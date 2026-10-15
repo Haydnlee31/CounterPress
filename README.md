@@ -1,5 +1,7 @@
 # CounterPress
 
+[![CI](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml/badge.svg)](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml)
+
 Synthetic football insights through Stage 5: a React replay screen with inspectable evidence,
 SQLite history, correction-driven updates and withdrawals, backed by FastAPI and
 deterministic synthetic match calculations. Stage 6 includes the Azure wording
@@ -17,6 +19,15 @@ The fourth adds sustained possession without progression, independent positive
 and negative controls, durable corrections and bilingual episode evidence.
 
 ## Local setup
+
+GitHub Actions runs backend tests and frontend tests/builds on pushes to `main`,
+pull requests targeting `main`, and manual runs from the Actions tab. The workflow
+uses Python from `.python-version`, uv 0.11.29, Node.js 24 and committed dependency
+locks. Actions are pinned to commit hashes, repository permissions are read-only,
+and no Azure credentials or live model requests are used. See
+[the workflow](.github/workflows/ci.yml) and the official
+[uv](https://docs.astral.sh/uv/guides/integration/github/) and
+[Node.js setup](https://github.com/actions/setup-node) action documentation.
 
 Prerequisites: Python 3.11+ and [uv](https://docs.astral.sh/uv/getting-started/installation/).
 The project selects Python 3.13 through `.python-version`. Run from this directory:
