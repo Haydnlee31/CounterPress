@@ -1,0 +1,67 @@
+{
+  "attempt_id": "workflow-db80bdef-4f34-49b2-a5a1-4b2c13275f23",
+  "status": "timeout",
+  "candidate": "recovery_increase",
+  "evidence_id": "ev-428caa9cdc25d7c20d43e8ba",
+  "evidence_version": 1,
+  "evidence_references": [
+    {
+      "event_id": "p043",
+      "revision": 1
+    },
+    {
+      "event_id": "p053",
+      "revision": 1
+    },
+    {
+      "event_id": "p064",
+      "revision": 1
+    },
+    {
+      "event_id": "p075",
+      "revision": 1
+    },
+    {
+      "event_id": "p086",
+      "revision": 1
+    }
+  ],
+  "requested_at": {
+    "period": 2,
+    "elapsed_ms": 780000
+  },
+  "available_at": {
+    "period": 2,
+    "elapsed_ms": 780000
+  },
+  "source_history_version": 89,
+  "deployment": "REDACTED-DEPLOYMENT",
+  "prompt_version": "analyst-producer-v1",
+  "started_at_unix_ms": 1792052888500,
+  "expires_at_unix_ms": 1792052948500,
+  "duration_ms": 8014,
+  "analyst_requests": 2,
+  "producer_requests": 1,
+  "provider_requests": 3,
+  "tool_invocations": 2,
+  "actions": [
+    {
+      "label": "Requested comparison",
+      "elapsed_ms": 3688
+    },
+    {
+      "label": "Checked data quality",
+      "elapsed_ms": 3689
+    },
+    {
+      "label": "Accepted supported comparison",
+      "elapsed_ms": 5671
+    },
+    {
+      "label": "Used factual fallback",
+      "elapsed_ms": 8014
+    }
+  ],
+  "reason": "total_deadline_exceeded",
+  "text": null
+}

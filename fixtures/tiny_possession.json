@@ -1,0 +1,366 @@
+{
+  "schema_version": "1.0",
+  "synthetic": true,
+  "match_id": "tiny-eastbridge-northport",
+  "pitch": {
+    "length_m": 105,
+    "width_m": 68,
+    "coordinates": "actor_team_attacks_positive_x"
+  },
+  "teams": [
+    {
+      "team_id": "eastbridge",
+      "name": "Eastbridge",
+      "player_ids": [
+        "eb08",
+        "eb09"
+      ]
+    },
+    {
+      "team_id": "northport",
+      "name": "Northport",
+      "player_ids": [
+        "np06",
+        "np08"
+      ]
+    }
+  ],
+  "initial_state": {
+    "at": {
+      "period": 2,
+      "elapsed_ms": 180000
+    },
+    "score": {
+      "eastbridge": 0,
+      "northport": 1
+    },
+    "controlled_possession_team_id": "northport"
+  },
+  "events": [
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e01",
+      "revision": 1,
+      "source_delivery_sequence": 1,
+      "occurrence_order": 1,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 185000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 185200
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np06"
+      },
+      "position": {
+        "x": 20,
+        "y": 34
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 28,
+          "y": 34
+        },
+        "recipient": {
+          "team_id": "northport",
+          "player_id": "np08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e02",
+      "revision": 1,
+      "source_delivery_sequence": 2,
+      "occurrence_order": 2,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 190000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 190200
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np08"
+      },
+      "position": {
+        "x": 28,
+        "y": 34
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 33,
+          "y": 34
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e03",
+      "revision": 1,
+      "source_delivery_sequence": 3,
+      "occurrence_order": 3,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 200000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 200200
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 72,
+        "y": 34
+      },
+      "action": {
+        "kind": "duel",
+        "outcome": "won",
+        "opponent": {
+          "team_id": "northport",
+          "player_id": "np08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e04",
+      "revision": 1,
+      "source_delivery_sequence": 4,
+      "occurrence_order": 4,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 210000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 210200
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 72,
+        "y": 34
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e05",
+      "revision": 1,
+      "source_delivery_sequence": 5,
+      "occurrence_order": 5,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 211000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 211200
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 72,
+        "y": 34
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 78,
+          "y": 24
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e06",
+      "revision": 1,
+      "source_delivery_sequence": 6,
+      "occurrence_order": 6,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 215000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 215200
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb09"
+      },
+      "position": {
+        "x": 78,
+        "y": 24
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 82,
+          "y": 24
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e07",
+      "revision": 1,
+      "source_delivery_sequence": 7,
+      "occurrence_order": 7,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 220000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 220200
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb09"
+      },
+      "position": {
+        "x": 82,
+        "y": 24
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 90,
+          "y": 30
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e08",
+      "revision": 1,
+      "source_delivery_sequence": 8,
+      "occurrence_order": 8,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 225000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 225200
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np06"
+      },
+      "position": {
+        "x": 15,
+        "y": 38
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e09",
+      "revision": 1,
+      "source_delivery_sequence": 9,
+      "occurrence_order": 9,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 230000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 230200
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np06"
+      },
+      "position": {
+        "x": 15,
+        "y": 38
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 25,
+          "y": 38
+        },
+        "recipient": {
+          "team_id": "northport",
+          "player_id": "np08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "tiny-eastbridge-northport",
+      "event_id": "e10",
+      "revision": 1,
+      "source_delivery_sequence": 10,
+      "occurrence_order": 10,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 235000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 235200
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np08"
+      },
+      "position": {
+        "x": 25,
+        "y": 38
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 30,
+          "y": 38
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,317 @@
+[
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "b3-duel",
+    "revision": 2,
+    "source_delivery_sequence": 100,
+    "occurrence_order": 15,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 275000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 785000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "carry",
+      "end_position": {
+        "x": 20.0,
+        "y": 34.0
+      }
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "c1-duel",
+    "revision": 2,
+    "source_delivery_sequence": 101,
+    "occurrence_order": 35,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 495000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 790000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "carry",
+      "end_position": {
+        "x": 20.0,
+        "y": 34.0
+      }
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "c2-duel",
+    "revision": 2,
+    "source_delivery_sequence": 102,
+    "occurrence_order": 41,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 535000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 790000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "carry",
+      "end_position": {
+        "x": 20.0,
+        "y": 34.0
+      }
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "c3-duel",
+    "revision": 2,
+    "source_delivery_sequence": 103,
+    "occurrence_order": 46,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 575000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 790000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "carry",
+      "end_position": {
+        "x": 20.0,
+        "y": 34.0
+      }
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "c4-duel",
+    "revision": 2,
+    "source_delivery_sequence": 104,
+    "occurrence_order": 51,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 615000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 790000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "carry",
+      "end_position": {
+        "x": 20.0,
+        "y": 34.0
+      }
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "b3-duel",
+    "revision": 3,
+    "source_delivery_sequence": 105,
+    "occurrence_order": 15,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 275000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 795000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "duel",
+      "opponent": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "outcome": "won"
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "c1-duel",
+    "revision": 3,
+    "source_delivery_sequence": 106,
+    "occurrence_order": 35,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 495000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 795000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "duel",
+      "opponent": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "outcome": "won"
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "c2-duel",
+    "revision": 3,
+    "source_delivery_sequence": 107,
+    "occurrence_order": 41,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 535000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 795000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "duel",
+      "opponent": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "outcome": "won"
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "c3-duel",
+    "revision": 3,
+    "source_delivery_sequence": 108,
+    "occurrence_order": 46,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 575000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 795000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "duel",
+      "opponent": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "outcome": "won"
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "build-up-increase-replay",
+    "event_id": "c4-duel",
+    "revision": 3,
+    "source_delivery_sequence": 109,
+    "occurrence_order": 51,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 615000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 795000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb04"
+    },
+    "position": {
+      "x": 20.0,
+      "y": 34.0
+    },
+    "action": {
+      "kind": "duel",
+      "opponent": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "outcome": "won"
+    }
+  }
+]

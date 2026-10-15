@@ -1,0 +1,28 @@
+[project]
+name = "counterpress"
+version = "0.1.0"
+description = "Synthetic football insights: foundation contracts and API"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "pydantic>=2.10,<3",
+    "uvicorn>=0.34,<1",
+    "httpx>=0.28,<1",
+    "agent-framework-core>=1,<2",
+    "agent-framework-openai>=1,<2",
+    "openai>=3,<4",
+    "httpx2>=2.13,<3",
+]
+
+[dependency-groups]
+dev = ["pytest>=8,<10"]
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend/counterpress"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

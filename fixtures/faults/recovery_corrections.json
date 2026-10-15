@@ -1,0 +1,122 @@
+[
+  {
+    "schema_version": "1.0",
+    "match_id": "eastbridge-northport-recovery-increase",
+    "event_id": "p053",
+    "revision": 2,
+    "source_delivery_sequence": 90,
+    "occurrence_order": 53,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 540000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 785000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb08"
+    },
+    "position": {
+      "x": 65,
+      "y": 38.0
+    },
+    "action": {
+      "kind": "recovery",
+      "from_team_id": "northport",
+      "control": "established",
+      "origin": "open_play"
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "eastbridge-northport-recovery-increase",
+    "event_id": "p064",
+    "revision": 2,
+    "source_delivery_sequence": 91,
+    "occurrence_order": 64,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 615000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 790000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb09"
+    },
+    "position": {
+      "x": 65,
+      "y": 38.0
+    },
+    "action": {
+      "kind": "recovery",
+      "from_team_id": "northport",
+      "control": "established",
+      "origin": "open_play"
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "eastbridge-northport-recovery-increase",
+    "event_id": "p075",
+    "revision": 2,
+    "source_delivery_sequence": 92,
+    "occurrence_order": 75,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 690000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 790000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb06"
+    },
+    "position": {
+      "x": 65,
+      "y": 38.0
+    },
+    "action": {
+      "kind": "recovery",
+      "from_team_id": "northport",
+      "control": "established",
+      "origin": "open_play"
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "match_id": "eastbridge-northport-recovery-increase",
+    "event_id": "p053",
+    "revision": 3,
+    "source_delivery_sequence": 93,
+    "occurrence_order": 53,
+    "occurred_at": {
+      "period": 2,
+      "elapsed_ms": 540000
+    },
+    "available_at": {
+      "period": 2,
+      "elapsed_ms": 795000
+    },
+    "actor": {
+      "team_id": "eastbridge",
+      "player_id": "eb08"
+    },
+    "position": {
+      "x": 72,
+      "y": 38.0
+    },
+    "action": {
+      "kind": "recovery",
+      "from_team_id": "northport",
+      "control": "established",
+      "origin": "open_play"
+    }
+  }
+]

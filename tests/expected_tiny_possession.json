@@ -1,0 +1,36 @@
+{
+  "note": "Hand-checked oracle, never loaded by the backend. e03 is a duel, e04 establishes Eastbridge control at x=72, and e08 establishes Northport control at x=15. Only e04 is a high recovery. Its 48:30 occurrence belongs only to the first window.",
+  "event_count": 10,
+  "event_ids": ["e01", "e02", "e03", "e04", "e05", "e06", "e07", "e08", "e09", "e10"],
+  "control_after_each_event": ["northport", "northport", "northport", "eastbridge", "eastbridge", "eastbridge", "eastbridge", "northport", "northport", "northport"],
+  "recovery_event_ids": ["e04", "e08"],
+  "evidence": {
+    "schema_version": "1.0",
+    "evidence_id": "tiny-high-recovery-comparison",
+    "evidence_version": 1,
+    "match_id": "tiny-eastbridge-northport",
+    "subject_team_id": "eastbridge",
+    "metric": "high_recovery_count",
+    "rule_version": "high-recovery-v1",
+    "cutoff": {"period": 2, "elapsed_ms": 240000},
+    "baseline": {
+      "window": {
+        "start": {"period": 2, "elapsed_ms": 180000},
+        "end": {"period": 2, "elapsed_ms": 210000},
+        "boundary": "(start,end]"
+      },
+      "value": 1,
+      "source_events": [{"event_id": "e04", "revision": 1}]
+    },
+    "current": {
+      "window": {
+        "start": {"period": 2, "elapsed_ms": 210000},
+        "end": {"period": 2, "elapsed_ms": 240000},
+        "boundary": "(start,end]"
+      },
+      "value": 0,
+      "source_events": []
+    },
+    "claim_type": "count_comparison"
+  }
+}

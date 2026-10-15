@@ -1,0 +1,62 @@
+{
+  "method": "Separately written after reviewing the qualifying event times, actor coordinates and pressure-trial resolutions. Runtime generation never reads this file.",
+  "window_bounds_ms": [180000, 480000, 780000],
+  "controls": [
+    {
+      "name": "successful_pressure",
+      "seed": 2,
+      "profile": "pressure-shift",
+      "match_id": "sim-cd3f34e3015e1cec5197fe8c",
+      "event_count": 112,
+      "baseline_ids": ["g0031"],
+      "current_ids": ["g0087", "g0097", "g0107"],
+      "current_pressure_recovery_ids": ["g0087", "g0097", "g0107"],
+      "current_failed_pressure_ids": ["g0082", "g0084", "g0094", "g0112"],
+      "end_state": "controlled",
+      "qualifying_occurrences_ms": [345000, 646000, 694000, 746000],
+      "qualifying_x": [100.24, 75.458, 75.72, 92.055]
+    },
+    {
+      "name": "unsuccessful_pressure",
+      "seed": 7,
+      "profile": "pressure-shift",
+      "match_id": "sim-dbe085e7da766da19d73ef4c",
+      "event_count": 111,
+      "baseline_ids": [],
+      "current_ids": [],
+      "current_pressure_recovery_ids": [],
+      "current_failed_pressure_ids": ["g0061"],
+      "end_state": "controlled",
+      "qualifying_occurrences_ms": [],
+      "qualifying_x": []
+    },
+    {
+      "name": "no_tactical_change",
+      "seed": 103,
+      "profile": "steady",
+      "match_id": "sim-4acca7f2a89c2b8e5a289fc9",
+      "event_count": 113,
+      "baseline_ids": [],
+      "current_ids": [],
+      "current_pressure_recovery_ids": [],
+      "current_failed_pressure_ids": ["g0094"],
+      "end_state": "controlled",
+      "qualifying_occurrences_ms": [],
+      "qualifying_x": []
+    },
+    {
+      "name": "count_increase_without_successful_pressure",
+      "seed": 15,
+      "profile": "pressure-shift",
+      "match_id": "sim-372562486a5ebe5e509db655",
+      "event_count": 113,
+      "baseline_ids": ["g0005"],
+      "current_ids": ["g0086", "g0106"],
+      "current_pressure_recovery_ids": [],
+      "current_failed_pressure_ids": ["g0079", "g0082", "g0084", "g0092", "g0112"],
+      "end_state": "loose",
+      "qualifying_occurrences_ms": [196000, 638000, 739000],
+      "qualifying_x": [71.843, 80.374, 83.863]
+    }
+  ]
+}

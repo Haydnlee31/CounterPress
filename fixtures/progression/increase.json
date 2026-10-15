@@ -1,0 +1,2789 @@
+{
+  "schema_version": "1.0",
+  "synthetic": true,
+  "match_id": "possession-increase",
+  "pitch": {
+    "length_m": 105,
+    "width_m": 68,
+    "coordinates": "actor_team_attacks_positive_x"
+  },
+  "teams": [
+    {
+      "team_id": "eastbridge",
+      "name": "Eastbridge",
+      "player_ids": [
+        "eb04",
+        "eb08"
+      ]
+    },
+    {
+      "team_id": "northport",
+      "name": "Northport",
+      "player_ids": [
+        "np04",
+        "np08"
+      ]
+    }
+  ],
+  "initial_state": {
+    "at": {
+      "period": 2,
+      "elapsed_ms": 180000
+    },
+    "score": {
+      "eastbridge": 0,
+      "northport": 1
+    },
+    "controlled_possession_team_id": "northport"
+  },
+  "events": [
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b1-feed",
+      "revision": 1,
+      "source_delivery_sequence": 1,
+      "occurrence_order": 1,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 184000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 184000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b1-start",
+      "revision": 1,
+      "source_delivery_sequence": 2,
+      "occurrence_order": 2,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 185000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 185000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b1-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 3,
+      "occurrence_order": 3,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 190000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 190000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b1-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 4,
+      "occurrence_order": 4,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 197000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 197000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 32.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b1-carry",
+      "revision": 1,
+      "source_delivery_sequence": 5,
+      "occurrence_order": 5,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 207000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 207000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 32.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b1-loss",
+      "revision": 1,
+      "source_delivery_sequence": 6,
+      "occurrence_order": 6,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 209000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 209000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b1-end",
+      "revision": 1,
+      "source_delivery_sequence": 7,
+      "occurrence_order": 7,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 211000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 211000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b2-feed",
+      "revision": 1,
+      "source_delivery_sequence": 8,
+      "occurrence_order": 8,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 229000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 229000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b2-start",
+      "revision": 1,
+      "source_delivery_sequence": 9,
+      "occurrence_order": 9,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 230000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 230000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b2-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 10,
+      "occurrence_order": 10,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 235000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 235000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 50.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b2-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 11,
+      "occurrence_order": 11,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 242000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 242000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 50.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b2-carry",
+      "revision": 1,
+      "source_delivery_sequence": 12,
+      "occurrence_order": 12,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 252000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 252000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b2-loss",
+      "revision": 1,
+      "source_delivery_sequence": 13,
+      "occurrence_order": 13,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 254000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 254000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b2-end",
+      "revision": 1,
+      "source_delivery_sequence": 14,
+      "occurrence_order": 14,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 256000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 256000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b3-feed",
+      "revision": 1,
+      "source_delivery_sequence": 15,
+      "occurrence_order": 15,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 274000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 274000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b3-start",
+      "revision": 1,
+      "source_delivery_sequence": 16,
+      "occurrence_order": 16,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 275000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 275000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b3-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 17,
+      "occurrence_order": 17,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 280000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 280000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 50.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b3-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 18,
+      "occurrence_order": 18,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 287000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 287000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 50.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b3-carry",
+      "revision": 1,
+      "source_delivery_sequence": 19,
+      "occurrence_order": 19,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 297000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 297000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b3-loss",
+      "revision": 1,
+      "source_delivery_sequence": 20,
+      "occurrence_order": 20,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 299000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 299000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b3-end",
+      "revision": 1,
+      "source_delivery_sequence": 21,
+      "occurrence_order": 21,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 301000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 301000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b4-feed",
+      "revision": 1,
+      "source_delivery_sequence": 22,
+      "occurrence_order": 22,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 319000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 319000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b4-start",
+      "revision": 1,
+      "source_delivery_sequence": 23,
+      "occurrence_order": 23,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 320000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 320000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b4-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 24,
+      "occurrence_order": 24,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 325000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 325000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 50.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b4-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 25,
+      "occurrence_order": 25,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 332000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 332000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 50.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b4-carry",
+      "revision": 1,
+      "source_delivery_sequence": 26,
+      "occurrence_order": 26,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 342000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 342000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b4-loss",
+      "revision": 1,
+      "source_delivery_sequence": 27,
+      "occurrence_order": 27,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 344000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 344000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b4-end",
+      "revision": 1,
+      "source_delivery_sequence": 28,
+      "occurrence_order": 28,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 346000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 346000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b5-feed",
+      "revision": 1,
+      "source_delivery_sequence": 29,
+      "occurrence_order": 29,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 364000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 364000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b5-start",
+      "revision": 1,
+      "source_delivery_sequence": 30,
+      "occurrence_order": 30,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 365000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 365000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b5-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 31,
+      "occurrence_order": 31,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 370000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 370000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 50.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b5-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 32,
+      "occurrence_order": 32,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 377000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 377000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 50.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b5-carry",
+      "revision": 1,
+      "source_delivery_sequence": 33,
+      "occurrence_order": 33,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 387000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 387000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b5-loss",
+      "revision": 1,
+      "source_delivery_sequence": 34,
+      "occurrence_order": 34,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 389000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 389000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b5-end",
+      "revision": 1,
+      "source_delivery_sequence": 35,
+      "occurrence_order": 35,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 391000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 391000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b6-feed",
+      "revision": 1,
+      "source_delivery_sequence": 36,
+      "occurrence_order": 36,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 409000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 409000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b6-start",
+      "revision": 1,
+      "source_delivery_sequence": 37,
+      "occurrence_order": 37,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 410000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 410000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b6-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 38,
+      "occurrence_order": 38,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 415000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 415000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 50.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b6-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 39,
+      "occurrence_order": 39,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 422000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 422000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 50.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b6-carry",
+      "revision": 1,
+      "source_delivery_sequence": 40,
+      "occurrence_order": 40,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 432000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 432000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b6-loss",
+      "revision": 1,
+      "source_delivery_sequence": 41,
+      "occurrence_order": 41,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 434000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 434000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "b6-end",
+      "revision": 1,
+      "source_delivery_sequence": 42,
+      "occurrence_order": 42,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 436000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 436000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c1-feed",
+      "revision": 1,
+      "source_delivery_sequence": 43,
+      "occurrence_order": 43,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 484000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 484000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c1-start",
+      "revision": 1,
+      "source_delivery_sequence": 44,
+      "occurrence_order": 44,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 485000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 485000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c1-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 45,
+      "occurrence_order": 45,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 490000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 490000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c1-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 46,
+      "occurrence_order": 46,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 497000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 497000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 32.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c1-carry",
+      "revision": 1,
+      "source_delivery_sequence": 47,
+      "occurrence_order": 47,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 507000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 507000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 32.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c1-loss",
+      "revision": 1,
+      "source_delivery_sequence": 48,
+      "occurrence_order": 48,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 509000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 509000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c1-end",
+      "revision": 1,
+      "source_delivery_sequence": 49,
+      "occurrence_order": 49,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 511000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 511000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c2-feed",
+      "revision": 1,
+      "source_delivery_sequence": 50,
+      "occurrence_order": 50,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 529000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 529000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c2-start",
+      "revision": 1,
+      "source_delivery_sequence": 51,
+      "occurrence_order": 51,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 530000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 530000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c2-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 52,
+      "occurrence_order": 52,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 535000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 535000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c2-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 53,
+      "occurrence_order": 53,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 542000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 542000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 32.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c2-carry",
+      "revision": 1,
+      "source_delivery_sequence": 54,
+      "occurrence_order": 54,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 552000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 552000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 32.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c2-loss",
+      "revision": 1,
+      "source_delivery_sequence": 55,
+      "occurrence_order": 55,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 554000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 554000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c2-end",
+      "revision": 1,
+      "source_delivery_sequence": 56,
+      "occurrence_order": 56,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 556000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 556000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c3-feed",
+      "revision": 1,
+      "source_delivery_sequence": 57,
+      "occurrence_order": 57,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 574000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 574000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c3-start",
+      "revision": 1,
+      "source_delivery_sequence": 58,
+      "occurrence_order": 58,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 575000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 575000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c3-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 59,
+      "occurrence_order": 59,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 580000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 580000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c3-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 60,
+      "occurrence_order": 60,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 587000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 587000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 32.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c3-carry",
+      "revision": 1,
+      "source_delivery_sequence": 61,
+      "occurrence_order": 61,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 597000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 597000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 32.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c3-loss",
+      "revision": 1,
+      "source_delivery_sequence": 62,
+      "occurrence_order": 62,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 599000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 599000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c3-end",
+      "revision": 1,
+      "source_delivery_sequence": 63,
+      "occurrence_order": 63,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 601000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 601000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c4-feed",
+      "revision": 1,
+      "source_delivery_sequence": 64,
+      "occurrence_order": 64,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 619000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 619000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c4-start",
+      "revision": 1,
+      "source_delivery_sequence": 65,
+      "occurrence_order": 65,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 620000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 620000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c4-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 66,
+      "occurrence_order": 66,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 625000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 625000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c4-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 67,
+      "occurrence_order": 67,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 632000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 632000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 32.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c4-carry",
+      "revision": 1,
+      "source_delivery_sequence": 68,
+      "occurrence_order": 68,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 642000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 642000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 32.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c4-loss",
+      "revision": 1,
+      "source_delivery_sequence": 69,
+      "occurrence_order": 69,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 644000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 644000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c4-end",
+      "revision": 1,
+      "source_delivery_sequence": 70,
+      "occurrence_order": 70,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 646000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 646000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c5-feed",
+      "revision": 1,
+      "source_delivery_sequence": 71,
+      "occurrence_order": 71,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 664000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 664000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c5-start",
+      "revision": 1,
+      "source_delivery_sequence": 72,
+      "occurrence_order": 72,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 665000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 665000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c5-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 73,
+      "occurrence_order": 73,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 670000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 670000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 50.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c5-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 74,
+      "occurrence_order": 74,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 677000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 677000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 50.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c5-carry",
+      "revision": 1,
+      "source_delivery_sequence": 75,
+      "occurrence_order": 75,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 687000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 687000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c5-loss",
+      "revision": 1,
+      "source_delivery_sequence": 76,
+      "occurrence_order": 76,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 689000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 689000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c5-end",
+      "revision": 1,
+      "source_delivery_sequence": 77,
+      "occurrence_order": 77,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 691000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 691000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c6-feed",
+      "revision": 1,
+      "source_delivery_sequence": 78,
+      "occurrence_order": 78,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 709000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 709000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 75.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c6-start",
+      "revision": 1,
+      "source_delivery_sequence": 79,
+      "occurrence_order": 79,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 710000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 710000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c6-pass1",
+      "revision": 1,
+      "source_delivery_sequence": 80,
+      "occurrence_order": 80,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 715000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 715000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 30.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 50.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c6-pass2",
+      "revision": 1,
+      "source_delivery_sequence": 81,
+      "occurrence_order": 81,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 722000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 722000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 50.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 35.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c6-carry",
+      "revision": 1,
+      "source_delivery_sequence": 82,
+      "occurrence_order": 82,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 732000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 732000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 35.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 40.0,
+          "y": 34.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c6-loss",
+      "revision": 1,
+      "source_delivery_sequence": 83,
+      "occurrence_order": 83,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 734000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 734000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 40.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 30.0,
+          "y": 34.0
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "possession-increase",
+      "event_id": "c6-end",
+      "revision": 1,
+      "source_delivery_sequence": 84,
+      "occurrence_order": 84,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 736000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 736000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 75.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "eastbridge",
+        "control": "established",
+        "origin": "open_play"
+      }
+    }
+  ]
+}

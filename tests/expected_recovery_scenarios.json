@@ -1,0 +1,48 @@
+{
+  "method": "Hand-reviewed expected IDs and locations. This file is test-only; it must never be loaded as a runtime event feed or agent input.",
+  "subject_team_id": "eastbridge",
+  "period": 2,
+  "baseline_window_ms": [180000, 480000],
+  "current_window_ms": [480000, 780000],
+  "cutoff_ms": 780000,
+  "scenarios": {
+    "recovery_increase": {
+      "match_id": "eastbridge-northport-recovery-increase",
+      "event_count": 89,
+      "baseline": {"count": 1, "event_ids": ["p043"]},
+      "current": {"count": 4, "event_ids": ["p053", "p064", "p075", "p086"]},
+      "increase_expected": true,
+      "nonqualifying_eastbridge_recoveries": ["p008", "p020", "p030"],
+      "qualifying_locations": {"p043": [70, 38], "p053": [72, 38], "p064": [77, 38], "p075": [80, 38], "p086": [74, 38]}
+    },
+    "recovery_control": {
+      "match_id": "eastbridge-northport-recovery-control",
+      "event_count": 89,
+      "baseline": {"count": 1, "event_ids": ["p043"]},
+      "current": {"count": 1, "event_ids": ["p086"]},
+      "increase_expected": false,
+      "nonqualifying_eastbridge_recoveries": ["p008", "p020", "p030", "p053", "p064", "p075"],
+      "qualifying_locations": {"p043": [70, 38], "p086": [74, 38]}
+    }
+  },
+  "possession_transitions": [
+    ["p008", "northport", "eastbridge"],
+    ["p014", "eastbridge", "northport"],
+    ["p020", "northport", "eastbridge"],
+    ["p025", "eastbridge", "northport"],
+    ["p030", "northport", "eastbridge"],
+    ["p036", "eastbridge", "northport"],
+    ["p043", "northport", "eastbridge"],
+    ["p048", "eastbridge", "northport"],
+    ["p053", "northport", "eastbridge"],
+    ["p059", "eastbridge", "northport"],
+    ["p064", "northport", "eastbridge"],
+    ["p070", "eastbridge", "northport"],
+    ["p075", "northport", "eastbridge"],
+    ["p082", "eastbridge", "northport"],
+    ["p086", "northport", "eastbridge"]
+  ],
+  "final_controlled_possession_team_id": "eastbridge",
+  "unchanged_score": {"eastbridge": 0, "northport": 1},
+  "boundary_review": "p043 occurs at exactly 53:00 (480000 ms into period 2) at x=70. It belongs only to baseline. p041 and p042 are two observations of a duel and are not recoveries. In the control, p075 is at x=69.9 and does not qualify."
+}

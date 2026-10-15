@@ -1,0 +1,25 @@
+{
+  "review": "Independent episode enumeration: each b1-b6/c1-c6 recovery starts at x=20. A named duel marks exposure, a carry to x=50 resolves escape, otherwise the opponent recovery resolves turnover. Windows are (48:00,49:00] and (49:00,50:00].",
+  "increase": {
+    "baseline_included": ["b1-start", "b2-start", "b3-start", "b4-start", "b5-start", "b6-start"],
+    "current_included": ["c1-start", "c2-start", "c3-start", "c4-start", "c5-start", "c6-start"],
+    "baseline_pressured": ["b1-start", "b2-start", "b3-start"],
+    "current_pressured": ["c1-start", "c2-start", "c3-start", "c4-start", "c5-start", "c6-start"],
+    "baseline_pressured_escapes": ["b1-start", "b2-start", "b3-start"],
+    "current_pressured_escapes": ["c1-start"],
+    "exposure_fraction": [3, 6, 6, 6],
+    "escape_fraction": [3, 3, 1, 6],
+    "statuses": ["eligible", "eligible"]
+  },
+  "control": {
+    "baseline_included": ["b1-start", "b2-start", "b3-start", "b4-start", "b5-start", "b6-start"],
+    "current_included": ["c1-start", "c2-start", "c3-start", "c4-start", "c5-start", "c6-start"],
+    "baseline_pressured": ["b1-start", "b2-start", "b3-start"],
+    "current_pressured": ["c1-start", "c2-start", "c3-start"],
+    "baseline_pressured_escapes": ["b1-start", "b2-start"],
+    "current_pressured_escapes": ["c1-start", "c2-start"],
+    "exposure_fraction": [3, 6, 3, 6],
+    "escape_fraction": [2, 3, 2, 3],
+    "statuses": ["below_threshold", "below_threshold"]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "review": "Each possession starts at x=30, has two completed passes and one carry, and spans 22 seconds of completed actions before opponent recovery at +26 s. Low-gain paths are 30->35->32->40 (maximum gain 10m); advancing paths are 30->50->35->40 (maximum gain 20m, despite the same final x=40).",
+  "increase": {
+    "baseline_ids": ["b1-start","b2-start","b3-start","b4-start","b5-start","b6-start"],
+    "current_ids": ["c1-start","c2-start","c3-start","c4-start","c5-start","c6-start"],
+    "baseline_without_progression": ["b1-start"],
+    "current_without_progression": ["c1-start","c2-start","c3-start","c4-start"],
+    "baseline_gains": [10,20,20,20,20,20],
+    "current_gains": [10,10,10,10,20,20],
+    "fraction": [1,6,4,6],
+    "status": "eligible"
+  },
+  "control": {
+    "baseline_ids": ["b1-start","b2-start","b3-start","b4-start","b5-start","b6-start"],
+    "current_ids": ["c1-start","c2-start","c3-start","c4-start","c5-start","c6-start"],
+    "baseline_without_progression": ["b1-start"],
+    "current_without_progression": ["c1-start"],
+    "baseline_gains": [10,20,20,20,20,20],
+    "current_gains": [10,20,20,20,20,20],
+    "fraction": [1,6,1,6],
+    "status": "below_threshold"
+  }
+}

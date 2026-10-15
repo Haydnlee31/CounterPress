@@ -1,0 +1,24 @@
+{
+  "invalid_player": {"fixture_valid": false, "reason": "registered player"},
+  "invalid_coordinate": {"fixture_valid": false, "reason": "less than or equal to 105"},
+  "duplicate_delivery": {
+    "individual_records_valid": true,
+    "ordered_fixture_valid": false,
+    "reason": "must be unique",
+    "delivered_records": 2,
+    "unique_record_identities": 1,
+    "future_canonical_high_recovery_count": 1
+  },
+  "event_correction": {
+    "individual_records_valid": true,
+    "ordered_fixture_valid": false,
+    "reason": "initial revisions only",
+    "event_id": "e04",
+    "occurrence_order": 4,
+    "revisions": [1, 2],
+    "source_delivery_sequences": [4, 11],
+    "x_coordinates": [72, 69.9],
+    "available_elapsed_ms": [210200, 240000],
+    "future_counts_before_after": [1, 0]
+  }
+}

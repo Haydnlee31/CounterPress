@@ -1,0 +1,67 @@
+{
+  "attempt_id": "workflow-bdfb5305-3a61-41bd-b18d-bc1532953144",
+  "status": "accepted",
+  "candidate": "recovery_increase",
+  "evidence_id": "ev-428caa9cdc25d7c20d43e8ba",
+  "evidence_version": 1,
+  "evidence_references": [
+    {
+      "event_id": "p043",
+      "revision": 1
+    },
+    {
+      "event_id": "p053",
+      "revision": 1
+    },
+    {
+      "event_id": "p064",
+      "revision": 1
+    },
+    {
+      "event_id": "p075",
+      "revision": 1
+    },
+    {
+      "event_id": "p086",
+      "revision": 1
+    }
+  ],
+  "requested_at": {
+    "period": 2,
+    "elapsed_ms": 780000
+  },
+  "available_at": {
+    "period": 2,
+    "elapsed_ms": 780000
+  },
+  "source_history_version": 89,
+  "deployment": "REDACTED-DEPLOYMENT",
+  "prompt_version": "analyst-producer-v1",
+  "started_at_unix_ms": 1792052956734,
+  "expires_at_unix_ms": 1792053016734,
+  "duration_ms": 6929,
+  "analyst_requests": 2,
+  "producer_requests": 1,
+  "provider_requests": 3,
+  "tool_invocations": 2,
+  "actions": [
+    {
+      "label": "Requested comparison",
+      "elapsed_ms": 2960
+    },
+    {
+      "label": "Checked data quality",
+      "elapsed_ms": 2960
+    },
+    {
+      "label": "Accepted supported comparison",
+      "elapsed_ms": 4407
+    },
+    {
+      "label": "Prepared explanation",
+      "elapsed_ms": 6916
+    }
+  ],
+  "reason": "supported_count_comparison",
+  "text": "Eastbridge: 4 high recoveries in 53:00–58:00, compared with 1 in 48:00–53:00."
+}

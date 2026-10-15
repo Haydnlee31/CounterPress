@@ -1,0 +1,17 @@
+{
+  "method": "Hand calculation: Northport passes e01 and e09 are 8 m and 10 m. Eastbridge's completed e05 is sqrt(6^2+10^2)=11.661903789690601 m; incomplete e07 is sqrt(8^2+6^2)=10 m. Carries are excluded.",
+  "eastbridge": {
+    "pass_attempts": 2,
+    "pass_completions": 1,
+    "attempted_pass_distance_m": 21.6619037896906,
+    "completed_pass_distance_m": 11.661903789690601,
+    "high_recovery_ids": ["e04"]
+  },
+  "northport": {
+    "pass_attempts": 2,
+    "pass_completions": 2,
+    "attempted_pass_distance_m": 18,
+    "completed_pass_distance_m": 18,
+    "high_recovery_ids": []
+  }
+}
