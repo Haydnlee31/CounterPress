@@ -2026,3 +2026,51 @@ owner/repository IDs. Azure federation initially expected the legacy name-only
 format. The template now binds the exact immutable subject; no wildcard trust or
 GitHub security downgrade is used. A separate regression requires the specifically
 requested Azure revision to be ready, avoiding a stale previous-ready match.
+
+
+### OIDC release verified
+
+The complete [GitHub deployment](https://github.com/Haydnlee31/CounterPress/actions/runs/38875948320)
+passed from `acf0a5dfc1fec1b4f43a2787854297de2d2a199b`. Its exact-commit
+[CI](https://github.com/Haydnlee31/CounterPress/actions/runs/38875592294) passed
+468 backend tests, 36 frontend tests, the container smoke and all Bicep compilations.
+Observed CI output:
+
+```console
+$ uv run --frozen pytest -q
+468 passed in 26.97s
+```
+
+Observed release commands/output:
+
+```console
+$ gh workflow run deploy.yml --repo Haydnlee31/CounterPress --ref main
+https://github.com/Haydnlee31/CounterPress/actions/runs/38875948320
+# Inside the successful workflow:
+$ python3 scripts/deploy_azure.py deploy
+PASS: protected main head has successful exact-commit CI
+Deploy phase: updating the existing app image
+Deploy phase: waiting for the requested revision
+PASS: OIDC image deployment; Cosmos, streaming, identities and scaling preserved
+PASS: public HTTPS smoke and historical streaming corrections
+```
+
+The federated login uses GitHub's exact immutable owner/repository subject and the
+new main-only environment. No existing reviewer protections were changed. App
+read/write and registry/environment roles retain their original narrow scopes.
+The first post-login attempt exposed Azure's empty successful asynchronous PATCH
+response: the image was accepted, but JSON parsing stopped verification. The fixed
+script treats PATCH success separately and waits for the requested revision name.
+An independent Azure state read confirmed the successful run's exact revision.
+The public workflow log scan found no configured model credentials/endpoints or
+JWT-like tokens.
+
+The new runtime passed Event Hubs → Cosmos → Web PubSub and checkpoint checks with
+duplicate deliveries, retained 4/3/withdrawn/2 history and unchanged original
+scenario. Its console emitted numeric records with two processed deliveries and
+zero retries. Monitoring collection uses the observed optional `F ` full-line
+prefix. Normal Logs KQL accepted regex replacement, but the ingestion engine
+rejected that function; the deployed filter uses supported `iff` and `substring`
+instead. A real KQL test keeps plain/prefixed numeric records, removes an extra
+synthetic field and discards an unstructured line. Retained-log verification is
+separate from this query-engine test and console emission.

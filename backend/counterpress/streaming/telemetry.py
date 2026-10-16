@@ -2,13 +2,14 @@
 import asyncio
 from datetime import datetime, timezone
 import json
+import logging
 import math
 import os
 import sys
 from time import monotonic
 
 COUNTERS = ('processed', 'rejected', 'retries', 'publish_failures',
-            'checkpoint_failures', 'consumer_failures')
+            'checkpoint_failures', 'consumer_failures', 'export_failures')
 
 
 class StreamTelemetry:
@@ -63,9 +64,23 @@ class StreamTelemetry:
 
     def emit(self):
         if self.enabled:
-            print(json.dumps(self.snapshot(), separators=(',', ':'), allow_nan=False), file=sys.stdout, flush=True)
+            record = self.snapshot()
+            print(json.dumps(record, separators=(',', ':'), allow_nan=False), file=sys.stdout, flush=True)
+            return record
+        return None
 
-    async def run(self):
+    async def flush(self, sender=None):
+        record = self.emit()
+        if record is not None and sender is not None:
+            try:
+                await asyncio.wait_for(sender(record), timeout=10)
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                self.increment('export_failures')
+                logging.getLogger(__name__).warning('stream_metrics_export_failed')
+
+    async def run(self, sender=None):
         while True:
-            self.emit()
+            await self.flush(sender)
             await asyncio.sleep(60)

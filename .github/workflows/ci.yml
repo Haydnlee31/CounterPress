@@ -89,3 +89,4 @@ jobs:
           "$RUNNER_TEMP/bicep" build infra/streaming.bicep --outfile "$RUNNER_TEMP/streaming.json"
           "$RUNNER_TEMP/bicep" build infra/deployment-identity.bicep --outfile "$RUNNER_TEMP/deployment-identity.json"
           "$RUNNER_TEMP/bicep" build infra/monitoring.bicep --outfile "$RUNNER_TEMP/monitoring.json"
+          "$RUNNER_TEMP/bicep" build infra/telemetry-ingestion.bicep --outfile "$RUNNER_TEMP/telemetry-ingestion.json"

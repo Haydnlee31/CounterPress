@@ -72,7 +72,10 @@ flowchart LR
   App -->|Revision heads after commit| PubSub[Azure Web PubSub Free]
   PubSub -->|Receive-only scenario notices| Browser
   App -->|Checkpoints and rejected deliveries| Blob[Azure Blob Storage]
-  ACR[Private Azure Container Registry] -->|Pinned image; managed identity pull| App
+  Actions[GitHub Actions + Entra OIDC] -->|Tested image| ACR[Private Azure Container Registry]
+  Actions -->|Existing app image update| App
+  ACR -->|Pinned image; managed identity pull| App
+  App -->|Managed-identity numeric uploads| Monitor[Azure Monitor + Log Analytics]
 ```
 
 This diagram describes the deployed demo. The registry
@@ -114,7 +117,7 @@ ignored local configuration, not in this public runbook. Registry storage has
 ongoing cost even when the
 app scales to zero; application use, networking and later services can add charges.
 Azure budget alerts are notifications, not a hard spending stop. The environment uses
-Azure Monitor routing; the optional [operations setup](operations.md) adds a small
+Azure Monitor support; the optional [operations setup](operations.md) adds a small
 Log Analytics workspace that retains only numeric streaming telemetry.
 Estimate the chosen region's costs and configure budget alerts before provisioning.
 Use the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/)
@@ -247,8 +250,8 @@ and 100%, with a forecast alert at 100%. Deployment status is in the progress lo
 
 ## Next integration steps
 
-1. Verify the OIDC release and numeric telemetry path using the [operations runbook](operations.md).
-2. Complete Stage 10 evaluation and the judge-ready architecture review.
+1. Complete Stage 10 evaluation: controls, correction behavior, evidence fidelity and measured delivery behavior.
+2. Prepare the final architecture review and prioritize Microsoft-platform extensions by demonstrable value and budget.
 
 Model endpoint/configuration stays server-side; credentials or private endpoints
 must never enter frontend builds, public outputs, image layers or committed files.

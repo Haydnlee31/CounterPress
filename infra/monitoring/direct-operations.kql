@@ -1,0 +1,4 @@
+CounterPressOperations_CL
+| where TimeGenerated > ago(1h) and schema == 'counterpress_ops_v1'
+| summarize Processed=sum(processed), Rejected=sum(rejected), Retries=sum(retries), PublishFailures=sum(publish_failures), CheckpointFailures=sum(checkpoint_failures), ConsumerFailures=sum(consumer_failures), ExportFailures=sum(export_failures), MaxDeliveryAgeSeconds=max(max_delivery_age_seconds), MaxPendingSeconds=max(pending_seconds), ObservedBacklog=max(observed_backlog) by bin(TimeGenerated, 5m)
+| order by TimeGenerated desc
