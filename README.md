@@ -2,6 +2,9 @@
 
 [![CI](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml/badge.svg)](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml)
 
+**Using or judging the demo? Start with the [demo user guide](docs/demo-guide.md)**
+for the live link, a five-minute walkthrough, scenario results and evidence explanations.
+
 Synthetic football insights through Stage 5: a React replay screen with inspectable evidence,
 durable history, correction-driven updates and withdrawals, backed by FastAPI and
 deterministic synthetic match calculations. Stage 6 includes the Azure wording
