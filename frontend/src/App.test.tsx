@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import App from './App'
+import App from './AnalysisApp'
 import { InsightCard } from './InsightCard'
 import * as api from './api'
 import { PlaybackScope } from './playbackScope'
