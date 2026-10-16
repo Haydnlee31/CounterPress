@@ -34,7 +34,7 @@ async def verify(exercise=False):
                         for _ in range(2):
                             delivery=Delivery(delivery_id='check-'+uuid4().hex,scenario_id='stream-recovery',match_id=history.fixture.match_id,events=records)
                             await send(delivery)
-                            message=await socket.receive(timeout=120)
+                            message=await asyncio.wait_for(socket.receive(), timeout=120)
                             assert message.type==aiohttp.WSMsgType.TEXT
                             n=RevisionNotice.model_validate_json(message.data)
                             assert n.scenario_id=='stream-recovery' and n.history_version==93
