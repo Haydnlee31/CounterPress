@@ -112,3 +112,20 @@ def test_stream_scenario_is_isolated_and_notice_includes_withdrawals():
     assert n.revisions[0].operation=='withdraw'
     assert s.history('increase')==original
     assert n.match_id!=original.fixture.match_id
+
+def test_cloud_runtime_constructs_and_closes_actual_sdk_clients_without_network(monkeypatch):
+    from azure.eventhub.aio import EventHubConsumerClient
+    from counterpress.streaming.azure import StreamingRuntime
+    values={'COUNTERPRESS_STORAGE':'cosmos','COUNTERPRESS_EVENTHUB_NAMESPACE':'example.servicebus.windows.net',
+        'COUNTERPRESS_EVENTHUB_NAME':'deliveries','COUNTERPRESS_CHECKPOINT_ENDPOINT':'https://example.blob.core.windows.net',
+        'COUNTERPRESS_PUBSUB_ENDPOINT':'https://example.webpubsub.azure.com','COUNTERPRESS_STREAM_CLIENT_ID':'test-identity'}
+    for k,v in values.items():monkeypatch.setenv(k,v)
+    async def hold(*args,**kwargs):await asyncio.Event().wait()
+    monkeypatch.setattr(EventHubConsumerClient,'receive',hold)
+    async def run():
+        runtime=StreamingRuntime(SnapshotService(FIXTURES))
+        await runtime.start()
+        assert runtime.publisher is not None and runtime.task is not None
+        await runtime.close()
+        assert runtime.task.done()
+    asyncio.run(run())
