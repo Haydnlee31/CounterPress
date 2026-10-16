@@ -33,8 +33,10 @@ adaptation remains off until step 2 is implemented and verified.
 the exact deployed commit and passing local/CI/live checks. Step 2's
 [editorial pilot](evaluation/editorial-pilot.md) is complete: a single editor had
 21/22 valid adaptations versus 13/22 for the two-role graph. Templates remain the
-public default; human usefulness, hosted activation controls and Studio remain
-pending. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
+public default. The [editorial access controls](editorial-access.md) now implement
+Entra authorization, shared durable admission, revision-bound reuse and stale-task
+cancellation locally. Real Entra/Cosmos activation checks, human usefulness and
+Studio remain pending. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
 is ready and no human ratings have been fabricated.
 
 The Matchday implementation is in `frontend/src/matchday/`. The previous workspace

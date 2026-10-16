@@ -2296,3 +2296,58 @@ this test-only correction:
 $ .venv/bin/python -m pytest -q
 495 passed, 1 warning in 28.41s
 ```
+
+## Authenticated editorial controls (2026-10-17)
+
+Implemented an opt-in private API around the single editor. The default remains
+`COUNTERPRESS_EDITORIAL=off`. Entra verification checks signatures, issuer, tenant,
+audience, time claims, allowed client, delegated scope and assigned editor role.
+An explicit context fingerprint is required for the paid POST; polling and health
+checks do no model work. There is no new frontend sign-in or Studio interface yet.
+
+The existing Cosmos container can hold a global admission ledger with ETag
+preconditions; local SQLite uses the same persistent database as history. Quotas
+survive restart and are never refunded after uncertain work. Exact-context leases
+deduplicate requests across instances, guard dispatch and reject old owners.
+Completed decisions reuse canonical revision-validated history until expiry.
+Corrections cancel pending work and invalidate old fingerprints; the existing
+atomic final check and factual fallback remain in force.
+
+The default allowances are 100 lifetime admissions, 20 per UTC day, 5 per editor
+per UTC day and 2 concurrent jobs, each at most one request and 650 output tokens.
+These are durable request limits, not an Azure billing cap. No new service, model
+call, tenant registration, cloud history write or deployment was performed here.
+
+Verification used generated signing keys, mocked provider responses, persistent
+SQLite and the Cosmos transactional service double. Real Entra authorization,
+Cosmos conflict/restart checks and the authenticated model route still need live
+verification before activation. Human sessions remain pending as requested.
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv sync --locked --offline
+Resolved 62 packages
+$ UV_CACHE_DIR=.uv-cache uv run --frozen --offline pytest -q
+531 passed, 1 warning in 17.18s
+$ npm --prefix frontend test -- --reporter=dot
+Test Files  8 passed (8)
+Tests  48 passed (48)
+$ npm --prefix frontend run build
+✓ 51 modules transformed.
+✓ built in 433ms
+$ UV_CACHE_DIR=.uv-cache uv run --frozen --offline python -m counterpress.evaluation.editorial --output var/editorial-controls-offline.json
+"suite": "editorial-controls-regression-v1"
+"checks": {"passed": 15, "failed": 0, "errored": 0}
+"dispatched_requests": 0
+```
+
+The existing Agent Framework experimental-evaluator warning remains. Initial uv
+commands attempted an unnecessary package-index refresh blocked by sandbox DNS;
+syncing from the local locked cache and running offline succeeded. No dependency
+versions changed; PyJWT is now an explicit direct dependency.
+
+The original paid report and its lock remain unchanged (lock SHA-256
+`c870171eb563be0c62649d9369751764df72d755c2bf8981395b80ec89cb2872`).
+Current source uses a separate regression lock; no new paid benchmark results are
+claimed. See [editorial access](editorial-access.md) for architecture, API contract,
+configuration, limits and remaining live checks. Next: real Entra/Cosmos integration
+and the authenticated Studio client, keeping hosted AI disabled until review.

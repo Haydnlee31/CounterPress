@@ -28,7 +28,7 @@ class HealthResponse(Contract):
 
 def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:",
                static_dir: Path | None = None, store: HistoryStore | None = None,
-               revision_publisher=None) -> FastAPI:
+               revision_publisher=None, editorial=None) -> FastAPI:
     root = fixture_dir or Path(os.environ.get("COUNTERPRESS_FIXTURE_DIR", Path(__file__).resolve().parents[3] / "fixtures"))
     service = SnapshotService(root, store if store is not None else configured_store(db_path))
     @asynccontextmanager
@@ -48,6 +48,8 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
     application = FastAPI(title="CounterPress", version="0.1.0", lifespan=lifespan)
     application.state.snapshots = service
     application.state.revision_publisher = revision_publisher
+    from counterpress.editorial.api import configure_editorial, install_editorial
+    install_editorial(application, editorial if editorial is not None else configure_editorial(service))
     negotiations: list[float] = []
 
     @application.get('/api/revisions/negotiate')

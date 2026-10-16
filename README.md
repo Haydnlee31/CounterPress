@@ -112,6 +112,12 @@ from actual AI success and human usefulness. The [fan usability kit](docs/evalua
 provides tasks and blank anonymous forms; no human study has been completed.
 Hosted AI remains disabled until the separate activation gates are met.
 
+The [editorial access guide](docs/editorial-access.md) describes the opt-in Entra
+API, shared Cosmos/SQLite quotas, duplicate-request prevention and revision-bound
+cache. These controls are implemented and tested locally; real identity/storage
+integration and participant review remain pending. The current evaluation CLI is
+a separately frozen regression suite; the original paid pilot report is unchanged.
+
 ```sh
 uv run --frozen python -m counterpress.evaluation.editorial
 ```
