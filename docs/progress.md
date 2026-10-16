@@ -2170,3 +2170,52 @@ is not replayed. No email/webhook alert is enabled. Actual spend remains unverif
 the US$75 envelope and daily guard are not automatic spending shutdowns. The hosted
 model remains off. Next: Stage 10 measured evaluation, final judge demonstration,
 and the as-built Microsoft architecture with separately costed extension proposals.
+
+## Fan-first redesign — Matchday implementation (2026-10-16)
+
+The first redesign slice introduces a useful default at 58:00, inline catch-up,
+readable event evidence, optional team/player following, persistent device-local
+preferences, English/Chinese presentation and mobile layouts. Original fictional
+names replace actor IDs in fan-facing copy; source identities and calculations are
+unchanged. The previous analysis workspace remains at `#analysis`.
+
+The interface exposes revision updates and withdrawals, keeps a paused viewer's
+position, and removes future facts on rewind. Slow playback requests are coalesced
+rather than repeatedly cancelled; displayed facts have an explicit cutoff.
+The release introduces no new cloud resources. Hosted model adaptation stays off;
+authenticated Studio, bounded editorial integration and user studies remain pending.
+See the [delivery plan](redesign-implementation.md) and [identity register](identity-assets.md).
+
+Local verification against an isolated SQLite backend:
+
+```console
+$ .venv/bin/python -m pytest -q
+471 passed in 12.86s
+$ npm --prefix frontend test -- --reporter=dot
+Test Files  8 passed (8)
+Tests  48 passed (48)
+$ npm --prefix frontend run build
+> tsc --noEmit && vite build
+✓ 51 modules transformed.
+```
+
+Real-browser command (Playwright supplied by the local runtime; installed Chrome):
+
+```sh
+NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules \
+CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
+COUNTERPRESS_CHECK_CORRECTIONS=1 \
+node scripts/test_matchday.cjs http://127.0.0.1:8010
+```
+
+```text
+PASS: historical recovery 4/3/withdrawn/2
+PASS: actual HTTP fan view, inline evidence, persistent bilingual preferences, all four story families, mobile widths, rewind and analysis navigation
+```
+
+The correction fixture was prepared in the isolated local history before this
+check; the browser script itself performs no ingestion. Desktop/mobile screenshots
+were visually reviewed. Layout checks cover 360, 390, 640 and 1365 pixels and 200%
+text sizing. These checks do not constitute human user research or a complete
+accessibility audit. Cloud promotion uses the existing protected PR/CI/OIDC path;
+release-specific live evidence is recorded separately after deployment.

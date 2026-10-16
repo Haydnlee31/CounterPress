@@ -5,6 +5,12 @@
 **Using or judging the demo? Start with the [demo user guide](docs/demo-guide.md)**
 for the live link, a five-minute walkthrough, scenario results and evidence explanations.
 
+The default **Matchday** experience opens at a useful comparison, with inline
+catch-up, readable evidence, fictional player names and saved team/language
+preferences. **Explore data** keeps the detailed analysis workspace available.
+See the [redesign delivery plan](docs/redesign-implementation.md) for the remaining
+bounded AI, Studio and evaluation stages.
+
 Synthetic football insights through Stage 5: a React replay screen with inspectable evidence,
 durable history, correction-driven updates and withdrawals, backed by FastAPI and
 deterministic synthetic match calculations. Stage 6 includes the Azure wording
@@ -90,7 +96,8 @@ npm ci --cache ../.npm-cache --no-audit --no-fund
 npm run dev
 ```
 
-Open <http://127.0.0.1:5173/>. Click **Go to comparison**, then **Show evidence**.
+Open <http://127.0.0.1:5173/>. Click **Catch me up**, then **Show the moments**.
+Use **Explore data** for the original analysis view and negative controls.
 Play, pause, reset, speed and seek controls work across the 48:00–58:00 segment.
 The control scenario shows no increase card. See the [interface guide](docs/interface.md)
 for API contracts and verification details. The [history guide](docs/history.md)

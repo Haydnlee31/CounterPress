@@ -9,7 +9,40 @@ second-half segment, with Eastbridge trailing Northport 0–1.
 No installation, sign-in, Azure account or API key is needed. The app can take
 around 30 seconds to wake after being idle; allow it to load before presenting.
 
-## Five-minute walkthrough
+## Start with Matchday — 30 seconds
+
+The new home screen starts paused at **58:00**, with a useful comparison already
+visible. **Catch me up** opens the segment's supported stories on the same page.
+**Show the moments** opens readable events and a pitch illustration. Select an
+event to see its recorded location; technical JSON is optional, inside details.
+
+![Matchday desktop view](screenshots/matchday-desktop.png)
+
+Choose **Neutral · choose a side** to follow Eastbridge or Northport, or follow a
+player from **Who was involved?**. Your choice changes story priority and the
+accent colour. Numbers and evidence stay the same. Team, player, language and
+explanation depth are saved on this device; **Clear preferences** resets them.
+If browser storage is unavailable, the app says preferences last for this visit.
+The teams and display names are fictional; no real match or endorsement is implied.
+
+Use **Explore a story** for winning the ball back, pressure, progression or a
+player spotlight. Each selection starts at its comparison. Use **Explore replay**
+for play, pause, speed or a historical time. **Facts through** identifies the
+loaded snapshot, which may trail the clock during playback. Rewinding removes
+facts that were not available at the selected time.
+
+For corrections, choose **When the story changes**. At 58:00 the recovery count is
+1 → 4. **See the update** moves explicitly to 58:15 and 1 → 2; a paused viewer
+never jumps automatically. The timeline also exposes 1 → 3 at 58:05 and the
+withdrawal at 58:10. Other supported stories can remain when one is withdrawn.
+
+**Explore data** opens the original analysis workspace, including negative
+controls and detailed presenter settings. **Matchday / 比赛故事** returns home.
+The detailed walkthrough below applies to that analysis workspace.
+
+## Five-minute analysis walkthrough
+
+Start by selecting **Explore data**.
 
 ### 1. See the change
 
@@ -68,7 +101,7 @@ Choose **English** and **Analyst** to return to the detailed view.
 
 ## Watch a correction arrive
 
-Choose **Live recovery corrections**, keep **Balanced**, then **Go to comparison**.
+In **Explore data**, choose **Live recovery corrections**, keep **Balanced**, then **Go to comparison**.
 At **58:00** the comparison remains **1 → 4**. Click **View latest corrections**
 to move to **58:15**, where it becomes **1 → 2**. Open **Show evidence** to see
 `p053` at source revision 3. Moving the slider back to 58:00 restores the original
