@@ -36,7 +36,8 @@ Web PubSub revision delivery. The full streaming path and duplicate delivery hav
 been verified live. Local development still defaults to SQLite and HTTP polling.
 See the [deployment guide](docs/deployment.md) for startup, costs, temporary storage
 limits, and the manual Azure sequence. Shared history design and verification are
-in the [Cosmos DB guide](docs/cosmos.md).
+in the [Cosmos DB guide](docs/cosmos.md). The [operations runbook](docs/operations.md)
+explains manual OIDC deployment and bounded streaming telemetry.
 
 ## Local setup
 

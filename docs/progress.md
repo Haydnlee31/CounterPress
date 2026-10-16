@@ -1977,3 +1977,45 @@ streaming. The USD 75 total envelope and USD 20 streaming allocation are unchang
 these are not measured spend or a hard cap. No model credentials were added to the
 hosted app. Next: protected OIDC deployment, cost-bounded operational telemetry,
 then Stage 10 evaluation and the complete Microsoft-platform architecture review.
+
+
+## OIDC deployment and operational telemetry — 16 October 2026
+
+Added a manually dispatched GitHub deployment workflow restricted to `main` and
+successful CI for the exact current commit. It builds/smoke-tests before Azure
+login, pushes by commit, deploys by immutable digest and checks unchanged runtime
+configuration plus public HTTPS and correction history. The dedicated federated
+identity has app-scoped read/write, registry AcrPush/Reader and environment Reader;
+no resource-group Contributor or role-assignment access. Model secrets are absent.
+
+Added numeric streaming counters for successful/quarantined deliveries, retries,
+publish/checkpoint/consumer failures, transport delivery age, pending duration and
+observed backlog. One record per minute avoids per-request logging. The monitoring
+Bicep template creates a 30-day Log Analytics workspace, 0.025 GB daily guard,
+numeric-only workspace transformation and a saved operational KQL query. No
+email/webhook notifications or recurring alert-rule charges are enabled.
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
+466 passed in 12.64s
+```
+
+The new identity and monitoring templates and updated application template compiled.
+The monitoring what-if initially rejected an `outputStream` intended for ingestion
+DCRs; the corrected workspace transformation omits it and passed preflight. The
+identity preview adds only the dedicated identity, federation, custom role and
+resource-scoped assignments. The monitoring preview creates only its workspace,
+table, transformation and saved query. Actual activation/deployment proof follows
+separately; compilation and tests do not prove cloud delivery.
+
+East US Analytics ingestion was checked at USD 2.30/GB. The nominal 0.025 GB daily
+guard corresponds to about USD 1.61 over 28 days before other charges, within the
+existing USD 5 storage/monitoring/network allowance and USD 75 total envelope.
+Caps may overshoot and the actual-cost API remained unavailable. See the
+[operations runbook](operations.md) for release, rollback, metric meanings and
+limits. Live model adaptation remains disabled.
+
+Azure's workspace API rejected the initial 0.01 GB guard because its minimum is
+greater than 0.023 GB/day. The template now uses 0.025 GB/day (about USD 1.61
+over 28 days at the checked ingestion rate, before other charges). This still
+fits the existing monitoring allowance; no budget increase was made.
