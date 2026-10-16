@@ -2219,3 +2219,24 @@ were visually reviewed. Layout checks cover 360, 390, 640 and 1365 pixels and 20
 text sizing. These checks do not constitute human user research or a complete
 accessibility audit. Cloud promotion uses the existing protected PR/CI/OIDC path;
 release-specific live evidence is recorded separately after deployment.
+
+
+Matchday was subsequently deployed from `b18fbf34f7f6cfb95feef6435eedc33d26614de4`
+through [release 38885974712](https://github.com/Haydnlee31/CounterPress/actions/runs/38885974712).
+Exact-main CI, the requested Azure revision, the restricted-container smoke test
+and public HTTPS/historical correction checks all passed. Cosmos, streaming,
+telemetry, managed identities and scaling were preserved; no model credentials
+were supplied to the hosted app.
+
+The same browser command was rerun with the public demo URL, from a temporary
+working directory so local screenshots were retained. Both PASS lines above were
+observed against the live app. Live desktop/mobile screenshots were visually
+reviewed and showed the revision channel connected. Source, 19 screenshot OCR
+outputs and the successful release log passed configured-secret/private-model-
+endpoint scans; the release log also passed a JWT-pattern check. Sanitized evidence
+is in [verification/matchday-live.json](verification/matchday-live.json).
+
+Next: benchmark templates, one agent and the existing Analyst/Producer workflow,
+then integrate the smallest useful bounded editorial flow. Authenticated Studio
+and human fan/producer evaluation follow. No Azure setup is required from the user
+for the completed Matchday release.

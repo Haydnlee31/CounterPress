@@ -29,6 +29,9 @@ adaptation remains off until step 2 is implemented and verified.
 
 ## First release verification
 
+**Matchday is live.** [Release evidence](verification/matchday-live.json) records
+the exact deployed commit and passing local/CI/live checks. Steps 2–4 remain pending.
+
 The Matchday implementation is in `frontend/src/matchday/`. The previous workspace
 is preserved in `AnalysisApp.tsx` and reachable at `#analysis`. Source schemas,
 fixture IDs, deterministic rules and cloud infrastructure are unchanged.
