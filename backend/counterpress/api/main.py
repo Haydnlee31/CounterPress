@@ -8,6 +8,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Query, Response
 
 from counterpress.domain.models import Contract
+from counterpress.domain.contributions import PlayerContributionEvidence
 from counterpress.audience import PreferenceError, ViewingPreferences
 from counterpress.api.snapshots import SCENARIOS, PlaybackRangeError, Scenario, ScreenSnapshot, SnapshotService, horizon
 from counterpress.history import EvidenceBundle, SQLiteHistoryStore
@@ -58,6 +59,21 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
             raise HTTPException(status_code=404, detail="Unknown scenario") from exc
         except PlaybackRangeError as exc:
             raise HTTPException(status_code=422, detail="Position is outside the available replay.") from exc
+        except (ValueError, OSError, sqlite3.Error) as exc:
+            raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
+
+    @application.get("/api/scenarios/{scenario_id}/players/{player_id}/contribution", response_model=PlayerContributionEvidence)
+    def contribution(scenario_id: str, player_id: str, response: Response,
+                     at_ms: int = Query(..., ge=180000), team_id: str = "eastbridge") -> PlayerContributionEvidence:
+        response.headers["Cache-Control"] = "no-store"
+        try:
+            return service.contribution(scenario_id, team_id, player_id, at_ms)
+        except PreferenceError as exc:
+            raise HTTPException(status_code=422, detail="Player must belong to the subject team.") from exc
+        except PlaybackRangeError as exc:
+            raise HTTPException(status_code=422, detail="Comparison requires completed windows within the available replay.") from exc
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="Unknown scenario") from exc
         except (ValueError, OSError, sqlite3.Error) as exc:
             raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
 

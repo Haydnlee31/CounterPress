@@ -7,8 +7,9 @@ from time import time
 from typing import Literal
 
 from counterpress.domain.metrics import TeamMetrics, compare_recoveries
+from counterpress.domain.contributions import analyze_contributions
 from counterpress.adaptation.contracts import AdaptationView
-from counterpress.audience import AudienceService, AudienceView, ViewingPreferences
+from counterpress.audience import AudienceService, AudienceView, PreferenceError, ViewingPreferences
 from counterpress.workflow.contracts import WorkflowView
 from counterpress.domain.models import (
     Contract, Event, EvidencePacket, Identifier, Insight, MatchState, MatchTime,
@@ -206,6 +207,15 @@ class SnapshotService:
         updated = self.store.transact(scenario_id, append)
         self.audiences.invalidate(updated)
         return updated
+
+    def contribution(self, scenario_id: str, team_id: str, player_id: str, at_ms: int):
+        history = self.history(scenario_id)
+        if not END.elapsed_ms <= at_ms <= horizon(history).elapsed_ms:
+            raise PlaybackRangeError("contribution requires completed windows within available history")
+        if not any(team.team_id == team_id and player_id in team.player_ids for team in history.fixture.teams):
+            raise PreferenceError("player must belong to the subject team")
+        return analyze_contributions(replay_session(history), team_id, player_id,
+                                     BASELINE, CURRENT, MatchTime(period=2, elapsed_ms=at_ms))
 
     def snapshot(self, scenario_id: str, at_ms: int, scope_id: str = "default",
                  preferences: ViewingPreferences | None = None) -> ScreenSnapshot:
