@@ -23,8 +23,11 @@ def setup():
     quarantine = AsyncMock()
     return service, delivery, event, partition, publisher, quarantine
 
-def test_commit_notify_checkpoint_and_duplicate_replay(tmp_path):
+@pytest.mark.parametrize("received_key_bytes", [False, True])
+def test_commit_notify_checkpoint_and_duplicate_replay(tmp_path, received_key_bytes):
     s,d,e,p,pub,q=setup()
+    if received_key_bytes:
+        e.partition_key = e.partition_key.encode("utf-8")
     async def check(n):
         assert len(s.history('increase').records)==93
         assert s.history('increase').changes[-1].revision==4
