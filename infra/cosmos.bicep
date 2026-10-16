@@ -71,7 +71,8 @@ resource access 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-1
   properties: {
     roleDefinitionId: writerRole.id
     principalId: identity.properties.principalId
-    scope: container.id
+    // Cosmos data-plane scopes use dbs/colls, not ARM sqlDatabases/containers.
+    scope: '${account.id}/dbs/${database.name}/colls/${container.name}'
   }
 }
 

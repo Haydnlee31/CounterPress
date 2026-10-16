@@ -3,7 +3,8 @@
 Stage 9 increment 1 packages the working app and provides Azure Bicep templates.
 The container is verified locally and in GitHub Actions. Azure Container Apps,
 the private registry and managed identity are deployed in the existing model
-resource group in East US. The USD 75 budget and trial spending limit are verified.
+resource group in East US. Shared history uses serverless Cosmos DB in East US 2,
+with a separate managed identity; East US database creation was capacity-blocked. The USD 75 budget and trial spending limit are verified.
 See the latest progress entry for hosted verification evidence. The existing Azure OpenAI model calls were
 verified separately. They are not enabled by this deployment template.
 
@@ -62,7 +63,8 @@ replace the all-scenario regression suite or the real HTTP smoke test.
 ```mermaid
 flowchart LR
   Browser -->|HTTPS| App[Azure Container Apps: React assets + FastAPI]
-  App --> SQLite[Temporary SQLite + packaged synthetic fixtures]
+  App --> Cosmos[Azure Cosmos DB serverless: shared history]
+  HistoryIdentity[History managed identity] -->|Container-scoped data access| Cosmos
   Identity[User-assigned managed identity] -->|AcrPull| ACR[Private images in Azure Container Registry]
   ACR -->|Pinned image digest| App
 ```
@@ -74,11 +76,16 @@ this registry. The application uses external HTTPS ingress, explicit target port
 8000, startup/readiness/liveness probes, Consumption profile, minimum zero and
 maximum one replica, and single active revision mode.
 
-Container filesystem storage is temporary: scaling to zero, recycling or replacing
-a revision can discard the SQLite journal, corrections and model audits. A new
-container reseeds packaged synthetic fixtures. Even one replica per revision is
-not a shared-state guarantee during rollout. This is a deterministic demo smoke
-stage; Cosmos DB durability must precede streaming ingestion and production use.
+The active hosted deployment uses `COUNTERPRESS_STORAGE=cosmos`; source history,
+evidence, publication revisions and audits live outside the container. See the
+[Cosmos design and runbook](cosmos.md) for atomic commits, session consistency,
+the 1.8 MB per-history guard and restart verification. This is a bounded demo,
+not an unbounded event store or multi-region disaster-recovery architecture.
+
+Local/default image mode still uses SQLite. In that mode, scaling to zero,
+recycling or replacing a revision can discard the local journal and audits.
+Do not switch a cloud deployment back to SQLite and expect to see its Cosmos
+history. No automatic migration from a developer's local database is performed.
 Microsoft documents [storage lifetimes](https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts),
 [managed-identity image pulls](https://learn.microsoft.com/en-us/azure/container-apps/managed-identity-image-pull)
 and [probe behavior](https://learn.microsoft.com/en-us/azure/container-apps/health-probes).
@@ -99,6 +106,8 @@ and [budget guidance](https://learn.microsoft.com/en-us/azure/cost-management-bi
 
 The following is a reproducible manual runbook, **not a CI deployment workflow**.
 The initial deployment has completed; do not rerun it just to view the demo.
+This foundation sequence defaults to SQLite; follow the Cosmos guide to retain
+shared storage when deploying the app (`useCosmos=true`).
 Use Azure CLI with Bicep and Docker. Sign in locally, and keep account identifiers
 in local shell variables. Do not commit resolved parameter files or command logs.
 The deploying identity needs resource creation rights and permission to assign the
@@ -216,10 +225,8 @@ and 100%, with a forecast alert at 100%. Deployment status is in the progress lo
 
 ## Next integration steps
 
-1. Add Cosmos DB persistence with atomic source/evidence/publication commits and
-   restart tests before replacing the SQLite demo store.
-2. Add Event Hubs partitioned by match ID and Web PubSub revision delivery/reconnect.
-3. Add Entra workload identities and protected GitHub environment/OIDC deployment,
+1. Add Event Hubs partitioned by match ID and Web PubSub revision delivery/reconnect.
+2. Add a protected GitHub environment/OIDC deployment,
    then operational telemetry. Model endpoint/configuration stays server-side;
    credentials or private endpoints must never enter frontend builds, public
    outputs, image layers or committed files.
