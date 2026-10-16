@@ -1878,7 +1878,7 @@ Validation commands and observed output:
 
 ```console
 $ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
-458 passed in 13.97s
+459 passed in 13.14s
 $ npm --prefix frontend test
 Test Files  7 passed (7)
 Tests  36 passed (36)

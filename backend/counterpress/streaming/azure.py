@@ -29,7 +29,7 @@ class Publisher:
 
     async def publish(self, notice):
         await self.client.send_to_group('scenario.' + notice.scenario_id,
-            notice.model_dump_json(), content_type='application/json')
+            notice.model_dump(mode='json'), content_type='application/json')
 
     async def negotiate(self, scenario):
         token = await self.client.get_client_access_token(groups=['scenario.' + scenario],

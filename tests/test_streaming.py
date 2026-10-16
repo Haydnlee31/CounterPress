@@ -129,3 +129,21 @@ def test_cloud_runtime_constructs_and_closes_actual_sdk_clients_without_network(
         await runtime.close()
         assert runtime.task.done()
     asyncio.run(run())
+
+def test_pubsub_sdk_wire_payload_is_a_json_object_not_a_double_encoded_string():
+    import json
+    from azure.core.credentials import AzureKeyCredential
+    from azure.messaging.webpubsubservice.aio import WebPubSubServiceClient
+    s=SnapshotService(FIXTURES)
+    n=notice('increase',s.history('increase'))
+    async def run():
+        async with WebPubSubServiceClient('https://example.webpubsub.azure.com',hub='counterpress',credential=AzureKeyCredential('test')) as client:
+            async def wire(request,**kwargs):
+                body=json.loads(request.body)
+                assert isinstance(body,dict)
+                assert body['type']=='history.changed' and body['revisions'][0]['revision']==1
+                return SimpleNamespace(http_response=SimpleNamespace(status_code=202))
+            client._client._pipeline.run=AsyncMock(side_effect=wire)
+            await Publisher(client).publish(n)
+            client._client._pipeline.run.assert_awaited_once()
+    asyncio.run(run())
