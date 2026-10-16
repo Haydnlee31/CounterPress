@@ -11,6 +11,7 @@ import { AudienceControls } from './AudienceControls'
 import { EventSequence } from './EventSequence'
 import { PressureCard } from './PressureCard'
 import { ContributionCard } from './ContributionCard'
+import { SegmentRecap } from './SegmentRecap'
 
 const START = 180000, END = 780000
 
@@ -125,6 +126,7 @@ export default function App() {
       {preferences.depth === 'analyst' && <section className="stats-strip" aria-label="Current match metrics"><div className="stats-label"><span className="eyebrow">{t('THIS REPLAY SEGMENT', '当前回放片段')}</span><h2>{t('Match in numbers', '比赛数据')}</h2></div>{snapshot?.metrics.map(metric => <div className="team-stats" key={metric.team_id}><h3>{metric.team_id === 'eastbridge' ? 'Eastbridge' : 'Northport'}</h3><div><span><strong>{metric.pass_completions}<small>/{metric.pass_attempts}</small></strong><em>{t('Passes completed', '传球成功')}</em></span><span><strong>{metric.high_recoveries.length}</strong><em>{t('High recoveries', '前场夺回球权')}</em></span></div></div>) ?? <p className="muted">{t('Waiting for match facts.', '等待比赛数据。')}</p>}</section>}
       {evidenceOpen && evidence && <EvidencePanel evidence={evidence} selected={selected} onSelect={selectEvent} language={preferences.language}/>}
       {preferences.depth === 'analyst' && !specialSelected && audience?.state === 'ready' && <EventSequence audience={audience}/>}
+      {snapshot?.recap && <SegmentRecap key={`${scope.id}:${scenario}`} recap={snapshot.recap} scenario={scenario}/>}
       <footer><span>COUNTERPRESS <span className="footer-dot">/</span> {t('See the game. Understand the moment.', '看比赛，懂变化。')}</span><span>{t('Synthetic data · Evidence-backed comparisons', '模拟数据 · 基于证据的比较')}</span></footer>
     </main>
   </div>

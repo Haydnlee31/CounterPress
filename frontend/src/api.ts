@@ -1,5 +1,6 @@
 import { defaultPreferences } from './types'
 import type { Preferences, Scenario, Snapshot } from './types'
+import { validateRecap } from './recapValidation'
 
 export async function fetchScenarios(signal: AbortSignal): Promise<Scenario[]> {
   const response = await fetch('/api/scenarios', { signal })
@@ -46,5 +47,6 @@ export async function fetchSnapshot(scenario: string, atMs: number, signal: Abor
       || JSON.stringify(latest) !== JSON.stringify(publication)) throw new Error('Player explanation did not match its evidence and perspective.')
   }
   if (data.selected_kind === 'contribution' && (!contribution?.variant || contribution.state !== 'ready' || preferences.card_budget === 0)) throw new Error('Player card selection is invalid.')
+  validateRecap(data, preferences)
   return data
 }

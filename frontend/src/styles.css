@@ -40,3 +40,17 @@
 .pressure-provenance{font-size:11px;overflow-wrap:anywhere;margin-top:20px;color:#b8c9aa}
 .pressure-provenance summary{cursor:pointer}
 @media(max-width:480px){.pressure-card .comparison strong{font-size:36px}.pressure-card .comparison{gap:8px}.pressure-evidence{margin-left:-8px;margin-right:-8px}}
+
+.segment-recap { margin: 28px 0; border: 1px solid var(--line); border-radius: 14px; background: #171e16; overflow: hidden; }
+.segment-recap summary { padding: 22px 24px; cursor: pointer; font-weight: 650; color: var(--lime); }
+.recap-count { float: right; font-size: 12px; font-weight: 500; color: #aab69f; }
+.recap-body { border-top: 1px solid var(--line); padding: 24px; }
+.recap-body h2 { margin: 8px 0; }
+.recap-scope, .recap-foot { color: #aab69f; font-size: 13px; line-height: 1.65; }
+.recap-body ol { padding-left: 24px; }
+.recap-body li { padding: 12px 0 20px 8px; border-bottom: 1px solid var(--line); }
+.recap-body h3 { font-size: 18px; margin: 6px 0; }
+.recap-body li p { line-height: 1.65; margin: 10px 0; font-size: 14px; }
+.recap-qualification { color: #aab69f; font-size: 13px; }
+.recap-body a { color: var(--lime); font-size: 13px; text-underline-offset: 3px; }
+@media (max-width: 600px) { .recap-count { float: none; display: block; margin: 8px 0 0 18px; } .recap-body { padding: 18px; } }
