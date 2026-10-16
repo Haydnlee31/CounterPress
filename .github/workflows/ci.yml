@@ -85,3 +85,4 @@ jobs:
           "$RUNNER_TEMP/bicep" build infra/foundation.bicep --outfile "$RUNNER_TEMP/foundation.json"
           "$RUNNER_TEMP/bicep" build infra/app.bicep --outfile "$RUNNER_TEMP/app.json"
           "$RUNNER_TEMP/bicep" build infra/budget.bicep --outfile "$RUNNER_TEMP/budget.json"
+          "$RUNNER_TEMP/bicep" build infra/cosmos.bicep --outfile "$RUNNER_TEMP/cosmos.json"

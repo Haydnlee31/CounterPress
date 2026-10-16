@@ -75,7 +75,38 @@ class History(Contract):
 class HistoryStore(Protocol):
     def read(self, scenario_id: str) -> History | None: ...
 
-    def transact(self, scenario_id: str, build: Callable[[History | None], History]) -> History: ...
+    def transact(self, scenario_id: str, build: Callable[[History | None], History]) -> History:
+        """Atomically rebuild history; build must be pure and safe to retry."""
+        ...
+
+
+class HistoryStorageError(RuntimeError):
+    """Sanitized storage failure; never expose SDK diagnostics or resource URLs."""
+
+
+def validate_history_update(previous: History | None, result: History) -> None:
+    """Shared append-only and uniqueness rules for local and cloud stores."""
+    collections = ("records", "changes", "adaptations", "workflows", "recap_workflows",
+                   "pressure_changes", "contribution_changes")
+    if previous and (result.fixture != previous.fixture
+                     or any(getattr(result, field)[:len(getattr(previous, field))] != getattr(previous, field)
+                            for field in collections)
+                     or any(getattr(result, field) < getattr(previous, field)
+                            for field in ("contribution_version", "pressure_version", "episode_rules_version"))):
+        raise ValueError("persisted history cannot be rewritten")
+    keys = [
+        [(e.event_id, e.revision) for e in result.records],
+        [e.source_delivery_sequence for e in result.records],
+        [c.revision for c in result.changes],
+        *[[a.attempt_id for a in getattr(result, field)]
+          for field in ("adaptations", "workflows", "recap_workflows")],
+        *[[(c.insight_id, c.revision) for c in getattr(result, field)]
+          for field in ("pressure_changes", "contribution_changes")],
+    ]
+    if any(len(values) != len(set(values)) for values in keys):
+        raise ValueError("persisted history identities must be unique")
+    if any(e.match_id != result.fixture.match_id for e in result.records):
+        raise ValueError("history must contain only its declared match")
 
 
 class SQLiteHistoryStore:
@@ -218,18 +249,7 @@ class SQLiteHistoryStore:
                 old_recap_workflows = previous.recap_workflows if previous else ()
                 old_pressure = previous.pressure_changes if previous else ()
                 old_contributions = previous.contribution_changes if previous else ()
-                if previous and (result.fixture != previous.fixture
-                                 or result.records[:len(old_records)] != old_records
-                                 or result.changes[:len(old_changes)] != old_changes
-                                 or result.adaptations[:len(old_adaptations)] != old_adaptations
-                                 or result.workflows[:len(old_workflows)] != old_workflows
-                                 or result.recap_workflows[:len(old_recap_workflows)] != old_recap_workflows
-                                 or result.pressure_changes[:len(old_pressure)] != old_pressure
-                                 or result.contribution_changes[:len(old_contributions)] != old_contributions
-                                 or result.contribution_version < previous.contribution_version
-                                 or result.pressure_version < previous.pressure_version
-                                 or result.episode_rules_version < previous.episode_rules_version):
-                    raise ValueError("persisted history cannot be rewritten")
+                validate_history_update(previous, result)
                 if previous is None:
                     connection.execute("INSERT INTO scenarios VALUES (?, ?)", (scenario_id, result.fixture.model_dump_json()))
                 for index, event in enumerate(result.records[len(old_records):], len(old_records) + 1):

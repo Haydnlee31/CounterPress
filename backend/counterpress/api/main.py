@@ -13,7 +13,8 @@ from counterpress.domain.models import Contract
 from counterpress.domain.contributions import PlayerContributionEvidence
 from counterpress.audience import PreferenceError, ViewingPreferences
 from counterpress.api.snapshots import SCENARIOS, PlaybackRangeError, Scenario, ScreenSnapshot, SnapshotService, horizon
-from counterpress.history import EvidenceBundle, SQLiteHistoryStore
+from counterpress.history import EvidenceBundle, HistoryStore, HistoryStorageError
+from counterpress.storage import configured_store
 from counterpress.pressure_publications import PressureChange
 from counterpress.contribution_publications import ContributionChange
 
@@ -24,10 +25,10 @@ class HealthResponse(Contract):
 
 
 def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:",
-               static_dir: Path | None = None) -> FastAPI:
+               static_dir: Path | None = None, store: HistoryStore | None = None) -> FastAPI:
     application = FastAPI(title="CounterPress", version="0.1.0")
     root = fixture_dir or Path(os.environ.get("COUNTERPRESS_FIXTURE_DIR", Path(__file__).resolve().parents[3] / "fixtures"))
-    service = SnapshotService(root, SQLiteHistoryStore(db_path))
+    service = SnapshotService(root, store if store is not None else configured_store(db_path))
     application.state.snapshots = service
 
     @application.get("/health", response_model=HealthResponse, tags=["health"])
@@ -37,11 +38,11 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
 
     @application.get("/ready", response_model=HealthResponse, tags=["health"])
     def ready(response: Response) -> HealthResponse:
-        """Check local replay/storage availability without contacting a model."""
+        """Check replay/storage availability without contacting a model."""
         response.headers["Cache-Control"] = "no-store"
         try:
             service.snapshot("increase", 180000)
-        except (ValueError, OSError, sqlite3.Error) as exc:
+        except (ValueError, OSError, sqlite3.Error, HistoryStorageError) as exc:
             raise HTTPException(status_code=503, detail="Replay is not ready.") from exc
         return HealthResponse()
 
@@ -51,7 +52,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
             return tuple(Scenario(scenario_id=key, label=value[1],
                                   **({"end": horizon(history)} if (history := service.store.read(key)) else {}))
                          for key, value in SCENARIOS.items())
-        except (ValueError, OSError, sqlite3.Error) as exc:
+        except (ValueError, OSError, sqlite3.Error, HistoryStorageError) as exc:
             raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
 
     @application.get("/api/scenarios/{scenario_id}/snapshot", response_model=ScreenSnapshot)
@@ -73,7 +74,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
             raise HTTPException(status_code=404, detail="Unknown scenario") from exc
         except PlaybackRangeError as exc:
             raise HTTPException(status_code=422, detail="Position is outside the available replay.") from exc
-        except (ValueError, OSError, sqlite3.Error) as exc:
+        except (ValueError, OSError, sqlite3.Error, HistoryStorageError) as exc:
             raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
 
     @application.get("/api/scenarios/{scenario_id}/players/{player_id}/contribution", response_model=PlayerContributionEvidence)
@@ -88,7 +89,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
             raise HTTPException(status_code=422, detail="Comparison requires completed windows within the available replay.") from exc
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="Unknown scenario") from exc
-        except (ValueError, OSError, sqlite3.Error) as exc:
+        except (ValueError, OSError, sqlite3.Error, HistoryStorageError) as exc:
             raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
 
     @application.get("/api/scenarios/{scenario_id}/evidence/{version}", response_model=EvidenceBundle)
@@ -98,7 +99,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
             return service.evidence(scenario_id, version, at_ms)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="Evidence is not available at this cutoff.") from exc
-        except (ValueError, OSError, sqlite3.Error) as exc:
+        except (ValueError, OSError, sqlite3.Error, HistoryStorageError) as exc:
             raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
 
     @application.get("/api/scenarios/{scenario_id}/pressure/{insight_id}/evidence/{version}", response_model=PressureChange)
@@ -109,7 +110,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
             return service.pressure_evidence(scenario_id, insight_id, version, at_ms)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="Pressure evidence is not available at this cutoff.") from exc
-        except (ValueError, OSError, sqlite3.Error) as exc:
+        except (ValueError, OSError, sqlite3.Error, HistoryStorageError) as exc:
             raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
 
     @application.get("/api/scenarios/{scenario_id}/contributions/{insight_id}/evidence/{version}", response_model=ContributionChange)
@@ -120,7 +121,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
             return service.contribution_evidence(scenario_id, insight_id, version, at_ms)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="Player evidence is not available at this cutoff.") from exc
-        except (ValueError, OSError, sqlite3.Error) as exc:
+        except (ValueError, OSError, sqlite3.Error, HistoryStorageError) as exc:
             raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
 
     if static_dir is not None:
