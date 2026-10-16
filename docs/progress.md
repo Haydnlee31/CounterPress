@@ -1895,3 +1895,20 @@ archive scan passed against four configured sensitive values/hostnames. The Azur
 what-if preview showed only new streaming resources; application activation and
 live transport proof are separate from these offline implementation checks.
 See [streaming design and operations](streaming.md).
+
+### Event Hubs received partition-key compatibility
+
+The first actual cloud delivery reached the consumer and was quarantined without
+changing history: the Event Hubs SDK exposes the received partition key as bytes,
+while the envelope uses a string. Normalize UTF-8 bytes before checking the exact
+match identity. The regression now runs commit/notify/checkpoint and duplicate
+replay with both representations. The invalid-delivery checkpoint remains retained;
+resubmitting the valid source records after the fix is safe.
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
+460 passed in 13.37s
+```
+
+The corrected image passed the restricted container smoke and private-configuration
+scan. Live verification must be repeated against this corrected revision.

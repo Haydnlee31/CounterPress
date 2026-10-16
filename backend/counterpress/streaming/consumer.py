@@ -19,7 +19,10 @@ class DeliveryProcessor:
             if len(raw) > MAX_DELIVERY_BYTES:
                 raise ValueError('oversize')
             delivery = Delivery.model_validate_json(raw)
-            if delivery.scenario_id not in SCENARIOS or event.partition_key != delivery.match_id:
+            partition_key = event.partition_key
+            if isinstance(partition_key, bytes):
+                partition_key = partition_key.decode('utf-8')
+            if delivery.scenario_id not in SCENARIOS or partition_key != delivery.match_id:
                 raise ValueError('invalid routing')
             history = await asyncio.to_thread(self.service.history, delivery.scenario_id)
             if history.fixture.match_id != delivery.match_id:
