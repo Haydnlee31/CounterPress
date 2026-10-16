@@ -97,7 +97,7 @@ identity, subscription or account identifiers into committed command logs.
 charges for consumed RUs and storage, with no provisioned-throughput minimum.
 This stage uses the existing USD 5 storage/monitoring/networking allocation inside
 the USD 75 total trial envelope; no budget increase is authorized. The checked
-East US retail request rate is USD 0.25 per million RUs, plus storage. A USD 1
+East US 2 retail request rate is USD 0.25 per million RUs, plus storage. A USD 1
 planning target allows roughly four million RUs before storage; it is not a cap
 or measured workload estimate. Writes replace the bounded history, so costs grow
 with history size; unchanged browser polls read the small head only. Monitor actual

@@ -1,20 +1,19 @@
 # Progress
 
-Current milestone: Stage 9 first increment — a digest-pinned, non-root Linux
-container serves the compiled React interface and FastAPI on one origin. Local
-HTTP smoke checks and the complete offline suites pass. Azure Container Apps,
-private ACR and managed-identity Bicep templates compile, with a new GitHub Actions
-container/template check. The USD 75 budget and Azure hosting are deployed. Deployment
-targets the existing model resource group, as requested by the user. Its resolved
-subscription/group/region are stored only in ignored local configuration. The
-user approved USD 75 total through the trial end, with USD 20 for initial hosting.
-Azure CLI sign-in and the read-only foundation preview are verified. SQLite inside the
-cloud container is explicitly temporary; shared Cosmos DB durability follows.
+Current milestone: Stage 9 shared durability — the hosted React/FastAPI app now
+uses serverless Cosmos DB through a dedicated managed identity. Atomic history
+commits, ETag conflict handling and head-version caching are implemented. A live
+replica replacement preserved correction/withdrawal history and immutable evidence
+without fixture reads. The USD 75 total trial budget and USD 20 initial hosting
+allocation remain unchanged. Hosting is in East US; Cosmos uses East US 2 after
+East US account creation was rejected for regional capacity. Resolved target
+identifiers remain only in ignored local configuration.
 
 Stage 8's scoped local detector, generator and recap path remains complete,
 including one live Azure acceptance of bounded Microsoft Agent Framework recap
 adaptation. Full-match coverage and broader player attribution remain extensions.
-Stages 9 and 10, cloud restart recovery and measured evaluation are not complete.
+Stage 9 streaming/delivery and Stage 10 measured evaluation are not complete.
+Cloud history recovery across a hosted replica replacement is now verified.
 After each task, report the result and best next move.
 
 The fixture declares Eastbridge 0–1 Northport at 48:00 and ten events through
@@ -56,8 +55,7 @@ the fallback. The bounded workflow is documented in `docs/workflow.md`;
 the first single-call increment remains documented in `docs/adaptation.md`.
 
 Stage 7 audience variants and the Stage 8 increments are documented below.
-Best next move: shared Cosmos DB durability with restart verification, then
-Event Hubs ingestion and Web PubSub delivery. Stage 10
+Best next move: Event Hubs ingestion and Web PubSub revision delivery. Stage 10
 still requires measured evaluation and the final demonstration. Never request API
 keys in chat. Do not claim cloud restart recovery from local SQLite storage.
 
@@ -71,7 +69,8 @@ Notify the user before Azure setup or resource decisions require their action.
 Current Microsoft use is the live-verified Azure OpenAI adapter and bounded
 Microsoft Agent Framework recovery and recap workflows; GitHub Actions provides protected-branch CI.
 Application hosting is deployed on Azure Container Apps with private ACR images
-and managed-identity pulls. Cosmos DB, Event Hubs and Web PubSub remain planned integrations.
+and managed-identity pulls. Cosmos DB shared history is deployed and restart-verified;
+Event Hubs and Web PubSub remain planned integrations.
 
 ## Verification recorded on 15 October 2026
 
@@ -1795,3 +1794,67 @@ only that newly failed account was targeted for cleanup. The existing hosting,
 registry, model and shared resource group are retained. A separate database-region
 parameter allows the nearby East US 2 fallback without moving the app. Live
 provisioning and restart verification remain pending in this implementation record.
+
+## Cosmos deployment and live restart verified — 16 October 2026
+
+[PR #8](https://github.com/Haydnlee31/CounterPress/pull/8) merged as
+`e07c2ea3df68ab396c409ac02f38c1aad6ac4948`; all three post-merge jobs passed in
+[run 38859791350](https://github.com/Haydnlee31/CounterPress/actions/runs/38859791350).
+The exact tested image was uploaded privately and activated by digest.
+
+East US 2 accepted the serverless account. Azure then rejected the original
+role-assignment scope because data-plane paths require `dbs/.../colls/...`, not
+ARM `sqlDatabases/.../containers/...`. Corrected that path in `infra/cosmos.bicep`;
+compilation and the subsequent deployment succeeded. The scoped role retains only
+metadata access and item read/create/replace. Key authentication is disabled.
+The existing app now uses the dedicated history identity and Cosmos configuration;
+no model secret is present. Latest-revision health was checked separately from
+ARM deployment status, which can finish while the revision is still starting.
+
+Actual commands executed inside the healthy Azure revision:
+
+```console
+$ python -m counterpress.cosmos_check seed --scope durability-20261016
+PASS: 93 source records, create/update/withdraw/create, historical 4/3/none/2, immutable evidence, fixture-free recovery
+
+# After an Azure revision restart and confirmed replacement replica:
+$ python -m counterpress.cosmos_check verify --scope durability-20261016
+PASS: 93 source records, create/update/withdraw/create, historical 4/3/none/2, immutable evidence, fixture-free recovery
+```
+
+The Azure CLI restart returned `Restart succeeded`. Comparing the replica lists
+confirmed one old replica replaced by one new replica with no shared name; the
+new container was Running/ready with restart count zero. Public `/ready` returned
+200. The verification service deliberately used a nonexistent fixture directory,
+so reseeding could not satisfy recovery. Its synthetic test partition is separate
+from all publicly selectable demo scenarios and is retained for inspection.
+
+The unchanged HTTP smoke script, SHA-256
+`e29241b6ef2d5687a44d6e27160e6bce8323b8e78c3a5023b31e0e8fb61a2836`,
+was fetched from the exact merged commit, hash-checked and run inside Azure against
+the public HTTPS URL before and after restart. Local orchestration command/output:
+
+```console
+$ python3 /private/tmp/counterpress-cosmos-live-check.py http
+PASS: health, readiness, frontend/assets, 1-to-4 evidence, control, bilingual recap, private-path 404s
+Phase: http verified through the hosted managed identity.
+```
+
+The temporary orchestration helper uses authenticated Azure CLI exec; resolved
+account/revision identifiers and raw logs stay under ignored `var/`. The committed
+HTTP smoke script and two-phase durability checker contain the actual assertions.
+Local urllib asset downloads intermittently truncated even after explicit proxy
+configuration was disabled. The earlier proxy diagnosis is therefore not proven;
+root cause remains unconfirmed. The identical strict smoke passed from Azure,
+without changing assertions or ignoring incomplete reads.
+
+The East US 2 retail serverless meter was checked at USD 0.25 per million RUs,
+plus storage. The USD 75 total envelope and USD 5 storage/monitoring/networking
+allocation are unchanged. The cross-region app/database arrangement adds latency
+and potential transfer cost; it is a capacity fallback, not regional replication.
+No paid upgrade or trial-spending-limit change was made.
+
+See [sanitized live evidence](verification/cosmos-durability.json) and the updated
+[deployed architecture](deployment.md). Cloud replica-restart durability is now
+verified. Larger histories, Event Hubs ingestion, Web PubSub reconnect delivery,
+OIDC deployment and Stage 10 evaluation remain subsequent work.

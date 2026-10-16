@@ -3,7 +3,7 @@
 [![CI](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml/badge.svg)](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml)
 
 Synthetic football insights through Stage 5: a React replay screen with inspectable evidence,
-SQLite history, correction-driven updates and withdrawals, backed by FastAPI and
+durable history, correction-driven updates and withdrawals, backed by FastAPI and
 deterministic synthetic match calculations. Stage 6 includes the Azure wording
 adapter and bounded Microsoft Agent Framework Analyst/Producer workflow, verified
 offline and against the configured Azure deployment.
@@ -27,9 +27,11 @@ The eighth adds bounded Microsoft Agent Framework recap review and approved
 presentation choices, verified offline and with one successful live Azure run.
 
 Stage 9 now has a deployed Azure Container Apps demo, a private container registry
-and managed-identity image pulls, with a USD 75 total trial budget.
+and managed-identity image pulls, with a USD 75 total trial budget. The hosted app
+now uses serverless Cosmos DB history; local development still defaults to SQLite.
 See the [deployment guide](docs/deployment.md) for startup, costs, temporary storage
-limits, and the manual Azure sequence.
+limits, and the manual Azure sequence. Shared history design and verification are
+in the [Cosmos DB guide](docs/cosmos.md).
 
 ## Local setup
 
@@ -165,9 +167,9 @@ controls, episode evidence and durable replay cards. Player high-recovery share
 detection now provides independent controls and source-linked CLI/API attribution.
 Durable player publications and bilingual replay cards are now implemented.
 The [Cosmos DB adapter](docs/cosmos.md) adds atomic shared history, conflict
-detection and a live restart-check command. See the progress log for deployment
-verification; cloud model adaptation remains disabled. Streaming delivery follows
-verified shared durability.
+detection and a live restart-check command. See the progress log for live
+verification; cloud model adaptation remains disabled. Best next move: Event Hubs
+ingestion and Web PubSub revision delivery.
 
 ## Run the replay
 

@@ -115,3 +115,12 @@ It has no stream transport, authentication, cloud replication, database migratio
 framework or retention pruning. The single-call model adapter is described in [adaptation](adaptation.md); agents,
 audience variants, recaps and Azure deployment remain subsequent stages. Existing source action types and one-period
 replay limits are unchanged.
+
+
+## Cloud storage
+
+Local SQLite remains the default. The hosted app now selects the shared Cosmos DB
+adapter through explicit server-side configuration. It preserves this history and
+publication contract using atomic batches and ETag concurrency. See [Cosmos DB
+history](cosmos.md) for the bounded item size, identity permissions, costs and live
+restart checks. Standalone model/workflow CLIs remain local SQLite tools.
