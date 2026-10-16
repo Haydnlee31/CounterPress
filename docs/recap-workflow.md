@@ -108,11 +108,19 @@ expiry with both evidence links intact and no browser warnings/errors.
 
 ![Accepted live recap and activity](screenshots/recap-workflow-live-en.png)
 
-## Next milestone
+## Evaluation and hosted integration
 
-Proceed to Stage 9 with a containerized backend/frontend path and configuration,
-then Cosmos DB durability, Event Hubs ingestion and Web PubSub delivery. The current
-application remains local; an Azure model call does not establish cloud hosting or
-cloud restart recovery. Stage 10 still needs measured evaluation and the final
-demonstration. The requested as-built architecture and prioritized Microsoft
-extensions will be delivered after those build-plan stages are complete.
+The application now runs on Azure Container Apps with Cosmos history and the
+Event Hubs/Web PubSub pipeline. Hosted model adaptation remains off, and Matchday
+currently displays factual recaps. This explicit local workflow is not an
+anonymous paid endpoint.
+
+The [editorial pilot](evaluation/editorial-pilot.md) compares this two-role graph
+with templates and a single bounded editor. Both model paths preserve the same
+facts, citations, expiry and final atomic source check. The single-editor audit
+uses `recap-single-editor-v1`; older two-role audits remain readable.
+
+Use measured results and human usefulness ratings to choose the next integration.
+Authenticated triggering, shared deduplication, durable quotas, Cosmos live checks
+and revision-aware cancellation/cache behavior remain required before activation.
+The [delivery plan](redesign-implementation.md) tracks Studio and evaluation work.
