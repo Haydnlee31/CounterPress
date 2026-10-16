@@ -31,5 +31,20 @@ export async function fetchSnapshot(scenario: string, atMs: number, signal: Abor
       || !data.pressure_lifecycle?.some(change => change.insight_id === publication.insight_id && change.revision === publication.revision && change.operation !== 'withdraw')) throw new Error('Pressure explanation did not match its evidence and perspective.')
   }
   if (data.selected_kind === 'pressure' && (!pressure?.variant || pressure.state !== 'ready' || preferences.card_budget === 0)) throw new Error('Pressure card selection is invalid.')
+  const contribution = data.contribution
+  if (contribution && Object.entries(preferences).some(([key, value]) => contribution.preferences[key as keyof Preferences] !== value)) throw new Error('Player evidence did not match these viewing preferences.')
+  if (contribution?.variant) {
+    const publication = contribution.publication, text = contribution.variant
+    const latest = data.contribution_lifecycle?.find(change => change.insight_id === publication?.insight_id)
+    if (!publication || publication.operation === 'withdraw' || publication.evidence.decision.status !== 'eligible'
+      || text.insight_id !== publication.insight_id || text.revision !== publication.revision
+      || text.language !== preferences.language || text.depth !== preferences.depth
+      || text.club_id !== preferences.club_id || text.player_id !== preferences.player_id
+      || (preferences.player_id !== null && publication.evidence.subject_player_id !== preferences.player_id)
+      || publication.available_at.period !== data.state.at.period || publication.available_at.elapsed_ms > atMs
+      || !latest || latest.revision !== publication.revision || latest.operation === 'withdraw'
+      || JSON.stringify(latest) !== JSON.stringify(publication)) throw new Error('Player explanation did not match its evidence and perspective.')
+  }
+  if (data.selected_kind === 'contribution' && (!contribution?.variant || contribution.state !== 'ready' || preferences.card_budget === 0)) throw new Error('Player card selection is invalid.')
   return data
 }

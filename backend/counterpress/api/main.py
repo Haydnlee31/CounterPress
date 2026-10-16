@@ -13,6 +13,7 @@ from counterpress.audience import PreferenceError, ViewingPreferences
 from counterpress.api.snapshots import SCENARIOS, PlaybackRangeError, Scenario, ScreenSnapshot, SnapshotService, horizon
 from counterpress.history import EvidenceBundle, SQLiteHistoryStore
 from counterpress.pressure_publications import PressureChange
+from counterpress.contribution_publications import ContributionChange
 
 
 class HealthResponse(Contract):
@@ -46,7 +47,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
                  language: Literal["en", "zh-Hans"] = "en", depth: Literal["analyst", "casual"] = "analyst",
                  club_id: str | None = Query(None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}$"),
                  player_id: str | None = Query(None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}$"),
-                 metric_focus: Literal["balanced", "high_recoveries", "passing", "pressure_exposure", "pressured_escape", "possession_without_progression"] = "balanced",
+                 metric_focus: Literal["balanced", "high_recoveries", "passing", "pressure_exposure", "pressured_escape", "possession_without_progression", "player_high_recovery_share"] = "balanced",
                  card_budget: int = Query(1, ge=0, le=1)) -> ScreenSnapshot:
         response.headers["Cache-Control"] = "no-store"
         try:
@@ -95,6 +96,17 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
             return service.pressure_evidence(scenario_id, insight_id, version, at_ms)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="Pressure evidence is not available at this cutoff.") from exc
+        except (ValueError, OSError, sqlite3.Error) as exc:
+            raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
+
+    @application.get("/api/scenarios/{scenario_id}/contributions/{insight_id}/evidence/{version}", response_model=ContributionChange)
+    def contribution_evidence(scenario_id: str, insight_id: str, version: int, response: Response,
+                             at_ms: int = Query(..., ge=180000)) -> ContributionChange:
+        response.headers["Cache-Control"] = "no-store"
+        try:
+            return service.contribution_evidence(scenario_id, insight_id, version, at_ms)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="Player evidence is not available at this cutoff.") from exc
         except (ValueError, OSError, sqlite3.Error) as exc:
             raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
 

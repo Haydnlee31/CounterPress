@@ -8,6 +8,8 @@ from typing import Literal
 
 from counterpress.domain.metrics import TeamMetrics, compare_recoveries
 from counterpress.domain.contributions import analyze_contributions
+from counterpress.contribution_publications import ContributionChange, project_contributions
+from counterpress.contribution_views import ContributionView, contribution_view
 from counterpress.adaptation.contracts import AdaptationView
 from counterpress.audience import AudienceService, AudienceView, PreferenceError, ViewingPreferences
 from counterpress.workflow.contracts import WorkflowView
@@ -29,6 +31,8 @@ SCENARIOS = {
     "pressure-control": ("pressure/control.json", "Pressure and escape control"),
     "progression-increase": ("progression/increase.json", "Possession without progression"),
     "progression-control": ("progression/control.json", "Progression control"),
+    "contribution-increase": ("contributions/increase.json", "Player recovery share increase"),
+    "contribution-control": ("contributions/control.json", "Player recovery share control"),
 }
 START = MatchTime(period=2, elapsed_ms=180000)
 SPLIT = MatchTime(period=2, elapsed_ms=480000)
@@ -66,7 +70,9 @@ class ScreenSnapshot(Contract):
     teams: tuple[Team, ...] = ()
     pressure: PressureView | None = None
     pressure_lifecycle: tuple[PressureChange, ...] = ()
-    selected_kind: Literal["recovery", "pressure"] | None = None
+    contribution: ContributionView | None = None
+    contribution_lifecycle: tuple[ContributionChange, ...] = ()
+    selected_kind: Literal["recovery", "pressure", "contribution"] | None = None
 
 
 def horizon(history: History) -> MatchTime:
@@ -82,7 +88,9 @@ def replay_session(history: History) -> ReplaySession:
 def project(history: History, cutoff: MatchTime) -> History:
     history = _project_recoveries(history, cutoff)
     return history.model_copy(update={"pressure_changes": project_pressure(history, replay_session(history), BASELINE, CURRENT, cutoff),
-                                      "pressure_version": len(history.records), "episode_rules_version": 2})
+                                      "pressure_version": len(history.records), "episode_rules_version": 2,
+                                      "contribution_changes": project_contributions(history, replay_session(history), BASELINE, CURRENT, cutoff),
+                                      "contribution_version": len(history.records)})
 
 
 def _project_recoveries(history: History, cutoff: MatchTime) -> History:
@@ -142,20 +150,24 @@ class SnapshotService:
             raise KeyError("unknown scenario")
         existing = self.store.read(scenario_id)
         if existing is not None:
-            if existing.pressure_version == len(existing.records) and existing.episode_rules_version == 2:
+            if existing.pressure_version == len(existing.records) and existing.episode_rules_version == 2 and existing.contribution_version == len(existing.records):
                 return existing
             # Additive migration: rebuild historical pressure publications without
             # rewriting source, recovery, adaptation or workflow history.
             def backfill(previous):
                 assert previous is not None
-                if previous.pressure_version == len(previous.records) and previous.episode_rules_version == 2:
+                if previous.pressure_version == len(previous.records) and previous.episode_rules_version == 2 and previous.contribution_version == len(previous.records):
                     return previous
                 result = previous
                 for at in sorted({END.elapsed_ms, *(event.available_at.elapsed_ms for event in previous.records if event.available_at.key() >= END.key())}):
                     cutoff = MatchTime(period=2, elapsed_ms=at)
-                    result = result.model_copy(update={"pressure_changes": project_pressure(result, replay_session(result), BASELINE, CURRENT, cutoff,
-                        progression_only=previous.pressure_version > 0)})
-                return result.model_copy(update={"pressure_version": len(result.records), "episode_rules_version": 2})
+                    if previous.pressure_version != len(previous.records) or previous.episode_rules_version != 2:
+                        result = result.model_copy(update={"pressure_changes": project_pressure(result, replay_session(result), BASELINE, CURRENT, cutoff,
+                            progression_only=previous.pressure_version > 0)})
+                    if previous.contribution_version != len(previous.records):
+                        result = result.model_copy(update={"contribution_changes": project_contributions(result, replay_session(result), BASELINE, CURRENT, cutoff)})
+                return result.model_copy(update={"pressure_version": len(result.records), "episode_rules_version": 2,
+                                                 "contribution_version": len(result.records)})
             return self.store.transact(scenario_id, backfill)
 
         def seed(previous: History | None) -> History:
@@ -252,9 +264,17 @@ class SnapshotService:
             if item.available_at.key() <= cutoff.key():
                 latest_pressure[item.insight_id] = item
         pressure = pressure_view(history, tuple(latest_pressure.values()), prefs, cutoff.key() < END.key())
+        latest_contributions = {}
+        for item in history.contribution_changes:
+            if item.available_at.key() <= cutoff.key():
+                latest_contributions[item.insight_id] = item
+        contribution = contribution_view(history, tuple(latest_contributions.values()), prefs, cutoff.key() < END.key())
         selected_kind = "recovery" if audience.state == "ready" else None
         if pressure.state == "ready" and (selected_kind is None or pressure.priority > audience.priority):
             selected_kind = "pressure"
+        selected_priority = audience.priority if selected_kind == "recovery" else pressure.priority if selected_kind == "pressure" else -1
+        if contribution.state == "ready" and contribution.priority > selected_priority:
+            selected_kind = "contribution"
         return ScreenSnapshot(
             scenario_id=scenario_id, scope_id=scope_id, history_version=len(history.records), replay_end=end,
             state=replay.state, metrics=replay.metrics,
@@ -263,6 +283,7 @@ class SnapshotService:
             adaptation=adaptation,
             workflow=WorkflowView(attempt_id=audit.attempt_id, status=audit.status, actions=audit.actions) if audit else None,
             audience=audience, pressure=pressure, pressure_lifecycle=tuple(latest_pressure.values()), selected_kind=selected_kind,
+            contribution=contribution, contribution_lifecycle=tuple(latest_contributions.values()),
             teams=history.fixture.teams,
         )
 
@@ -281,3 +302,12 @@ class SnapshotService:
             if change.insight_id == insight_id and change.revision == version and change.available_at.elapsed_ms <= at_ms:
                 return change
         raise KeyError("pressure evidence not available at this cutoff")
+
+    def contribution_evidence(self, scenario_id: str, insight_id: str, version: int, at_ms: int) -> ContributionChange:
+        history = self.history(scenario_id)
+        if not START.elapsed_ms <= at_ms <= horizon(history).elapsed_ms:
+            raise KeyError("cutoff outside history")
+        for change in history.contribution_changes:
+            if change.insight_id == insight_id and change.revision == version and change.available_at.elapsed_ms <= at_ms:
+                return change
+        raise KeyError("player evidence not available at this cutoff")

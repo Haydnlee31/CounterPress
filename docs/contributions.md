@@ -92,11 +92,13 @@ return 503 without exposing internal configuration. The original recovery scenar
 has only one baseline team recovery, so this example correctly reports insufficient
 sample under the new policy; it does not substitute the new positive control.
 
-The two new control feeds are CLI fixtures, not new browser scenarios. The API
+The two control feeds are also available as browser scenarios through
+[durable contribution publication](contribution-publication.md). The candidate API
 recomputes from the durable source journal, including corrections, and works after
-restart without fixture files once history is seeded. It does not create a new
-publication stream, cooldown receipt, frozen publication ID, or viewer card.
-Existing recovery and possession stories keep their current behavior.
+restart without fixture files once history is seeded. Its response is candidate
+evidence, rather than a frozen publication or viewer card. The publication and
+snapshot routes expose those separately. Existing recovery and possession stories
+keep their current behavior.
 
 ## Verification and next work
 
@@ -106,6 +108,6 @@ forged evidence, late corrections, historical API cutoffs, restart durability an
 CLI parsing. The complete backend suite and both required GitHub Actions checks
 must pass before merge. Exact local output is recorded in [progress](progress.md).
 
-Best next move: add durable player-contribution publications and bilingual replay
-cards with correction/withdrawal handling and per-player cooldown scope. Recaps
-follow later. No Azure resources, model calls or credentials are needed here.
+Durable player-contribution publications, bilingual replay cards and per-player
+cooldowns are now implemented in [the next increment](contribution-publication.md).
+Best next move: evidence-linked match recaps. No Azure action is needed.

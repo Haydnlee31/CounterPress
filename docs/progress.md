@@ -1,11 +1,11 @@
 # Progress
 
-Current milestone: Stage 8 fifth increment — player high-recovery share detection
-has independent attribution controls, revision-aware CLI evidence and an API over
-persisted source history. Contribution publication/UI integration remains next.
-Possession without progression, pressure/escape and recovery stories share the one-card audience budget. Seeded generation,
+Current milestone: Stage 8 sixth increment — player high-recovery stories now have
+durable publication histories, correction-driven updates/withdrawals/restoration,
+per-player cooldowns and bilingual replay cards with exact attribution.
+Contribution, possession, pressure/escape and recovery stories share the one-card audience budget. Seeded generation,
 independent controls and whole-match development/holdout splits remain complete.
-Durable player-contribution cards, broader attribution rules and recaps remain outstanding.
+Evidence-linked recaps and broader attribution rules remain outstanding.
 Stage 7 analyst/casual views, preferences and English/Simplified Chinese variants
 remain complete. Stage 6 single-call adaptation and
 bounded Analyst/Producer workflow remain verified against live Azure. Stage 5
@@ -1288,3 +1288,127 @@ with actor-correction withdrawal/restoration and player-scoped cooldowns. The cu
 increment returns candidate evidence through CLI/API; it does not publish a player
 story or change the existing viewer-card budget. Recaps and broader attribution
 rules follow later. No dependencies, Azure resources, keys or endpoints changed.
+
+## Stage 8 sixth increment — durable player-contribution cards
+
+Added independent player publication streams, a source-count checkpoint and
+historical backfill for existing SQLite files. Stable identity includes match,
+team, player, metric, rule version and window pair. A 60-second cooldown scopes new
+comparisons to the same player/team/match/rule; corrections to an existing comparison
+always bypass it. Source and publication writes remain one atomic transaction.
+
+The replay catalog now includes the original positive/negative contribution controls.
+English and Simplified Chinese cards expose player counts, full team denominators,
+source actor/revision attribution, thresholds and historical provenance. Contribution
+stories share the one-card budget with recovery and pressure. Player preferences
+select the actual subject, while stale/missing lifecycle streams and mismatched
+narratives are rejected by the client. See [publication details](contribution-publication.md).
+
+Exact local verification commands and output:
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
+........................................................................ [ 19%]
+........................................................................ [ 39%]
+........................................................................ [ 58%]
+........................................................................ [ 78%]
+........................................................................ [ 97%]
+........                                                                 [100%]
+368 passed in 6.61s
+
+$ npm --prefix frontend test
+
+> counterpress-frontend@0.1.0 test
+> vitest run
+
+ RUN  v3.2.7 /Users/haydn/Documents/CounterPress/frontend
+
+ ✓ src/api.test.ts (4 tests) 8ms
+ ✓ src/WorkflowActivity.test.tsx (2 tests) 91ms
+ ✓ src/PressureCard.test.tsx (5 tests) 419ms
+ ✓ src/ContributionCard.test.tsx (4 tests) 672ms
+   ✓ player choice, card budget, language, viewers and negative control keep their own presentation  343ms
+ ✓ src/App.test.tsx (12 tests) 1078ms
+   ✓ the local replay screen > opens the exact evidence records and hides them on reset, then replays again  340ms
+
+ Test Files  5 passed (5)
+      Tests  27 passed (27)
+   Start at  10:42:02
+   Duration  2.11s (transform 370ms, setup 0ms, collect 1.03s, tests 2.27s, environment 2.71s, prepare 318ms)
+
+$ npm --prefix frontend run build
+
+> counterpress-frontend@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 40 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.53 kB │ gzip:  0.35 kB
+dist/assets/index-3c30FPTv.css   17.64 kB │ gzip:  4.77 kB
+dist/assets/index-BQ6rlB6o.js   265.02 kB │ gzip: 81.94 kB
+✓ built in 419ms
+```
+
+The 18 new backend cases cover durable update/withdraw/restore, idempotence,
+restart without fixtures, frozen evidence ID/version/cutoff scope, bilingual views,
+player filtering, zero-card budget, independent controls, old-schema backfill,
+atomic rejection, publication consistency, player/team/match cooldown isolation,
+exact expiry, correction bypass and cross-metric ranking. Five new frontend cases
+cover source attribution and denominator evidence, translations, independent
+revision watermarks, stale/missing streams, visible withdrawal/restoration, player/
+viewer/budget behavior, negative controls and invalid API narratives.
+
+The Chrome review used a separate ignored SQLite database. Local server commands:
+
+```sh
+COUNTERPRESS_DB_PATH=var/contribution-ui-verification.sqlite3 UV_CACHE_DIR=.uv-cache uv run --frozen uvicorn counterpress.api.main:app --host 127.0.0.1 --port 8000
+npm --prefix frontend run dev -- --host 127.0.0.1
+```
+
+Exact correction command and output:
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.ingest contribution-increase fixtures/contributions/publication_corrections.json --db var/contribution-ui-verification.sqlite3
+Stored 16 new records; history version 64
+58:02 | eastbridge/eb04 player_high_recovery_share | update r2 | 1/4 -> 3/4 | eligible
+58:05 | eastbridge/eb04 player_high_recovery_share | withdraw r3 | 1/4 -> 2/4 | below_threshold
+58:15 | eastbridge/eb04 player_high_recovery_share | create r4 | 1/4 -> 3/4 | eligible
+```
+
+Browser review confirmed the 25%→75% card, the four-source team denominator in
+both windows, actor attribution labels, Chinese casual wording, no credit for the
+duel winner, paused historical evidence after ingestion, revised `b1-recovery@r2`
+at 58:02, withdrawal at 58:05, restoration at 58:15 and the negative control's empty
+state. It caught a selected-player withdrawal label showing the generic empty
+state; the UI now shows that player's withdrawal while other players keep their
+own empty state, with regression coverage. The temporary tab and both servers
+were closed. Screenshot: [player evidence](screenshots/contribution-evidence-en.png).
+
+Files added:
+
+- `backend/counterpress/contribution_publications.py`
+- `backend/counterpress/contribution_views.py`
+- `fixtures/contributions/publication_corrections.json`
+- `tests/test_contribution_history.py`
+- `frontend/src/ContributionCard.tsx`
+- `frontend/src/ContributionCard.test.tsx`
+- `docs/contribution-publication.md`
+- `docs/screenshots/contribution-evidence-en.png`
+
+Files updated:
+
+- `backend/counterpress/history.py`, `backend/counterpress/api/snapshots.py`
+- `backend/counterpress/api/main.py`, `backend/counterpress/audience.py`, `backend/counterpress/ingest.py`
+- `tests/test_snapshot_api.py`
+- `frontend/src/App.tsx`, `frontend/src/AudienceControls.tsx`, `frontend/src/types.ts`
+- `frontend/src/api.ts`, `frontend/src/api.test.ts`, `frontend/src/playbackScope.ts`
+- `README.md`, `docs/contributions.md`, `docs/audience.md`, `docs/progress.md`
+
+The independent actor controls, detector thresholds, Event contract and dependencies
+are unchanged. No Azure resources, credentials or model calls are needed. Existing
+Azure wording/workflow remains specific to recovery stories. Best next move:
+evidence-linked match recaps composed from available published stories and exact
+revisions. Broader attribution rules and Azure deployment remain later work.

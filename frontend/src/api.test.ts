@@ -39,3 +39,24 @@ test('rejects pressure wording with stale revisions, future availability or mism
     await expect(fetchSnapshot('increase',780000,new AbortController().signal,'viewer-one')).rejects.toThrow(/Pressure/)
   }
 })
+
+test('rejects player narratives with stale identity, another player, future evidence or missing lifecycle', async () => {
+  const preferences={...defaultPreferences,player_id:'eb04'}
+  const publication={insight_id:'player-one',revision:2,operation:'update',evidence:{subject_player_id:'eb04',decision:{status:'eligible'}},available_at:{period:2,elapsed_ms:780000}}
+  const variant={insight_id:'player-one',revision:2,language:'en',depth:'analyst',club_id:null,player_id:'eb04'}
+  const contribution={preferences,state:'ready',publication,variant}
+  const response={...base,state:{at:{period:2,elapsed_ms:780000}},audience:{...base.audience,preferences},contribution,contribution_lifecycle:[publication],selected_kind:'contribution'}
+  for(const changed of [
+    {...response,contribution:{...contribution,variant:{...variant,revision:1}}},
+    {...response,contribution:{...contribution,publication:{...publication,evidence:{...publication.evidence,subject_player_id:'eb08'}}}},
+    {...response,contribution:{...contribution,publication:{...publication,available_at:{period:2,elapsed_ms:785000}}}},
+    {...response,contribution_lifecycle:[]},
+    {...response,contribution_lifecycle:[{...publication,operation:'withdraw'}]},
+    {...response,contribution:{...contribution,preferences:{...preferences,language:'zh-Hans'}}},
+  ]) {
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:true,json:async()=>changed}))
+    await expect(fetchSnapshot('increase',780000,new AbortController().signal,'viewer-one',preferences)).rejects.toThrow(/Player/)
+  }
+  vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:true,json:async()=>response}))
+  await expect(fetchSnapshot('increase',780000,new AbortController().signal,'viewer-one',preferences)).resolves.toEqual(response)
+})

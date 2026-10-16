@@ -13,6 +13,7 @@ from counterpress.workflow.contracts import WorkflowAttempt
 from counterpress.domain.models import Contract, Event, EvidencePacket, Identifier, Insight, MatchTime, PositiveInt
 from counterpress.fixture import PossessionFixture
 from counterpress.pressure_publications import PressureChange
+from counterpress.contribution_publications import ContributionChange
 
 DEFINITION = "An open-play change into established controlled possession at x ≥ 70 m, in the recovering team's attacking direction. Duels and restarts are excluded."
 
@@ -65,6 +66,8 @@ class History(Contract):
     pressure_changes: tuple[PressureChange, ...] = ()
     pressure_version: int = 0
     episode_rules_version: int = 0
+    contribution_changes: tuple[ContributionChange, ...] = ()
+    contribution_version: int = 0
 
 
 class HistoryStore(Protocol):
@@ -126,6 +129,15 @@ class SQLiteHistoryStore:
                 payload TEXT NOT NULL, PRIMARY KEY (scenario_id, insight_id, revision),
                 UNIQUE (scenario_id, ordinal)
             );
+            CREATE TABLE IF NOT EXISTS contribution_changes (
+                scenario_id TEXT NOT NULL REFERENCES scenarios(scenario_id),
+                ordinal INTEGER NOT NULL, insight_id TEXT NOT NULL, revision INTEGER NOT NULL,
+                payload TEXT NOT NULL, PRIMARY KEY (scenario_id, insight_id, revision),
+                UNIQUE (scenario_id, ordinal)
+            );
+            CREATE TABLE IF NOT EXISTS contribution_checkpoints (
+                scenario_id TEXT PRIMARY KEY REFERENCES scenarios(scenario_id), source_version INTEGER NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS pressure_checkpoints (
                 scenario_id TEXT PRIMARY KEY REFERENCES scenarios(scenario_id), source_version INTEGER NOT NULL,
                 rules_version INTEGER NOT NULL DEFAULT 0
@@ -158,9 +170,13 @@ class SQLiteHistoryStore:
             "SELECT payload FROM workflows WHERE scenario_id = ? ORDER BY ordinal", (scenario_id,)))
         pressure_changes = tuple(PressureChange.model_validate_json(item[0]) for item in connection.execute(
             "SELECT payload FROM pressure_changes WHERE scenario_id = ? ORDER BY ordinal", (scenario_id,)))
+        contribution_changes = tuple(ContributionChange.model_validate_json(item[0]) for item in connection.execute(
+            "SELECT payload FROM contribution_changes WHERE scenario_id = ? ORDER BY ordinal", (scenario_id,)))
+        contribution_checkpoint = connection.execute("SELECT source_version FROM contribution_checkpoints WHERE scenario_id = ?", (scenario_id,)).fetchone()
         checkpoint = connection.execute("SELECT source_version, rules_version FROM pressure_checkpoints WHERE scenario_id = ?", (scenario_id,)).fetchone()
         return History(fixture=PossessionFixture.model_validate_json(row[0]), records=records, changes=changes,
             adaptations=adaptations, workflows=workflows, pressure_changes=pressure_changes,
+            contribution_changes=contribution_changes, contribution_version=contribution_checkpoint[0] if contribution_checkpoint else 0,
             pressure_version=checkpoint[0] if checkpoint else 0, episode_rules_version=checkpoint[1] if checkpoint else 0)
 
     def read(self, scenario_id: str) -> History | None:
@@ -190,12 +206,15 @@ class SQLiteHistoryStore:
                 old_adaptations = previous.adaptations if previous else ()
                 old_workflows = previous.workflows if previous else ()
                 old_pressure = previous.pressure_changes if previous else ()
+                old_contributions = previous.contribution_changes if previous else ()
                 if previous and (result.fixture != previous.fixture
                                  or result.records[:len(old_records)] != old_records
                                  or result.changes[:len(old_changes)] != old_changes
                                  or result.adaptations[:len(old_adaptations)] != old_adaptations
                                  or result.workflows[:len(old_workflows)] != old_workflows
                                  or result.pressure_changes[:len(old_pressure)] != old_pressure
+                                 or result.contribution_changes[:len(old_contributions)] != old_contributions
+                                 or result.contribution_version < previous.contribution_version
                                  or result.pressure_version < previous.pressure_version
                                  or result.episode_rules_version < previous.episode_rules_version):
                     raise ValueError("persisted history cannot be rewritten")
@@ -217,6 +236,11 @@ class SQLiteHistoryStore:
                 for index, change in enumerate(result.pressure_changes[len(old_pressure):], len(old_pressure) + 1):
                     connection.execute("INSERT INTO pressure_changes VALUES (?, ?, ?, ?, ?)", (
                         scenario_id, index, change.insight_id, change.revision, change.model_dump_json()))
+                for index, change in enumerate(result.contribution_changes[len(old_contributions):], len(old_contributions) + 1):
+                    connection.execute("INSERT INTO contribution_changes VALUES (?, ?, ?, ?, ?)", (
+                        scenario_id, index, change.insight_id, change.revision, change.model_dump_json()))
+                connection.execute("INSERT INTO contribution_checkpoints VALUES (?, ?) ON CONFLICT(scenario_id) DO UPDATE SET source_version=excluded.source_version",
+                                   (scenario_id, result.contribution_version))
                 connection.execute("INSERT INTO pressure_checkpoints VALUES (?, ?, ?) ON CONFLICT(scenario_id) DO UPDATE SET source_version=excluded.source_version, rules_version=excluded.rules_version",
                                    (scenario_id, result.pressure_version, result.episode_rules_version))
                 connection.commit()

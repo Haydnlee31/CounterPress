@@ -23,7 +23,9 @@ export type Insight = {
 export type Snapshot = {
   pressure?: PressureView | null;
   pressure_lifecycle?: PressureChange[];
-  selected_kind?: 'recovery' | 'pressure' | null;
+  selected_kind?: 'recovery' | 'pressure' | 'contribution' | null;
+  contribution?: ContributionView | null;
+  contribution_lifecycle?: ContributionChange[];
   audience?: Audience | null;
   teams?: { team_id: string; name: string; player_ids: string[] }[];
   workflow?: Workflow | null;
@@ -42,7 +44,7 @@ export type Snapshot = {
 }
 export type Adaptation = { attempt_id: string; evidence_id: string; evidence_version: number; text: string; expires_at_unix_ms: number }
 export type Workflow = { attempt_id: string; status: string; actions: { label: string; elapsed_ms: number }[] }
-export type Preferences = { language: 'en' | 'zh-Hans'; depth: 'analyst' | 'casual'; club_id: string | null; player_id: string | null; metric_focus: 'balanced' | 'high_recoveries' | 'passing' | 'pressure_exposure' | 'pressured_escape' | 'possession_without_progression'; card_budget: number }
+export type Preferences = { language: 'en' | 'zh-Hans'; depth: 'analyst' | 'casual'; club_id: string | null; player_id: string | null; metric_focus: 'balanced' | 'high_recoveries' | 'passing' | 'pressure_exposure' | 'pressured_escape' | 'possession_without_progression' | 'player_high_recovery_share'; card_budget: number }
 export const defaultPreferences: Preferences = { language: 'en', depth: 'analyst', club_id: null, player_id: null, metric_focus: 'balanced', card_budget: 1 }
 export type Variant = { insight_id: string; revision: number; language: Preferences['language']; depth: Preferences['depth']; club_id: string | null; player_id: string | null; title: string; explanation: string; qualification: string; subject_name: string }
 export type Audience = { preferences: Preferences; state: 'ready' | 'collecting' | 'no_increase' | 'no_contribution' | 'budget_hidden'; message: string; variant: Variant | null; priority: number; highlighted_events: Reference[]; sequence: Event[]; supporting_event_count: number; selected_event_count: number }
@@ -62,3 +64,11 @@ export function clock(ms: number, period = 2) {
   return `${Math.floor(total / 60) + (period === 2 ? 45 : 0)}:${String(total % 60).padStart(2, '0')}`
 }
 export function windowLabel(window: Window) { return `${clock(window.start.elapsed_ms)}–${clock(window.end.elapsed_ms)}` }
+
+export type ContributionWindow = { window: Window; team_events: Reference[]; player_events: Reference[]; team_count: number; player_count: number; share: number | null }
+export type ContributionChange = { insight_id: string; evidence_id: string; revision: number; operation: 'create' | 'update' | 'withdraw'; available_at: MatchTime; invalidates: number[];
+  evidence: { rule_version: string; metric: 'player_high_recovery_share'; match_id: string; subject_team_id: string; subject_player_id: string; cutoff: MatchTime; coverage_start: MatchTime;
+    baseline: ContributionWindow; current: ContributionWindow; records: Event[]; disclosure: string;
+    policy: { minimum_team_recoveries: number; minimum_current_player_recoveries: number; minimum_count_increase: number; minimum_share_increase: number };
+    decision: { status: string; count_change: number; share_change: number | null } } }
+export type ContributionView = { preferences: Preferences; state: string; message: string; publication: ContributionChange | null; variant: Variant | null; highlighted_events: Reference[]; priority: number }
