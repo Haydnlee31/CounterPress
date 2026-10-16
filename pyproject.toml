@@ -14,6 +14,11 @@ dependencies = [
     "httpx2>=2.13,<3",
     "azure-cosmos>=4.9,<5",
     "azure-identity>=1.23,<2",
+    "azure-eventhub>=5.15,<6",
+    "azure-eventhub-checkpointstoreblob-aio>=1.2,<2",
+    "azure-messaging-webpubsubservice>=1.2,<2",
+    "aiohttp>=3.11,<4",
+    "azure-storage-blob>=12.25,<13",
 ]
 
 [dependency-groups]
