@@ -143,8 +143,10 @@ uv run --env-file .env --frozen uvicorn counterpress.api.main:app --reload
 The application
 will reject incomplete auth/model configuration or in-memory admission storage.
 
-Before cloud activation, verify actual Cosmos ETag conflict/restart behavior and
-RBAC, the request-count allowance, current Azure usage, live model behavior through
+The [live integration record](verification/editorial-integration.json) now verifies
+Cosmos conflict/fresh-process behavior under the existing managed identity and
+real Entra authorization against the local API. Before cloud activation, verify
+hosted-route authorization, current Azure usage, live model behavior through
 the authenticated route, and cancellation on real revision delivery. Deploy the
 expanded audit schema before single-editor writes. Keep secrets in private Azure
 runtime configuration. Turning `COUNTERPRESS_EDITORIAL=off` blocks new requests;
@@ -158,7 +160,8 @@ SQLite concurrency, Cosmos ETag conflicts with a transactional service double,
 restart/reuse, quota exhaustion, expired leases, storage failure before dispatch,
 corrections during work, cancellation, expiry, preferences and API behavior. It
 uses mocked model responses and generated test signing keys; it spends no Azure
-credits. These are not live Entra/Cosmos or human usability results.
+credits. These unit tests are distinct from the later real integration record
+above; neither is a human usability result.
 
 The original paid pilot and `fixtures/evaluation/editorial_lock.json` remain
 unchanged. The current offline/mocked regression suite uses a separately versioned

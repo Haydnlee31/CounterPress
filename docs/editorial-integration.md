@@ -4,6 +4,10 @@ The editor API remains disabled on the public application. These checks prepare
 activation; they do not publish an editor UI, enable paid requests or complete
 participant review.
 
+**Real Entra sign-in and both managed-identity Cosmos phases passed.** The
+[sanitized verification record](verification/editorial-integration.json) separates
+real identity, real storage and mocked model behavior.
+
 ## Entra registration
 
 Two single-tenant registrations were configured on 17 October 2026:
@@ -78,6 +82,16 @@ in-memory model transport and real Cosmos persistence. It checks cached reuse,
 correction invalidation and fixture-free restoration of the single-editor audit
 and historical 4/3/withdrawn/2 counts in a fresh process. It makes **zero external
 model calls**. This is storage evidence, not a live model-quality result.
+
+Both phases ran from CI-verified source `b729d3f` in separate processes inside the
+existing app container under its existing managed identity. A temporary source
+archive was fetched at that exact revision and checked against its SHA-256 before
+execution; temporary files were removed on exit. The serving app's revision,
+template, configuration and identities were unchanged. The seed observed a real
+409 conflict; fresh-process verification preserved the exhausted quota and
+single-editor audit without reading fixture files. The initial Azure console
+connection returned 404 before execution; after a readiness check, a shorter
+verified bootstrap succeeded. The exact cause of that console failure is unconfirmed.
 
 `tests/test_editorial_live_checks.py` tests the probe assertions offline with
 generated signing keys and a transactional Cosmos double. MSAL is now a direct

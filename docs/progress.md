@@ -2351,3 +2351,56 @@ Current source uses a separate regression lock; no new paid benchmark results ar
 claimed. See [editorial access](editorial-access.md) for architecture, API contract,
 configuration, limits and remaining live checks. Next: real Entra/Cosmos integration
 and the authenticated Studio client, keeping hosted AI disabled until review.
+
+## Real editorial identity and Cosmos checks (2026-10-17)
+
+Configured two single-tenant Entra registrations: CounterPress Editorial API and
+CounterPress Local Editor. The API exposes only the custom delegated editor scope
+and user role; only the signed-in operator has that role. The local public client
+has a localhost redirect, no secret, and no Graph API permission. The user completed
+Microsoft sign-in. Token verification and the protected local API passed; missing,
+invalid and disallowed-client credentials were rejected. Tokens remained in memory.
+
+The operator's existing Cosmos Data Reader role correctly rejected the initial
+local write probe; no items were created. The role was not broadened. After exact-
+source CI passed, the probe ran in temporary standalone processes inside the
+existing app container under its existing managed history identity. It used fresh
+verification partitions and a synthetic model transport, leaving production demo
+history, production admission counters and serving app configuration unchanged.
+
+Observed a real Cosmos 409 conflict with only one admitted owner, a single dispatch
+claim, persistent quota exhaustion, rejected old lease ownership, cached
+presentation reuse and invalidation on correction. A second fresh process restored
+the quota and single-editor audit without fixtures, preserving historical
+4/3/withdrawn/2 facts. No new hosting service, model call or cloud release was made.
+The first console connection returned 404 before execution; after a readiness
+check, a shorter archive/hash-verified bootstrap succeeded. The exact cause is
+unconfirmed. Source was `b729d3f`.
+
+```console
+$ .venv/bin/python scripts/check_editorial_identity.py --config var/editorial-entra.json
+PASS: real Entra token, local API authorization, denial checks and zero model calls.
+$ python3 /private/tmp/counterpress-editorial-remote.py seed
+PASS: Cosmos seed via existing managed identity; app revision/configuration unchanged; zero model calls.
+$ python3 /private/tmp/counterpress-editorial-remote.py verify
+PASS: Cosmos verify via existing managed identity; app revision/configuration unchanged; zero model calls.
+$ UV_CACHE_DIR=.uv-cache uv run --frozen --offline pytest -q
+533 passed, 1 warning in 17.75s
+$ UV_CACHE_DIR=.uv-cache uv run --frozen --offline python -m counterpress.evaluation.editorial --output var/editorial-integration-offline.json
+"suite": "editorial-controls-regression-v2"
+"checks": {"passed": 15, "failed": 0, "errored": 0}
+"dispatched_requests": 0
+```
+
+The private remote wrapper selected the existing ready revision and invoked the
+committed `scripts/check_editorial_cosmos.py` seed/verify CLI from a verified
+temporary source archive. [Reusable commands and scope](editorial-integration.md)
+and [sanitized results](verification/editorial-integration.json) are committed;
+resource identifiers, endpoints and console diagnostics remain local. Backend,
+frontend/build and container/Bicep GitHub checks passed on the probe source.
+The existing experimental-evaluator warning remains. MSAL became a direct
+dependency without changing its locked version; the current regression lock is
+v2, while the original paid pilot is unchanged.
+
+Next: Studio sign-in/review UI, then hosted authorization and a bounded real-model
+route check. Human review is still pending, and hosted AI remains disabled.

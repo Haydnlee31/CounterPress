@@ -1,0 +1,63 @@
+{
+  "verification_date_singapore": "2026-10-17",
+  "identity": {
+    "signed_token_verified": true,
+    "authorized_context_http": 200,
+    "missing_token_http": 401,
+    "invalid_token_http": 401,
+    "disallowed_client_status": 403,
+    "ineligible_request": "free_factual_fallback",
+    "model_calls": 0,
+    "api_location": "local ASGI",
+    "hosted_activation": false
+  },
+  "cosmos_seed": {
+    "real_cosmos_conflict_statuses": [
+      409
+    ],
+    "atomic_duplicate_admission": true,
+    "single_dispatch_claim": true,
+    "durable_quota_exhaustion": true,
+    "old_lease_owner_rejected": true,
+    "lease_test_clock": "controlled timestamps",
+    "revision_cache_reused": true,
+    "correction_invalidated_presentation": true,
+    "model_transport": "synthetic in-memory double",
+    "external_model_calls": 0,
+    "source_commit": "b729d3f84a1de63e4ddbbb1dbefe0f0042e90b6f",
+    "execution": "standalone process in existing app container using managed identity",
+    "app_revision_changed": false
+  },
+  "cosmos_fresh_process": {
+    "fresh_process_quota_preserved": true,
+    "fixture_free_history_recovery": true,
+    "single_editor_audit_restored": true,
+    "historical_counts": [
+      4,
+      3,
+      null,
+      2
+    ],
+    "corrected_presentation_not_applied": true,
+    "external_model_calls": 0,
+    "source_commit": "b729d3f84a1de63e4ddbbb1dbefe0f0042e90b6f",
+    "execution": "standalone process in existing app container using managed identity",
+    "app_revision_changed": false
+  },
+  "local_backend_tests": 533,
+  "offline_regression": {
+    "suite": "editorial-controls-regression-v2",
+    "passed": 15,
+    "failed": 0,
+    "external_model_calls": 0
+  },
+  "activation": {
+    "hosted_editorial_enabled": false,
+    "cloud_app_revision_changed": false,
+    "new_hosting_services": 0,
+    "operator_cosmos_reader_preserved": true,
+    "human_review": "pending",
+    "authenticated_live_model_check": "pending",
+    "studio_interface": "pending"
+  }
+}
