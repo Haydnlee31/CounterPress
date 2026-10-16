@@ -4,7 +4,9 @@ Stage 9 increment 1 packages the working app and provides Azure Bicep templates.
 The container is verified locally and in GitHub Actions. Azure Container Apps,
 the private registry and managed identity are deployed in the existing model
 resource group in East US. Shared history uses serverless Cosmos DB in East US 2,
-with a separate managed identity; East US database creation was capacity-blocked. The USD 75 budget and trial spending limit are verified.
+with a separate managed identity; East US database creation was capacity-blocked.
+Event Hubs Basic, Web PubSub Free and Blob checkpoints are now deployed in East US.
+The USD 75 budget and trial spending limit are verified.
 See the latest progress entry for hosted verification evidence. The existing Azure OpenAI model calls were
 verified separately. They are not enabled by this deployment template.
 
@@ -54,19 +56,23 @@ it unset and uses Vite. Container paths are explicit:
 | `COUNTERPRESS_DB_PATH` | `/data/counterpress.sqlite3` |
 
 `/health` checks process liveness. `/ready` loads the initial recovery replay from
-local storage, returning a sanitized 503 on failure. It can seed the fixture on
-first use. Neither endpoint contacts Azure. Initial `/ready` success does not
-replace the all-scenario regression suite or the real HTTP smoke test.
+the configured store, returning a sanitized 503 on failure. It can seed the fixture
+on first use. In Cosmos mode readiness contacts Azure; in local SQLite mode neither
+endpoint needs Azure. Readiness does not prove consumer progress or Web PubSub
+delivery. The all-scenario suite and live transport check remain separate.
 
 ## Deployed Azure architecture
 
 ```mermaid
 flowchart LR
-  Browser -->|HTTPS| App[Azure Container Apps: React assets + FastAPI]
-  App --> Cosmos[Azure Cosmos DB serverless: shared history]
-  HistoryIdentity[History managed identity] -->|Container-scoped data access| Cosmos
-  Identity[User-assigned managed identity] -->|AcrPull| ACR[Private images in Azure Container Registry]
-  ACR -->|Pinned image digest| App
+  Producer[Authorized synthetic producer] -->|Match-keyed deliveries| EH[Azure Event Hubs Basic]
+  EH --> App[Azure Container Apps: FastAPI + consumer]
+  Browser[React replay browser] -->|HTTPS snapshots and evidence| App
+  App -->|Atomic history and evidence| Cosmos[Azure Cosmos DB serverless]
+  App -->|Revision heads after commit| PubSub[Azure Web PubSub Free]
+  PubSub -->|Receive-only scenario notices| Browser
+  App -->|Checkpoints and rejected deliveries| Blob[Azure Blob Storage]
+  ACR[Private Azure Container Registry] -->|Pinned image; managed identity pull| App
 ```
 
 This diagram describes the deployed demo. The registry
@@ -81,6 +87,15 @@ evidence, publication revisions and audits live outside the container. See the
 [Cosmos design and runbook](cosmos.md) for atomic commits, session consistency,
 the 1.8 MB per-history guard and restart verification. This is a bounded demo,
 not an unbounded event store or multi-region disaster-recovery architecture.
+
+The [streaming runbook](streaming.md) explains commit/notify/checkpoint ordering,
+retry and quarantine. Separate managed identities grant the consumer receiver,
+Blob and Web PubSub service access, and the explicit producer hub-only sender
+access. These services use Entra authentication with local/shared-key access off.
+The browser receives only a short-lived, receive-only scenario token. Push prompts
+a validated HTTP snapshot; reconnect and periodic reconciliation recover missed
+notifications. An Event Hubs scale rule complements HTTP scaling. Activation from
+zero is configured but has not been separately measured in the live proof.
 
 Local/default image mode still uses SQLite. In that mode, scaling to zero,
 recycling or replacing a revision can discard the local journal and audits.
@@ -107,7 +122,10 @@ and [budget guidance](https://learn.microsoft.com/en-us/azure/cost-management-bi
 The following is a reproducible manual runbook, **not a CI deployment workflow**.
 The initial deployment has completed; do not rerun it just to view the demo.
 This foundation sequence defaults to SQLite; follow the Cosmos guide to retain
-shared storage when deploying the app (`useCosmos=true`).
+shared storage when deploying the app (`useCosmos=true`). The current deployment
+also requires `useStreaming=true` and the reviewed streaming resource parameters;
+follow the [streaming runbook](streaming.md) to retain that integration. The bare
+commands below describe the initial foundation, not an update of the current app.
 Use Azure CLI with Bicep and Docker. Sign in locally, and keep account identifiers
 in local shell variables. Do not commit resolved parameter files or command logs.
 The deploying identity needs resource creation rights and permission to assign the
@@ -176,7 +194,8 @@ syntax/type validation, not proof that a subscription permits the region, quotas
 roles or deployment. Azure what-if and live verification are still required.
 
 To roll back code, redeploy `infra/app.bicep` with a previously tested image digest;
-this does not restore temporary database changes. For cleanup in the shared
+preserve the current Cosmos and streaming parameters. A code rollback does not
+roll back source history or Event Hubs checkpoints. For cleanup in the shared
 group, first review the exact resources created by the
 CounterPress deployments and their dependencies. Remove only those app,
 environment, registry, identity and registry-scoped role-assignment resources
@@ -194,8 +213,9 @@ their allocation. Review actual spend before each new service.
 Use Web PubSub Free while its connection/message limits meet the demo's needs.
 
 For cost context, the public Azure retail API in East US on 16 October 2026
-reported ACR Basic at USD 0.1666/day and Event Hubs Standard at USD 0.03 per
-throughput-unit hour (about USD 21.90 for 730 hours with one unit, plus ingress).
+reported ACR Basic at USD 0.1666/day. The deployed Event Hubs **Basic** tier is
+USD 0.015 per throughput-unit hour: about USD 10.08 for 28 days at one TU, plus
+ingress, storage and network usage. Web PubSub uses its Free tier.
 Cosmos DB serverless requests were USD 0.25 per million RUs, plus storage.
 These are unit rates, not measured CounterPress workload costs; credits,
 subscription entitlements and usage determine actual billing. See the
@@ -203,8 +223,9 @@ subscription entitlements and usage determine actual billing. See the
 [Container Apps free grants](https://azure.microsoft.com/en-us/pricing/details/container-apps/)
 and [Web PubSub Free limits](https://azure.microsoft.com/en-us/pricing/details/web-pubsub/).
 The Cosmos adapter must account for RU consumption from repeated snapshot reads;
-caching and later revision push delivery should avoid rereading full histories
-on every viewer poll.
+connected revision push now reduces idle reconciliation to once per 30 seconds;
+disconnected clients poll every two seconds, and playback still fetches snapshots.
+Further caching may be needed as audience size grows.
 
 Keep scale-to-zero enabled, close replay tabs when unused (polling keeps sending
 requests), and start streaming capacity only when needed. Continuous workers and
@@ -225,11 +246,13 @@ and 100%, with a forecast alert at 100%. Deployment status is in the progress lo
 
 ## Next integration steps
 
-1. Add Event Hubs partitioned by match ID and Web PubSub revision delivery/reconnect.
-2. Add a protected GitHub environment/OIDC deployment,
-   then operational telemetry. Model endpoint/configuration stays server-side;
-   credentials or private endpoints must never enter frontend builds, public
-   outputs, image layers or committed files.
+1. Add a protected GitHub environment/OIDC deployment,
+   then operational telemetry for consumer lag, rejection/retry counts and delivery
+   failures with bounded retention and spend.
+2. Complete Stage 10 evaluation and the judge-ready architecture review.
+
+Model endpoint/configuration stays server-side; credentials or private endpoints
+must never enter frontend builds, public outputs, image layers or committed files.
 
 Current CI only builds, tests and compiles templates. It does not push an image,
 create Azure resources or use cloud credentials. The full architecture review

@@ -4,7 +4,8 @@ The streaming path is optional. Local development still runs without Azure and
 uses the existing HTTP snapshots. Azure mode adds an Event Hubs consumer to the
 single FastAPI process, Blob checkpoints and rejection storage, and Web PubSub
 revision notices. The application continues to derive every visible fact from a
-validated snapshot. Deployment and live proof are recorded in the progress log.
+validated snapshot. The hosted path is deployed and verified; see the
+[sanitized live proof](verification/streaming-live.json) and progress log.
 
 ## Delivery and recovery
 
@@ -94,8 +95,8 @@ Cosmos and registry identities keep their current scopes.
 
 The app remains at zero-to-one replicas. An identity-authenticated `azure-eventhub`
 scale rule checks unprocessed events using the Python SDK's `blobMetadata`
-checkpoint strategy. HTTP traffic can also activate the app. A new delivery can
-wake an idle consumer; cold starts and scaler polling mean this is not a guaranteed
+checkpoint strategy. HTTP traffic can also activate the app. The rule is configured to wake an idle consumer when events arrive; activation
+from zero has not been separately measured. Cold starts and scaler polling mean this is not a guaranteed
 subsecond delivery system. Event Hubs retention is finite: recover an outage before
 its one-day retention expires. No regional disaster-recovery claim is made.
 

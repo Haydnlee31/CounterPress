@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-16",
+  "result": "passed",
+  "application_source_commit": "2a71e85188d6009fb58f6b7125e4a34a41aa7812",
+  "hosting_region": "eastus",
+  "database_region": "eastus2",
+  "services": {
+    "event_hubs": "Basic, 1 throughput unit, 1 partition, 1-day retention",
+    "web_pubsub": "Free_F1",
+    "blob_storage": "Standard_LRS, private checkpoint and rejection containers",
+    "cosmos": "NoSQL serverless"
+  },
+  "authentication": "separate stream and producer managed identities; local/shared-key access disabled",
+  "scenario": "stream-recovery",
+  "original_recovery_scenario_unchanged": true,
+  "pipeline": [
+    "Event Hubs delivery",
+    "atomic Cosmos commit",
+    "Web PubSub notice",
+    "durable Blob checkpoint"
+  ],
+  "source_records_including_revisions": 93,
+  "canonical_events": 89,
+  "publication_operations": [
+    "create",
+    "update",
+    "withdraw",
+    "create"
+  ],
+  "publication_revisions": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "historical_current_counts": [
+    4,
+    3,
+    null,
+    2
+  ],
+  "historical_match_times": [
+    "58:00",
+    "58:05",
+    "58:10",
+    "58:15"
+  ],
+  "original_evidence_current_count": 4,
+  "duplicate_delivery_idempotent": true,
+  "checkpoint_advanced_for_duplicate_deliveries": true,
+  "replacement_replica_confirmed": true,
+  "historical_read_after_restart": "passed",
+  "duplicate_delivery_through_full_pipeline_after_restart": "passed",
+  "public_https_readiness_after_restart": true,
+  "public_http_smoke_after_restart": "passed from Azure against public HTTPS URL",
+  "http_smoke_script_sha256": "e29241b6ef2d5687a44d6e27160e6bce8323b8e78c3a5023b31e0e8fb61a2836",
+  "browser": {
+    "live_connection_label_observed": true,
+    "paused_at_5800_with_original_1_to_4": true,
+    "latest_corrections_to_5815_1_to_2": true,
+    "evidence_p053_revision": 3,
+    "screenshot": "../screenshots/streaming-live.png"
+  },
+  "backend_tests": 460,
+  "frontend_tests": 36,
+  "container_smoke": "passed",
+  "bicep_compile": "passed",
+  "merged_app_ci_run": "https://github.com/Haydnlee31/CounterPress/actions/runs/38870163374",
+  "total_trial_budget_usd": 75,
+  "streaming_allocation_usd": 20,
+  "eventhub_basic_tu_usd_per_hour": 0.015,
+  "model_credentials_supplied_to_hosted_app": false,
+  "limitations": [
+    "at-least-once transport; browser notices are not durable replay",
+    "single application replica and bounded per-scenario Cosmos history",
+    "Event Hubs activation from zero configured but not separately measured",
+    "public synthetic viewer token negotiation; private-data viewer authorization is subsequent work",
+    "Web PubSub Free: 20 simultaneous connections and 20000 outbound messages per day",
+    "live model adaptation and centralized operational telemetry remain disabled",
+    "budget is an allocation, not measured spend or an automatic shutdown"
+  ],
+  "initial_live_issue": "Received partition key was bytes; first test delivery quarantined, UTF-8 normalization fixed and regression tested. Rejected delivery retained privately."
+}

@@ -66,6 +66,27 @@ shorter and the main interface switches to Simplified Chinese. The same numbers,
 time windows and evidence remain. Reopen the recap after a preference change.
 Choose **English** and **Analyst** to return to the detailed view.
 
+## Watch a correction arrive
+
+Choose **Live recovery corrections**, keep **Balanced**, then **Go to comparison**.
+At **58:00** the comparison remains **1 → 4**. Click **View latest corrections**
+to move to **58:15**, where it becomes **1 → 2**. Open **Show evidence** to see
+`p053` at source revision 3. Moving the slider back to 58:00 restores the original
+comparison; source occurrence time and correction availability are different.
+
+This dedicated scenario has already received its demonstration corrections through
+Azure Event Hubs. The connection label **Live revision updates connected** means
+Web PubSub is connected. Incoming notices refresh facts at your current playhead;
+they do not move a paused viewer. The intermediate history at 58:05 changes to
+1 → 3; at 58:10 the recovery story is withdrawn, so another eligible story can appear.
+
+![Live connection and corrected recovery comparison at 58:15](screenshots/streaming-live.png)
+
+The presenter can send the fixture using the [streaming runbook](streaming.md).
+Sending identical source revisions again verifies safe replay; it does not reset
+or repeat the correction sequence. The original **Recovery increase** scenario
+remains unchanged for the five-minute walkthrough.
+
 ## Replay controls
 
 | Control | What it does |
@@ -107,6 +128,7 @@ to the original comparison at **58:00**, with all contributors selected.
 | --- | --- | --- |
 | Recovery increase | High recoveries | Eastbridge: 1 → 4 high recoveries. |
 | No-increase control | High recoveries | 1 → 1; no recovery-increase card. |
+| Live recovery corrections | High recoveries | 1 → 4 at 58:00; View latest corrections shows 1 → 2 at 58:15. |
 | Pressure and escape shift | Pressure exposure / Escape under pressure | Exposure 3/6 → 6/6; escape 3/3 → 1/6. |
 | Pressure and escape control | Pressure exposure / Escape under pressure | No eligible pressure/escape change. |
 | Possession without progression | Possession without progression | Qualifying sustained possessions without progression: 1/6 → 4/6. |
@@ -129,9 +151,9 @@ attacking direction normalized toward increasing x.
 Evidence records distinguish when an event occurred from when its revision became
 available. A correction can update or withdraw an earlier insight while retaining
 the earlier evidence for historical inspection. If a prepared correction history
-is present, **View latest corrections** exposes it. The public interface has no
-button for submitting corrections; ask the presenter to prepare that optional
-demonstration using the [history runbook](history.md).
+is present, **View latest corrections** exposes it. **Live recovery corrections**
+provides this history on the hosted demo. The public interface has no correction
+submission button; authorized ingestion uses the [streaming runbook](streaming.md).
 
 Pressure is a proxy based on recorded duel involvement in observed episodes.
 Recovery counts, escape fractions and possession progression do not establish
@@ -153,19 +175,24 @@ The current Microsoft platform roles are:
 | --- | --- |
 | Azure Container Apps | Hosts the React interface and FastAPI backend over HTTPS; can scale to zero while idle. |
 | Azure Cosmos DB | Stores shared event history, publication revisions and evidence; recovery after a cloud replica restart has been verified. |
-| Azure Container Registry and managed identities | Stores private container images and authorizes image pulls and scoped database access without putting those credentials in the browser. |
+| Azure Event Hubs | Receives match-keyed synthetic events and corrections; duplicates do not duplicate facts. |
+| Azure Web PubSub | Delivers revision notices to scenario subscribers; the browser retrieves validated snapshots and resynchronizes after reconnecting. |
+| Azure Blob Storage | Persists consumer checkpoints and private rejected deliveries for inspection. |
+| Azure Container Registry and managed identities | Stores private images and authorizes scoped service access without service keys in the browser. |
 | Azure OpenAI and Microsoft Agent Framework | Wording and bounded review workflows are implemented and separately live-tested. They are **not enabled in this hosted demo**; its narratives use verified factual templates. |
 
 GitHub Actions checks tests, builds and container smoke behaviour. The current
-browser receives snapshots by HTTP polling. Event Hubs ingestion, Web PubSub
-delivery, automated Azure deployment and broader evaluation are subsequent work.
+browser receives Web PubSub revision notices and fetches snapshots over HTTP,
+with periodic reconciliation and polling fallback. Automated Azure deployment,
+central operational telemetry and broader evaluation are subsequent work.
 See the [current architecture](deployment.md#deployed-azure-architecture) and
-[Cosmos verification](verification/cosmos-durability.json) for technical evidence.
+[live streaming verification](verification/streaming-live.json) for technical evidence.
 
 ## If something looks wrong
 
 | What you see | What to do |
 | --- | --- |
+| Checking for updates periodically | Push is disconnected or unavailable; the app still checks snapshots. Web PubSub Free supports up to 20 concurrent connections. |
 | Loading on first visit | Allow around 30 seconds for startup. If an error appears, click **Retry**. |
 | Let the comparison unfold | Click **Go to comparison**, or play through 58:00. |
 | Cards hidden | Set **Card budget → 1**. |
@@ -176,6 +203,6 @@ See the [current architecture](deployment.md#deployed-azure-architecture) and
 | Evidence table wider than your phone | Scroll the table horizontally, or use a desktop for the detailed walkthrough. |
 
 Before presenting, open the app, run the recovery comparison once, then reset to
-48:00. After the demo, close unused demo tabs: paused tabs still poll for updates.
+48:00. After the demo, close unused demo tabs: paused tabs still reconcile updates and hold a live connection.
 For a local backup, follow [local interface startup](interface.md#start-locally).
 No Azure setup is required to run the default local demo.
