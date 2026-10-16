@@ -21,6 +21,7 @@ export type Insight = {
   eligible_at: MatchTime
 }
 export type Snapshot = {
+  recap?: SegmentRecap | null;
   pressure?: PressureView | null;
   pressure_lifecycle?: PressureChange[];
   selected_kind?: 'recovery' | 'pressure' | 'contribution' | null;
@@ -72,3 +73,7 @@ export type ContributionChange = { insight_id: string; evidence_id: string; revi
     policy: { minimum_team_recoveries: number; minimum_current_player_recoveries: number; minimum_count_increase: number; minimum_share_increase: number };
     decision: { status: string; count_change: number; share_change: number | null } } }
 export type ContributionView = { preferences: Preferences; state: string; message: string; publication: ContributionChange | null; variant: Variant | null; highlighted_events: Reference[]; priority: number }
+
+export type RecapCitation = { kind: 'recovery' | 'pressure' | 'contribution'; insight_id: string; revision: number; evidence_id: string; available_at: MatchTime }
+export type SegmentRecap = { match_id: string; cutoff: MatchTime; windows: [Window, Window]; preferences: Preferences;
+  state: 'ready' | 'collecting' | 'no_eligible' | 'budget_hidden'; statements: { narrative: Variant; citation: RecapCitation }[]; omitted_count: number }

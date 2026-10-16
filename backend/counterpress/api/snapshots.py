@@ -23,6 +23,7 @@ from counterpress.replay import ReplaySession, display_time
 from counterpress.pressure_publications import PressureChange, project_pressure
 from counterpress.pressure_views import PressureView, pressure_view
 from counterpress.fixture import PossessionFixture
+from counterpress.recaps import SegmentRecap, build_recap
 
 SCENARIOS = {
     "increase": ("recovery_increase.json", "Recovery increase"),
@@ -73,6 +74,7 @@ class ScreenSnapshot(Contract):
     contribution: ContributionView | None = None
     contribution_lifecycle: tuple[ContributionChange, ...] = ()
     selected_kind: Literal["recovery", "pressure", "contribution"] | None = None
+    recap: SegmentRecap | None = None
 
 
 def horizon(history: History) -> MatchTime:
@@ -284,6 +286,7 @@ class SnapshotService:
             workflow=WorkflowView(attempt_id=audit.attempt_id, status=audit.status, actions=audit.actions) if audit else None,
             audience=audience, pressure=pressure, pressure_lifecycle=tuple(latest_pressure.values()), selected_kind=selected_kind,
             contribution=contribution, contribution_lifecycle=tuple(latest_contributions.values()),
+            recap=build_recap(history, cutoff, (BASELINE, CURRENT), prefs, audience),
             teams=history.fixture.teams,
         )
 

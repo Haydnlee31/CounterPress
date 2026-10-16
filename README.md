@@ -21,6 +21,8 @@ The fifth adds actor-attributed player high-recovery shares, independent control
 revision-aware CLI evidence and an API over persisted source history.
 The sixth persists those player stories, handles correction-driven withdrawal and
 restoration, and adds bilingual replay cards with exact actor attribution.
+The seventh adds bilingual segment recaps with exact evidence citations and
+correction-aware selection from the same publication ledger.
 
 ## Local setup
 
@@ -154,7 +156,8 @@ meaningful controls. Possession without progression now has its own independent
 controls, episode evidence and durable replay cards. Player high-recovery share
 detection now provides independent controls and source-linked CLI/API attribution.
 Durable player publications and bilingual replay cards are now implemented.
-Best next move: evidence-linked match recaps using the published stories.
+Best next move: bounded narrative adaptation of the factual recap, with frozen
+citations and correction-safe fallback, then Stage 9 Azure integration.
 Azure application deployment remains later work.
 
 ## Run the replay
@@ -303,3 +306,10 @@ and **Show evidence**. Select **Player recovery share** under Metric focus to
 prioritize player stories. The card retains the full team denominator and labels
 each recorded recovery's attribution. See [publication and replay details](docs/contribution-publication.md)
 for correction commands, historical evidence, cooldown and shared card ranking.
+
+## Catch up on the replay
+
+Expand **Catch up on this segment** below the match metrics. Up to four current
+eligible stories use your viewpoint and link to their exact evidence revisions.
+The recap covers 48:00–58:00 and updates with corrections. Card budget zero hides
+it. See the [recap guide](docs/recaps.md) for scope, citations and correction checks.

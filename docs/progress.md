@@ -1,11 +1,13 @@
 # Progress
 
-Current milestone: Stage 8 sixth increment — player high-recovery stories now have
-durable publication histories, correction-driven updates/withdrawals/restoration,
-per-player cooldowns and bilingual replay cards with exact attribution.
-Contribution, possession, pressure/escape and recovery stories share the one-card audience budget. Seeded generation,
-independent controls and whole-match development/holdout splits remain complete.
-Evidence-linked recaps and broader attribution rules remain outstanding.
+Current milestone: Stage 8 seventh increment — factual segment recaps now select
+up to four current eligible ledger stories, preserve exact evidence citations,
+and update or remove statements after corrections. The bilingual recap shares
+snapshot scope and respects preferences and the card budget. Player contribution,
+progression, pressure/escape and recovery publications remain available.
+Seeded generation, independent controls and whole-match development/holdout splits
+remain complete. Recap adaptation through the validated narrative workflow remains
+outstanding; broader attribution rules are optional future expansion.
 Stage 7 analyst/casual views, preferences and English/Simplified Chinese variants
 remain complete. Stage 6 single-call adaptation and
 bounded Analyst/Producer workflow remain verified against live Azure. Stage 5
@@ -52,10 +54,22 @@ the fallback. The bounded workflow is documented in `docs/workflow.md`;
 the first single-call increment remains documented in `docs/adaptation.md`.
 
 Stage 7 audience variants and the Stage 8 increments are documented below.
-Best next move: add possession-without-progression detection with independent
-episode controls and the same durable evidence lifecycle. No Azure
-action is needed for that increment. Recaps and Azure application deployment remain
-later work. Never request API keys in chat.
+Best next move: adapt frozen recaps through the bounded Microsoft Agent Framework
+workflow, preserving citations and rejecting stale model output. Then integrate
+the Azure runtime one adapter at a time (Stage 9), followed by measured evaluation
+and the final demonstration (Stage 10). Never request API keys in chat.
+
+User direction, 16 October 2026: creatively use Microsoft platforms where they
+add real product value. After completing the build plan, deliver an as-built
+architecture diagram and a separately labelled proposal for additional Microsoft
+capabilities. Explain each addition's user benefit, integration, operational cost
+and demo value; verify current product capabilities against official sources.
+Distinguish deployed and verified components from local adapters and proposals.
+Notify the user before Azure setup or resource decisions require their action.
+Current Microsoft use is the live-verified Azure OpenAI adapter and bounded
+Microsoft Agent Framework workflow; GitHub Actions provides protected-branch CI.
+Application hosting, Cosmos DB, Event Hubs and Web PubSub are planned Stage 9
+integrations, not implemented or deployed capabilities.
 
 ## Verification recorded on 15 October 2026
 
@@ -1412,3 +1426,85 @@ are unchanged. No Azure resources, credentials or model calls are needed. Existi
 Azure wording/workflow remains specific to recovery stories. Best next move:
 evidence-linked match recaps composed from available published stories and exact
 revisions. Broader attribution rules and Azure deployment remain later work.
+
+## Stage 8 seventh increment — factual segment recaps, 16 October 2026
+
+The snapshot now includes a bounded recap of current eligible publications at its
+cutoff. It selects latest revisions before filtering withdrawals, ranks using the
+existing preferences, and carries exact citation identities and revisions. The
+collapsed bilingual UI opens each frozen evidence revision and follows snapshot
+scope, revision watermarks and the card budget. See `docs/recaps.md`.
+
+The independent expectations cover pressure 3/6 → 6/6 and escape 3/3 → 1/6,
+player recovery share 1/4 → 3/4, recovery 1 → 4, corrections without number changes,
+withdrawal/restoration, historical rewind after restart, detector controls,
+per-statement citation resolution, bounded deterministic selection and malformed
+release contracts. Browser checks confirmed both languages and no warning/error
+console entries. Initial visual review exposed a light-background contrast issue;
+the final styles use the existing dark theme. The frontend test fixture was also
+corrected to avoid shared-object mutation and to check the actual collapsed state
+of a details element after a viewer switch.
+
+Files changed:
+
+- `backend/counterpress/recaps.py`: recap contracts and ledger composition.
+- `backend/counterpress/api/snapshots.py`: same-read recap in snapshot responses.
+- `frontend/src/SegmentRecap.tsx`: localized recap and exact revision links.
+- `frontend/src/recapValidation.ts`, `frontend/src/api.ts`: transport validation.
+- `frontend/src/App.tsx`, `frontend/src/types.ts`, `frontend/src/styles.css`: scoped UI, types and theme.
+- `tests/test_recaps.py`, `frontend/src/SegmentRecap.test.tsx`: independent and lifecycle checks.
+- `README.md`, `docs/recaps.md`, `docs/progress.md`: behavior, commands and next work.
+- `docs/screenshots/segment-recap-en.png`, `docs/screenshots/segment-recap-zh.png`: browser captures.
+
+Final local verification commands and output:
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+........................................................................ [ 56%]
+........................................................................ [ 75%]
+........................................................................ [ 93%]
+........................                                                 [100%]
+384 passed in 7.88s
+
+$ npm --prefix frontend test
+Test Files  6 passed (6)
+     Tests  30 passed (30)
+  Duration  2.06s
+
+$ npm --prefix frontend run build
+> counterpress-frontend@0.1.0 build
+> tsc --noEmit && vite build
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 42 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.53 kB │ gzip:  0.35 kB
+dist/assets/index-Cie8pE97.css   18.51 kB │ gzip:  4.96 kB
+dist/assets/index-DUXMj61y.js   269.28 kB │ gzip: 83.23 kB
+✓ built in 420ms
+
+$ git diff --check
+(no output; exit 0)
+```
+
+This completes the factual recap increment, not the full build plan. Best next
+move: bounded recap adaptation using Microsoft Agent Framework, with unchanged
+citations, deterministic fallback and stale-result rejection. Stage 9 then adds
+Container Apps/configuration, Cosmos DB durability, Event Hubs ingestion, Web
+PubSub delivery/reconnect and deployed language polish. Stage 10 measures the
+result and assembles the demonstration. No Azure action was needed in this turn.
+The requested final architecture review remains a build-plan completion gate.
+
+PR CI initially exposed a pre-existing cancellation-test timing assumption:
+the 50 ms workflow budget expired during cold fixture projection on a shared
+runner, correctly producing timeout before any provider invocation. The test now
+prepares fixture history first and uses a 500 ms test budget, still requiring
+exactly one cancelled provider request, timeout status, no model text and usable
+match facts. The production eight-second ceiling is unchanged; the independent
+exhausted-budget test still checks rejection before network/tool invocation.
+`tests/test_workflow.py` is the additional changed file. The full backend suite
+then passed locally: 384 tests in 7.88s. Both required CI checks must pass on the
+updated commit before merge.
