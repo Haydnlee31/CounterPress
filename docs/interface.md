@@ -1,5 +1,8 @@
 # First local interface and evidence card
 
+For a nontechnical walkthrough of the current hosted app, see the
+[demo user guide](demo-guide.md).
+
 The interface connects a React TypeScript screen to the deterministic Python replay.
 The API supplies authoritative counts, eligibility, insight text and source records.
 The browser controls its own playback position and renders the returned facts.
