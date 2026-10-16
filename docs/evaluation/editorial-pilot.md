@@ -46,7 +46,7 @@ new live Cosmos integration claim.
 The observed results below belong to the archived source commit `ce4cf9e` and
 unchanged `editorial_lock.json`. After the access-controls increment, the current
 CLI uses `editorial_controls_lock.json` with suite name
-`editorial-controls-regression-v1`. It reruns the same cases against current code;
+`editorial-controls-regression-v2`. It reruns the same cases against current code;
 it does not reproduce or extend the original paid pilot. No new paid run has been
 performed. To reproduce the original protocol, use its recorded source commit in
 an isolated checkout.

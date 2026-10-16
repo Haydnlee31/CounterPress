@@ -115,12 +115,13 @@ broadcast approval/export. Do not paste access tokens into the public demo.
 
 ## Activation prerequisites — still pending
 
-Do not enable this in the live app yet. First complete the participant review,
-then configure a single-tenant Entra API registration with v2 access tokens,
+Do not enable this in the live app yet. Complete participant review before hosted
+activation. The [integration guide](editorial-integration.md) records the configured
+single-tenant Entra API and successful real local sign-in. Use v2 access tokens,
 delegated scope `Editorial.Run` and user role `CounterPress.Editor`. Use a separate
 approved client registration for the eventual sign-in flow; grant the scope and
 assign the editor role only to intended reviewers. Verify real allowed and denied
-tokens end to end. No registration or tenant permission was changed in this work.
+tokens on the eventual hosted route before activation.
 
 For a controlled local integration session, private environment configuration is:
 

@@ -117,6 +117,8 @@ API, shared Cosmos/SQLite quotas, duplicate-request prevention and revision-boun
 cache. These controls are implemented and tested locally; real identity/storage
 integration and participant review remain pending. The current evaluation CLI is
 a separately frozen regression suite; the original paid pilot report is unchanged.
+The [integration guide](docs/editorial-integration.md) records the real Entra
+sign-in check and repeatable identity/Cosmos verification commands.
 
 ```sh
 uv run --frozen python -m counterpress.evaluation.editorial
