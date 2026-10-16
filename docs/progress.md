@@ -4,10 +4,12 @@ Current milestone: Stage 9 first increment — a digest-pinned, non-root Linux
 container serves the compiled React interface and FastAPI on one origin. Local
 HTTP smoke checks and the complete offline suites pass. Azure Container Apps,
 private ACR and managed-identity Bicep templates compile, with a new GitHub Actions
-container/template check. These resources have not been provisioned. Deployment
+container/template check. The USD 75 budget is deployed; hosting provisioning is
+in progress. Deployment
 targets the existing model resource group, as requested by the user. Its resolved
 subscription/group/region are stored only in ignored local configuration. The
-monthly hosting budget remains pending; Azure CLI sign-in is now verified. SQLite inside the
+user approved USD 75 total through the trial end, with USD 20 for initial hosting.
+Azure CLI sign-in and the read-only foundation preview are verified. SQLite inside the
 cloud container is explicitly temporary; shared Cosmos DB durability follows.
 
 Stage 8's scoped local detector, generator and recap path remains complete,
@@ -1695,6 +1697,16 @@ guide, with the locally stored target, explicit region and `--mode Incremental
 --no-pretty-print --only-show-errors --output json`. Raw preview results stay
 under ignored `var/`; the lines above contain only change categories/types.
 The app preview still requires the foundation and uploaded image. No resources
-were created. A USD 100 whole-trial budget was recommended, with USD 20 reserved
-for the initial hosting stage; approval is pending. Budget alerts are not a hard
+were created. The user approved USD 75 for the whole trial, with USD 20 reserved
+for the initial hosting stage. Budget alerts are not a hard
 spending cap. Current public East US retail rates were checked for this advice.
+
+The approved budget is now deployed and read back as USD 75, Quarterly, ending
+2026-11-14T00:00:00Z (through 13 November). Actual thresholds are 50%, 75%, 90%,
+100%; forecast threshold is 100%. The subscription spending limit remains On.
+Azure rejected the original `none` log-destination string during deployment
+validation despite successful compilation and what-if. The environment template
+now uses supported `azure-monitor` routing without a diagnostic sink or paid
+workspace. Budget, corrected foundation and application templates compile without
+diagnostics. The private registry, identity and AcrPull assignment are provisioned;
+the environment is still provisioning. The tested image has been uploaded.

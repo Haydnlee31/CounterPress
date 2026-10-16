@@ -1,8 +1,9 @@
 # Container and Azure deployment foundation
 
 Stage 9 increment 1 packages the working app and provides Azure Bicep templates.
-The container is verified locally and in GitHub Actions; **Azure application
-resources have not been deployed**. The existing Azure OpenAI model calls were
+The container is verified locally and in GitHub Actions. Azure deployment is
+underway in the existing model resource group; the budget is verified. See the
+latest progress entry for hosted verification status. The existing Azure OpenAI model calls were
 verified separately. They are not enabled by this deployment template.
 
 ## Local container
@@ -89,8 +90,8 @@ existing model deployment. Keep its resolved subscription/resource identifiers i
 ignored local configuration, not in this public runbook. Registry storage has
 ongoing cost even when the
 app scales to zero; application use, networking and later services can add charges.
-Azure budget alerts are notifications, not a hard spending stop. There is no paid
-Log Analytics workspace in these templates; logs are not centrally retained yet.
+Azure budget alerts are notifications, not a hard spending stop. The environment uses Azure Monitor routing without a diagnostic sink or paid
+Log Analytics workspace; logs are not centrally retained yet.
 Estimate the chosen region's costs and configure budget alerts before provisioning.
 Use the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/)
 and [budget guidance](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets).
@@ -163,12 +164,14 @@ environment, registry, identity and registry-scoped role-assignment resources
 when authorized; never delete the shared group or the existing model resource.
 Resource deletion is not part of CI.
 
-## Hackathon cost envelope (proposal, not yet approved)
+## Approved hackathon cost envelope
 
-Plan for USD 100 total across the remaining trial, with a USD 50–70 target under
+The user approved USD 75 total across the remaining trial, with a USD 50–60 target under
 light development/demo use. This is a spending envelope, not a prepaid purchase
-or a guarantee. Allocate USD 20 to hosting/registry, USD 25 to streaming, USD 15
-to model calls, USD 10 to storage/monitoring/networking, and USD 30 contingency.
+or a guarantee. Allocate USD 20 to hosting/registry, USD 20 to streaming, USD 10
+to model calls, USD 5 to storage/monitoring/networking, and USD 20 contingency.
+Create streaming resources only when needed; their full-month cost can consume
+their allocation. Review actual spend before each new service.
 Use Web PubSub Free while its connection/message limits meet the demo's needs.
 
 For cost context, the public Azure retail API in East US on 16 October 2026
@@ -180,6 +183,9 @@ subscription entitlements and usage determine actual billing. See the
 [retail pricing API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices),
 [Container Apps free grants](https://azure.microsoft.com/en-us/pricing/details/container-apps/)
 and [Web PubSub Free limits](https://azure.microsoft.com/en-us/pricing/details/web-pubsub/).
+The Cosmos adapter must account for RU consumption from repeated snapshot reads;
+caching and later revision push delivery should avoid rereading full histories
+on every viewer poll.
 
 Keep scale-to-zero enabled, close replay tabs when unused (polling keeps sending
 requests), and start streaming capacity only when needed. Continuous workers and
@@ -189,11 +195,14 @@ in place; do not upgrade or remove it as part of deployment. Some Marketplace
 items are excluded from credits; see [spending-limit details](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/spending-limit).
 
 Track cumulative project cost across calendar months through the actual trial
-expiry; a monthly budget reset must not authorize another USD 100. Configure
+expiry; a monthly budget reset must not authorize another USD 75. Configure
 alerts well before the envelope is exhausted and review cost data regularly:
 Azure alerts are delayed notifications, not automatic shutdown. Preserve an
 exported demo before trial expiry, and make a separate decision about hosting
-needed after the credits expire. No budget resource has been configured yet.
+needed after the credits expire. `infra/budget.bicep` uses quarterly tracking with an explicit trial-end date to
+avoid a November monthly reset. Its contact address is a secure parameter loaded
+from ignored local configuration. Actual-cost alerts trigger at 50%, 75%, 90%
+and 100%, with a forecast alert at 100%. Deployment status is in the progress log.
 
 ## Next integration steps
 
