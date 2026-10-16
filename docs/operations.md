@@ -90,7 +90,8 @@ with `useTelemetry=true` while preserving the other app parameters.
 
 The app emits one compact JSON record per minute while a replica is running,
 plus startup/shutdown records. The transformation retains only the fixed numeric
-operational schema, rebuilding the JSON from an allowlist. Other console lines,
+operational schema, rebuilding the JSON from an allowlist. It accepts the container
+log stream's optional `F ` (full-line) prefix before parsing JSON. Other console lines,
 event bodies, exception text, URLs and tokens are not part of this retained schema.
 HTTP access logging remains off; system/HTTP diagnostic categories are not enabled.
 The existing Container Apps environment's log destination stays `azure-monitor`.
