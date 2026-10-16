@@ -1466,7 +1466,7 @@ $ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
 ........................................................................ [ 75%]
 ........................................................................ [ 93%]
 ........................                                                 [100%]
-384 passed in 6.98s
+384 passed in 7.88s
 
 $ npm --prefix frontend test
 Test Files  6 passed (6)
@@ -1497,3 +1497,14 @@ Container Apps/configuration, Cosmos DB durability, Event Hubs ingestion, Web
 PubSub delivery/reconnect and deployed language polish. Stage 10 measures the
 result and assembles the demonstration. No Azure action was needed in this turn.
 The requested final architecture review remains a build-plan completion gate.
+
+PR CI initially exposed a pre-existing cancellation-test timing assumption:
+the 50 ms workflow budget expired during cold fixture projection on a shared
+runner, correctly producing timeout before any provider invocation. The test now
+prepares fixture history first and uses a 500 ms test budget, still requiring
+exactly one cancelled provider request, timeout status, no model text and usable
+match facts. The production eight-second ceiling is unchanged; the independent
+exhausted-budget test still checks rejection before network/tool invocation.
+`tests/test_workflow.py` is the additional changed file. The full backend suite
+then passed locally: 384 tests in 7.88s. Both required CI checks must pass on the
+updated commit before merge.

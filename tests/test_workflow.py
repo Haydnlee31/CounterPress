@@ -202,9 +202,12 @@ def test_timeout_cancels_provider_and_preserves_match_calculations():
         finally:
             cancelled.append(True)
     app = snapshots()
-    result = run(app, slow, timeout_seconds=0.05)
+    # Exercise cancellation of an entered provider, not cold fixture projection.
+    # A 50 ms total budget can expire before the first request on shared CI.
+    app.snapshot("increase", 780000)
+    result = run(app, slow, timeout_seconds=0.5)
     assert result.status == "timeout" and result.provider_requests == 1 and cancelled == [True]
-    assert result.duration_ms < 1000 and result.text is None
+    assert result.duration_ms < 2000 and result.text is None
     assert app.snapshot("increase", 780000).insight.facts.current_count == 4
 
 
