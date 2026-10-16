@@ -10,6 +10,9 @@ param namePrefix string = 'counterpress'
 @maxLength(71)
 param imageDigest string
 
+@description('Enable only after deploying infra/cosmos.bicep and testing persistence.')
+param useCosmos bool = false
+
 resource registry 'Microsoft.ContainerRegistry/registries@2025-11-01' existing = {
   name: 'cp${uniqueString(resourceGroup().id)}'
 }
@@ -20,12 +23,19 @@ resource pullIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-
   name: '${namePrefix}-pull'
 }
 
+resource historyIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (useCosmos) {
+  name: '${namePrefix}-history'
+}
+resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' existing = if (useCosmos) {
+  name: 'cp-${uniqueString(resourceGroup().id)}'
+}
+
 resource app 'Microsoft.App/containerApps@2025-07-01' = {
   name: namePrefix
   location: location
   identity: {
     type: 'UserAssigned'
-    userAssignedIdentities: { '${pullIdentity.id}': {} }
+    userAssignedIdentities: union({ '${pullIdentity.id}': {} }, useCosmos ? { '${historyIdentity.id}': {} } : {})
   }
   properties: {
     environmentId: environment.id
@@ -49,6 +59,13 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
           name: 'counterpress'
           image: '${registry.properties.loginServer}/counterpress@${imageDigest}'
           resources: { cpu: json('0.5'), memory: '1Gi' }
+          env: useCosmos ? [
+            { name: 'COUNTERPRESS_STORAGE', value: 'cosmos' }
+            { name: 'COUNTERPRESS_COSMOS_ENDPOINT', value: cosmos!.properties.documentEndpoint }
+            { name: 'COUNTERPRESS_COSMOS_DATABASE', value: 'counterpress' }
+            { name: 'COUNTERPRESS_COSMOS_CONTAINER', value: 'histories' }
+            { name: 'COUNTERPRESS_COSMOS_CLIENT_ID', value: historyIdentity!.properties.clientId }
+          ] : []
           probes: [
             {
               type: 'Startup'
@@ -74,7 +91,7 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
           ]
         }
       ]
-      // Temporary demo storage only: Cosmos DB must precede multiple replicas.
+      // Keep one replica for the bounded demo workload even with shared persistence.
       scale: {
         minReplicas: 0
         maxReplicas: 1

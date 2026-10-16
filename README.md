@@ -164,9 +164,10 @@ meaningful controls. Possession without progression now has its own independent
 controls, episode evidence and durable replay cards. Player high-recovery share
 detection now provides independent controls and source-linked CLI/API attribution.
 Durable player publications and bilingual replay cards are now implemented.
-Best next move: add shared Cosmos DB durability and restart verification before
-streaming delivery. The hosted demo currently uses temporary SQLite and factual
-templates; cloud model adaptation is not enabled.
+The [Cosmos DB adapter](docs/cosmos.md) adds atomic shared history, conflict
+detection and a live restart-check command. See the progress log for deployment
+verification; cloud model adaptation remains disabled. Streaming delivery follows
+verified shared durability.
 
 ## Run the replay
 

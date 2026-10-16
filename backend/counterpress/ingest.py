@@ -1,4 +1,4 @@
-"""Append local synthetic deliveries to the same SQLite history used by the API."""
+"""Append local synthetic deliveries to the configured history used by the API."""
 
 import argparse
 import os
@@ -9,7 +9,8 @@ from pydantic import TypeAdapter
 
 from counterpress.api.snapshots import SCENARIOS, SnapshotService
 from counterpress.domain.models import Event
-from counterpress.history import SQLiteHistoryStore
+from counterpress.history import HistoryStorageError
+from counterpress.storage import configured_store
 from counterpress.replay import display_time
 
 
@@ -22,7 +23,7 @@ def main() -> None:
     parser.add_argument("--fixtures", type=Path, default=Path(os.environ.get("COUNTERPRESS_FIXTURE_DIR", root / "fixtures")))
     args = parser.parse_args()
     try:
-        service = SnapshotService(args.fixtures, SQLiteHistoryStore(args.db))
+        service = SnapshotService(args.fixtures, configured_store(args.db))
         updates = TypeAdapter(tuple[Event, ...]).validate_json(args.updates.read_text())
         before = service.history(args.scenario)
         after = service.ingest(args.scenario, updates)
@@ -41,7 +42,7 @@ def main() -> None:
             print(f"{display_time(change.available_at)} | {e.subject_team_id}/{e.subject_player_id} {e.metric} | "
                   f"{change.operation} r{change.revision} | {e.baseline.player_count}/{e.baseline.team_count} -> "
                   f"{e.current.player_count}/{e.current.team_count} | {e.decision.status}")
-    except (OSError, ValueError, sqlite3.Error) as exc:
+    except (OSError, ValueError, sqlite3.Error, HistoryStorageError) as exc:
         parser.error(str(exc))
 
 

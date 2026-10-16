@@ -1754,3 +1754,44 @@ It does not enable cloud model calls or promise journal survival after scale-dow
 Best next move: implement Cosmos DB shared persistence and prove restart recovery,
 then add Event Hubs/Web PubSub. The full build plan and final architecture review
 remain incomplete until the remaining Stage 9 and Stage 10 work is verified.
+
+
+## Cosmos DB adapter and infrastructure — 16 October 2026
+
+Added shared Cosmos history behind the storage protocol, common append-only and
+uniqueness validation, explicit API/ingestion storage selection and sanitized
+cloud failures. A two-item atomic batch commits the version head and full bounded
+history together, with ETag conflict retry. Polling reads the small version head
+and reloads the body only after a change. Histories above 1,800,000 serialized bytes
+are rejected before writing; larger feeds require segmented storage.
+
+Added serverless Cosmos Bicep, a separate managed identity with container-scoped
+read/create/replace rights, disabled key authentication and optional Cosmos wiring
+in the app template. Added template compilation to CI and an isolated two-phase
+live durability checker. No cloud model credentials or public ingestion API added.
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
+444 passed in 10.87s
+```
+
+The resource preview succeeded with only new Cosmos resources and the history
+identity; existing app/model resources were ignored. Cost Management returned
+429 twice; its result is unavailable, not zero. The earlier budget read reported
+USD 0.00 but is delayed billing data. Serverless storage stays inside the existing
+USD 5 storage/monitoring/networking allocation and USD 75 total envelope. Azure
+provisioning is underway; live managed-identity and revision-restart checks must
+pass before claiming cloud durability. See [Cosmos design and runbook](cosmos.md).
+
+
+Local restricted-container smoke passed both HTTP behavior and non-root/private-file
+checks. The final image scan checked 18 archive entries against four configured
+private values/hostnames; no key or endpoint matches were found. Cosmos and app
+Bicep compilation exited 0 without diagnostics.
+
+East US account creation failed with Azure `ServiceUnavailable` due to regional
+capacity. The failed account was confirmed to have never reached database creation;
+only that newly failed account was targeted for cleanup. The existing hosting,
+registry, model and shared resource group are retained. A separate database-region
+parameter allows the nearby East US 2 fallback without moving the app. Live
+provisioning and restart verification remain pending in this implementation record.

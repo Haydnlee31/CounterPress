@@ -12,6 +12,8 @@ dependencies = [
     "agent-framework-openai>=1,<2",
     "openai>=3,<4",
     "httpx2>=2.13,<3",
+    "azure-cosmos>=4.9,<5",
+    "azure-identity>=1.23,<2",
 ]
 
 [dependency-groups]
