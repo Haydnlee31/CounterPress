@@ -80,24 +80,35 @@ A code rollback does not undo Cosmos commits or Event Hubs checkpoints.
 
 ## Monitor ingestion
 
-`infra/monitoring.bicep` creates a dedicated pay-as-you-go Log Analytics workspace,
-a workspace transformation and the saved query **Streaming failures and delivery
-timing** in category **CounterPress**. Deploy it first with `enableCollection=false`
-to create the workspace, table and transformation, then with
-`enableCollection=true` to associate the transformation and route console logs.
-Keep the flag true on subsequent deployments. Enable app telemetry separately
-with `useTelemetry=true` while preserving the other app parameters.
+`infra/monitoring.bicep` creates the pay-as-you-go Log Analytics workspace with
+30-day retention and a daily ingestion guard. For a new installation, leave
+`enableCollection=false`; console export is not the active collection path.
+Then deploy `infra/telemetry-ingestion.bicep` to create the typed
+`CounterPressOperations_CL` table, a Direct data collection rule, and the saved
+query **Acknowledged streaming operations** in category **CounterPress**.
+It grants the streaming managed identity Monitoring Metrics Publisher on that
+rule only. No monitoring key is stored. Finally deploy the app with
+`useTelemetry=true`, preserving Cosmos, streaming and the current image digest.
+The app template resolves the private ingestion endpoint and rule ID at deployment.
 
-The app emits one compact JSON record per minute while a replica is running,
-plus startup/shutdown records. The transformation retains only the fixed numeric
-operational schema, rebuilding the JSON from an allowlist. It accepts the container
-log stream's optional `F ` (full-line) prefix before parsing JSON. Other console lines,
-event bodies, exception text, URLs and tokens are not part of this retained schema.
-HTTP access logging remains off; system/HTTP diagnostic categories are not enabled.
-The existing Container Apps environment's log destination stays `azure-monitor`.
+The app submits one fixed numeric record per minute while a replica is running,
+plus startup/shutdown records, using the Azure Monitor Logs Ingestion API. Each
+upload requires HTTP 204 acknowledgement. Records contain a timestamp, a fixed
+schema marker and allowlisted numeric counters; event bodies, exception text,
+URLs and tokens are excluded. Upload errors are bounded and sanitized and do not
+stop event processing. Failed windows are not retried or durably buffered;
+`ExportFailures` appears in the next successful window. Counters are operational
+signals, not a lossless ledger. The app also writes the same numeric record to its
+console for local diagnosis. HTTP access logging remains off.
+
+The earlier environment diagnostic export produced no retained records in live
+checks, so it is replaced by direct ingestion. Disable/delete its
+`counterpress-ops` diagnostic setting when migrating an existing installation;
+do not enable that route alongside direct ingestion. Its empty console table and
+workspace transform are not used by the direct custom stream.
 
 In Azure Portal, open **Log Analytics workspaces → counterpress-logs → Logs**.
-Run the saved query, or paste `infra/monitoring/operations.kql`. It shows:
+Run the saved query, or paste `infra/monitoring/direct-operations.kql`. It shows:
 
 | Field | Interpretation |
 | --- | --- |
@@ -106,6 +117,7 @@ Run the saved query, or paste `infra/monitoring/operations.kql`. It shows:
 | Retries | Failed processing attempts retried on the same offset. |
 | PublishFailures / CheckpointFailures | Failures in those pipeline stages; source may already be committed. |
 | ConsumerFailures | Receive-loop failures before it reconnects. |
+| ExportFailures | Failed or timed-out metric uploads since the prior window; gaps may undercount processing. |
 | MaxDeliveryAgeSeconds | Event Hubs enqueue-to-completion age, or age of the pending delivery. Not football occurrence time or measured browser latency. |
 | MaxPendingSeconds | Time spent on the current delivery across retries. |
 | ObservedBacklog | Latest sequence minus current sequence from the SDK's last received service metadata; an observed estimate, not a continuously polled queue-depth guarantee. |
@@ -131,8 +143,7 @@ telemetry should use less. This remains within the existing USD 5 combined stora
 monitoring and network allowance and USD 75 total envelope. There is no budget
 increase. Current actual spend could not be retrieved from the cost API.
 
-Daily caps can overshoot and collection stops when reached. Transform processing,
-other services and usage can add cost. The guard is not a hard spending limit;
+Daily caps can overshoot and collection stops when reached. Other services and usage can add cost. The guard is not a hard spending limit;
 review actual spend in Cost Management and remove unused services after the trial.
 Log tables contain normal private Azure resource metadata even though application
 records contain only numeric counters. Restrict workspace access and do not publish
@@ -142,6 +153,5 @@ References: [Azure OIDC authentication](https://learn.microsoft.com/en-us/azure/
 [Immutable GitHub subjects](https://github.blog/changelog/2026-04-23-immutable-subject-claims-for-github-actions-oidc-tokens/),
 [GitHub environment controls](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments),
 [Container Apps log routing](https://learn.microsoft.com/en-us/azure/container-apps/log-options),
-[console table and transformations](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/containerappconsolelogs),
-[workspace transformations](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/tutorial-workspace-transformations-api),
+[Logs Ingestion API](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/logs-ingestion-api-overview),
 [daily cap limitations](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/daily-cap).

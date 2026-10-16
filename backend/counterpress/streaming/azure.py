@@ -45,6 +45,7 @@ class StreamingRuntime:
         self.publisher = None
         self.telemetry = StreamTelemetry()
         self.telemetry_task = None
+        self.metric_sender = None
 
     async def start(self):
         if os.environ.get("COUNTERPRESS_STORAGE") != "cosmos":
@@ -94,7 +95,11 @@ class StreamingRuntime:
                     await asyncio.sleep(5)
         self.task = asyncio.create_task(run())
         if self.telemetry.enabled:
-            self.telemetry_task = asyncio.create_task(self.telemetry.run())
+            from aiohttp import ClientSession, ClientTimeout
+            from counterpress.streaming.monitor import MonitorPublisher
+            session = await self.stack.enter_async_context(ClientSession(timeout=ClientTimeout(total=5)))
+            self.metric_sender = MonitorPublisher(credential, session).send
+            self.telemetry_task = asyncio.create_task(self.telemetry.run(self.metric_sender))
 
     async def close(self):
         if self.task:
@@ -109,7 +114,7 @@ class StreamingRuntime:
                 await self.telemetry_task
             except asyncio.CancelledError:
                 pass
-            self.telemetry.emit()
+            await self.telemetry.flush(self.metric_sender)
         if hasattr(self, 'checkpoints'):
             await self.checkpoints.close()
         await self.stack.aclose()

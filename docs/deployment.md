@@ -75,7 +75,7 @@ flowchart LR
   Actions[GitHub Actions + Entra OIDC] -->|Tested image| ACR[Private Azure Container Registry]
   Actions -->|Existing app image update| App
   ACR -->|Pinned image; managed identity pull| App
-  App -->|Numeric operational records| Monitor[Azure Monitor + Log Analytics]
+  App -->|Managed-identity numeric uploads| Monitor[Azure Monitor + Log Analytics]
 ```
 
 This diagram describes the deployed demo. The registry
@@ -117,7 +117,7 @@ ignored local configuration, not in this public runbook. Registry storage has
 ongoing cost even when the
 app scales to zero; application use, networking and later services can add charges.
 Azure budget alerts are notifications, not a hard spending stop. The environment uses
-Azure Monitor routing; the optional [operations setup](operations.md) adds a small
+Azure Monitor support; the optional [operations setup](operations.md) adds a small
 Log Analytics workspace that retains only numeric streaming telemetry.
 Estimate the chosen region's costs and configure budget alerts before provisioning.
 Use the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/)

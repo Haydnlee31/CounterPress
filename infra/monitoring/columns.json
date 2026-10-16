@@ -1,0 +1,54 @@
+[
+  {
+    "name": "TimeGenerated",
+    "type": "datetime"
+  },
+  {
+    "name": "schema",
+    "type": "string"
+  },
+  {
+    "name": "processed",
+    "type": "long"
+  },
+  {
+    "name": "rejected",
+    "type": "long"
+  },
+  {
+    "name": "retries",
+    "type": "long"
+  },
+  {
+    "name": "publish_failures",
+    "type": "long"
+  },
+  {
+    "name": "checkpoint_failures",
+    "type": "long"
+  },
+  {
+    "name": "consumer_failures",
+    "type": "long"
+  },
+  {
+    "name": "export_failures",
+    "type": "long"
+  },
+  {
+    "name": "window_seconds",
+    "type": "real"
+  },
+  {
+    "name": "max_delivery_age_seconds",
+    "type": "real"
+  },
+  {
+    "name": "pending_seconds",
+    "type": "real"
+  },
+  {
+    "name": "observed_backlog",
+    "type": "long"
+  }
+]

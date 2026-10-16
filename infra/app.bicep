@@ -52,6 +52,8 @@ resource pubsub 'Microsoft.SignalRService/webPubSub@2024-03-01' existing = if (u
   name: 'cp-live-${uniqueString(resourceGroup().id)}'
 }
 
+resource monitorRule 'Microsoft.Insights/dataCollectionRules@2023-03-11' existing = if (useTelemetry) { name: '${namePrefix}-ops-ingest' }
+
 resource app 'Microsoft.App/containerApps@2025-07-01' = {
   name: namePrefix
   location: location
@@ -97,6 +99,9 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
             { name: 'COUNTERPRESS_EVENTHUB_NAME', value: 'deliveries' }
             { name: 'COUNTERPRESS_CHECKPOINT_ENDPOINT', value: streamStorage!.properties.primaryEndpoints.blob }
             { name: 'COUNTERPRESS_PUBSUB_ENDPOINT', value: 'https://${pubsub!.properties.hostName}' }
+          ] : [], useTelemetry ? [
+            { name: 'COUNTERPRESS_MONITOR_ENDPOINT', value: monitorRule!.properties.endpoints.logsIngestion }
+            { name: 'COUNTERPRESS_MONITOR_DCR_ID', value: monitorRule!.properties.immutableId }
           ] : [])
           probes: [
             {
