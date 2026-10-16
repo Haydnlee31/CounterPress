@@ -179,12 +179,15 @@ The current Microsoft platform roles are:
 | Azure Web PubSub | Delivers revision notices to scenario subscribers; the browser retrieves validated snapshots and resynchronizes after reconnecting. |
 | Azure Blob Storage | Persists consumer checkpoints and private rejected deliveries for inspection. |
 | Azure Container Registry and managed identities | Stores private images and authorizes scoped service access without service keys in the browser. |
+| Azure Monitor and Log Analytics | Provides a saved operational query for numeric ingestion, retry and delivery-timing telemetry; no event bodies or model settings in the retained application schema. |
 | Azure OpenAI and Microsoft Agent Framework | Wording and bounded review workflows are implemented and separately live-tested. They are **not enabled in this hosted demo**; its narratives use verified factual templates. |
 
-GitHub Actions checks tests, builds and container smoke behaviour. The current
+GitHub Actions checks tests, builds and container smoke behaviour. A separate
+manual OIDC workflow deploys tested images from protected main. The current
 browser receives Web PubSub revision notices and fetches snapshots over HTTP,
-with periodic reconciliation and polling fallback. Automated Azure deployment,
-central operational telemetry and broader evaluation are subsequent work.
+with periodic reconciliation and polling fallback. Broader evaluation and the final
+architecture review are the next stage. The [operations guide](operations.md)
+explains release controls and how to inspect monitoring data.
 See the [current architecture](deployment.md#deployed-azure-architecture) and
 [live streaming verification](verification/streaming-live.json) for technical evidence.
 

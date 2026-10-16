@@ -1,6 +1,6 @@
 source
 | where ContainerAppName == 'counterpress'
-| extend m = parse_json(replace_regex(Log, @'^F ', ''))
+| extend m = parse_json(iff(Log startswith 'F ', substring(Log, 2), Log))
 | where tostring(m.schema) == 'counterpress_ops_v1'
 | extend Log = tostring(bag_pack('schema', 'counterpress_ops_v1', 'window_seconds', todouble(m.window_seconds), 'processed', tolong(m.processed), 'rejected', tolong(m.rejected), 'retries', tolong(m.retries), 'publish_failures', tolong(m.publish_failures), 'checkpoint_failures', tolong(m.checkpoint_failures), 'consumer_failures', tolong(m.consumer_failures), 'max_delivery_age_seconds', todouble(m.max_delivery_age_seconds), 'pending_seconds', todouble(m.pending_seconds), 'observed_backlog', tolong(m.observed_backlog)))
 | project-away m
