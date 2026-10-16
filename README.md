@@ -17,6 +17,8 @@ The third increment persists those comparisons with independent lifecycle
 revisions and displays bilingual pressure/escape cards with inspectable episodes.
 The fourth adds sustained possession without progression, independent positive
 and negative controls, durable corrections and bilingual episode evidence.
+The fifth adds actor-attributed player high-recovery shares, independent controls,
+revision-aware CLI evidence and an API over persisted source history.
 
 ## Local setup
 
@@ -106,6 +108,8 @@ and invalid inputs, as well as the health endpoint and documentation routes.
 - `fixtures/pressure/`, `tests/test_pressure.py`, `tests/expected_pressure.json`: independent episode controls and regression checks.
 - `backend/counterpress/domain/progression.py` and `backend/counterpress/progression.py`: sustained-possession evidence and CLI.
 - `fixtures/progression/`, `tests/test_progression.py`, `tests/expected_progression.json`: independent progression controls, corrections and regression checks.
+- `backend/counterpress/domain/contributions.py` and `backend/counterpress/contributions.py`: player high-recovery share evidence and CLI.
+- `fixtures/contributions/`, `tests/test_contributions.py`, `tests/expected_contributions.json`: independent actor attribution controls and revision checks.
 - `fixtures/tiny_possession.json`: fictional Eastbridge/Northport sequence.
 - `fixtures/recovery_increase.json` and `fixtures/recovery_control.json`: 89-event,
   ten-minute scenarios with independently checked one-versus-four and one-versus-one counts.
@@ -143,8 +147,9 @@ The seeded generator now exports feeds compatible with the existing replay and
 evidence pipeline. The pressure-proxy and defensive build-up-escape detector now
 provides CLI evidence and durable replay cards with fully observed episodes and
 meaningful controls. Possession without progression now has its own independent
-controls, episode evidence and durable replay cards. Best next move: player-contribution
-detection with independent controls and evidence-linked attribution, followed by recaps.
+controls, episode evidence and durable replay cards. Player high-recovery share
+detection now provides independent controls and source-linked CLI/API attribution.
+Best next move: durable player-contribution publications and replay cards, followed by recaps.
 Azure application deployment remains later work.
 
 ## Run the replay
@@ -273,3 +278,17 @@ select **Possession without progression**, then **Go to comparison** and
 **Show evidence**. This is a spatial proxy, not a claim about possession dominance
 or tactical value. See the [progression guide](docs/progression.md) for eligibility,
 excluded episodes, correction commands and verification.
+
+## Inspect player contributions
+
+```sh
+UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.contributions fixtures/contributions/increase.json --player eb04
+UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.contributions fixtures/contributions/control.json --player eb04
+```
+
+The positive control changes the selected player's share from 1/4 to 3/4 while
+team totals stay fixed. The negative stays at 1/4. Only the recovery actor receives
+credit; duel winners and pass recipients do not. Counts and shares must both rise
+to qualify. This does not measure overall player quality or tactical impact.
+See the [contribution guide](docs/contributions.md) for policy, historical actor
+corrections, API usage and the planned publication/UI integration.

@@ -1,10 +1,11 @@
 # Progress
 
-Current milestone: Stage 8 fourth increment — possession without progression now
-has independent controls, durable correction/withdrawal handling and bilingual
-episode evidence. Pressure/escape and recovery stories share the one-card audience budget. Seeded generation,
+Current milestone: Stage 8 fifth increment — player high-recovery share detection
+has independent attribution controls, revision-aware CLI evidence and an API over
+persisted source history. Contribution publication/UI integration remains next.
+Possession without progression, pressure/escape and recovery stories share the one-card audience budget. Seeded generation,
 independent controls and whole-match development/holdout splits remain complete.
-Player-contribution detector expansion and recaps remain outstanding.
+Durable player-contribution cards, broader attribution rules and recaps remain outstanding.
 Stage 7 analyst/casual views, preferences and English/Simplified Chinese variants
 remain complete. Stage 6 single-call adaptation and
 bounded Analyst/Producer workflow remain verified against live Azure. Stage 5
@@ -1204,3 +1205,86 @@ Best next move: player-contribution detector expansion with independent controls
 and evidence-linked attribution, then recaps. Current player preferences indicate
 source involvement only. No Azure action is needed for that next local increment;
 application deployment and broader model adaptation remain later work.
+
+## Stage 8 fifth increment — player high-recovery contribution detector
+
+Implemented an actor-attributed share comparison using only canonical high-recovery
+records. Both independent controls keep team totals at four per window. The
+positive assigns `eb04` one then three recoveries; the negative assigns one then
+one. `eb09` wins all preceding duels and receives no recovery attribution. Counts
+and shares must both rise; shrinking denominators alone cannot qualify. Defaults
+require three team recoveries in each window, three current player recoveries,
+a count increase of two and a share increase of 25 percentage points.
+
+The CLI exposes the typed evidence and configurable subject/windows/cutoff. A new
+API route reads persisted source history, including actor revisions, without a
+new database table or changes to existing story publication. Evidence validation
+checks actor attribution, denominators, policy decisions and source availability.
+The separate guide documents equal-duration windows, roster/membership checks,
+undefined shares, missing minutes-played information and descriptive limitations:
+[contribution guide](contributions.md).
+
+Exact local verification command and output:
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+........................................................................ [ 61%]
+........................................................................ [ 82%]
+..............................................................           [100%]
+350 passed in 5.69s
+
+$ UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.contributions fixtures/contributions/increase.json --player eb04
+player-recoveries-increase | eastbridge/eb04 | player-high-recoveries-v1
+Baseline: 1/4 team high recoveries | share=25.0%
+Current: 3/4 team high recoveries | share=75.0%
+eligible | player count +2 | share +50.0 pp
+Recorded open-play high recoveries attributed only to the recovering actor. Shares are not a player rating, per-minute rate, or evidence of tactical causality.
+
+$ UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.contributions fixtures/contributions/control.json --player eb04
+player-recoveries-control | eastbridge/eb04 | player-high-recoveries-v1
+Baseline: 1/4 team high recoveries | share=25.0%
+Current: 1/4 team high recoveries | share=25.0%
+below_threshold | player count +0 | share +0.0 pp
+Recorded open-play high recoveries attributed only to the recovering actor. Shares are not a player rating, per-minute rate, or evidence of tactical causality.
+
+$ UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.contributions fixtures/contributions/increase.json --player eb04 --updates fixtures/contributions/actor_corrections.json --at 58:10
+player-recoveries-increase | eastbridge/eb04 | player-high-recoveries-v1
+Baseline: 1/4 team high recoveries | share=25.0%
+Current: 1/4 team high recoveries | share=25.0%
+below_threshold | player count +0 | share +0.0 pp
+Recorded open-play high recoveries attributed only to the recovering actor. Shares are not a player rating, per-minute rate, or evidence of tactical causality.
+```
+
+The 37 new test cases cover independent actor partitions and continuity, duel/
+recipient exclusions, exact threshold/window boundaries, denominator shrinkage,
+zero samples, invalid membership/policy/windows, forged evidence, actor corrections,
+late availability, idempotent retransmission, historical API cutoffs, restart without
+fixtures and CLI output/error handling. Existing 313 backend cases continue to pass.
+No frontend code changed; the required GitHub Actions frontend job still runs
+its tests and production build for this pull request.
+
+Files added:
+
+- `backend/counterpress/domain/contributions.py`
+- `backend/counterpress/contributions.py`
+- `fixtures/contributions/increase.json`
+- `fixtures/contributions/control.json`
+- `fixtures/contributions/actor_corrections.json`
+- `tests/expected_contributions.json`
+- `tests/test_contributions.py`
+- `docs/contributions.md`
+
+Files updated:
+
+- `backend/counterpress/api/main.py`
+- `backend/counterpress/api/snapshots.py`
+- `README.md`
+- `docs/progress.md`
+
+Best next move: durable player-contribution publications and bilingual replay cards,
+with actor-correction withdrawal/restoration and player-scoped cooldowns. The current
+increment returns candidate evidence through CLI/API; it does not publish a player
+story or change the existing viewer-card budget. Recaps and broader attribution
+rules follow later. No dependencies, Azure resources, keys or endpoints changed.

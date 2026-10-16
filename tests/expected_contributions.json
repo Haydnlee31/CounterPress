@@ -1,0 +1,15 @@
+{
+  "method": "Manually assigned recovery actors; production never reads this oracle. Team totals stay four in both windows. eb09 wins the preceding duels but never establishes recovery control.",
+  "team_baseline": ["b1-recovery", "b2-recovery", "b3-recovery", "b4-recovery"],
+  "team_current": ["c1-recovery", "c2-recovery", "c3-recovery", "c4-recovery"],
+  "increase": {
+    "eb04": {"baseline": ["b1-recovery"], "current": ["c1-recovery", "c2-recovery", "c3-recovery"], "status": "eligible", "count_change": 2, "share_change": 0.5},
+    "eb08": {"baseline": ["b2-recovery", "b3-recovery", "b4-recovery"], "current": ["c4-recovery"], "status": "below_threshold", "count_change": -2, "share_change": -0.5},
+    "eb09": {"baseline": [], "current": [], "status": "below_threshold", "count_change": 0, "share_change": 0.0}
+  },
+  "control": {
+    "eb04": {"baseline": ["b1-recovery"], "current": ["c1-recovery"], "status": "below_threshold", "count_change": 0, "share_change": 0.0},
+    "eb08": {"baseline": ["b2-recovery", "b3-recovery", "b4-recovery"], "current": ["c2-recovery", "c3-recovery", "c4-recovery"], "status": "below_threshold", "count_change": 0, "share_change": 0.0},
+    "eb09": {"baseline": [], "current": [], "status": "below_threshold", "count_change": 0, "share_change": 0.0}
+  }
+}
