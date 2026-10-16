@@ -43,8 +43,8 @@ resource environment 'Microsoft.App/managedEnvironments@2025-07-01' = {
   name: '${namePrefix}-env'
   location: location
   properties: {
-    // Log streaming only for the smoke stage; no paid Log Analytics workspace yet.
-    appLogsConfiguration: { destination: 'none' }
+    // No diagnostic sink or paid Log Analytics workspace in this smoke stage.
+    appLogsConfiguration: { destination: 'azure-monitor' }
     workloadProfiles: [
       { name: 'Consumption', workloadProfileType: 'Consumption' }
     ]
