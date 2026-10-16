@@ -4,8 +4,7 @@ Current milestone: Stage 9 first increment — a digest-pinned, non-root Linux
 container serves the compiled React interface and FastAPI on one origin. Local
 HTTP smoke checks and the complete offline suites pass. Azure Container Apps,
 private ACR and managed-identity Bicep templates compile, with a new GitHub Actions
-container/template check. The USD 75 budget is deployed; hosting provisioning is
-in progress. Deployment
+container/template check. The USD 75 budget and Azure hosting are deployed. Deployment
 targets the existing model resource group, as requested by the user. Its resolved
 subscription/group/region are stored only in ignored local configuration. The
 user approved USD 75 total through the trial end, with USD 20 for initial hosting.
@@ -57,8 +56,8 @@ the fallback. The bounded workflow is documented in `docs/workflow.md`;
 the first single-call increment remains documented in `docs/adaptation.md`.
 
 Stage 7 audience variants and the Stage 8 increments are documented below.
-Best next move: select the Azure target and budget for a hosted container smoke
-check, then shared Cosmos DB durability, Event Hubs ingestion and Web PubSub delivery. Stage 10
+Best next move: shared Cosmos DB durability with restart verification, then
+Event Hubs ingestion and Web PubSub delivery. Stage 10
 still requires measured evaluation and the final demonstration. Never request API
 keys in chat. Do not claim cloud restart recovery from local SQLite storage.
 
@@ -71,8 +70,8 @@ Distinguish deployed and verified components from local adapters and proposals.
 Notify the user before Azure setup or resource decisions require their action.
 Current Microsoft use is the live-verified Azure OpenAI adapter and bounded
 Microsoft Agent Framework recovery and recap workflows; GitHub Actions provides protected-branch CI.
-Application hosting now has locally verified packaging and compiled templates;
-it is not deployed. Cosmos DB, Event Hubs and Web PubSub remain planned integrations.
+Application hosting is deployed on Azure Container Apps with private ACR images
+and managed-identity pulls. Cosmos DB, Event Hubs and Web PubSub remain planned integrations.
 
 ## Verification recorded on 15 October 2026
 
@@ -1710,3 +1709,48 @@ now uses supported `azure-monitor` routing without a diagnostic sink or paid
 workspace. Budget, corrected foundation and application templates compile without
 diagnostics. The private registry, identity and AcrPull assignment are provisioned;
 the environment is still provisioning. The tested image has been uploaded.
+
+## Azure hosted demo verified — 16 October 2026
+
+Foundation and application ARM deployments both completed with `Succeeded`.
+The app uses the tested image built from `30753cf1f37c550ec726a9b95d7f210f20e52c09`,
+pinned by digest; infrastructure is from PR #6, merged as
+`eeba7905408065c9e942d4096e71aa370c8235b1`. All three post-merge CI jobs passed
+in [run 38857255717](https://github.com/Haydnlee31/CounterPress/actions/runs/38857255717).
+Read-back checks confirmed private registry authentication, disabled admin access,
+managed-identity pulls, HTTPS-only ingress, minimum zero/maximum one replica,
+no runtime model secrets, the USD 75 budget and trial spending limit On.
+
+Exact hosted verification command and output:
+
+```console
+$ .venv/bin/python - <<'PY'
+import runpy, sys, urllib.request
+urllib.request.install_opener(urllib.request.build_opener(urllib.request.ProxyHandler({})))
+sys.argv = ['scripts/container_smoke.py', 'https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io']
+runpy.run_path(sys.argv[0], run_name='__main__')
+PY
+PASS: health, readiness, frontend/assets, 1-to-4 evidence, control, bilingual recap, private-path 404s
+```
+
+Initial urllib runs through the inherited local proxy truncated response bodies
+with `IncompleteRead`. Explicit direct HTTPS passed the unchanged smoke script;
+no assertion or body-integrity check was relaxed. Unsetting proxy environment
+variables alone did not resolve the issue because macOS proxy discovery remained.
+A separate complete JavaScript download was 271,175 bytes and matched the local
+build SHA-256 `2f7bfc5f5a4eff3216c71f98535ddf84b660a3b06f6254a82ebfbfbdddf98567`.
+This is a verification-process workaround, not an application networking change.
+
+The live browser displayed the 58:00 comparison, 1 baseline recovery versus 4
+current recoveries, all five pitch markers, 89 source records and the expanded
+evidence panel. [Screenshot](screenshots/azure-hosted-recovery-en.png) and
+[sanitized verification record](verification/azure-hosted-smoke.json) are included.
+The test tab was closed after capture to avoid continued polling. Raw Azure
+responses, account identifiers and budget contact details remain ignored locally.
+The published hostname is the public demo, not the private model endpoint.
+
+This deployment serves deterministic factual templates with temporary SQLite.
+It does not enable cloud model calls or promise journal survival after scale-down.
+Best next move: implement Cosmos DB shared persistence and prove restart recovery,
+then add Event Hubs/Web PubSub. The full build plan and final architecture review
+remain incomplete until the remaining Stage 9 and Stage 10 work is verified.

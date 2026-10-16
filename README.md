@@ -26,8 +26,8 @@ correction-aware selection from the same publication ledger.
 The eighth adds bounded Microsoft Agent Framework recap review and approved
 presentation choices, verified offline and with one successful live Azure run.
 
-Stage 9 now has a verified production container and reviewable Azure Container Apps
-and private-registry templates. No application resources have been deployed yet.
+Stage 9 now has a deployed Azure Container Apps demo, a private container registry
+and managed-identity image pulls, with a USD 75 total trial budget.
 See the [deployment guide](docs/deployment.md) for startup, costs, temporary storage
 limits, and the manual Azure sequence.
 
@@ -164,9 +164,9 @@ meaningful controls. Possession without progression now has its own independent
 controls, episode evidence and durable replay cards. Player high-recovery share
 detection now provides independent controls and source-linked CLI/API attribution.
 Durable player publications and bilingual replay cards are now implemented.
-Best next move: confirm the Azure subscription, region and budget for the hosted
-container smoke check, then add shared Cosmos DB durability and streaming delivery.
-Azure application deployment is prepared but has not run.
+Best next move: add shared Cosmos DB durability and restart verification before
+streaming delivery. The hosted demo currently uses temporary SQLite and factual
+templates; cloud model adaptation is not enabled.
 
 ## Run the replay
 

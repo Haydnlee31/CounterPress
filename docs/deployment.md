@@ -1,9 +1,10 @@
 # Container and Azure deployment foundation
 
 Stage 9 increment 1 packages the working app and provides Azure Bicep templates.
-The container is verified locally and in GitHub Actions. Azure deployment is
-underway in the existing model resource group; the budget is verified. See the
-latest progress entry for hosted verification status. The existing Azure OpenAI model calls were
+The container is verified locally and in GitHub Actions. Azure Container Apps,
+the private registry and managed identity are deployed in the existing model
+resource group in East US. The USD 75 budget and trial spending limit are verified.
+See the latest progress entry for hosted verification evidence. The existing Azure OpenAI model calls were
 verified separately. They are not enabled by this deployment template.
 
 ## Local container
@@ -56,7 +57,7 @@ local storage, returning a sanitized 503 on failure. It can seed the fixture on
 first use. Neither endpoint contacts Azure. Initial `/ready` success does not
 replace the all-scenario regression suite or the real HTTP smoke test.
 
-## Prepared Azure architecture
+## Deployed Azure architecture
 
 ```mermaid
 flowchart LR
@@ -66,7 +67,7 @@ flowchart LR
   ACR -->|Pinned image digest| App
 ```
 
-This diagram describes the templates, not an already deployed system. The registry
+This diagram describes the deployed demo. The registry
 uses Basic SKU with admin credentials disabled. Its network endpoint is public,
 but image access requires authorization. A managed identity has only `AcrPull` on
 this registry. The application uses external HTTPS ingress, explicit target port
@@ -96,7 +97,8 @@ Estimate the chosen region's costs and configure budget alerts before provisioni
 Use the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/)
 and [budget guidance](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets).
 
-The following is a manual runbook, **not an automatically executed workflow**.
+The following is a reproducible manual runbook, **not a CI deployment workflow**.
+The initial deployment has completed; do not rerun it just to view the demo.
 Use Azure CLI with Bicep and Docker. Sign in locally, and keep account identifiers
 in local shell variables. Do not commit resolved parameter files or command logs.
 The deploying identity needs resource creation rights and permission to assign the
@@ -121,9 +123,17 @@ reuse model compute or make hosting free. Do not use complete deployment mode,
 delete the group, or modify the existing model resource. A resource group's metadata
 location can differ from its resources; pass the chosen app region explicitly.
 Resource provider registration may be needed
-for `Microsoft.App`, `Microsoft.ContainerRegistry`, and `Microsoft.ManagedIdentity`.
+for `Microsoft.App`, `Microsoft.ContainerRegistry`, `Microsoft.ManagedIdentity`
+and `Microsoft.Insights`.
+
+Create the budget before hosting. Keep `amount`, `startDate`, `endDate` and the
+private `contactEmail` in an ignored local ARM parameters file; the approved
+values are USD 75, 2026-10-01T00:00:00Z and 2026-11-14T00:00:00Z.
 
 ```sh
+az deployment group create --name counterpress-budget --resource-group "$CP_GROUP" \
+  --template-file infra/budget.bicep --mode Incremental \
+  --parameters @var/azure-budget.parameters.json --output none
 az deployment group create --name counterpress-foundation --resource-group "$CP_GROUP" \
   --template-file infra/foundation.bicep --mode Incremental --parameters location="$CP_REGION" --output none
 CP_REGISTRY=$(az deployment group show --name counterpress-foundation --resource-group "$CP_GROUP" \
@@ -206,11 +216,10 @@ and 100%, with a forecast alert at 100%. Deployment status is in the progress lo
 
 ## Next integration steps
 
-1. Confirm the Azure target/budget and perform the hosted smoke check above.
-2. Add Cosmos DB persistence with atomic source/evidence/publication commits and
+1. Add Cosmos DB persistence with atomic source/evidence/publication commits and
    restart tests before replacing the SQLite demo store.
-3. Add Event Hubs partitioned by match ID and Web PubSub revision delivery/reconnect.
-4. Add Entra workload identities and protected GitHub environment/OIDC deployment,
+2. Add Event Hubs partitioned by match ID and Web PubSub revision delivery/reconnect.
+3. Add Entra workload identities and protected GitHub environment/OIDC deployment,
    then operational telemetry. Model endpoint/configuration stays server-side;
    credentials or private endpoints must never enter frontend builds, public
    outputs, image layers or committed files.
