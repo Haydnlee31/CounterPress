@@ -1912,3 +1912,68 @@ $ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
 
 The corrected image passed the restricted container smoke and private-configuration
 scan. Live verification must be repeated against this corrected revision.
+
+
+### Streaming deployment and live verification
+
+Merged implementation [PR #11](https://github.com/Haydnlee31/CounterPress/pull/11)
+and SDK compatibility [PR #12](https://github.com/Haydnlee31/CounterPress/pull/12).
+The deployed image is built from `2a71e85188d6009fb58f6b7125e4a34a41aa7812`;
+its [post-merge CI](https://github.com/Haydnlee31/CounterPress/actions/runs/38870163374)
+passed all three jobs. The image was smoke-tested and scanned before registry push.
+Both incremental Azure previews were reviewed before creating streaming resources
+and activating the existing application with Cosmos and streaming enabled.
+
+The corrected revision passed the actual Event Hubs → Cosmos → Web PubSub → Blob
+checkpoint exercise. Two deliveries with different envelope IDs but identical
+source revisions produced only 93 journal records (89 canonical events). Real
+receive-only WebSocket messages carried history version 93 and the latest recovery
+revision 4. Durable offsets advanced for both deliveries. The isolated live scenario
+preserves historical counts 4, 3, withdrawn, 2, and original revision-1 evidence 4.
+The original public recovery scenario remains unchanged.
+
+Exact live-check commands and observed output (inside the configured Azure app):
+
+```console
+$ python -m counterpress.streaming.check --exercise
+PASS: Event Hubs -> Cosmos -> Web PubSub, duplicate replay, durable Blob checkpoint
+PASS: historical 4/3/withdrawn/2, frozen evidence, original scenario unchanged
+```
+
+The Azure revision was restarted. Before/after replica lists had no name in common,
+and public readiness returned 200. The orchestration and subsequent checks were:
+
+```console
+$ python3 /private/tmp/counterpress-restart-stream.py
+Revision restart accepted; waiting for a replacement replica.
+PASS: previous replica replaced; public readiness returned 200 after restart
+$ python3 /private/tmp/counterpress-stream-remote.py verify
+PASS: historical 4/3/withdrawn/2, frozen evidence, original scenario unchanged
+$ python3 /private/tmp/counterpress-stream-remote.py exercise
+PASS: Event Hubs -> Cosmos -> Web PubSub, duplicate replay, durable Blob checkpoint
+PASS: historical 4/3/withdrawn/2, frozen evidence, original scenario unchanged
+$ python3 /private/tmp/counterpress-stream-remote.py http
+PASS: health, readiness, frontend/assets, 1-to-4 evidence, control, bilingual recap, private-path 404s
+```
+
+These temporary helpers resolve private Azure target configuration and invoke the
+committed `counterpress.streaming.check` module through authenticated CLI exec.
+The HTTP phase fetches the unchanged smoke script from the exact deployed commit,
+checks its SHA-256, then executes it inside Azure against the public HTTPS URL.
+Actual identifiers, checkpoint offsets and raw diagnostic logs stay under ignored
+`var/`. The initial rejected delivery is retained, not erased from the audit trail.
+
+Chrome confirmed **Live revision updates connected**, the 58:00 historical 1 → 4
+comparison with a **View latest corrections** action, then 1 → 2 at 58:15. The
+evidence table identifies `p053` revision 3. The browser remained paused until the
+latest-corrections button was clicked. The screenshot is in
+[screenshots/streaming-live.png](screenshots/streaming-live.png); the test tab was
+closed afterward. Reconnect/duplicate-notice/fallback behavior also has automated
+frontend coverage; activation from zero has not been separately measured.
+
+The [demo guide](demo-guide.md), [current architecture](deployment.md) and
+[sanitized live record](verification/streaming-live.json) now reflect deployed
+streaming. The USD 75 total envelope and USD 20 streaming allocation are unchanged;
+these are not measured spend or a hard cap. No model credentials were added to the
+hosted app. Next: protected OIDC deployment, cost-bounded operational telemetry,
+then Stage 10 evaluation and the complete Microsoft-platform architecture review.

@@ -31,7 +31,9 @@ presentation choices, verified offline and with one successful live Azure run.
 
 Stage 9 now has a deployed Azure Container Apps demo, a private container registry
 and managed-identity image pulls, with a USD 75 total trial budget. The hosted app
-now uses serverless Cosmos DB history; local development still defaults to SQLite.
+uses serverless Cosmos DB history, Event Hubs ingestion, Blob checkpoints and
+Web PubSub revision delivery. The full streaming path and duplicate delivery have
+been verified live. Local development still defaults to SQLite and HTTP polling.
 See the [deployment guide](docs/deployment.md) for startup, costs, temporary storage
 limits, and the manual Azure sequence. Shared history design and verification are
 in the [Cosmos DB guide](docs/cosmos.md).
