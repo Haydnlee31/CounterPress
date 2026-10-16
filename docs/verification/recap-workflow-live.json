@@ -1,0 +1,46 @@
+{
+  "status": "accepted",
+  "reason": "supported_comparisons",
+  "duration_ms": 7304,
+  "provider_requests": 3,
+  "analyst_requests": 2,
+  "producer_requests": 1,
+  "tool_invocations": 2,
+  "prompt_version": "recap-analyst-producer-v1",
+  "citations": [
+    {
+      "kind": "pressure",
+      "insight_id": "pressure-4b8a7ba48ce311a48b6e76ec",
+      "revision": 1,
+      "evidence_id": "pressure-ev-4b8a7ba48ce311a48b6e76ec"
+    },
+    {
+      "kind": "pressure",
+      "insight_id": "pressure-b01a1084da2b632516c2d1c3",
+      "revision": 1,
+      "evidence_id": "pressure-ev-b01a1084da2b632516c2d1c3"
+    }
+  ],
+  "draft": {
+    "fingerprint": "d8517456baf4e22d3116c30eeaff54e03d0152174c89d168e77d7050409cb50e",
+    "language": "en",
+    "heading": "segment_review",
+    "stories": [
+      {
+        "kind": "pressure",
+        "insight_id": "pressure-4b8a7ba48ce311a48b6e76ec",
+        "revision": 1,
+        "evidence_id": "pressure-ev-4b8a7ba48ce311a48b6e76ec",
+        "template": "brief"
+      },
+      {
+        "kind": "pressure",
+        "insight_id": "pressure-b01a1084da2b632516c2d1c3",
+        "revision": 1,
+        "evidence_id": "pressure-ev-b01a1084da2b632516c2d1c3",
+        "template": "brief"
+      }
+    ]
+  },
+  "verification": "One live Azure run, 16 October 2026; not a latency distribution or reliability claim."
+}

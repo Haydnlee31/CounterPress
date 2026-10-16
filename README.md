@@ -23,6 +23,8 @@ The sixth persists those player stories, handles correction-driven withdrawal an
 restoration, and adds bilingual replay cards with exact actor attribution.
 The seventh adds bilingual segment recaps with exact evidence citations and
 correction-aware selection from the same publication ledger.
+The eighth adds bounded Microsoft Agent Framework recap review and approved
+presentation choices, verified offline and with one successful live Azure run.
 
 ## Local setup
 
@@ -156,8 +158,8 @@ meaningful controls. Possession without progression now has its own independent
 controls, episode evidence and durable replay cards. Player high-recovery share
 detection now provides independent controls and source-linked CLI/API attribution.
 Durable player publications and bilingual replay cards are now implemented.
-Best next move: bounded narrative adaptation of the factual recap, with frozen
-citations and correction-safe fallback, then Stage 9 Azure integration.
+Best next move: Stage 9 container packaging and Azure configuration, followed by
+shared durable storage and streaming delivery adapters.
 Azure application deployment remains later work.
 
 ## Run the replay
@@ -313,3 +315,7 @@ Expand **Catch up on this segment** below the match metrics. Up to four current
 eligible stories use your viewpoint and link to their exact evidence revisions.
 The recap covers 48:00–58:00 and updates with corrections. Card budget zero hides
 it. See the [recap guide](docs/recaps.md) for scope, citations and correction checks.
+
+To explicitly adapt a recap using the configured Azure deployment, see the
+[bounded recap workflow](docs/recap-workflow.md). Model choices retain validated
+facts/citations, expire automatically, and fall back to the complete factual recap.

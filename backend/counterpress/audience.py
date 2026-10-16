@@ -1,13 +1,16 @@
 """Reusable bilingual presentation variants; preferences never create football facts."""
 
+from __future__ import annotations
+
 from collections import OrderedDict
 from threading import RLock
-from typing import Literal
+from typing import Literal, TYPE_CHECKING
 
 from pydantic import Field
 
 from counterpress.domain.models import Contract, Event, EventReference, Identifier, Insight
-from counterpress.history import EvidenceBundle, History
+if TYPE_CHECKING:
+    from counterpress.history import EvidenceBundle, History
 from counterpress.replay import display_time
 
 

@@ -29,7 +29,8 @@ class Action(Contract):
     label: Literal["Requested comparison", "Checked data quality", "Requested event sequence",
                    "Accepted supported comparison", "Narrowed to recovery counts",
                    "Rejected insufficient evidence", "Prepared explanation", "Used factual fallback",
-                   "Discarded stale result"]
+                   "Discarded stale result", "Requested recap evidence", "Checked recap limitations",
+                   "Accepted recap stories", "Narrowed recap stories", "Prepared recap"]
     elapsed_ms: NonNegativeInt
 
 

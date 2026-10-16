@@ -24,6 +24,8 @@ from counterpress.pressure_publications import PressureChange, project_pressure
 from counterpress.pressure_views import PressureView, pressure_view
 from counterpress.fixture import PossessionFixture
 from counterpress.recaps import SegmentRecap, build_recap
+from counterpress.recap_adaptation import present_recap
+from counterpress.workflow.recap_contracts import RecapWorkflowView
 
 SCENARIOS = {
     "increase": ("recovery_increase.json", "Recovery increase"),
@@ -75,6 +77,8 @@ class ScreenSnapshot(Contract):
     contribution_lifecycle: tuple[ContributionChange, ...] = ()
     selected_kind: Literal["recovery", "pressure", "contribution"] | None = None
     recap: SegmentRecap | None = None
+    adapted_recap: SegmentRecap | None = None
+    recap_workflow: RecapWorkflowView | None = None
 
 
 def horizon(history: History) -> MatchTime:
@@ -277,6 +281,8 @@ class SnapshotService:
         selected_priority = audience.priority if selected_kind == "recovery" else pressure.priority if selected_kind == "pressure" else -1
         if contribution.state == "ready" and contribution.priority > selected_priority:
             selected_kind = "contribution"
+        recap = build_recap(history, cutoff, (BASELINE, CURRENT), prefs, audience)
+        adapted_recap, recap_workflow = present_recap(history, recap, replay.state.score, now)
         return ScreenSnapshot(
             scenario_id=scenario_id, scope_id=scope_id, history_version=len(history.records), replay_end=end,
             state=replay.state, metrics=replay.metrics,
@@ -286,7 +292,8 @@ class SnapshotService:
             workflow=WorkflowView(attempt_id=audit.attempt_id, status=audit.status, actions=audit.actions) if audit else None,
             audience=audience, pressure=pressure, pressure_lifecycle=tuple(latest_pressure.values()), selected_kind=selected_kind,
             contribution=contribution, contribution_lifecycle=tuple(latest_contributions.values()),
-            recap=build_recap(history, cutoff, (BASELINE, CURRENT), prefs, audience),
+            recap=recap, recap_workflow=recap_workflow,
+            adapted_recap=adapted_recap if recap_workflow and recap_workflow.applied else None,
             teams=history.fixture.teams,
         )
 
