@@ -103,6 +103,19 @@ The control scenario shows no increase card. See the [interface guide](docs/inte
 for API contracts and verification details. The [history guide](docs/history.md)
 explains persistence, correction ingestion and historical replay.
 
+## Evaluate the editorial workflow
+
+The [frozen editorial pilot](docs/evaluation/editorial-pilot.md) compares templates,
+a single Microsoft Agent Framework editor and the existing Analyst/Producer pair.
+It runs locally, defaults to no model calls, and separates supported factual output
+from actual AI success and human usefulness. The [fan usability kit](docs/evaluation/fan-usability.md)
+provides tasks and blank anonymous forms; no human study has been completed.
+Hosted AI remains disabled until the separate activation gates are met.
+
+```sh
+uv run --frozen python -m counterpress.evaluation.editorial
+```
+
 ## Validate the foundation
 
 ```sh

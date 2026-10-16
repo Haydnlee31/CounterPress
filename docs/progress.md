@@ -2240,3 +2240,48 @@ Next: benchmark templates, one agent and the existing Analyst/Producer workflow,
 then integrate the smallest useful bounded editorial flow. Authenticated Studio
 and human fan/producer evaluation follow. No Azure setup is required from the user
 for the completed Matchday release.
+
+## Editorial comparison and fan study kit (2026-10-17)
+
+Implemented a bounded single-editor alternative and a frozen 15-case development
+pilot against the existing Analyst/Producer workflow and deterministic templates.
+The Microsoft Agent Framework `LocalEvaluator` scores exact supported presentation
+and free handling of ineligible cases. This runs locally; no new service, hosted
+paid endpoint or cloud history write was added. Single-editor audits preserve the
+same final atomic freshness check, expiry and factual fallback as the existing
+workflow. Existing histories remain readable.
+
+Protocol source commit: `ce4cf9e`, frozen before the paid run. Two repetitions,
+rotated variant order, fresh in-memory histories and the same configured model.
+
+```console
+$ .venv/bin/python -m pytest -q
+495 passed, 1 warning in 16.46s
+$ npm --prefix frontend test -- --reporter=dot
+Test Files  8 passed (8)
+Tests  48 passed (48)
+$ UV_CACHE_DIR=.uv-cache uv run --env-file .env --frozen python -m counterpress.evaluation.editorial --live --repetitions 2 --output var/editorial-live.json
+"checks": {"passed": 90, "failed": 0, "errored": 0}
+```
+
+The warning identifies the pinned Agent Framework evaluation API as experimental.
+The printed live output also included per-variant counters; the complete sanitized
+record is [verification/editorial-pilot.json](verification/editorial-pilot.json).
+Single editor: 21/22 eligible adaptations, median 4,610 ms, 22 dispatched calls.
+Analyst/Producer: 13/22, median 7,323 ms, 61 calls. Templates: median 27 ms and no
+provider calls. Six usage receipts are missing; do not call unknown usage free.
+Known receipts estimate US$0.10281172 under conservative rates; the US$1 admission
+allowance reserved US$0.54624944, not an observed charge.
+
+The [results and decision](evaluation/editorial-pilot.md) recommend retaining the
+immediate factual default and using one editor as the next integration candidate.
+Acceptance and supported citations do not demonstrate human preference. Fan and
+producer ratings remain uncollected; the user will arrange participants later.
+A [five-fan task kit](evaluation/fan-usability.md), blank response form, and separate
+English/Chinese blind-review packets are prepared. No agents simulate participants.
+
+Source, live result/log and generated review sheets passed configured-secret,
+private-model-endpoint and JWT-pattern scans. The public app remains on the
+verified Matchday release. Hosted AI stays disabled pending human review, an
+explicit authenticated trigger, shared deduplication, durable quotas, Cosmos live
+integration and revision-aware cache/cancellation checks.
