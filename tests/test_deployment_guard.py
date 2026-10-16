@@ -27,3 +27,9 @@ def test_image_only_invariants_detect_storage_scaling_and_identity_drift():
         if change=='scaling':altered['properties']['template']['scale']['maxReplicas']=2
         if change=='identity':altered['identity']['userAssignedIdentities']={}
         assert deploy.invariants(app)!=deploy.invariants(altered)
+
+
+def test_newer_failed_ci_cannot_be_hidden_by_an_older_success():
+    run={'head_sha':'a'*40,'head_branch':'main','event':'push','conclusion':'success','path':'.github/workflows/ci.yml','id':1}
+    assert not deploy.check_ci({'workflow_runs':[run,run|{'id':2,'conclusion':'failure'}]},'a'*40)
+    assert not deploy.check_ci({'workflow_runs':[run,run|{'id':2,'conclusion':None}]},'a'*40)

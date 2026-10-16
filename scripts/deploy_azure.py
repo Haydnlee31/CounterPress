@@ -22,10 +22,12 @@ def run(args, *, parse=False, timeout=180):
 
 
 def check_ci(payload, sha):
-    return any(r.get('head_sha') == sha and r.get('head_branch') == 'main'
-               and r.get('event') == 'push' and r.get('conclusion') == 'success'
-               and r.get('path') == '.github/workflows/ci.yml'
-               for r in payload.get('workflow_runs', []))
+    candidates = [r for r in payload.get('workflow_runs', [])
+                  if r.get('head_sha') == sha and r.get('head_branch') == 'main'
+                  and r.get('event') == 'push' and r.get('path') == '.github/workflows/ci.yml']
+    latest = max(candidates, key=lambda r: (r.get('id', 0), r.get('run_attempt', 0)), default={})
+    return latest.get('conclusion') == 'success'
+
 
 
 def invariants(app):
