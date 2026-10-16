@@ -171,8 +171,9 @@ detection now provides independent controls and source-linked CLI/API attributio
 Durable player publications and bilingual replay cards are now implemented.
 The [Cosmos DB adapter](docs/cosmos.md) adds atomic shared history, conflict
 detection and a live restart-check command. See the progress log for live
-verification; cloud model adaptation remains disabled. Best next move: Event Hubs
-ingestion and Web PubSub revision delivery.
+verification; cloud model adaptation remains disabled. The optional
+[streaming path](docs/streaming.md) adds Event Hubs ingestion, Blob checkpoints
+and Web PubSub revision notices with snapshot resynchronization.
 
 ## Run the replay
 

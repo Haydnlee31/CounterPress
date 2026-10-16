@@ -30,6 +30,7 @@ from counterpress.workflow.recap_contracts import RecapWorkflowView
 SCENARIOS = {
     "increase": ("recovery_increase.json", "Recovery increase"),
     "control": ("recovery_control.json", "No-increase control"),
+    "stream-recovery": ("recovery_increase.json", "Live recovery corrections"),
     "pressure-increase": ("pressure/increase.json", "Pressure and escape shift"),
     "pressure-control": ("pressure/control.json", "Pressure and escape control"),
     "progression-increase": ("progression/increase.json", "Possession without progression"),
@@ -180,6 +181,12 @@ class SnapshotService:
             if previous is not None:
                 return previous
             fixture = load_fixture(self.fixture_dir / SCENARIOS[scenario_id][0])
+            if scenario_id == "stream-recovery":
+                raw = fixture.model_dump()
+                raw["match_id"] += "-stream"
+                for event in raw["events"]:
+                    event["match_id"] = raw["match_id"]
+                fixture = PossessionFixture.model_validate(raw)
             if scenario_id.startswith("pressure-"):
                 # Stretch the independently reviewed two-minute controls across
                 # the screen's ten-minute interval; no outcomes or positions change.

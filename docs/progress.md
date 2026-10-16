@@ -1858,3 +1858,40 @@ See [sanitized live evidence](verification/cosmos-durability.json) and the updat
 [deployed architecture](deployment.md). Cloud replica-restart durability is now
 verified. Larger histories, Event Hubs ingestion, Web PubSub reconnect delivery,
 OIDC deployment and Stage 10 evaluation remain subsequent work.
+
+## Event Hubs and Web PubSub implementation — 16 October 2026
+
+Added typed, match-keyed Event Hubs deliveries, a retrying consumer, atomic existing
+Cosmos ingestion, durable Blob checkpoints and invalid-delivery quarantine. Current
+revision heads publish through Web PubSub before checkpointing. The browser uses
+receive-only scenario tokens and treats push as a hint to retrieve a validated
+snapshot; reconnect and periodic reconciliation recover missed notices. Added an
+isolated `stream-recovery` scenario without changing the original fixture history.
+
+Infrastructure adds Basic one-TU Event Hubs, Web PubSub Free and LRS Blob storage,
+with separate consumer/producer managed identities and a zero-to-one Event Hubs
+scale rule. The checked Basic rate is USD 0.015/hour, approximately USD 10.08 over
+28 days before ingress/storage/network costs, within the approved USD 20 streaming
+allocation. The total trial envelope remains USD 75. Local mode remains cloud-free.
+
+Validation commands and observed output:
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
+457 passed in 11.75s
+$ npm --prefix frontend test
+Test Files  7 passed (7)
+Tests  36 passed (36)
+$ npm --prefix frontend run build
+✓ 43 modules transformed.
+✓ built in 441ms
+$ bash scripts/test_container.sh counterpress:streaming
+PASS: health, readiness, frontend/assets, 1-to-4 evidence, control, bilingual recap, private-path 404s
+PASS: non-root runtime, writable ephemeral database, no Azure environment or source credentials
+```
+
+Both `infra/streaming.bicep` and the updated `infra/app.bicep` compiled. The image
+archive scan passed against four configured sensitive values/hostnames. The Azure
+what-if preview showed only new streaming resources; application activation and
+live transport proof are separate from these offline implementation checks.
+See [streaming design and operations](streaming.md).

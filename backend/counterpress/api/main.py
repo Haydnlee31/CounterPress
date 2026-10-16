@@ -1,6 +1,8 @@
 """Run with: uv run uvicorn counterpress.api.main:app --reload."""
 
 from typing import Literal
+from contextlib import asynccontextmanager
+from time import monotonic
 import os
 import sqlite3
 from pathlib import Path
@@ -25,11 +27,49 @@ class HealthResponse(Contract):
 
 
 def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:",
-               static_dir: Path | None = None, store: HistoryStore | None = None) -> FastAPI:
-    application = FastAPI(title="CounterPress", version="0.1.0")
+               static_dir: Path | None = None, store: HistoryStore | None = None,
+               revision_publisher=None) -> FastAPI:
     root = fixture_dir or Path(os.environ.get("COUNTERPRESS_FIXTURE_DIR", Path(__file__).resolve().parents[3] / "fixtures"))
     service = SnapshotService(root, store if store is not None else configured_store(db_path))
+    @asynccontextmanager
+    async def lifespan(application):
+        runtime = None
+        try:
+            if os.environ.get('COUNTERPRESS_STREAMING', 'off') == 'azure':
+                from counterpress.streaming.azure import StreamingRuntime
+                runtime = StreamingRuntime(service)
+                await runtime.start()
+                application.state.revision_publisher = runtime.publisher
+            yield
+        finally:
+            if runtime:
+                await runtime.close()
+
+    application = FastAPI(title="CounterPress", version="0.1.0", lifespan=lifespan)
     application.state.snapshots = service
+    application.state.revision_publisher = revision_publisher
+    negotiations: list[float] = []
+
+    @application.get('/api/revisions/negotiate')
+    async def negotiate(response: Response, scenario_id: str):
+        response.headers['Cache-Control'] = 'no-store'
+        response.headers['Referrer-Policy'] = 'no-referrer'
+        if scenario_id not in SCENARIOS:
+            raise HTTPException(status_code=404, detail='Unknown scenario')
+        publisher = application.state.revision_publisher
+        if publisher is None:
+            return {'enabled': False}
+        now = monotonic()
+        negotiations[:] = [at for at in negotiations if now - at < 60]
+        # One process / one replica demo limit. No identity or token is logged.
+        if len(negotiations) >= 30:
+            raise HTTPException(status_code=429, detail='Live updates are busy; polling remains available.',
+                                headers={'Retry-After': '60'})
+        negotiations.append(now)
+        try:
+            return await publisher.negotiate(scenario_id)
+        except Exception:
+            raise HTTPException(status_code=503, detail='Live updates unavailable; polling remains available.') from None
 
     @application.get("/health", response_model=HealthResponse, tags=["health"])
     def health() -> HealthResponse:
