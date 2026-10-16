@@ -83,8 +83,11 @@ and [probe behavior](https://learn.microsoft.com/en-us/azure/container-apps/heal
 
 ## Deployment sequence after target and cost review
 
-Before running Azure commands, choose a subscription, supported region, dedicated
-resource group and monthly budget. Registry storage has ongoing cost even when the
+Before running Azure commands, choose a subscription, supported region, resource
+group and monthly budget. The user has chosen to reuse the group containing the
+existing model deployment. Keep its resolved subscription/resource identifiers in
+ignored local configuration, not in this public runbook. Registry storage has
+ongoing cost even when the
 app scales to zero; application use, networking and later services can add charges.
 Azure budget alerts are notifications, not a hard spending stop. There is no paid
 Log Analytics workspace in these templates; logs are not centrally retained yet.
@@ -102,21 +105,27 @@ registry-scoped `AcrPull` role (Contributor alone does not grant role assignment
 az login
 read -r -p 'Subscription ID: ' CP_SUBSCRIPTION
 read -r -p 'Region: ' CP_REGION
-read -r -p 'New dedicated resource group name: ' CP_GROUP
+read -r -p 'Existing model resource group name: ' CP_GROUP
 az account set --subscription "$CP_SUBSCRIPTION"
-az group create --name "$CP_GROUP" --location "$CP_REGION" --output none
+az group show --name "$CP_GROUP" --query '{name:name,location:location}'
+az resource list --resource-group "$CP_GROUP" --query '[].{name:name,type:type}' --output table
 az deployment group what-if --resource-group "$CP_GROUP" \
-  --template-file infra/foundation.bicep
+  --template-file infra/foundation.bicep --parameters location="$CP_REGION"
 ```
 
-These `read -p` examples use Bash. Inspect the resource changes, cost estimate and
-target before the create command. Resource provider registration may be needed
+These `read -p` examples use Bash. Inspect existing resources for name collisions,
+the incremental what-if changes,
+cost estimate and target before deployment. Reusing a resource group does not
+reuse model compute or make hosting free. Do not use complete deployment mode,
+delete the group, or modify the existing model resource. A resource group's metadata
+location can differ from its resources; pass the chosen app region explicitly.
+Resource provider registration may be needed
 for `Microsoft.App`, `Microsoft.ContainerRegistry`, and `Microsoft.ManagedIdentity`.
 
 ```sh
-az deployment group create --name foundation --resource-group "$CP_GROUP" \
-  --template-file infra/foundation.bicep --output none
-CP_REGISTRY=$(az deployment group show --name foundation --resource-group "$CP_GROUP" \
+az deployment group create --name counterpress-foundation --resource-group "$CP_GROUP" \
+  --template-file infra/foundation.bicep --mode Incremental --parameters location="$CP_REGION" --output none
+CP_REGISTRY=$(az deployment group show --name counterpress-foundation --resource-group "$CP_GROUP" \
   --query properties.outputs.registryName.value --output tsv)
 CP_LOGIN_SERVER=$(az acr show --name "$CP_REGISTRY" --query loginServer --output tsv)
 az acr login --name "$CP_REGISTRY" --output none
@@ -127,14 +136,14 @@ docker push "${CP_LOGIN_SERVER}/counterpress:${CP_TAG}"
 CP_DIGEST=$(az acr repository show --name "$CP_REGISTRY" \
   --image "counterpress:${CP_TAG}" --query digest --output tsv)
 az deployment group what-if --resource-group "$CP_GROUP" \
-  --template-file infra/app.bicep --parameters imageDigest="$CP_DIGEST"
+  --template-file infra/app.bicep --parameters location="$CP_REGION" imageDigest="$CP_DIGEST"
 ```
 
 Check the second what-if, then deploy the exact digest:
 
 ```sh
-az deployment group create --name application --resource-group "$CP_GROUP" \
-  --template-file infra/app.bicep --parameters imageDigest="$CP_DIGEST" --output none
+az deployment group create --name counterpress-application --resource-group "$CP_GROUP" \
+  --template-file infra/app.bicep --mode Incremental --parameters location="$CP_REGION" imageDigest="$CP_DIGEST" --output none
 CP_HOST=$(az containerapp show --name counterpress --resource-group "$CP_GROUP" \
   --query properties.configuration.ingress.fqdn --output tsv)
 python3 scripts/container_smoke.py "https://${CP_HOST}"
@@ -147,9 +156,44 @@ syntax/type validation, not proof that a subscription permits the region, quotas
 roles or deployment. Azure what-if and live verification are still required.
 
 To roll back code, redeploy `infra/app.bicep` with a previously tested image digest;
-this does not restore temporary database changes. Remove the dedicated demo
-resource group through Azure when the demo is no longer needed, after confirming
-it contains no shared resources. Resource deletion is not part of CI.
+this does not restore temporary database changes. For cleanup in the shared
+group, first review the exact resources created by the
+CounterPress deployments and their dependencies. Remove only those app,
+environment, registry, identity and registry-scoped role-assignment resources
+when authorized; never delete the shared group or the existing model resource.
+Resource deletion is not part of CI.
+
+## Hackathon cost envelope (proposal, not yet approved)
+
+Plan for USD 100 total across the remaining trial, with a USD 50–70 target under
+light development/demo use. This is a spending envelope, not a prepaid purchase
+or a guarantee. Allocate USD 20 to hosting/registry, USD 25 to streaming, USD 15
+to model calls, USD 10 to storage/monitoring/networking, and USD 30 contingency.
+Use Web PubSub Free while its connection/message limits meet the demo's needs.
+
+For cost context, the public Azure retail API in East US on 16 October 2026
+reported ACR Basic at USD 0.1666/day and Event Hubs Standard at USD 0.03 per
+throughput-unit hour (about USD 21.90 for 730 hours with one unit, plus ingress).
+Cosmos DB serverless requests were USD 0.25 per million RUs, plus storage.
+These are unit rates, not measured CounterPress workload costs; credits,
+subscription entitlements and usage determine actual billing. See the
+[retail pricing API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices),
+[Container Apps free grants](https://azure.microsoft.com/en-us/pricing/details/container-apps/)
+and [Web PubSub Free limits](https://azure.microsoft.com/en-us/pricing/details/web-pubsub/).
+
+Keep scale-to-zero enabled, close replay tabs when unused (polling keeps sending
+requests), and start streaming capacity only when needed. Continuous workers and
+load tests can exceed the light-use estimates. Track model evaluation calls and
+log ingestion, and avoid unnecessary paid add-ons. Keep the trial spending limit
+in place; do not upgrade or remove it as part of deployment. Some Marketplace
+items are excluded from credits; see [spending-limit details](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/spending-limit).
+
+Track cumulative project cost across calendar months through the actual trial
+expiry; a monthly budget reset must not authorize another USD 100. Configure
+alerts well before the envelope is exhausted and review cost data regularly:
+Azure alerts are delayed notifications, not automatic shutdown. Preserve an
+exported demo before trial expiry, and make a separate decision about hosting
+needed after the credits expire. No budget resource has been configured yet.
 
 ## Next integration steps
 

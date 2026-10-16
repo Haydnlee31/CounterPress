@@ -5,7 +5,9 @@ container serves the compiled React interface and FastAPI on one origin. Local
 HTTP smoke checks and the complete offline suites pass. Azure Container Apps,
 private ACR and managed-identity Bicep templates compile, with a new GitHub Actions
 container/template check. These resources have not been provisioned. Deployment
-awaits the user's subscription, region and spending constraints. SQLite inside the
+targets the existing model resource group, as requested by the user. Its resolved
+subscription/group/region are stored only in ignored local configuration. The
+monthly hosting budget remains pending; Azure CLI sign-in is now verified. SQLite inside the
 cloud container is explicitly temporary; shared Cosmos DB durability follows.
 
 Stage 8's scoped local detector, generator and recap path remains complete,
@@ -1657,3 +1659,42 @@ resources, registry uploads, model requests or deployment workflow ran. The best
 next move is the hosted smoke check once the user supplies subscription, region,
 resource-group preference and budget; the deployment guide makes that action
 reviewable. Cosmos DB, Event Hubs, Web PubSub and Stage 10 remain subsequent work.
+
+
+## Azure deployment target clarification — 16 October 2026
+
+The user chose to reuse the existing model resource group. The Azure portal's
+resource metadata was matched to the locally configured model endpoint without
+printing the endpoint or key. Resolved target identifiers remain in ignored
+`var/azure-target.json`, not in published source or screenshots. No Azure resources
+were changed. The deployment runbook now uses an existing-group inventory,
+explicit location, namespaced deployment names and incremental mode. Cleanup
+must target only newly created CounterPress resources, never the shared group.
+The next step is authenticated Azure what-if and a cost estimate within the
+user's hosting budget, followed by the hosted smoke deployment.
+
+Azure CLI 2.90.0 was installed through Homebrew and signed into the confirmed
+tenant using the normal browser flow. No model credentials were used for CLI
+authentication. Read-only preflight precedes any resource creation.
+
+Read-only preflight found only the existing model account and Foundry project in
+the target group. The incremental foundation preview completed successfully:
+
+```text
+What-if status: Succeeded
+Create Microsoft.App/managedEnvironments
+Ignore Microsoft.CognitiveServices/accounts
+Ignore Microsoft.CognitiveServices/accounts/projects
+Create Microsoft.ContainerRegistry/registries
+Create Microsoft.Authorization/roleAssignments
+Create Microsoft.ManagedIdentity/userAssignedIdentities
+```
+
+The command is the foundation `az deployment group what-if` in the deployment
+guide, with the locally stored target, explicit region and `--mode Incremental
+--no-pretty-print --only-show-errors --output json`. Raw preview results stay
+under ignored `var/`; the lines above contain only change categories/types.
+The app preview still requires the foundation and uploaded image. No resources
+were created. A USD 100 whole-trial budget was recommended, with USD 20 reserved
+for the initial hosting stage; approval is pending. Budget alerts are not a hard
+spending cap. Current public East US retail rates were checked for this advice.
