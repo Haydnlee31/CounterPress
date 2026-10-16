@@ -2285,3 +2285,14 @@ private-model-endpoint and JWT-pattern scans. The public app remains on the
 verified Matchday release. Hosted AI stays disabled pending human review, an
 explicit authenticated trigger, shared deduplication, durable quotas, Cosmos live
 integration and revision-aware cache/cancellation checks.
+
+GitHub initially exposed a timing assumption in the new timeout test: the total
+deadline can expire during SDK setup before a request is dispatched. The test now
+checks the actual dispatch count (zero or one) and unchanged factual fallback;
+the frozen backend, prompts and pilot results remain unchanged. Verification after
+this test-only correction:
+
+```console
+$ .venv/bin/python -m pytest -q
+495 passed, 1 warning in 28.41s
+```

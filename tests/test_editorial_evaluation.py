@@ -99,11 +99,18 @@ def test_concurrent_correction_discards_single_editor_without_holding_a_transact
 
 
 def test_single_editor_timeout_retains_factual_fallback():
+    dispatched = []
     async def never(request):
-        await asyncio.sleep(1)
-        return single_response(request)
-    result = asyncio.run(service(snapshots(), never, timeout_seconds=.02).run('increase', 780000))
-    assert result.status == 'timeout' and result.draft is None and result.provider_requests == 1
+        dispatched.append(request)
+        await asyncio.Event().wait()
+    app = snapshots()
+    before = app.snapshot('increase', 780000).recap
+    result = asyncio.run(service(app, never, timeout_seconds=.02).run('increase', 780000))
+    assert result.status == 'timeout' and result.draft is None
+    # The total deadline includes SDK setup: a busy runner may expire before dispatch.
+    assert result.provider_requests == len(dispatched) <= 1
+    after = app.snapshot('increase', 780000)
+    assert after.adapted_recap is None and after.recap == before
 
 
 def test_single_editor_cosmos_contract_survives_fresh_store_and_expiry(monkeypatch):
