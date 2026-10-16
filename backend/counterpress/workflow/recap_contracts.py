@@ -45,7 +45,7 @@ class RecapWorkflowAttempt(Contract):
     requested_at: MatchTime
     available_at: MatchTime
     source_history_version: NonNegativeInt
-    prompt_version: Literal['recap-analyst-producer-v1'] = PROMPT_VERSION
+    prompt_version: Literal['recap-analyst-producer-v1', 'recap-single-editor-v1'] = PROMPT_VERSION
     started_at_unix_ms: NonNegativeInt
     expires_at_unix_ms: NonNegativeInt
     duration_ms: NonNegativeInt

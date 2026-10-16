@@ -1,0 +1,288 @@
+{
+  "version": "editorial-pilot-v1",
+  "split": "development pilot; not held-out",
+  "cases": [
+    {
+      "id": "recovery-en",
+      "scenario": "increase",
+      "at_ms": 780000,
+      "preferences": {
+        "language": "en",
+        "depth": "casual",
+        "club_id": "eastbridge",
+        "metric_focus": "high_recoveries"
+      },
+      "expected_state": "ready",
+      "model_eligible": true,
+      "required_fact": {
+        "metric": "high_recovery_count",
+        "team": "eastbridge",
+        "before": [
+          1
+        ],
+        "after": [
+          4
+        ]
+      }
+    },
+    {
+      "id": "recovery-zh-Hans",
+      "scenario": "increase",
+      "at_ms": 780000,
+      "preferences": {
+        "language": "zh-Hans",
+        "depth": "analyst",
+        "club_id": "eastbridge",
+        "metric_focus": "high_recoveries"
+      },
+      "expected_state": "ready",
+      "model_eligible": true,
+      "required_fact": {
+        "metric": "high_recovery_count",
+        "team": "eastbridge",
+        "before": [
+          1
+        ],
+        "after": [
+          4
+        ]
+      }
+    },
+    {
+      "id": "pressure-en",
+      "scenario": "pressure-increase",
+      "at_ms": 780000,
+      "preferences": {
+        "language": "en",
+        "depth": "casual",
+        "club_id": "eastbridge",
+        "metric_focus": "pressure_exposure"
+      },
+      "expected_state": "ready",
+      "model_eligible": true,
+      "required_fact": {
+        "metric": "pressure_exposure",
+        "team": "eastbridge",
+        "before": [
+          3,
+          6
+        ],
+        "after": [
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "id": "pressure-zh-Hans",
+      "scenario": "pressure-increase",
+      "at_ms": 780000,
+      "preferences": {
+        "language": "zh-Hans",
+        "depth": "analyst",
+        "club_id": "eastbridge",
+        "metric_focus": "pressure_exposure"
+      },
+      "expected_state": "ready",
+      "model_eligible": true,
+      "required_fact": {
+        "metric": "pressure_exposure",
+        "team": "eastbridge",
+        "before": [
+          3,
+          6
+        ],
+        "after": [
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "id": "progression-en",
+      "scenario": "progression-increase",
+      "at_ms": 780000,
+      "preferences": {
+        "language": "en",
+        "depth": "casual",
+        "club_id": "eastbridge",
+        "metric_focus": "possession_without_progression"
+      },
+      "expected_state": "ready",
+      "model_eligible": true,
+      "required_fact": {
+        "metric": "possession_without_progression",
+        "team": "eastbridge",
+        "before": [
+          1,
+          6
+        ],
+        "after": [
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "id": "progression-zh-Hans",
+      "scenario": "progression-increase",
+      "at_ms": 780000,
+      "preferences": {
+        "language": "zh-Hans",
+        "depth": "analyst",
+        "club_id": "eastbridge",
+        "metric_focus": "possession_without_progression"
+      },
+      "expected_state": "ready",
+      "model_eligible": true,
+      "required_fact": {
+        "metric": "possession_without_progression",
+        "team": "eastbridge",
+        "before": [
+          1,
+          6
+        ],
+        "after": [
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "id": "player-en",
+      "scenario": "contribution-increase",
+      "at_ms": 780000,
+      "preferences": {
+        "language": "en",
+        "depth": "casual",
+        "club_id": "eastbridge",
+        "metric_focus": "player_high_recovery_share"
+      },
+      "expected_state": "ready",
+      "model_eligible": true,
+      "required_fact": {
+        "metric": "player_high_recovery_share",
+        "team": "eastbridge",
+        "before": [
+          1,
+          4
+        ],
+        "after": [
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "id": "player-zh-Hans",
+      "scenario": "contribution-increase",
+      "at_ms": 780000,
+      "preferences": {
+        "language": "zh-Hans",
+        "depth": "analyst",
+        "club_id": "eastbridge",
+        "metric_focus": "player_high_recovery_share"
+      },
+      "expected_state": "ready",
+      "model_eligible": true,
+      "required_fact": {
+        "metric": "player_high_recovery_share",
+        "team": "eastbridge",
+        "before": [
+          1,
+          4
+        ],
+        "after": [
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "id": "no-change",
+      "scenario": "pressure-control",
+      "at_ms": 780000,
+      "preferences": {},
+      "expected_state": "no_eligible",
+      "model_eligible": false
+    },
+    {
+      "id": "incomplete",
+      "scenario": "pressure-increase",
+      "at_ms": 779999,
+      "preferences": {},
+      "expected_state": "collecting",
+      "model_eligible": false
+    },
+    {
+      "id": "wrong-player",
+      "scenario": "contribution-increase",
+      "at_ms": 780000,
+      "preferences": {
+        "player_id": "eb09"
+      },
+      "expected_state": "no_eligible",
+      "model_eligible": false
+    },
+    {
+      "id": "recovery-control-other-story",
+      "scenario": "control",
+      "at_ms": 780000,
+      "preferences": {},
+      "expected_state": "ready",
+      "model_eligible": true,
+      "forbidden_kind": "recovery"
+    },
+    {
+      "id": "withdrawn",
+      "scenario": "increase",
+      "at_ms": 790000,
+      "preferences": {},
+      "corrections_through": 790000,
+      "expected_state": "ready",
+      "model_eligible": true,
+      "forbidden_kind": "recovery"
+    },
+    {
+      "id": "restored-duplicate-out-of-order",
+      "scenario": "increase",
+      "at_ms": 795000,
+      "preferences": {
+        "language": "zh-Hans"
+      },
+      "corrections_through": 795000,
+      "duplicate_reversed": true,
+      "expected_state": "ready",
+      "model_eligible": true,
+      "required_fact": {
+        "metric": "high_recovery_count",
+        "team": "eastbridge",
+        "before": [
+          1
+        ],
+        "after": [
+          2
+        ]
+      }
+    },
+    {
+      "id": "historical-after-correction",
+      "scenario": "increase",
+      "at_ms": 780000,
+      "preferences": {},
+      "corrections_through": 795000,
+      "expected_state": "ready",
+      "model_eligible": false,
+      "required_fact": {
+        "metric": "high_recovery_count",
+        "team": "eastbridge",
+        "before": [
+          1
+        ],
+        "after": [
+          4
+        ]
+      }
+    }
+  ]
+}

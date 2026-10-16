@@ -46,6 +46,8 @@ def evidence_summaries(history, recap):
 
 
 class RecapWorkflowService:
+    prompt_version = PROMPT_VERSION
+
     def __init__(self, snapshots, config: AzureConfig | None, *, transport_factory=None,
                  timeout_seconds: float = 8, ttl_ms: int = 60000, now=utc_ms):
         if not 0 < timeout_seconds <= 8 or not 0 < ttl_ms <= 60000:
@@ -105,6 +107,7 @@ class RecapWorkflowService:
             if status == 'stale': budget.action('Discarded stale result')
             if draft is None: budget.action('Used factual fallback')
             attempt = RecapWorkflowAttempt(attempt_id=f'recap-{uuid4()}', status=status, reason=reason,
+                prompt_version=self.prompt_version,
                 fingerprint=key, match_id=recap.match_id, preferences=prefs, citations=identities(recap),
                 requested_at=cutoff, available_at=horizon(latest), source_history_version=len(history.records),
                 started_at_unix_ms=started, expires_at_unix_ms=expires,
