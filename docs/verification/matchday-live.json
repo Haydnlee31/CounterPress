@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-16",
+  "result": "passed",
+  "application_source_commit": "b18fbf34f7f6cfb95feef6435eedc33d26614de4",
+  "implementation_pr": "https://github.com/Haydnlee31/CounterPress/pull/19",
+  "ci_run": "https://github.com/Haydnlee31/CounterPress/actions/runs/38885864365",
+  "deployment_run": "https://github.com/Haydnlee31/CounterPress/actions/runs/38885974712",
+  "exact_revision_ready": true,
+  "backend_tests": 471,
+  "frontend_tests": 48,
+  "production_container_smoke": "passed",
+  "azure_template_compilation": "passed",
+  "live_browser_checks": [
+    "default 58:00 comparison",
+    "inline recap and readable event evidence",
+    "persisted team/language preferences and clear action",
+    "English and Simplified Chinese",
+    "recovery, pressure, progression and contribution stories",
+    "360/390/640/1365-pixel widths without horizontal overflow",
+    "200% text sizing without horizontal overflow",
+    "historical recovery 4/3/withdrawn/2",
+    "rewind removes future facts",
+    "analysis workspace navigation",
+    "no browser page exceptions"
+  ],
+  "revision_connection_label_observed": "connected",
+  "source_screenshot_ocr_and_release_log_secret_scan": "passed",
+  "new_cloud_resources": false,
+  "hosted_model_adaptation": "disabled",
+  "total_trial_budget_usd": 75,
+  "preserved_services": [
+    "Azure Container Apps",
+    "Azure Cosmos DB",
+    "Azure Event Hubs",
+    "Azure Web PubSub",
+    "Azure Blob Storage",
+    "Azure Monitor"
+  ],
+  "limitations": [
+    "First Matchday slice only; bounded editorial integration and authenticated Studio are subsequent releases",
+    "Original fictional identities only; real club/player permissions are not cleared",
+    "No human usability study or full accessibility audit has been completed",
+    "Text-size checks are not a full browser zoom audit",
+    "Actual current spend was not measured by this release"
+  ]
+}
