@@ -33,3 +33,14 @@ def test_newer_failed_ci_cannot_be_hidden_by_an_older_success():
     run={'head_sha':'a'*40,'head_branch':'main','event':'push','conclusion':'success','path':'.github/workflows/ci.yml','id':1}
     assert not deploy.check_ci({'workflow_runs':[run,run|{'id':2,'conclusion':'failure'}]},'a'*40)
     assert not deploy.check_ci({'workflow_runs':[run,run|{'id':2,'conclusion':None}]},'a'*40)
+
+
+def test_previous_ready_revision_cannot_satisfy_new_image_readiness():
+    app={'properties':{'latestRevisionName':'old','latestReadyRevisionName':'old','provisioningState':'Succeeded'}}
+    assert not deploy.revision_is_ready(app,'new')
+    app['properties']['latestRevisionName']='new'
+    assert not deploy.revision_is_ready(app,'new')
+    app['properties']['latestReadyRevisionName']='new'
+    assert deploy.revision_is_ready(app,'new')
+    app['properties']['provisioningState']='Updating'
+    assert not deploy.revision_is_ready(app,'new')
