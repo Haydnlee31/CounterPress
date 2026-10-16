@@ -1,19 +1,18 @@
 # Progress
 
-Current milestone: Stage 8 eighth increment — bounded recap adaptation through
-Microsoft Agent Framework is implemented and verified offline plus one live Azure
-acceptance. Analyst tools review frozen evidence/limitations; the Producer selects
-approved wording while code retains facts and citations. Atomic source checks,
-automatic expiry, durable audits and factual fallback are in place. Seeded
-simulation, reviewed detectors and bilingual factual recaps remain available.
-The scoped local Stage 8 path is ready for Stage 9 Azure integration. Full-match
-coverage and broader player attribution remain extensions, not achieved claims.
-Stage 7 analyst/casual views, preferences and English/Simplified Chinese variants
-remain complete. Stage 6 single-call adaptation and
-bounded Analyst/Producer workflow remain verified against live Azure. Stage 5
-durable history remains complete. Foundation contracts and the local
-FastAPI health endpoint remain in place. Startup and validation commands are in
-the README. After each task, report the result and the best next move.
+Current milestone: Stage 9 first increment — a digest-pinned, non-root Linux
+container serves the compiled React interface and FastAPI on one origin. Local
+HTTP smoke checks and the complete offline suites pass. Azure Container Apps,
+private ACR and managed-identity Bicep templates compile, with a new GitHub Actions
+container/template check. These resources have not been provisioned. Deployment
+awaits the user's subscription, region and spending constraints. SQLite inside the
+cloud container is explicitly temporary; shared Cosmos DB durability follows.
+
+Stage 8's scoped local detector, generator and recap path remains complete,
+including one live Azure acceptance of bounded Microsoft Agent Framework recap
+adaptation. Full-match coverage and broader player attribution remain extensions.
+Stages 9 and 10, cloud restart recovery and measured evaluation are not complete.
+After each task, report the result and best next move.
 
 The fixture declares Eastbridge 0–1 Northport at 48:00 and ten events through
 48:55. Independent expectations identify e04 as the only Eastbridge high recovery,
@@ -54,8 +53,8 @@ the fallback. The bounded workflow is documented in `docs/workflow.md`;
 the first single-call increment remains documented in `docs/adaptation.md`.
 
 Stage 7 audience variants and the Stage 8 increments are documented below.
-Best next move: begin Stage 9 with container packaging and configuration, then
-shared Cosmos DB durability, Event Hubs ingestion and Web PubSub delivery. Stage 10
+Best next move: select the Azure target and budget for a hosted container smoke
+check, then shared Cosmos DB durability, Event Hubs ingestion and Web PubSub delivery. Stage 10
 still requires measured evaluation and the final demonstration. Never request API
 keys in chat. Do not claim cloud restart recovery from local SQLite storage.
 
@@ -68,8 +67,8 @@ Distinguish deployed and verified components from local adapters and proposals.
 Notify the user before Azure setup or resource decisions require their action.
 Current Microsoft use is the live-verified Azure OpenAI adapter and bounded
 Microsoft Agent Framework recovery and recap workflows; GitHub Actions provides protected-branch CI.
-Application hosting, Cosmos DB, Event Hubs and Web PubSub are planned Stage 9
-integrations, not implemented or deployed capabilities.
+Application hosting now has locally verified packaging and compiled templates;
+it is not deployed. Cosmos DB, Event Hubs and Web PubSub remain planned integrations.
 
 ## Verification recorded on 15 October 2026
 
@@ -1597,3 +1596,64 @@ resources, establish the target subscription/resource group, region, cost limit
 and access configuration. The application is still local; this increment verifies
 Azure model use, not Azure hosting. Stage 10 evaluation and the user's final
 as-built architecture/Microsoft-extension review remain outstanding.
+
+## Stage 9 container foundation verification — 16 October 2026
+
+Changed files: `Dockerfile`, `.dockerignore`, `infra/foundation.bicep`,
+`infra/app.bicep`, `scripts/container_smoke.py`, `scripts/test_container.sh`,
+`backend/counterpress/api/main.py`, `tests/test_container_serving.py`,
+`.github/workflows/ci.yml`, `docs/deployment.md`, `README.md` and this progress log.
+No dependencies, credentials or frontend behavior changed.
+
+Commands ran from the repository root; long test/build progress is abbreviated
+below, with the actual result lines retained. Durations vary.
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
+422 passed in 11.04s
+
+$ npm --prefix frontend test
+Test Files  6 passed (6)
+Tests  32 passed (32)
+Duration  2.59s
+
+$ npm --prefix frontend run build
+vite v7.3.7 building client environment for production...
+✓ 42 modules transformed.
+dist/index.html                   0.53 kB │ gzip:  0.35 kB
+dist/assets/index-Cie8pE97.css   18.51 kB │ gzip:  4.96 kB
+dist/assets/index-BTCKEVKM.js   271.18 kB │ gzip: 83.82 kB
+✓ built in 474ms
+
+$ docker build --platform linux/amd64 -t counterpress:smoke . > /private/tmp/counterpress-docker-build.log 2>&1
+(exit 0; build log ended with #26 DONE 0.7s)
+
+$ bash scripts/test_container.sh
+PASS: health, readiness, frontend/assets, 1-to-4 evidence, control, bilingual recap, private-path 404s
+PASS: non-root runtime, writable ephemeral database, no Azure environment or source credentials
+
+$ DOTNET_BUNDLE_EXTRACT_BASE_DIR=/private/tmp/counterpress-dotnet /private/tmp/counterpress-bicep --version
+Bicep CLI version 0.48.1 (cec7951cf6)
+
+$ DOTNET_BUNDLE_EXTRACT_BASE_DIR=/private/tmp/counterpress-dotnet /private/tmp/counterpress-bicep build infra/foundation.bicep --outfile /private/tmp/counterpress-foundation.json
+$ DOTNET_BUNDLE_EXTRACT_BASE_DIR=/private/tmp/counterpress-dotnet /private/tmp/counterpress-bicep build infra/app.bicep --outfile /private/tmp/counterpress-app.json
+```
+
+Both final Bicep compilations exited 0 with no diagnostics. The official compiler
+was downloaded temporarily and its SHA-256 verified against the release metadata;
+CI verifies the Linux binary's pinned checksum too. Compilation is not an Azure
+what-if or live deployment. The local Linux/amd64 image is 242,940,261 bytes.
+
+The local image archive scan checked all 18 entries against configured private
+values/hostnames: no private key or endpoint matches. The configured deployment
+label overlaps a public model identifier in the third-party OpenAI SDK; this was
+inspected and excluded only within those SDK files. No local environment was
+passed into the build or runtime. The source publication scan is also required
+before push. No new browser capture was necessary: UI code is unchanged and its
+compiled assets plus same-origin API were exercised over real HTTP.
+
+The container has temporary SQLite state and factual templates only. No new Azure
+resources, registry uploads, model requests or deployment workflow ran. The best
+next move is the hosted smoke check once the user supplies subscription, region,
+resource-group preference and budget; the deployment guide makes that action
+reviewable. Cosmos DB, Event Hubs, Web PubSub and Stage 10 remain subsequent work.

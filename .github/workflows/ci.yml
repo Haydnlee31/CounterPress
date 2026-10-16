@@ -61,3 +61,26 @@ jobs:
         run: npm test
       - name: Build production frontend
         run: npm run build
+
+  container:
+    name: Container smoke and Azure templates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build production image without secrets
+        run: docker build --platform linux/amd64 -t counterpress:smoke .
+      - name: Verify same-origin application in restricted container
+        run: bash scripts/test_container.sh
+      - name: Download and verify Bicep compiler
+        run: |
+          curl --fail --silent --show-error --location --retry 3 https://github.com/Azure/bicep/releases/download/v0.48.1/bicep-linux-x64 -o "$RUNNER_TEMP/bicep"
+          echo "b09ec25a9d376c1f8e33ede6ed22b587f915ad68488d5db77a6f9541748c7f6e  $RUNNER_TEMP/bicep" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/bicep"
+      - name: Compile Azure templates without signing in or provisioning
+        run: |
+          "$RUNNER_TEMP/bicep" build infra/foundation.bicep --outfile "$RUNNER_TEMP/foundation.json"
+          "$RUNNER_TEMP/bicep" build infra/app.bicep --outfile "$RUNNER_TEMP/app.json"
