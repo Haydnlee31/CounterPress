@@ -1,13 +1,13 @@
 # Progress
 
-Current milestone: Stage 8 seventh increment — factual segment recaps now select
-up to four current eligible ledger stories, preserve exact evidence citations,
-and update or remove statements after corrections. The bilingual recap shares
-snapshot scope and respects preferences and the card budget. Player contribution,
-progression, pressure/escape and recovery publications remain available.
-Seeded generation, independent controls and whole-match development/holdout splits
-remain complete. Recap adaptation through the validated narrative workflow remains
-outstanding; broader attribution rules are optional future expansion.
+Current milestone: Stage 8 eighth increment — bounded recap adaptation through
+Microsoft Agent Framework is implemented and verified offline plus one live Azure
+acceptance. Analyst tools review frozen evidence/limitations; the Producer selects
+approved wording while code retains facts and citations. Atomic source checks,
+automatic expiry, durable audits and factual fallback are in place. Seeded
+simulation, reviewed detectors and bilingual factual recaps remain available.
+The scoped local Stage 8 path is ready for Stage 9 Azure integration. Full-match
+coverage and broader player attribution remain extensions, not achieved claims.
 Stage 7 analyst/casual views, preferences and English/Simplified Chinese variants
 remain complete. Stage 6 single-call adaptation and
 bounded Analyst/Producer workflow remain verified against live Azure. Stage 5
@@ -54,10 +54,10 @@ the fallback. The bounded workflow is documented in `docs/workflow.md`;
 the first single-call increment remains documented in `docs/adaptation.md`.
 
 Stage 7 audience variants and the Stage 8 increments are documented below.
-Best next move: adapt frozen recaps through the bounded Microsoft Agent Framework
-workflow, preserving citations and rejecting stale model output. Then integrate
-the Azure runtime one adapter at a time (Stage 9), followed by measured evaluation
-and the final demonstration (Stage 10). Never request API keys in chat.
+Best next move: begin Stage 9 with container packaging and configuration, then
+shared Cosmos DB durability, Event Hubs ingestion and Web PubSub delivery. Stage 10
+still requires measured evaluation and the final demonstration. Never request API
+keys in chat. Do not claim cloud restart recovery from local SQLite storage.
 
 User direction, 16 October 2026: creatively use Microsoft platforms where they
 add real product value. After completing the build plan, deliver an as-built
@@ -67,7 +67,7 @@ and demo value; verify current product capabilities against official sources.
 Distinguish deployed and verified components from local adapters and proposals.
 Notify the user before Azure setup or resource decisions require their action.
 Current Microsoft use is the live-verified Azure OpenAI adapter and bounded
-Microsoft Agent Framework workflow; GitHub Actions provides protected-branch CI.
+Microsoft Agent Framework recovery and recap workflows; GitHub Actions provides protected-branch CI.
 Application hosting, Cosmos DB, Event Hubs and Web PubSub are planned Stage 9
 integrations, not implemented or deployed capabilities.
 
@@ -1508,3 +1508,92 @@ exhausted-budget test still checks rejection before network/tool invocation.
 `tests/test_workflow.py` is the additional changed file. The full backend suite
 then passed locally: 384 tests in 7.88s. Both required CI checks must pass on the
 updated commit before merge.
+
+## Stage 8 eighth increment — bounded recap workflow, 16 October 2026
+
+A Microsoft Agent Framework Analyst/Producer graph now adapts a frozen recap.
+The Analyst must request the evidence and limitations tools, then accept, narrow
+or reject the supplied stories. The Producer receives a fresh package and chooses
+approved wording and a heading. Code validates identity, order, fingerprint and
+language; model prose never becomes football facts. Both stages use the existing
+hard transport/tool budgets and eight-second deadline.
+
+A new append-only audit table is migrated additively. Atomic commit checks reject
+intervening source/publication changes. Snapshot presentation checks source,
+cutoff, preferences and expiry. The factual recap stays in every snapshot alongside
+any accepted adaptation, and a browser timer restores it when the adaptation
+expires. Replay polling does not invoke the model. No new Azure resource was
+required; existing local configuration validated without revealing its values.
+
+Files changed:
+
+- `backend/counterpress/workflow/recap_contracts.py`, `recap_service.py`, `recap.py`: schemas, bounded graph and sanitized CLI.
+- `backend/counterpress/recap_adaptation.py`: fingerprint, validated plan and factual fallback.
+- `backend/counterpress/history.py`: additive audit persistence and append-only guards.
+- `backend/counterpress/api/snapshots.py`: factual/adapted recaps and compact workflow view.
+- `backend/counterpress/recaps.py`, `audience.py`, `workflow/contracts.py`: shared factual rendering, type-only history imports and activity labels.
+- `frontend/src/SegmentRecap.tsx`, `App.tsx`, `types.ts`, `recapValidation.ts`, `WorkflowActivity.tsx`: validated presentation, expiry fallback and bilingual activity.
+- `tests/test_recap_workflow.py`, `frontend/src/SegmentRecap.test.tsx`: real framework/SDK mock boundaries, lifecycle tests and browser-contract checks.
+- `README.md`, `docs/recaps.md`, `docs/recap-workflow.md`, `docs/progress.md`: behavior, commands, scope and next milestone.
+- `docs/verification/recap-workflow-live.json`, `docs/screenshots/recap-workflow-live-en.png`: sanitized live verification and browser capture.
+
+Final local verification commands and output (result excerpts):
+
+```console
+$ UV_CACHE_DIR=.uv-cache uv run --frozen pytest -q
+419 passed in 11.10s
+
+$ npm --prefix frontend test
+Test Files  6 passed (6)
+     Tests  32 passed (32)
+  Duration  2.29s
+
+$ npm --prefix frontend run build
+> counterpress-frontend@0.1.0 build
+> tsc --noEmit && vite build
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 42 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.53 kB │ gzip:  0.35 kB
+dist/assets/index-Cie8pE97.css   18.51 kB │ gzip:  4.96 kB
+dist/assets/index-BTCKEVKM.js   271.18 kB │ gzip: 83.82 kB
+✓ built in 421ms
+
+$ git diff --check
+(no output; exit 0)
+```
+
+Live check command:
+
+```sh
+UV_CACHE_DIR=.uv-cache uv run --env-file .env --frozen python -m counterpress.workflow.recap pressure-increase --db var/recap-workflow-live.sqlite3 > /private/tmp/counterpress-recap-live.json
+```
+
+Sanitized result excerpt:
+
+```json
+{
+  "status": "accepted",
+  "reason": "supported_comparisons",
+  "duration_ms": 7304,
+  "provider_requests": 3,
+  "analyst_requests": 2,
+  "producer_requests": 1,
+  "tool_invocations": 2
+}
+```
+
+The live result retained both stories and their exact citations. Browser review
+showed the accepted brief presentation and activity, then automatic expiry restored
+the full factual wording with both evidence links intact. Browser warning/error
+log was empty. The live latency is one sample, not P95 or a reliability claim.
+Both languages and narrowed/rejected/failure cases are covered offline.
+
+Best next move: Stage 9 container packaging and Azure runtime configuration,
+followed by shared durability and streaming adapters. Before deploying new Azure
+resources, establish the target subscription/resource group, region, cost limit
+and access configuration. The application is still local; this increment verifies
+Azure model use, not Azure hosting. Stage 10 evaluation and the user's final
+as-built architecture/Microsoft-extension review remain outstanding.

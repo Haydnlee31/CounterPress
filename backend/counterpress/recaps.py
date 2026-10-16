@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import Field, model_validator
 
-from counterpress.audience import AudienceView, NarrativeVariant, ViewingPreferences
+from counterpress.audience import AudienceService, AudienceView, NarrativeVariant, ViewingPreferences
 from counterpress.contribution_views import contribution_view
 from counterpress.domain.models import Contract, Identifier, MatchTime, ObservationWindow, PositiveInt
 from counterpress.history import History
@@ -62,7 +62,7 @@ class SegmentRecap(Contract):
 
 
 def build_recap(history: History, cutoff: MatchTime, windows, prefs: ViewingPreferences,
-                audience: AudienceView) -> SegmentRecap:
+                audience: AudienceView | None = None) -> SegmentRecap:
     """Select latest revisions before filtering withdrawals; use one immutable read.
 
     Club and metric preferences rank; player preferences require actual recorded
@@ -85,6 +85,8 @@ def build_recap(history: History, cutoff: MatchTime, windows, prefs: ViewingPref
 
     recovery = next((c for c in reversed(history.changes) if c.available_at.key() <= cutoff.key()), None)
     if recovery and recovery.operation != 'withdraw':
+        if audience is None:
+            audience = AudienceService().build(history, recovery.insight, recovery.evidence, (), prefs, False)
         add('recovery', recovery, audience, recovery.evidence.packet.evidence_id)
     for kind, stream, render in [('pressure', history.pressure_changes, pressure_view),
                                  ('contribution', history.contribution_changes, contribution_view)]:

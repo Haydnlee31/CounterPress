@@ -22,6 +22,8 @@ export type Insight = {
 }
 export type Snapshot = {
   recap?: SegmentRecap | null;
+  adapted_recap?: SegmentRecap | null;
+  recap_workflow?: RecapWorkflow | null;
   pressure?: PressureView | null;
   pressure_lifecycle?: PressureChange[];
   selected_kind?: 'recovery' | 'pressure' | 'contribution' | null;
@@ -77,3 +79,5 @@ export type ContributionView = { preferences: Preferences; state: string; messag
 export type RecapCitation = { kind: 'recovery' | 'pressure' | 'contribution'; insight_id: string; revision: number; evidence_id: string; available_at: MatchTime }
 export type SegmentRecap = { match_id: string; cutoff: MatchTime; windows: [Window, Window]; preferences: Preferences;
   state: 'ready' | 'collecting' | 'no_eligible' | 'budget_hidden'; statements: { narrative: Variant; citation: RecapCitation }[]; omitted_count: number }
+
+export type RecapWorkflow = Workflow & { applied: boolean; heading: 'segment_review' | 'key_changes' | null; expires_at_unix_ms: number }

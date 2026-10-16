@@ -93,3 +93,43 @@ test('screen removes withdrawn recap, ignores stale delivery, and clears it on r
   expect(screen.getByText(/Waiting for both comparison windows/)).toBeTruthy()
   expect(screen.queryByRole('link', { name: /Open cited evidence/ })).toBeNull()
 })
+
+test('validated brief presentation retains citation and restores factual wording exactly at expiry', () => {
+  vi.useFakeTimers()
+  const factual = snapshot().recap!
+  factual.statements[0].narrative.explanation += ' Only complete episodes are counted.'
+  const adapted = structuredClone(factual)
+  adapted.statements[0].narrative.explanation = 'Eastbridge: (48:00,53:00] 3/6 → (53:00,58:00] 6/6.'
+  const workflow = { attempt_id: 'recap-one', status: 'accepted', applied: true, heading: 'key_changes' as const,
+    expires_at_unix_ms: Date.now() + 1000, actions: [{ label: 'Prepared recap', elapsed_ms: 100 }] }
+  render(<SegmentRecap recap={factual} adapted={adapted} workflow={workflow} scenario="pressure-increase" />)
+  fireEvent.click(screen.getByText('Catch up on this segment'))
+  expect(screen.getByText('KEY CHANGES IN THIS SEGMENT')).toBeTruthy()
+  expect(screen.getByText(/AI-assisted selection/)).toBeTruthy()
+  expect(screen.queryByText(/Only complete episodes/)).toBeNull()
+  const url = screen.getByRole('link', { name: /Open cited evidence/ }).getAttribute('href')
+  act(() => vi.advanceTimersByTime(1000))
+  expect(screen.getByText(/Only complete episodes/)).toBeTruthy()
+  expect(screen.getByText(/Factual recap shown/)).toBeTruthy()
+  expect(screen.queryByText(/AI-assisted selection/)).toBeNull()
+  expect(screen.getByRole('link', { name: /Open cited evidence/ }).getAttribute('href')).toBe(url)
+})
+
+test('transport rejects adapted stories outside the factual selection and inconsistent audit metadata', () => {
+  const source = snapshot()
+  source.adapted_recap = structuredClone(source.recap)
+  source.recap_workflow = { attempt_id: 'recap-one', status: 'accepted', applied: true, heading: 'key_changes', expires_at_unix_ms: Date.now() + 1000, actions: [] }
+  expect(() => validateRecap(source, defaultPreferences)).not.toThrow()
+  for (const mutation of [
+    (s: Snapshot) => { s.recap_workflow!.status = 'invalid' },
+    (s: Snapshot) => { s.recap_workflow!.applied = false },
+    (s: Snapshot) => { s.adapted_recap = null },
+    (s: Snapshot) => { s.recap = null },
+    (s: Snapshot) => { s.adapted_recap!.statements[0].narrative.qualification = 'Invented tactical claim' },
+    (s: Snapshot) => { s.adapted_recap!.omitted_count = 1 },
+    (s: Snapshot) => { s.recap!.statements = []; s.recap!.state = 'no_eligible' },
+  ]) {
+    const altered = structuredClone(source); mutation(altered)
+    expect(() => validateRecap(altered, defaultPreferences)).toThrow(/Recap/)
+  }
+})

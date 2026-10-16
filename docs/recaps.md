@@ -75,11 +75,10 @@ recap. They do not alter producer history.
 
 ## Remaining work
 
-This increment implements the factual template portion of Stage 8 recaps. The next
-increment should adapt a frozen recap through the bounded Microsoft Agent
-Framework narrative workflow, retaining exact citations, a deterministic fallback
-and atomic rejection when any cited publication changes. Full-match recaps need
+The factual template portion is now complemented by the [bounded recap workflow](recap-workflow.md).
+It reviews frozen identities and selects approved presentation choices with an
+atomic correction check and deterministic fallback. Full-match recaps still need
 broader fixture coverage; this ten-minute sample cannot support that claim.
 
 Stage 9's deployed Azure path and Stage 10's measured evaluation/demo remain
-outstanding. No Azure setup or live model call was needed for this increment.
+outstanding. The factual recap itself requires no model call or Azure resource.
