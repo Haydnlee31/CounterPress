@@ -6,6 +6,8 @@ import sqlite3
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query, Response
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from counterpress.domain.models import Contract
 from counterpress.domain.contributions import PlayerContributionEvidence
@@ -21,7 +23,8 @@ class HealthResponse(Contract):
     service: Literal["counterpress"] = "counterpress"
 
 
-def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:") -> FastAPI:
+def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:",
+               static_dir: Path | None = None) -> FastAPI:
     application = FastAPI(title="CounterPress", version="0.1.0")
     root = fixture_dir or Path(os.environ.get("COUNTERPRESS_FIXTURE_DIR", Path(__file__).resolve().parents[3] / "fixtures"))
     service = SnapshotService(root, SQLiteHistoryStore(db_path))
@@ -30,6 +33,16 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
     @application.get("/health", response_model=HealthResponse, tags=["health"])
     def health() -> HealthResponse:
         """Process liveness only; no external dependencies."""
+        return HealthResponse()
+
+    @application.get("/ready", response_model=HealthResponse, tags=["health"])
+    def ready(response: Response) -> HealthResponse:
+        """Check local replay/storage availability without contacting a model."""
+        response.headers["Cache-Control"] = "no-store"
+        try:
+            service.snapshot("increase", 180000)
+        except (ValueError, OSError, sqlite3.Error) as exc:
+            raise HTTPException(status_code=503, detail="Replay is not ready.") from exc
         return HealthResponse()
 
     @application.get("/api/scenarios", response_model=tuple[Scenario, ...])
@@ -110,7 +123,22 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
         except (ValueError, OSError, sqlite3.Error) as exc:
             raise HTTPException(status_code=503, detail="Replay history could not be loaded or validated.") from exc
 
+    if static_dir is not None:
+        static_dir = static_dir.resolve()
+        if not (static_dir / "index.html").is_file() or not (static_dir / "assets").is_dir():
+            raise ValueError("Static frontend requires index.html and an assets directory.")
+
+        @application.get("/", include_in_schema=False)
+        def frontend() -> FileResponse:
+            return FileResponse(static_dir / "index.html", headers={"Cache-Control": "no-store"})
+
+        # Only expose compiled assets. No catch-all, source files or repository root.
+        application.mount("/assets", StaticFiles(directory=static_dir / "assets"), name="assets")
+
     return application
 
 
-app = create_app(db_path=os.environ.get("COUNTERPRESS_DB_PATH", str(Path(__file__).resolve().parents[3] / "var/counterpress.sqlite3")))
+app = create_app(
+    db_path=os.environ.get("COUNTERPRESS_DB_PATH", str(Path(__file__).resolve().parents[3] / "var/counterpress.sqlite3")),
+    static_dir=Path(os.environ["COUNTERPRESS_STATIC_DIR"]) if os.environ.get("COUNTERPRESS_STATIC_DIR") else None,
+)

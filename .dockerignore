@@ -1,0 +1,27 @@
+# Deny by default: private files never enter the build context.
+**
+!Dockerfile
+!.dockerignore
+!pyproject.toml
+!uv.lock
+!backend/
+!backend/counterpress/
+!backend/counterpress/**/
+!backend/counterpress/**/*.py
+!fixtures/
+!fixtures/**/
+!fixtures/**/*.json
+!frontend/
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/tsconfig.json
+!frontend/vite.config.ts
+!frontend/index.html
+!frontend/src/
+!frontend/src/**/
+!frontend/src/**/*.ts
+!frontend/src/**/*.tsx
+!frontend/src/**/*.css
+# Tests are not needed by the production frontend build.
+frontend/src/**/*.test.ts
+frontend/src/**/*.test.tsx

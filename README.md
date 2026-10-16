@@ -26,9 +26,15 @@ correction-aware selection from the same publication ledger.
 The eighth adds bounded Microsoft Agent Framework recap review and approved
 presentation choices, verified offline and with one successful live Azure run.
 
+Stage 9 now has a verified production container and reviewable Azure Container Apps
+and private-registry templates. No application resources have been deployed yet.
+See the [deployment guide](docs/deployment.md) for startup, costs, temporary storage
+limits, and the manual Azure sequence.
+
 ## Local setup
 
-GitHub Actions runs backend tests and frontend tests/builds on pushes to `main`,
+GitHub Actions runs backend tests, frontend tests/builds, a production-container
+HTTP smoke check and Bicep compilation on pushes to `main`,
 pull requests targeting `main`, and manual runs from the Actions tab. The workflow
 uses Python from `.python-version`, uv 0.11.29, Node.js 24 and committed dependency
 locks. Actions are pinned to commit hashes, repository permissions are read-only,
@@ -158,9 +164,9 @@ meaningful controls. Possession without progression now has its own independent
 controls, episode evidence and durable replay cards. Player high-recovery share
 detection now provides independent controls and source-linked CLI/API attribution.
 Durable player publications and bilingual replay cards are now implemented.
-Best next move: Stage 9 container packaging and Azure configuration, followed by
-shared durable storage and streaming delivery adapters.
-Azure application deployment remains later work.
+Best next move: confirm the Azure subscription, region and budget for the hosted
+container smoke check, then add shared Cosmos DB durability and streaming delivery.
+Azure application deployment is prepared but has not run.
 
 ## Run the replay
 
