@@ -36,6 +36,11 @@ def main() -> None:
             print(f"{display_time(change.available_at)} | {change.evidence.subject_team_id} {change.metric} | "
                   f"{change.operation} r{change.revision} | {d.baseline_numerator}/{d.baseline_denominator} -> "
                   f"{d.current_numerator}/{d.current_denominator} | {d.status}")
+        for change in after.contribution_changes[len(before.contribution_changes):]:
+            e = change.evidence
+            print(f"{display_time(change.available_at)} | {e.subject_team_id}/{e.subject_player_id} {e.metric} | "
+                  f"{change.operation} r{change.revision} | {e.baseline.player_count}/{e.baseline.team_count} -> "
+                  f"{e.current.player_count}/{e.current.team_count} | {e.decision.status}")
     except (OSError, ValueError, sqlite3.Error) as exc:
         parser.error(str(exc))
 

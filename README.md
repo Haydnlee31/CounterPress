@@ -19,6 +19,8 @@ The fourth adds sustained possession without progression, independent positive
 and negative controls, durable corrections and bilingual episode evidence.
 The fifth adds actor-attributed player high-recovery shares, independent controls,
 revision-aware CLI evidence and an API over persisted source history.
+The sixth persists those player stories, handles correction-driven withdrawal and
+restoration, and adds bilingual replay cards with exact actor attribution.
 
 ## Local setup
 
@@ -110,6 +112,8 @@ and invalid inputs, as well as the health endpoint and documentation routes.
 - `fixtures/progression/`, `tests/test_progression.py`, `tests/expected_progression.json`: independent progression controls, corrections and regression checks.
 - `backend/counterpress/domain/contributions.py` and `backend/counterpress/contributions.py`: player high-recovery share evidence and CLI.
 - `fixtures/contributions/`, `tests/test_contributions.py`, `tests/expected_contributions.json`: independent actor attribution controls and revision checks.
+- `backend/counterpress/contribution_publications.py` and `backend/counterpress/contribution_views.py`: durable player histories and bilingual views.
+- `tests/test_contribution_history.py` and `frontend/src/ContributionCard.test.tsx`: player lifecycle, cooldown, persistence and display checks.
 - `fixtures/tiny_possession.json`: fictional Eastbridge/Northport sequence.
 - `fixtures/recovery_increase.json` and `fixtures/recovery_control.json`: 89-event,
   ten-minute scenarios with independently checked one-versus-four and one-versus-one counts.
@@ -149,7 +153,8 @@ provides CLI evidence and durable replay cards with fully observed episodes and
 meaningful controls. Possession without progression now has its own independent
 controls, episode evidence and durable replay cards. Player high-recovery share
 detection now provides independent controls and source-linked CLI/API attribution.
-Best next move: durable player-contribution publications and replay cards, followed by recaps.
+Durable player publications and bilingual replay cards are now implemented.
+Best next move: evidence-linked match recaps using the published stories.
 Azure application deployment remains later work.
 
 ## Run the replay
@@ -291,4 +296,10 @@ team totals stay fixed. The negative stays at 1/4. Only the recovery actor recei
 credit; duel winners and pass recipients do not. Counts and shares must both rise
 to qualify. This does not measure overall player quality or tactical impact.
 See the [contribution guide](docs/contributions.md) for policy, historical actor
-corrections, API usage and the planned publication/UI integration.
+corrections and API usage.
+
+In the browser, select **Player recovery share increase**, then **Go to comparison**
+and **Show evidence**. Select **Player recovery share** under Metric focus to
+prioritize player stories. The card retains the full team denominator and labels
+each recorded recovery's attribution. See [publication and replay details](docs/contribution-publication.md)
+for correction commands, historical evidence, cooldown and shared card ranking.

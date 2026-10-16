@@ -7,6 +7,7 @@ export class PlaybackScope {
   private atMs = -1
   private insightRevision = 0
   private pressureRevisions = new Map<string, number>()
+  private contributionRevisions = new Map<string, number>()
 
   constructor(id: string = crypto.randomUUID()) { this.id = id }
 
@@ -16,6 +17,9 @@ export class PlaybackScope {
       || snapshot.state.at.elapsed_ms < this.atMs || revision < this.insightRevision) return false
     const pressure = new Map((snapshot.pressure_lifecycle ?? []).map(change => [change.insight_id, change.revision]))
     for (const [id, version] of this.pressureRevisions) if ((pressure.get(id) ?? 0) < version) return false
+    const contributions = new Map((snapshot.contribution_lifecycle ?? []).map(change => [change.insight_id, change.revision]))
+    for (const [id, version] of this.contributionRevisions) if ((contributions.get(id) ?? 0) < version) return false
+    this.contributionRevisions = contributions
     this.pressureRevisions = pressure
     this.historyVersion = snapshot.history_version
     this.atMs = snapshot.state.at.elapsed_ms

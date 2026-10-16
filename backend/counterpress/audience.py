@@ -20,7 +20,7 @@ class ViewingPreferences(Contract):
     depth: Literal["analyst", "casual"] = "analyst"
     club_id: Identifier | None = None
     player_id: Identifier | None = None
-    metric_focus: Literal["balanced", "high_recoveries", "passing", "pressure_exposure", "pressured_escape", "possession_without_progression"] = "balanced"
+    metric_focus: Literal["balanced", "high_recoveries", "passing", "pressure_exposure", "pressured_escape", "possession_without_progression", "player_high_recovery_share"] = "balanced"
     card_budget: int = Field(default=1, ge=0, le=1)
 
 

@@ -80,7 +80,7 @@ The snapshot endpoint accepts these query parameters in addition to `at_ms` and
 | `depth` | `analyst` (default), `casual` |
 | `club_id` | Registered team ID; omitted means any |
 | `player_id` | Registered player ID; omitted means all contributors |
-| `metric_focus` | `balanced` (default), `high_recoveries`, `passing`, `pressure_exposure`, `pressured_escape`, `possession_without_progression` |
+| `metric_focus` | `balanced` (default), `high_recoveries`, `passing`, `pressure_exposure`, `pressured_escape`, `possession_without_progression`, `player_high_recovery_share` |
 | `card_budget` | 0 or 1 (default) |
 
 Unknown IDs or unsupported values return 422. Responses contain the registered
