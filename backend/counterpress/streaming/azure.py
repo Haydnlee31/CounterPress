@@ -6,6 +6,7 @@ import os
 import re
 from urllib.parse import urlparse
 from counterpress.streaming.consumer import DeliveryProcessor
+from counterpress.streaming.telemetry import StreamTelemetry
 
 log = logging.getLogger(__name__)
 
@@ -42,6 +43,8 @@ class StreamingRuntime:
         self.stack = AsyncExitStack()
         self.task = None
         self.publisher = None
+        self.telemetry = StreamTelemetry()
+        self.telemetry_task = None
 
     async def start(self):
         if os.environ.get("COUNTERPRESS_STORAGE") != "cosmos":
@@ -71,7 +74,7 @@ class StreamingRuntime:
                     metadata={'sha256': digest, 'reason': 'invalid_delivery'})
             except ResourceExistsError:
                 pass  # Stable offset identity, already durably quarantined.
-        processor = DeliveryProcessor(self.service, self.publisher, reject)
+        processor = DeliveryProcessor(self.service, self.publisher, reject, self.telemetry)
         self.checkpoints = BlobCheckpointStore(blob_account_url=blob,
             container_name='eventhub-checkpoints', credential=credential)
         self.consumer = await self.stack.enter_async_context(EventHubConsumerClient(
@@ -81,13 +84,17 @@ class StreamingRuntime:
         async def run():
             while True:
                 try:
-                    await self.consumer.receive(on_event=processor.on_event, starting_position='-1')
+                    await self.consumer.receive(on_event=processor.on_event, starting_position='-1',
+                        track_last_enqueued_event_properties=True)
                 except asyncio.CancelledError:
                     raise
                 except Exception:
+                    self.telemetry.increment('consumer_failures')
                     log.warning('stream_consumer_retry')
                     await asyncio.sleep(5)
         self.task = asyncio.create_task(run())
+        if self.telemetry.enabled:
+            self.telemetry_task = asyncio.create_task(self.telemetry.run())
 
     async def close(self):
         if self.task:
@@ -96,6 +103,13 @@ class StreamingRuntime:
                 await self.task
             except asyncio.CancelledError:
                 pass
+        if self.telemetry_task:
+            self.telemetry_task.cancel()
+            try:
+                await self.telemetry_task
+            except asyncio.CancelledError:
+                pass
+            self.telemetry.emit()
         if hasattr(self, 'checkpoints'):
             await self.checkpoints.close()
         await self.stack.aclose()

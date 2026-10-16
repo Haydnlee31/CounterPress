@@ -1,0 +1,6 @@
+ContainerAppConsoleLogs
+| where TimeGenerated > ago(1h) and ContainerAppName == 'counterpress'
+| extend m = parse_json(Log)
+| where tostring(m.schema) == 'counterpress_ops_v1'
+| summarize Processed=sum(tolong(m.processed)), Rejected=sum(tolong(m.rejected)), Retries=sum(tolong(m.retries)), PublishFailures=sum(tolong(m.publish_failures)), CheckpointFailures=sum(tolong(m.checkpoint_failures)), ConsumerFailures=sum(tolong(m.consumer_failures)), MaxDeliveryAgeSeconds=max(todouble(m.max_delivery_age_seconds)), MaxPendingSeconds=max(todouble(m.pending_seconds)), ObservedBacklog=max(tolong(m.observed_backlog)) by bin(TimeGenerated, 5m)
+| order by TimeGenerated desc

@@ -113,8 +113,9 @@ existing model deployment. Keep its resolved subscription/resource identifiers i
 ignored local configuration, not in this public runbook. Registry storage has
 ongoing cost even when the
 app scales to zero; application use, networking and later services can add charges.
-Azure budget alerts are notifications, not a hard spending stop. The environment uses Azure Monitor routing without a diagnostic sink or paid
-Log Analytics workspace; logs are not centrally retained yet.
+Azure budget alerts are notifications, not a hard spending stop. The environment uses
+Azure Monitor routing; the optional [operations setup](operations.md) adds a small
+Log Analytics workspace that retains only numeric streaming telemetry.
 Estimate the chosen region's costs and configure budget alerts before provisioning.
 Use the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/)
 and [budget guidance](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets).
@@ -246,14 +247,13 @@ and 100%, with a forecast alert at 100%. Deployment status is in the progress lo
 
 ## Next integration steps
 
-1. Add a protected GitHub environment/OIDC deployment,
-   then operational telemetry for consumer lag, rejection/retry counts and delivery
-   failures with bounded retention and spend.
+1. Verify the OIDC release and numeric telemetry path using the [operations runbook](operations.md).
 2. Complete Stage 10 evaluation and the judge-ready architecture review.
 
 Model endpoint/configuration stays server-side; credentials or private endpoints
 must never enter frontend builds, public outputs, image layers or committed files.
 
-Current CI only builds, tests and compiles templates. It does not push an image,
-create Azure resources or use cloud credentials. The full architecture review
+The `CI` workflow builds, tests and compiles templates without cloud credentials.
+The separate manually dispatched `Deploy Azure` workflow uses OIDC to push an image
+and update the existing app; it does not provision resources. The full architecture review
 and Microsoft-platform extension proposal follow completion of Stages 9 and 10.

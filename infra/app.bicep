@@ -16,6 +16,9 @@ param useCosmos bool = false
 @description('Enable only with Cosmos after deploying infra/streaming.bicep.')
 param useStreaming bool = false
 
+@description('Emit bounded numeric streaming telemetry; configure monitoring.bicep first.')
+param useTelemetry bool = false
+
 resource registry 'Microsoft.ContainerRegistry/registries@2025-11-01' existing = {
   name: 'cp${uniqueString(resourceGroup().id)}'
 }
@@ -86,6 +89,7 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
             { name: 'COUNTERPRESS_COSMOS_CLIENT_ID', value: historyIdentity!.properties.clientId }
           ] : [], useStreaming ? [
             { name: 'COUNTERPRESS_STREAMING', value: 'azure' }
+            { name: 'COUNTERPRESS_TELEMETRY', value: useTelemetry ? 'on' : 'off' }
             { name: 'COUNTERPRESS_STREAM_CLIENT_ID', value: streamIdentity!.properties.clientId }
             { name: 'COUNTERPRESS_FEED_CLIENT_ID', value: feedIdentity!.properties.clientId }
             { name: 'COUNTERPRESS_FEED_AUTH', value: 'managed-identity' }
