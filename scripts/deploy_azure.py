@@ -101,7 +101,8 @@ def deploy():
     template['revisionSuffix']='gh-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
     body=json.dumps({'properties':{'template':template}})
     run(['az','rest','--method','patch','--url',before['id']+'?api-version=2025-07-01',
-         '--body',body,'--only-show-errors','-o','json'],parse=True,timeout=300)
+         '--body',body,'--only-show-errors','-o','json'],timeout=300)
+    print('Deploy phase: waiting for the requested revision',flush=True)
     for _ in range(36):
         current=app();p=current['properties']
         if revision_is_ready(current, 'counterpress--'+template['revisionSuffix']):break
