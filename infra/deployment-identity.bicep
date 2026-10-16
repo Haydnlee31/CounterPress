@@ -3,6 +3,10 @@ param location string = resourceGroup().location
 param namePrefix string = 'counterpress'
 param githubRepository string = 'Haydnlee31/CounterPress'
 param githubEnvironment string = 'azure-demo'
+@description('Immutable public GitHub owner ID; obtain from the repository API.')
+param githubOwnerId string
+@description('Immutable public GitHub repository ID; obtain from the repository API.')
+param githubRepositoryId string
 
 resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: '${namePrefix}-deploy'
@@ -13,7 +17,7 @@ resource federation 'Microsoft.ManagedIdentity/userAssignedIdentities/federatedI
   name: 'github-environment'
   properties: {
     issuer: 'https://token.actions.githubusercontent.com'
-    subject: 'repo:${githubRepository}:environment:${githubEnvironment}'
+    subject: 'repo:${split(githubRepository, '/')[0]}@${githubOwnerId}/${split(githubRepository, '/')[1]}@${githubRepositoryId}:environment:${githubEnvironment}'
     audiences: ['api://AzureADTokenExchange']
   }
 }

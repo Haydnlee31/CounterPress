@@ -42,6 +42,13 @@ def invariants(app):
             'identity':app['identity'], 'environmentId':properties['environmentId']}
 
 
+def revision_is_ready(app, revision):
+    p = app['properties']
+    return (p.get('latestRevisionName') == revision
+            and p.get('latestReadyRevisionName') == revision
+            and p.get('provisioningState') == 'Succeeded')
+
+
 def validate_app(app):
     p=app['properties'];container=p['template']['containers'][0]
     env={v['name']:v.get('value') for v in container.get('env',[])}
@@ -97,7 +104,7 @@ def deploy():
          '--body',body,'--only-show-errors','-o','json'],parse=True,timeout=300)
     for _ in range(36):
         current=app();p=current['properties']
-        if p.get('latestRevisionName')==p.get('latestReadyRevisionName') and p.get('provisioningState')=='Succeeded':break
+        if revision_is_ready(current, 'counterpress--'+template['revisionSuffix']):break
         time.sleep(5)
     else:raise DeploymentError('New revision did not become ready; use the documented rollback')
     validate_app(current)
