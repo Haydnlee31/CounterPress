@@ -114,9 +114,12 @@ Hosted AI remains disabled until the separate activation gates are met.
 
 The [editorial access guide](docs/editorial-access.md) describes the opt-in Entra
 API, shared Cosmos/SQLite quotas, duplicate-request prevention and revision-bound
-cache. These controls are implemented and tested locally; real identity/storage
-integration and participant review remain pending. The current evaluation CLI is
+cache. Real Entra/local API and managed-identity Cosmos integration checks passed;
+hosted authorization, authenticated model verification and participant review
+remain pending. The current evaluation CLI is
 a separately frozen regression suite; the original paid pilot report is unchanged.
+The [integration guide](docs/editorial-integration.md) records the real Entra
+sign-in check and repeatable identity/Cosmos verification commands.
 
 ```sh
 uv run --frozen python -m counterpress.evaluation.editorial

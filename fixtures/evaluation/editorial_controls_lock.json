@@ -1,5 +1,5 @@
 {
-  "version": "editorial-controls-regression-v1",
+  "version": "editorial-controls-regression-v2",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -75,6 +75,6 @@
     "fixtures/progression/increase.json": "daecf9455fec1950d623e5dc7ec3f6bb669cdd630da3ff7c664fe43bc1f8d327",
     "fixtures/recovery_control.json": "6dbbfa120f9d3389422168ebf6a0481cdce46517e04da34f15154dc056b048f5",
     "fixtures/recovery_increase.json": "63f1878b818288ac8602e06d75c495c3bd869a31139479bbe50570bd991e803f",
-    "uv.lock": "852b0642735de8f8ad42e2948b9c7013dc970b176db4b1a1e1051170331a0e93"
+    "uv.lock": "fcd26ffd0a3b0918bac98771922ad55b48cbd305b056b04111965a436bc0e914"
   }
 }

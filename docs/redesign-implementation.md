@@ -35,8 +35,9 @@ the exact deployed commit and passing local/CI/live checks. Step 2's
 21/22 valid adaptations versus 13/22 for the two-role graph. Templates remain the
 public default. The [editorial access controls](editorial-access.md) now implement
 Entra authorization, shared durable admission, revision-bound reuse and stale-task
-cancellation locally. Real Entra/Cosmos activation checks, human usefulness and
-Studio remain pending. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
+cancellation locally. [Real Entra/local API and managed-identity Cosmos checks](editorial-integration.md)
+have passed. Hosted authorization, a bounded authenticated model check, human
+usefulness and Studio remain pending. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
 is ready and no human ratings have been fabricated.
 
 The Matchday implementation is in `frontend/src/matchday/`. The previous workspace
