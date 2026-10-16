@@ -1,7 +1,7 @@
 targetScope = 'resourceGroup'
 param location string = resourceGroup().location
 param namePrefix string = 'counterpress'
-@description('First deploy false to create the workspace/table/DCR. Then true to associate and route logs. Preserve true on later deployments.')
+@description('Leave false for direct API ingestion. True enables the legacy console route; see operations.md migration instructions.')
 param enableCollection bool = false
 
 var workspaceName = '${namePrefix}-logs'

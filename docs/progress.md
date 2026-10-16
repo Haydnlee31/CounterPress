@@ -1,20 +1,21 @@
 # Progress
 
-Current milestone: Stage 9 shared durability — the hosted React/FastAPI app now
-uses serverless Cosmos DB through a dedicated managed identity. Atomic history
-commits, ETag conflict handling and head-version caching are implemented. A live
-replica replacement preserved correction/withdrawal history and immutable evidence
-without fixture reads. The USD 75 total trial budget and USD 20 initial hosting
-allocation remain unchanged. Hosting is in East US; Cosmos uses East US 2 after
-East US account creation was rejected for regional capacity. Resolved target
-identifiers remain only in ignored local configuration.
+Current milestone: Stage 9 streaming and release operations. The hosted React/FastAPI
+app uses serverless Cosmos DB, Event Hubs ingestion, Web PubSub revision delivery
+and Blob checkpoints through managed identities. Live checks cover duplicate
+replay, correction/withdrawal history, frozen evidence and replica replacement.
+Protected GitHub OIDC deployment is verified. Direct Azure Monitor numeric
+telemetry is retained and live-verified; see the latest entry below.
+The USD 75 total trial budget remains unchanged. Hosting is in East US; Cosmos
+uses East US 2 after East US account creation was rejected for regional capacity.
+Resolved identifiers remain in ignored local configuration.
 
 Stage 8's scoped local detector, generator and recap path remains complete,
 including one live Azure acceptance of bounded Microsoft Agent Framework recap
-adaptation. Full-match coverage and broader player attribution remain extensions.
-Stage 9 streaming/delivery and Stage 10 measured evaluation are not complete.
-Cloud history recovery across a hosted replica replacement is now verified.
-After each task, report the result and best next move.
+adaptation. The hosted model path remains off. Full-match coverage and broader
+player attribution remain extensions. Stage 10 measured evaluation and the final
+Microsoft-platform architecture review are the next work. After each task, report
+the result and best next move.
 
 The fixture declares Eastbridge 0–1 Northport at 48:00 and ten events through
 48:55. Independent expectations identify e04 as the only Eastbridge high recovery,
@@ -55,8 +56,8 @@ the fallback. The bounded workflow is documented in `docs/workflow.md`;
 the first single-call increment remains documented in `docs/adaptation.md`.
 
 Stage 7 audience variants and the Stage 8 increments are documented below.
-Best next move: Event Hubs ingestion and Web PubSub revision delivery. Stage 10
-still requires measured evaluation and the final demonstration. Never request API
+Best next move: Stage 10 measured evaluation and the final demonstration, followed
+by the as-built architecture and separately labelled Microsoft extension proposals. Never request API
 keys in chat. Do not claim cloud restart recovery from local SQLite storage.
 
 User direction, 16 October 2026: creatively use Microsoft platforms where they
@@ -70,7 +71,8 @@ Current Microsoft use is the live-verified Azure OpenAI adapter and bounded
 Microsoft Agent Framework recovery and recap workflows; GitHub Actions provides protected-branch CI.
 Application hosting is deployed on Azure Container Apps with private ACR images
 and managed-identity pulls. Cosmos DB shared history is deployed and restart-verified;
-Event Hubs and Web PubSub remain planned integrations.
+Event Hubs and Web PubSub are deployed and live-verified. GitHub Actions uses
+protected OIDC releases; direct numeric Azure Monitor retention is live-verified.
 
 ## Verification recorded on 15 October 2026
 
@@ -2074,3 +2076,97 @@ rejected that function; the deployed filter uses supported `iff` and `substring`
 instead. A real KQL test keeps plain/prefixed numeric records, removes an extra
 synthetic field and discards an unstructured line. Retained-log verification is
 separate from this query-engine test and console emission.
+
+
+## 16 October 2026 — acknowledged monitoring and protected release verified
+
+The [protected OIDC release](https://github.com/Haydnlee31/CounterPress/actions/runs/38878879739)
+succeeded from `f0fff2cfffeb9fa055dddbd4b4a34489b3e27ff7`, after its
+[exact-commit CI](https://github.com/Haydnlee31/CounterPress/actions/runs/38878763648)
+passed. The requested revision became ready; public HTTPS, frozen evidence and
+4/3/withdrawn/2 correction history passed. A new duplicate-delivery exercise passed
+Event Hubs → atomic Cosmos history → Web PubSub → durable Blob checkpoint without
+changing the original scenario.
+
+The console-export diagnostic route did not produce retained rows. Its filter was
+restored, then the route was removed after the replacement worked. The app now
+uses the Azure Monitor Logs Ingestion API with its streaming managed identity,
+Monitoring Metrics Publisher scoped only to the new Direct collection rule, and a
+typed `CounterPressOperations_CL` table. An explicit live upload received HTTP 204.
+Subsequent Log Analytics queries confirmed retained operational records, including
+the processed exercise deliveries. This proof is separate from console output and
+API acknowledgement. The workspace retained its 30-day retention and 0.025 GB/day
+guard. No new budget allocation, application secret or model endpoint was added.
+
+Exact local verification:
+
+```console
+$ .venv/bin/python -m pytest -q
+471 passed in 12.15s
+```
+
+Exact backend CI command/output (frontend: 36 passed; container and Bicep checks passed):
+
+```console
+$ uv run --frozen pytest -q
+471 passed in 27.71s
+```
+
+Release and live exercise commands/output:
+
+```console
+$ gh workflow run deploy.yml --repo Haydnlee31/CounterPress --ref main
+https://github.com/Haydnlee31/CounterPress/actions/runs/38878879739
+# Inside the release workflow:
+$ python3 scripts/deploy_azure.py deploy
+PASS: protected main head has successful exact-commit CI
+Deploy phase: updating the existing app image
+Deploy phase: waiting for the requested revision
+PASS: OIDC image deployment; Cosmos, streaming, identities and scaling preserved
+PASS: public HTTPS smoke and historical streaming corrections
+# Inside the deployed container:
+$ python -m counterpress.streaming.check --exercise
+PASS: Event Hubs -> Cosmos -> Web PubSub, duplicate replay, durable Blob checkpoint
+PASS: historical 4/3/withdrawn/2, frozen evidence, original scenario unchanged
+```
+
+Retained query:
+
+```kusto
+CounterPressOperations_CL
+| where TimeGenerated > ago(1h) and schema == 'counterpress_ops_v1'
+| summarize Windows=count(), Processed=sum(processed), Rejected=sum(rejected),
+    Retries=sum(retries), PublishFailures=sum(publish_failures),
+    CheckpointFailures=sum(checkpoint_failures), ConsumerFailures=sum(consumer_failures),
+    ExportFailures=sum(export_failures), MaxAgeSeconds=max(max_delivery_age_seconds),
+    LastRecord=max(TimeGenerated)
+```
+
+Observed output:
+
+```json
+{
+  "Windows": 7,
+  "Processed": 2,
+  "Rejected": 0,
+  "Retries": 0,
+  "PublishFailures": 0,
+  "CheckpointFailures": 0,
+  "ConsumerFailures": 0,
+  "ExportFailures": 0,
+  "MaxAgeSeconds": 15.784,
+  "LastRecord": "2026-10-16T09:20:14.297435Z"
+}
+```
+
+Sanitized [release evidence](verification/operations-live.json) and the
+[operations runbook](operations.md) capture the current behavior. The source and
+successful public release log scans found no configured model credentials/endpoints
+or credential patterns; the log also passed a JWT-pattern scan. Resolved cloud
+configuration and raw Azure responses remain outside tracked files.
+
+Metrics are best-effort windows; a failed upload is counted in a later window but
+is not replayed. No email/webhook alert is enabled. Actual spend remains unverified;
+the US$75 envelope and daily guard are not automatic spending shutdowns. The hosted
+model remains off. Next: Stage 10 measured evaluation, final judge demonstration,
+and the as-built Microsoft architecture with separately costed extension proposals.

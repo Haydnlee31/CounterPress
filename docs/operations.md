@@ -5,6 +5,9 @@ and updates the existing CounterPress app. Azure resource provisioning stays a
 separate reviewed Bicep operation. The deployment preserves Cosmos, Event Hubs,
 Web PubSub, managed identities, telemetry and zero-to-one scaling.
 
+Live release and retained-metric checks are recorded in
+[verification/operations-live.json](verification/operations-live.json).
+
 ## Deploy a reviewed change
 
 1. Merge a PR through the existing required checks.
@@ -126,7 +129,9 @@ Repeated failures, pending age above two minutes, or sustained backlog deserve
 inspection. Use the existing quarantine and checkpoint runbook; do not skip a
 failed offset, delete history or broaden RBAC as a shortcut. No rows can mean a
 scaled-to-zero app, collection delay, daily-cap suspension or a monitoring failure;
-it does not prove health. Metrics reset on process restart and are not an audit
+it does not prove health. New custom tables can take several minutes to show
+the first records; an upload acknowledgement alone is not proof of retention.
+Metrics reset on process restart and are not an audit
 ledger. Cosmos and checkpoints remain the durable sources of truth.
 
 No email/webhook alert, Application Insights auto-instrumentation, always-on
@@ -154,4 +159,5 @@ References: [Azure OIDC authentication](https://learn.microsoft.com/en-us/azure/
 [GitHub environment controls](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments),
 [Container Apps log routing](https://learn.microsoft.com/en-us/azure/container-apps/log-options),
 [Logs Ingestion API](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/logs-ingestion-api-overview),
+[Ingestion API sample and initial delays](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/tutorial-logs-ingestion-code),
 [daily cap limitations](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/daily-cap).
