@@ -43,6 +43,14 @@ new live Cosmos integration claim.
 
 ## Run and inspect
 
+The observed results below belong to the archived source commit `ce4cf9e` and
+unchanged `editorial_lock.json`. After the access-controls increment, the current
+CLI uses `editorial_controls_lock.json` with suite name
+`editorial-controls-regression-v1`. It reruns the same cases against current code;
+it does not reproduce or extend the original paid pilot. No new paid run has been
+performed. To reproduce the original protocol, use its recorded source commit in
+an isolated checkout.
+
 Offline, without loading any cloud configuration:
 
 ```sh
@@ -123,10 +131,10 @@ presentations in rotated A/B/C order and blank rating fields. They do not invent
 ratings. Generated sheets and raw human responses stay under ignored `var/`.
 The [fan task kit](fan-usability.md) tests the live interface separately.
 
-Before any hosted activation, implement explicit authenticated triggering,
-shared deduplication, durable quotas, revision-bound caching, stale-work cancellation,
-Cosmos integration checks and visible factual fallback. Those are future gates;
-this local benchmark does not satisfy them by itself.
+The [access-controls increment](../editorial-access.md) implements explicit
+authenticated triggering, shared deduplication, durable quotas, revision-bound
+caching and stale-work cancellation. Real Entra/Cosmos integration checks and
+human review remain activation gates; this local benchmark does not satisfy them.
 
 ## Observed pilot — 17 October 2026, Singapore time
 
@@ -158,7 +166,8 @@ Decision: retain templates as the immediate fan-facing default. Use the single
 editor as the candidate for a bounded, authenticated editorial integration. The
 current two-role graph does not justify its extra calls and fallbacks in this pilot;
 do not add more agents. Before activating AI, collect the blinded human scores and
-implement the explicit trigger, durable budget, cache and stale-work gates above.
+verify the explicit trigger, durable quota, cache and stale-work gates above in
+the real deployment.
 Human participants will be arranged later; all forms and rating fields remain blank.
 
 The public app remains on the previously verified Matchday image; this benchmark

@@ -32,7 +32,7 @@ from counterpress.evaluation.meter import Meter, MeteredTransport
 
 ROOT = Path(__file__).resolve().parents[3]
 MANIFEST = ROOT / 'fixtures/evaluation/editorial_cases.json'
-LOCK = ROOT / 'fixtures/evaluation/editorial_lock.json'
+LOCK = ROOT / 'fixtures/evaluation/editorial_controls_lock.json'
 
 
 def locked_files():
@@ -49,7 +49,8 @@ def verified_cases():
     lock = json.loads(LOCK.read_text())
     if lock['files'] != source_hashes():
         raise ValueError('Frozen cases or prompts changed; version and review the pilot before running again')
-    return json.loads(MANIFEST.read_text()), sha256(LOCK.read_bytes()).hexdigest()
+    manifest = json.loads(MANIFEST.read_text())
+    return {**manifest, 'version': lock['version']}, sha256(LOCK.read_bytes()).hexdigest()
 
 
 def prepare(case):
