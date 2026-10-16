@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-16",
+  "result": "passed",
+  "application_source_commit": "f0fff2cfffeb9fa055dddbd4b4a34489b3e27ff7",
+  "ci_run": "https://github.com/Haydnlee31/CounterPress/actions/runs/38878763648",
+  "deployment_run": "https://github.com/Haydnlee31/CounterPress/actions/runs/38878879739",
+  "deployment_authentication": "GitHub immutable-subject OIDC; main-only environment; no client secret",
+  "exact_revision_ready": true,
+  "public_https_smoke": "passed",
+  "historical_counts": [
+    4,
+    3,
+    null,
+    2
+  ],
+  "event_hubs_cosmos_pubsub_checkpoint_exercise": "passed",
+  "original_scenario_unchanged": true,
+  "monitoring": {
+    "transport": "Azure Monitor Logs Ingestion API",
+    "authentication": "stream managed identity; Monitoring Metrics Publisher scoped to the Direct DCR",
+    "table": "CounterPressOperations_CL",
+    "record_shape": "timestamp, fixed schema marker and allowlisted numeric fields",
+    "explicit_http_204_verified": true,
+    "retention_days": 30,
+    "daily_guard_gb": 0.025,
+    "retained_numeric_aggregate": {
+      "Windows": 7,
+      "Processed": 2,
+      "Rejected": 0,
+      "Retries": 0,
+      "PublishFailures": 0,
+      "CheckpointFailures": 0,
+      "ConsumerFailures": 0,
+      "ExportFailures": 0,
+      "MaxAgeSeconds": 15.784,
+      "LastRecord": "2026-10-16T09:20:14.297435Z"
+    },
+    "legacy_console_export_removed": true
+  },
+  "backend_tests": 471,
+  "frontend_tests": 36,
+  "container_smoke": "passed",
+  "bicep_compile": "passed",
+  "model_credentials_supplied_to_hosted_app": false,
+  "source_and_release_log_secret_scan": "passed",
+  "total_trial_budget_usd": 75,
+  "combined_storage_monitoring_network_allowance_usd": 5,
+  "limitations": [
+    "metrics are best-effort windows, not a durable audit ledger; failed uploads are not replayed",
+    "no unattended email/webhook alerts",
+    "current actual spend unavailable from cost API; daily guard is not a hard spending cap",
+    "hosted model adaptation remains off",
+    "Stage 10 measured evaluation and final architecture review remain subsequent work"
+  ]
+}

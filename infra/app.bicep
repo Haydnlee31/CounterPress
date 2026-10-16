@@ -16,7 +16,7 @@ param useCosmos bool = false
 @description('Enable only with Cosmos after deploying infra/streaming.bicep.')
 param useStreaming bool = false
 
-@description('Emit bounded numeric streaming telemetry; configure monitoring.bicep first.')
+@description('Emit bounded numeric streaming telemetry; provision monitoring.bicep and telemetry-ingestion.bicep first.')
 param useTelemetry bool = false
 
 resource registry 'Microsoft.ContainerRegistry/registries@2025-11-01' existing = {
