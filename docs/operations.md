@@ -29,7 +29,9 @@ an independent required reviewer.
 
 The job rebuilds and smoke-tests the container without cloud configuration, then
 uses GitHub OIDC with a dedicated Azure user-assigned identity. Azure trusts only
-`repo:Haydnlee31/CounterPress:environment:azure-demo` from the GitHub token issuer.
+`repo:Haydnlee31@<owner-id>/CounterPress@<repository-id>:environment:azure-demo`
+from the GitHub token issuer. This repository uses GitHub’s immutable subject
+format; the IDs are taken from the repository API and must match the emitted claim.
 There is no client secret or service-principal password. Environment secrets hold
 client, tenant and subscription IDs plus private target metadata; none are model
 credentials. They are masked in logs and never passed into Docker builds.
@@ -44,13 +46,17 @@ GitHub environment administration as privileged.
 
 The script uses an immutable registry digest, waits for the new revision to become
 ready, then checks the public app and the saved 4/3/withdrawn/2 correction history.
+Readiness must identify the specifically requested revision; an older ready
+revision cannot satisfy the gate.
 It does not send new fixture events. Resolved Azure settings and command stderr
 are not printed or uploaded as workflow artifacts. Model adaptation remains off.
 
 ## Bootstrap and rollback
 
 Provision `infra/deployment-identity.bicep` once using an authorized local Azure
-identity after reviewing its incremental what-if. Configure the GitHub environment
+identity after reviewing its incremental what-if. Supply the public immutable
+`githubOwnerId` and `githubRepositoryId` from `gh api repos/Haydnlee31/CounterPress`;
+do not switch GitHub back to a legacy subject format. Configure the GitHub environment
 with a custom deployment branch policy allowing branch `main`, and these secrets:
 
 | Environment secret | Source |
@@ -132,6 +138,7 @@ records contain only numeric counters. Restrict workspace access and do not publ
 raw query responses or Azure command logs.
 
 References: [Azure OIDC authentication](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect),
+[Immutable GitHub subjects](https://github.blog/changelog/2026-04-23-immutable-subject-claims-for-github-actions-oidc-tokens/),
 [GitHub environment controls](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments),
 [Container Apps log routing](https://learn.microsoft.com/en-us/azure/container-apps/log-options),
 [console table and transformations](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/containerappconsolelogs),

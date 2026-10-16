@@ -2019,3 +2019,10 @@ Azure's workspace API rejected the initial 0.01 GB guard because its minimum is
 greater than 0.023 GB/day. The template now uses 0.025 GB/day (about USD 1.61
 over 28 days at the checked ingestion rate, before other charges). This still
 fits the existing monitoring allowance; no budget increase was made.
+
+The first GitHub deployment stopped at OIDC login, before pushing or changing the
+app: this recently created repository emits GitHub's immutable subject containing
+owner/repository IDs. Azure federation initially expected the legacy name-only
+format. The template now binds the exact immutable subject; no wildcard trust or
+GitHub security downgrade is used. A separate regression requires the specifically
+requested Azure revision to be ready, avoiding a stale previous-ready match.
