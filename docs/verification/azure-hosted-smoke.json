@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-16",
+  "platform": "Azure Container Apps",
+  "region": "eastus",
+  "source_commit": "30753cf1f37c550ec726a9b95d7f210f20e52c09",
+  "infrastructure_commit": "eeba7905408065c9e942d4096e71aa370c8235b1",
+  "result": "passed",
+  "checks": [
+    "HTTPS health and readiness",
+    "compiled frontend and assets",
+    "independent 1-to-4 recovery evidence",
+    "negative control",
+    "English and Simplified Chinese factual recaps",
+    "private-path 404s"
+  ],
+  "transport": "direct HTTPS; inherited proxy disabled for verification process",
+  "javascript_bytes": 271175,
+  "javascript_sha256": "2f7bfc5f5a4eff3216c71f98535ddf84b660a3b06f6254a82ebfbfbdddf98567",
+  "browser": "1-to-4 card, five evidence markers and expanded evidence panel verified",
+  "model_credentials_supplied": false,
+  "storage": "ephemeral SQLite",
+  "total_trial_budget_usd": 75,
+  "initial_hosting_allowance_usd": 20,
+  "budget_end_exclusive": "2026-11-14T00:00:00Z",
+  "trial_spending_limit": "On"
+}
