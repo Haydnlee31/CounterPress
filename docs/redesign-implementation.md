@@ -37,7 +37,9 @@ public default. The [editorial access controls](editorial-access.md) now impleme
 Entra authorization, shared durable admission, revision-bound reuse and stale-task
 cancellation locally. [Real Entra/local API and managed-identity Cosmos checks](editorial-integration.md)
 have passed. Hosted authorization, a bounded authenticated model check, human
-usefulness and Studio remain pending. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
+usefulness remain pending. The [Studio factual review slice](studio.md) now implements
+authenticated producer review, exact-version durable approval, revocation, clean preview
+and checked export. Its browser SPA/live Cosmos/hosted activation checks remain pending. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
 is ready and no human ratings have been fabricated.
 
 The Matchday implementation is in `frontend/src/matchday/`. The previous workspace
@@ -63,5 +65,5 @@ The script writes the two Matchday screenshots under `docs/screenshots/`.
 reads API data and changes browser-local preferences only; it sends no events.
 
 Hosted model adaptation remains disabled. Matchday currently presents factual
-recap statements, not generated editorial wording. Studio and user research are
-subsequent releases, not features of this first UI slice.
+recap statements, not generated editorial wording. Studio is implemented behind a separate disabled-by-default activation switch;
+Studio cloud activation and user research remain subsequent release work.

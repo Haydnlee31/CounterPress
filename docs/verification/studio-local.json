@@ -1,0 +1,41 @@
+{
+  "source_commit": "161c5dbd61dc08bfc68b1c38ca892bca0c81d3b5",
+  "scope": "Local factual Studio implementation; no cloud activation",
+  "checks": [
+    {
+      "command": "UV_CACHE_DIR=.uv-cache uv run --frozen --offline pytest -q",
+      "output": "550 passed, 1 warning in 20.61s",
+      "note": "Existing Agent Framework evaluator ExperimentalWarning. Cosmos uses the transaction service double."
+    },
+    {
+      "command": "npm --prefix frontend test -- --reporter=dot",
+      "output": "Test Files 10 passed (10); Tests 57 passed (57)"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "output": "tsc --noEmit && vite build; 209 modules transformed; built in 698ms"
+    },
+    {
+      "command": "UV_CACHE_DIR=.uv-cache uv run --frozen --offline python scripts/prepare_studio_qa.py",
+      "output": "PASS prepared local Studio fixture; authentication is mocked, no Azure configuration used."
+    },
+    {
+      "command": "node scripts/test_studio.cjs http://127.0.0.1:5173",
+      "environment": "NODE_PATH resolved installed Playwright; CHROME_EXECUTABLE selected installed Chrome; local Vite server running",
+      "output": "PASS Studio fixture browser QA: 360/390/760/1365px, evidence table, approve, preview, revoke, session end; no overflow or page errors. Authentication is mocked."
+    }
+  ],
+  "secret_scan": {
+    "result": "PASS",
+    "coverage": "257 indexed files; configured model key/endpoint/deployment/hostname; credential patterns; private Entra/Cosmos metadata; JWT patterns",
+    "fixture_exception": "The exact invalid non-JWT unit-test string test-access-token is allowlisted in frontend/src/studio/session.test.ts only."
+  },
+  "not_verified": [
+    "Real browser SPA login and logout",
+    "New Studio approval schema against live Cosmos",
+    "Hosted Studio authorization and deployment",
+    "Human producer and fan usability"
+  ],
+  "paid_model_calls": 0,
+  "new_azure_resources": 0
+}
