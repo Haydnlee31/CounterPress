@@ -41,7 +41,8 @@ def invariants(app):
     config = copy.deepcopy(properties['configuration'])
     config.get('ingress', {}).pop('traffic', None)
     # Azure never returns secret values. Compare names/Key Vault metadata only.
-    for secret in config.get('secrets', []):
+    config['secrets'] = config.get('secrets') or []
+    for secret in config['secrets']:
         secret.pop('value', None)
     if 'secrets' in config:
         config['secrets'].sort(key=lambda secret: secret['name'])
@@ -86,7 +87,7 @@ def editorial_settings(app, mode, model=None):
                      {'name': 'COUNTERPRESS_ENTRA_CLIENT_IDS', 'value': client},
                      *[{'name': name, 'secretRef': secret} for name, secret in MODEL_SECRETS.items()]]
         config = result['properties']['configuration']
-        config['secrets'] = [s for s in config.get('secrets', []) if s['name'] not in MODEL_SECRETS.values()] + [
+        config['secrets'] = [s for s in (config.get('secrets') or []) if s['name'] not in MODEL_SECRETS.values()] + [
             {'name': secret, 'value': model[name]} for name, secret in MODEL_SECRETS.items()]
     removed = {*MODEL_SECRETS, 'COUNTERPRESS_EDITORIAL', 'COUNTERPRESS_ENTRA_CLIENT_IDS'}
     container['env'] = [v for v in container.get('env', []) if v['name'] not in removed] + additions
@@ -136,7 +137,7 @@ def validate_app(app):
     assert env.get('COUNTERPRESS_STORAGE')=='cosmos'
     assert env.get('COUNTERPRESS_STREAMING')=='azure'
     assert env.get('COUNTERPRESS_TELEMETRY')=='on'
-    secrets = {s['name'] for s in p['configuration'].get('secrets', [])}
+    secrets = {s['name'] for s in (p['configuration'].get('secrets') or [])}
     assert secrets <= set(MODEL_SECRETS.values())
     assert env.get('COUNTERPRESS_EDITORIAL', 'off') in ('off', 'entra')
     model_env = {v['name']: v for v in container.get('env', []) if v['name'].startswith('AZURE_OPENAI')}

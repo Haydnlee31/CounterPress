@@ -80,7 +80,7 @@ def test_editorial_activation_keeps_model_values_out_of_environment_and_supports
     app = {'properties': {'template': {'containers': [{'env': [
         {'name': 'COUNTERPRESS_STUDIO', 'value': 'entra'},
         {'name': 'COUNTERPRESS_STUDIO_CLIENT_ID', 'value': client},
-        {'name': 'COUNTERPRESS_EDITORIAL', 'value': 'off'}]}]}, 'configuration': {'secrets': []}}}
+        {'name': 'COUNTERPRESS_EDITORIAL', 'value': 'off'}]}]}, 'configuration': {'secrets': None}}}
     model = {'AZURE_OPENAI_ENDPOINT': 'https://'+'demo.openai.azure.com',
              'AZURE_OPENAI_DEPLOYMENT': 'test', 'AZURE_OPENAI_API_KEY': 'dummy'}
     original = copy.deepcopy(app)
@@ -96,3 +96,16 @@ def test_editorial_activation_keeps_model_values_out_of_environment_and_supports
     assert deploy.editorial_settings(enabled, 'preserve') == enabled
     for bad in (None, {}, model | {'extra': 'no'}, model | {'AZURE_OPENAI_ENDPOINT': 'http://invalid.example'}):
         with pytest.raises(deploy.DeploymentError): deploy.editorial_settings(app, 'enable', bad)
+
+
+def test_azure_null_secret_collection_is_equivalent_to_empty_list():
+    app = {'identity': {}, 'properties': {'environmentId': 'test',
+        'template': {'containers': [{'image': 'test', 'env': [
+            {'name': 'COUNTERPRESS_STORAGE', 'value': 'cosmos'},
+            {'name': 'COUNTERPRESS_STREAMING', 'value': 'azure'},
+            {'name': 'COUNTERPRESS_TELEMETRY', 'value': 'on'}]}],
+            'scale': {'minReplicas': 0, 'maxReplicas': 1}},
+        'configuration': {'secrets': None, 'activeRevisionsMode': 'Single', 'ingress': {'allowInsecure': False}}}}
+    deploy.validate_app(app)
+    empty = copy.deepcopy(app); empty['properties']['configuration']['secrets'] = []
+    assert deploy.invariants(app) == deploy.invariants(empty)
