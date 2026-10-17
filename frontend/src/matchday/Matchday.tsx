@@ -8,10 +8,11 @@ import { Moments } from './Moments'
 import { ClubCrest } from './ClubCrest'
 import { MatchPitch } from './MatchPitch'
 import { scoreAtPlayhead } from './pitchScene'
+import { replayGallery } from './replayGallery'
 import './matchday.css'
 
 const showcases: Record<string, [string, string]> = {
-  'last-gasp': ['Last-second turnaround', '最后一刻的逆转'],
+  ...Object.fromEntries(Object.entries(replayGallery).map(([id,story])=>[id,story.title])),
   increase: ['Winning it back', '前场夺回球权'],
   'pressure-increase': ['Playing under pressure', '在压力下控球'],
   'progression-increase': ['Moving the ball forward', '向前推进'],
@@ -23,11 +24,12 @@ export function Matchday() {
     p = m.request.preferences,
     snapshot = m.snapshot
   const t = (en: string, zh: string) => (p.language === 'zh-Hans' ? zh : en)
-  const isTurnaround=m.request.scenario==='last-gasp'
+  const replayStory=replayGallery[m.request.scenario]
+  const isReplayStory=!!replayStory
   const [pitchHead,setPitchHead]=useState({index:0,resolved:false})
   const pitchEvents=snapshot?.pitch_events ?? []
-  const shownScore=isTurnaround&&snapshot?scoreAtPlayhead(snapshot.state.score,pitchEvents,pitchHead.index,pitchHead.resolved):snapshot?.state.score
-  const shownTime=isTurnaround?(pitchEvents[pitchHead.index]?.occurred_at.elapsed_ms ?? 760000):m.request.atMs
+  const shownScore=isReplayStory&&snapshot?scoreAtPlayhead(snapshot.state.score,pitchEvents,pitchHead.index,pitchHead.resolved):snapshot?.state.score
+  const shownTime=isReplayStory?(pitchEvents[pitchHead.index]?.occurred_at.elapsed_ms ?? 760000):m.request.atMs
   const [preferencesOpen, setPreferencesOpen] = useState(false)
   const [recapOpen, setRecapOpen] = useState(false)
   const [replayOpen, setReplayOpen] = useState(false)
@@ -251,8 +253,8 @@ export function Matchday() {
           </div>
           <div className="fan-score-foot">
             <span>
-              {isTurnaround?t('Last-second turnaround · 57:40–58:00','最后一刻的逆转 · 57:40–58:00'):<>{t('Match highlights', '比赛集锦')} · 48:00–{clock(m.end)}</>}
-              {snapshot && !isTurnaround && (
+              {isReplayStory?<>{t(...replayStory.title)} · {t('Replay','回放')}</>:<>{t('Match highlights', '比赛集锦')} · 48:00–{clock(m.end)}</>}
+              {snapshot && !isReplayStory && (
                 <>
                   <br />
                   {t('Updated to', '更新至')}{' '}
@@ -260,7 +262,7 @@ export function Matchday() {
                 </>
               )}
             </span>
-            {!isTurnaround && <button
+            {!isReplayStory && <button
               onClick={() => setReplayOpen((v) => !v)}
               aria-expanded={replayOpen}
               aria-controls="fan-replay"
@@ -269,9 +271,16 @@ export function Matchday() {
             </button>}
           </div>
         </section>
-        {!isTurnaround && <button className="fan-turnaround-link" onClick={()=>chooseShowcase('last-gasp')}>{t('Two saves. One last attack. Watch the turnaround →','两次扑救，最后一击。观看逆转 →')}</button>}
-        {snapshot && <MatchPitch key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} fromStart={isTurnaround} onPlayhead={isTurnaround?setPitchHead:undefined} />}
-        {replayOpen && !isTurnaround && (
+        <section className="fan-replay-gallery" aria-label={t('Choose a replay','选择回放')}>
+          <div className="fan-gallery-heading"><h2>{t('Pick a moment','选择精彩片段')}</h2><span>{t('Three plays to explore','三个精彩片段')}</span></div>
+          <div className="fan-replay-cards">{Object.entries(replayGallery).map(([id,story],i)=><button key={id} className={`fan-replay-card ${id===m.request.scenario?'is-active':''}`} aria-pressed={id===m.request.scenario} onClick={()=>chooseShowcase(id)}>
+            <span className="fan-card-meta"><span>0{i+1}</span><span>{story.duration} <span aria-hidden="true">▶</span></span></span>
+            <strong>{t(...story.title)}</strong><span>{t(...story.hook)}</span>
+          </button>)}</div>
+        </section>
+        {replayStory && <div className="fan-replay-context"><p>{t(...replayStory.context)}</p><a href={replayStory.source} target="_blank" rel="noreferrer">{t('Original clip','原始片段')} · {replayStory.sourceLabel} ↗</a></div>}
+        {snapshot && <MatchPitch key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} fromStart={isReplayStory} onPlayhead={isReplayStory?setPitchHead:undefined} />}
+        {replayOpen && !isReplayStory && (
           <section
             id="fan-replay"
             className="fan-replay"
@@ -372,7 +381,7 @@ export function Matchday() {
         )}
         <div className="fan-section-heading fan-story-heading">
           <h2>
-            {p.club_id
+            {isReplayStory ? t('More match stories','更多比赛故事') : p.club_id
               ? t('What changed for your side?', '你关注的一方有哪些变化？')
               : t('What changed?', '发生了什么变化？')}
           </h2>
@@ -420,13 +429,8 @@ export function Matchday() {
               )}
             </p>
           </section>
-        ) : isTurnaround ? (
-          <article className="fan-turnaround-story">
-            <p className="fan-kicker">{t('LAST-SECOND TURNAROUND','最后一刻的逆转')}</p>
-            <h3>{t('From a double save to a chance at the other end','从两连扑到另一端的机会')}</h3>
-            <p>{t('Northport have a penalty. Ashford stands in their way. Follow the ball as Eastbridge break down the wing, send in a cross and look for Ellis in the middle.','Northport获得点球，Ashford挺身而出。跟随球的轨迹，看Eastbridge沿边路反击、传中，在中路寻找Ellis。')}</p>
-            <a href="https://www.youtube.com/watch?v=ETXv-SvOk9g&t=560s" target="_blank" rel="noreferrer">{t('Watch the original moment · Watford FC ↗','观看原始片段 · Watford FC ↗')}</a>
-          </article>
+        ) : isReplayStory ? (
+          <article className="fan-turnaround-story"><p>{t('Use “Explore a story” to see how pressure, winning the ball back and individual players change a match.', '通过“选择故事”探索施压、夺回球权和球员表现如何改变比赛。')}</p></article>
         ) : first ? (
           <article className="fan-hero">
             <div className="fan-hero-copy">
@@ -629,7 +633,7 @@ export function Matchday() {
           />
         )}
         <footer className="fan-footer">
-          {isTurnaround && <small className="fan-data-note">{t('Inspired by Watford–Leicester, 12 May 2013. Original club highlights: start at 9:20. This is a hand-authored reconstruction with fictional identities, approximate positions and a rebased match clock; it is not measured tracking. No footage or audio is reproduced. This short sequence is excluded from the five-minute comparison benchmarks.','灵感来自2013年5月12日Watford对Leicester。俱乐部原片从9:20开始。此手工重建使用虚构身份、近似位置和重设的比赛时钟，并非追踪测量；未复制影像或音频，亦不计入五分钟比较基准。')}</small>}
+          {replayStory && <small className="fan-data-note">{t(...replayStory.note)} {t('Hand-authored reconstruction with fictional identities, approximate positions and a rebased clock. Visible actions and lanes are estimated from the linked footage; off-camera positions and motion are illustrative, not measured tracking. No footage or audio is reproduced. Short replays are excluded from five-minute comparisons.', '手工重建使用虚构身份、近似位置和重设时钟。可见动作和线路参考所链接影像；镜头外的位置和移动为示意，并非追踪测量。未复制影像或音频。短回放不计入五分钟比较。')}</small>}
           <a href="#studio">{t("Producer Studio", "制作人工作室")} ↗</a>
           <p>
             {t(
@@ -647,7 +651,7 @@ export function Matchday() {
           <a href="#analysis">
             {t('Analysis & presenter tools', '分析与演示工具')} ↗
           </a>
-          <small className="fan-data-note">{t('This showcase uses fictional clubs, players and synthetic match events. The 22-player pitch is an illustration: ball actions follow the event records; off-ball positions and movement are animated, not tracking data. Comparisons cover the displayed five-minute windows, excluding the start and including the end.', '本展示使用虚构球队、球员和合成比赛事件。22人球场为示意动画：有球动作来自事件记录，无球位置和移动并非追踪数据。比较覆盖画面中的五分钟时段，不含起点、包含终点。')}</small>
+          {!replayStory && <small className="fan-data-note">{t('This showcase uses fictional clubs, players and synthetic match events. The 22-player pitch is an illustration: ball actions follow the event records; off-ball positions and movement are animated, not tracking data. Comparisons cover the displayed five-minute windows, excluding the start and including the end.', '本展示使用虚构球队、球员和合成比赛事件。22人球场为示意动画：有球动作来自事件记录，无球位置和移动并非追踪数据。比较覆盖画面中的五分钟时段，不含起点、包含终点。')}</small>}
         </footer>
       </main>
     </div>

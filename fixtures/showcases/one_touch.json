@@ -1,0 +1,234 @@
+{
+  "schema_version": "1.0",
+  "synthetic": true,
+  "match_id": "showcase-one-touch-v1",
+  "pitch": {
+    "length_m": 105,
+    "width_m": 68,
+    "coordinates": "actor_team_attacks_positive_x"
+  },
+  "teams": [
+    {
+      "team_id": "eastbridge",
+      "name": "Eastbridge",
+      "player_ids": [
+        "eb01",
+        "eb02",
+        "eb03",
+        "eb04",
+        "eb05",
+        "eb06",
+        "eb07",
+        "eb08",
+        "eb09",
+        "eb10",
+        "eb11"
+      ]
+    },
+    {
+      "team_id": "northport",
+      "name": "Northport",
+      "player_ids": [
+        "np01",
+        "np02",
+        "np03",
+        "np04",
+        "np05",
+        "np06",
+        "np07",
+        "np08",
+        "np09",
+        "np10",
+        "np11"
+      ]
+    }
+  ],
+  "initial_state": {
+    "at": {
+      "period": 2,
+      "elapsed_ms": 180000
+    },
+    "score": {
+      "eastbridge": 2,
+      "northport": 0
+    },
+    "controlled_possession_team_id": "eastbridge"
+  },
+  "events": [
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-one-touch-v1",
+      "event_id": "ot-control",
+      "revision": 1,
+      "source_delivery_sequence": 1,
+      "occurrence_order": 1,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 770000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 770000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb09"
+      },
+      "position": {
+        "x": 79,
+        "y": 43
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 80,
+          "y": 42
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-one-touch-v1",
+      "event_id": "ot-layoff",
+      "revision": 1,
+      "source_delivery_sequence": 2,
+      "occurrence_order": 2,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 772000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 772000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb09"
+      },
+      "position": {
+        "x": 80,
+        "y": 42
+      },
+      "action": {
+        "kind": "pass",
+        "end_position": {
+          "x": 88,
+          "y": 46
+        },
+        "outcome": "completed",
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-one-touch-v1",
+      "event_id": "ot-link",
+      "revision": 1,
+      "source_delivery_sequence": 3,
+      "occurrence_order": 3,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 774000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 774000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 88,
+        "y": 46
+      },
+      "action": {
+        "kind": "pass",
+        "end_position": {
+          "x": 82,
+          "y": 29
+        },
+        "outcome": "completed",
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb06"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-one-touch-v1",
+      "event_id": "ot-return",
+      "revision": 1,
+      "source_delivery_sequence": 4,
+      "occurrence_order": 4,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 776000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 776000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb06"
+      },
+      "position": {
+        "x": 82,
+        "y": 29
+      },
+      "action": {
+        "kind": "pass",
+        "end_position": {
+          "x": 94,
+          "y": 34
+        },
+        "outcome": "completed",
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-one-touch-v1",
+      "event_id": "ot-finish",
+      "revision": 1,
+      "source_delivery_sequence": 5,
+      "occurrence_order": 5,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb09"
+      },
+      "position": {
+        "x": 94,
+        "y": 34
+      },
+      "action": {
+        "kind": "shot",
+        "end_position": {
+          "x": 105,
+          "y": 36
+        },
+        "outcome": "goal",
+        "goalkeeper": {
+          "team_id": "northport",
+          "player_id": "np01"
+        }
+      }
+    }
+  ]
+}

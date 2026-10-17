@@ -234,7 +234,8 @@ test('first visit has a full pitch, footer-only disclosure and readable moments 
   expect(document.querySelectorAll('pre')).toHaveLength(0)
   expect(screen.queryByText('Recorded counts do not establish tactical cause.')).toBeNull()
   expect(screen.queryByLabelText('Local viewer')).toBeNull()
-  expect(screen.queryByRole('slider')).toBeNull()
+  expect(screen.queryByRole('slider',{name:'Match time'})).toBeNull()
+  expect(screen.getByRole('slider',{name:'Replay position'})).toBeTruthy()
   await user.click(screen.getByRole('button', { name: /Catch me up/ }))
   expect(
     screen.getByRole('region', { name: 'The story in a few moments' }),
@@ -363,7 +364,7 @@ test('latest correction is an explicit action and keeps paused time until reques
   render(<App />)
   await screen.findByLabelText('1 to 4')
   await user.click(screen.getByRole('button', { name: /Explore replay/ }))
-  expect(screen.getByRole('slider').getAttribute('aria-valuetext')).toBe(
+  expect(screen.getByRole('slider',{name:'Match time'}).getAttribute('aria-valuetext')).toBe(
     '58:00',
   )
   await user.click(screen.getByRole('button', { name: /A newer version/ }))
@@ -376,7 +377,7 @@ test('latest correction is an explicit action and keeps paused time until reques
       fanDefaults,
     ),
   )
-  expect(screen.getByRole('slider').getAttribute('aria-valuetext')).toBe(
+  expect(screen.getByRole('slider',{name:'Match time'}).getAttribute('aria-valuetext')).toBe(
     '58:15',
   )
 })

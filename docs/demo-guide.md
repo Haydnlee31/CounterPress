@@ -15,9 +15,27 @@ cross, knockdown and finish are clear. The app uses fictional names and approxim
 authored positions, with its clock rebased to 57:40–58:00. It is not measured or
 frame-synchronised tracking. The reference link and provenance are also in the app.
 
-Find this sequence from any Matchday story using **Two saves. One last attack.**
+Find this sequence from any Matchday story using the **Pick a moment** cards
 or **Explore a story → Last-second turnaround**. The existing analytical stories
 remain available separately.
+
+## Switch between three moments
+
+The three **Pick a moment** cards sit above the pitch. Each opens paused at the
+start, with its own score and a short suggestion of which runner to watch.
+
+| Replay | Action span | Reference clip |
+| --- | --- | --- |
+| Last-second turnaround | 20 seconds | [Watford FC · 9:20](https://www.youtube.com/watch?v=ETXv-SvOk9g&t=560s) |
+| [Pass, move, finish](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/?story=one-touch#matchday) | 10 seconds | [FIFA: Brazil–Korea · 0:48](https://www.youtube.com/watch?v=c0-ZhEkEFtA&t=48s) |
+| [From halfway to goal](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/?story=breakaway#matchday) | 12 seconds | [FIFA: Argentina–France · 2:54](https://www.youtube.com/watch?v=agrGb25mJzs&t=174s) |
+
+Press **Play sequence** above the field. The final shot has a short animation/hold
+beyond the listed first-to-last-event span. Speed changes keep playback running;
+seeking pauses it. The score and goal announcement follow the ball, including when
+rewinding. The original clips open separately so judges can compare the passing
+pattern and finish. The reconstructions use estimated coordinates and fictional
+identities, not continuous optical tracking. See [source coverage](replay.md#clip-reconstruction-source-coverage).
 
 CounterPress turns recorded football events into comparisons that you can check
 against their source evidence. This guide is for demo users and hackathon judges.
@@ -34,8 +52,8 @@ The new home screen starts paused at **58:00**, with a useful comparison already
 visible. **Catch me up** opens the segment's supported stories on the same page.
 The pitch is available at both explanation levels and opens at the latest play.
 **Play sequence** starts the recent sequence and stops at its end; arrow buttons
-step between plays. **Near the ball** highlights a 26-metre area, retaining distant
-players as quiet dots. **All players** restores every label. Hover, focus or tap any of the 22
+step between plays. All 22 players stay visible with initials throughout playback.
+Use **Restart**, the **Replay position** slider or **Speed** (0.5×, 1×, 1.5×) to revisit a pass. Hover, focus or tap any of the 22
 players to see their full name. Involved players have a gold ring. On phones the
 pitch turns portrait; reduced-motion settings replace animation with a manual
 ball-position control. **Show the moments** opens readable events and a pitch
@@ -45,7 +63,7 @@ On desktop, the left panel identifies the current player and field area, and the
 right panel provides **Match commentary**. Select a commentary entry to replay it;
 **Latest play** returns to the newest event in the loaded snapshot. Commentary
 shows only the selected play and earlier entries, and follows playback. On mobile,
-the controls remain directly under the pitch and commentary follows below.
+the controls sit above the pitch and commentary follows below.
 
 ![Matchday desktop view](screenshots/matchday-desktop.png)
 

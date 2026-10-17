@@ -28,10 +28,8 @@ const assert = require('node:assert/strict')
     assert.equal(await page.locator('.fan-data-note').evaluate(e=>e.closest('footer')!==null),true)
     const feed=pitch.getByRole('complementary',{name:'Match commentary'})
     assert.equal(await feed.locator('li').count(),5)
-    assert((await pitch.locator('.fan-pitch-player.is-distant').count())>0)
-    await pitch.getByRole('button',{name:'All players',exact:true}).click()
     assert.equal(await pitch.locator('.fan-pitch-player.is-distant').count(),0)
-    await pitch.getByRole('button',{name:'Near the ball',exact:true}).click()
+    assert.equal(await pitch.getByRole('button',{name:'Near the ball',exact:true}).count(),0)
     await feed.locator('li button').last().click()
     const selectedTime=await feed.locator('[aria-current=step] time').innerText()
     assert.equal(await pitch.locator('.fan-pitch-time').innerText(),selectedTime)
@@ -184,7 +182,7 @@ const assert = require('node:assert/strict')
     if (process.env.COUNTERPRESS_CHECK_CORRECTIONS === '1')
       console.log('PASS: historical recovery 4/3/withdrawn/2')
     console.log(
-      'PASS: HTTP Matchday, 22-player moving pitch, ball spotlight, synchronised commentary, keyboard names, club colours, footer-only disclosure, no JSON, bilingual stories, mobile portrait/200% text, rewind and analyst navigation',
+      'PASS: HTTP Matchday, 22-player moving pitch, persistent full-team view, synchronised commentary, keyboard names, club colours, footer-only disclosure, no JSON, bilingual stories, mobile portrait/200% text, rewind and analyst navigation',
     )
   } finally {
     await browser.close()

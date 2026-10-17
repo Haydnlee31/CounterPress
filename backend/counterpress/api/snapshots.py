@@ -38,6 +38,8 @@ SCENARIOS = {
     "contribution-increase": ("contributions/increase.json", "Player recovery share increase"),
     "contribution-control": ("contributions/control.json", "Player recovery share control"),
     "last-gasp": ("showcases/last_gasp.json", "Last-second turnaround"),
+    "one-touch": ("showcases/one_touch.json", "Pass, move, finish"),
+    "breakaway": ("showcases/breakaway.json", "From halfway to goal"),
 }
 START = MatchTime(period=2, elapsed_ms=180000)
 SPLIT = MatchTime(period=2, elapsed_ms=480000)
@@ -95,7 +97,7 @@ def replay_session(history: History) -> ReplaySession:
 
 
 def project(history: History, cutoff: MatchTime) -> History:
-    if history.fixture.match_id == "showcase-last-gasp-v1":
+    if history.fixture.match_id in {"showcase-last-gasp-v1", "showcase-one-touch-v1", "showcase-breakaway-v1"}:
         # A short reconstructed clip is not coverage of two five-minute windows.
         return history.model_copy(update={"pressure_version": len(history.records),
             "contribution_version": len(history.records), "episode_rules_version": 2})

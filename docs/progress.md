@@ -1,5 +1,17 @@
 # Progress
 
+Latest replay-gallery refinement: all 22 players stay visible; continuous player
+trajectories replace per-action formation resets. Three cards expose the existing
+turnaround plus a 10-second Brazil-inspired combination and a 12-second
+Argentina-inspired counterattack. Playback controls above the pitch include
+scrubbing, restart and speed; shot commentary and score follow the finish.
+Source links and estimation limits remain in the footer. Local validation covers
+592 backend and 77 frontend tests, production build and three browser suites.
+See [source coverage](replay.md#clip-reconstruction-source-coverage) and
+[the design critique](redesign-implementation.md#replay-gallery-designer-and-football-fan-review).
+No new Azure resources or AI calls. Human comprehension testing remains pending.
+
+
 Latest showcase: **Last-second turnaround** adds a clip-inspired ten-event attack,
 two typed saves, a rebound, cross/header and goal. The score follows canonical
 goal revisions and the pitch playhead. Fictional identities and approximate
@@ -12,8 +24,8 @@ No new Azure resources or AI calls. Best next move: compare the original clip an
 replay with football fans and ask them to describe the change of possession and finish.
 
 Latest tracker refinement ([verification](verification/matchday-tracker-local.json), 578 backend and 68 frontend tests passed): desktop now pairs player context, pitch and synchronised
-commentary; mobile keeps controls directly below the field. A default 26-metre
-spotlight reduces visual clutter while retaining all 22 selectable players.
+commentary; mobile keeps controls directly below the field. The original 26-metre
+spotlight has since been removed by the replay-gallery refinement above.
 Wider attacking support, compact defending lines and bounded keepers replace
 random drifting. Playback starts from the latest-event view, rewinds on request
 and stops at the end. Off-ball positioning remains illustrative. Design references
