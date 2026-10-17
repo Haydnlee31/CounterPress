@@ -35,7 +35,7 @@ assert b"/assets/" in callback
 studio = data("/api/studio/config")
 if '--studio-enabled' in sys.argv:
     assert studio['enabled'] is True and set(studio) == {'enabled', 'client_id', 'authority', 'scope'}
-    for action in ('review', 'approve', 'revoke', 'export'):
+    for action in ('review', 'approve', 'revoke', 'export', 'draft'):
         payload = {} if action == 'review' else {'fingerprint': 'a'*64}
         request = Request(base+'/api/studio/increase/'+action, data=json.dumps(payload).encode(),
                           headers={'Content-Type': 'application/json'})

@@ -267,7 +267,8 @@ and Microsoft-platform extension proposal follow completion of Stages 9 and 10.
 Preserve changes only the image. Enable/disable additionally change only the four
 Studio identity/mode settings; all storage, streaming, telemetry, identities,
 network settings and replica limits must match the reviewed expected template.
-The paid editorial API must remain off and model credentials are rejected.
+Changing Studio identity settings requires the editorial API to be off. For AI
+activation, preserve Studio and use the separate editorial mode below.
 
 Enable requires the `CP_STUDIO_IDENTITY` secret in the existing `azure-demo`
 environment. Its JSON has exactly `tenant_id`, `api_client_id`, and `client_id`,
@@ -296,3 +297,32 @@ Once decisions exist, retain a schema-compatible image. The runner saves the old
 image and full template privately during deployment; never publish that file.
 For a Bicep redeployment, explicitly preserve `useStudio` and the secure
 `studioIdentity` object alongside the existing Cosmos/streaming settings.
+
+## Authenticated Studio AI pilot
+
+`editorial_mode=enable` requires Studio already enabled and the protected environment
+secret `CP_EDITORIAL_MODEL`: JSON containing exactly `AZURE_OPENAI_ENDPOINT`,
+`AZURE_OPENAI_DEPLOYMENT`, `AZURE_OPENAI_API_KEY`. Never paste values into commands,
+logs or repository files. Supply the secret over stdin from private configuration.
+The deployment stores all three values as Container Apps secrets, with only secret
+references in the runtime environment. The allowlisted client is the existing Studio
+SPA. No new service, identity grant, quota increase or anonymous AI route is added.
+
+```sh
+gh workflow run deploy.yml --repo Haydnlee31/CounterPress --ref main -f studio_mode=preserve -f editorial_mode=enable
+```
+
+Activation requires successful local mocked security/expiry tests and a bounded
+live-model integration check. Verify the real signed-in hosted flow after deployment.
+The pilot is for the assigned operator; usefulness research remains pending.
+`editorial_mode=disable` removes model environment references and disables paid routes
+while retaining Studio, schema compatibility and app secrets for an explicit later
+reactivation. Disable editorial before disabling Studio. `preserve` keeps the current
+editorial configuration; it never enables AI implicitly. A Bicep redeployment must
+preserve `useEditorial` and secure `editorialModel` as well as existing parameters.
+
+One-call local integration probe (fresh ignored SQLite path, no public history):
+
+```sh
+uv run --env-file .env --frozen python scripts/check_studio_editorial.py --live --database var/studio-ai-probe.sqlite3
+```

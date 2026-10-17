@@ -4,7 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       studio_mode:
-        description: 'Studio factual review access (paid editorial API remains off)'
+        description: 'Studio review access (preserve when changing editorial mode)'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, enable, disable]
+      editorial_mode:
+        description: 'Authenticated AI editor; uses existing durable request limits'
         required: true
         default: preserve
         type: choice
@@ -53,5 +59,7 @@ jobs:
         env:
           CP_STUDIO_MODE: ${{ inputs.studio_mode }}
           CP_STUDIO_IDENTITY: ${{ secrets.CP_STUDIO_IDENTITY }}
+          CP_EDITORIAL_MODE: ${{ inputs.editorial_mode }}
+          CP_EDITORIAL_MODEL: ${{ secrets.CP_EDITORIAL_MODEL }}
           CP_AZURE_TARGET: ${{ secrets.CP_AZURE_TARGET }}
         run: python3 scripts/deploy_azure.py deploy

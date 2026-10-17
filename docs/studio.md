@@ -3,8 +3,10 @@
 Studio is the authenticated producer review workspace at `#studio`. It is
 enabled on the hosted app as of 17 October 2026; [release evidence](verification/studio-live.json)
 records the deployed commit and real hosted sign-in, approval, export and revocation checks.
-A separate deployment switch controls activation. Public Matchday remains available without sign-in. Studio uses factual templates;
-opening it, reviewing, approving and exporting never invokes a model.
+A separate deployment switch controls activation. Public Matchday remains available without sign-in.
+Studio opens with factual templates. Reviewing, approving, exporting and polling never
+invoke a model. The optional **Request AI draft** action is a separately enabled,
+authenticated pilot; human usefulness evaluation remains pending.
 
 ## Using Studio
 
@@ -62,9 +64,31 @@ not roll back to a build that cannot read this field.** Disable Studio while kee
 a schema-compatible image if rollback is necessary. API responses never expose
 stored actor hashes to the browser.
 
-This slice intentionally does not approve expiring AI presentations. Integrating
-a model attempt requires binding that attempt and its expiry to approval first.
-The existing private editorial API remains independently disabled.
+## Optional AI draft
+
+When the private editor is enabled, **Request AI draft** makes one explicit bounded
+request through the existing durable quota/cache controller. The single Microsoft
+Agent Framework editor selects supported stories and brief/detailed approved wording;
+it cannot supply new prose or football facts. There is no automatic request on page
+load, poll, refresh, approval or expiry. Limits remain 100 lifetime admissions,
+20 per UTC day, 5 per editor per UTC day and 2 concurrent jobs; these are request
+limits, not a hard dollar cap. A cached result does not require another model call.
+
+The browser selects the exact returned attempt ID. Review, approval and export
+resolve that saved attempt against canonical history, preferences and wall-clock
+expiry. Another editor's later attempt cannot silently replace it. The approval
+fingerprint includes the attempt, exact rendered wording, expiry and evidence.
+At expiry (at most 60 seconds from the attempt start), correction or withdrawal,
+the AI approval cannot authorize export. Factual fallback is displayed; select
+**Use factual wording** to review/approve that version, or explicitly request again.
+The browser also locks actions at the server-reported remaining lifetime, subtracting
+the entire request duration conservatively. Background throttling can delay the UI;
+the server independently rejects expired approval/export. Downloaded HTML includes
+attempt/expiry provenance and cannot be recalled.
+
+Provider failure, rejection, quota exhaustion and duplicate work return an explained
+factual fallback. This feature is a technical pilot for the assigned editor, not a
+claim that human reviewers prefer AI output. Broader activation awaits that research.
 
 ## Local startup and Azure activation
 
@@ -144,7 +168,7 @@ mocked in this harness; it is never a production auth bypass or bundled build en
 It checks 360/390/760/1365px layouts, source evidence, approval, preview, revocation,
 session end and page errors. Stop the dev server after use.
 
-The editorial **regression** source lock is now `studio-regression-v1` because
+The editorial **regression** source lock is now `studio-editorial-regression-v3` because
 history/API source changed. The original paid pilot lock and report are preserved;
 no new model benchmark or human usability score is claimed. Vitest was updated to
 the patched 5.x line after npm audit identified vulnerabilities in its older

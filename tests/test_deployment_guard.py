@@ -72,3 +72,27 @@ def test_studio_activation_rejects_unexpected_secrets_invalid_identity_and_activ
     with pytest.raises(deploy.DeploymentError):deploy.studio_template(template,'unexpected')
     with pytest.raises(deploy.DeploymentError):
         deploy.studio_template({'containers':[{'env':[{'name':'COUNTERPRESS_EDITORIAL','value':'entra'}]}]},'disable')
+
+
+def test_editorial_activation_keeps_model_values_out_of_environment_and_supports_disable():
+    import pytest
+    client = '33333333-3333-4333-8333-333333333333'
+    app = {'properties': {'template': {'containers': [{'env': [
+        {'name': 'COUNTERPRESS_STUDIO', 'value': 'entra'},
+        {'name': 'COUNTERPRESS_STUDIO_CLIENT_ID', 'value': client},
+        {'name': 'COUNTERPRESS_EDITORIAL', 'value': 'off'}]}]}, 'configuration': {'secrets': []}}}
+    model = {'AZURE_OPENAI_ENDPOINT': 'https://'+'demo.openai.azure.com',
+             'AZURE_OPENAI_DEPLOYMENT': 'test', 'AZURE_OPENAI_API_KEY': 'dummy'}
+    original = copy.deepcopy(app)
+    enabled = deploy.editorial_settings(app, 'enable', model)
+    assert app == original
+    env = {v['name']: v for v in enabled['properties']['template']['containers'][0]['env']}
+    assert env['COUNTERPRESS_ENTRA_CLIENT_IDS']['value'] == client
+    assert all(env[k] == {'name': k, 'secretRef': v} for k,v in deploy.MODEL_SECRETS.items())
+    assert len(enabled['properties']['configuration']['secrets']) == 3
+    disabled = deploy.editorial_settings(enabled, 'disable')
+    names = {v['name'] for v in disabled['properties']['template']['containers'][0]['env']}
+    assert not names & set(deploy.MODEL_SECRETS)
+    assert deploy.editorial_settings(enabled, 'preserve') == enabled
+    for bad in (None, {}, model | {'extra': 'no'}, model | {'AZURE_OPENAI_ENDPOINT': 'http://invalid.example'}):
+        with pytest.raises(deploy.DeploymentError): deploy.editorial_settings(app, 'enable', bad)

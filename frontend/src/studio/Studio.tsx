@@ -25,6 +25,8 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
   const [busy, setBusy] = useState(false)
   const [checked, setChecked] = useState(false)
   const [preview, setPreview] = useState(false)
+  const [attemptId, setAttemptId] = useState<string | null>(null)
+  const [notice, setNotice] = useState('')
   const [tick, setTick] = useState(0)
   const epoch = useRef(0)
   const acting = useRef(false)
@@ -41,13 +43,22 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
     if (!session || !signedIn) return
     setChecked(false)
     let timer: number | undefined
+    let expiryTimer: number | undefined
     const update = async () => {
       try {
-        const next = await session.call('review', scenario, preferences, undefined, controller.signal)
+        const started = performance.now()
+        const next = await session.call('review', scenario, preferences, undefined, controller.signal, attemptId)
         if (generation !== epoch.current) return
         if (reviewRef.current?.fingerprint !== next.fingerprint || next.status !== 'approved') setPreview(false)
         reviewRef.current = next
         setReview(next); setError(''); setChecked(true)
+        if (next.valid_for_ms != null) {
+          const remaining = Math.max(0, next.valid_for_ms - (performance.now() - started))
+          expiryTimer = window.setTimeout(() => {
+            if (generation !== epoch.current) return
+            setChecked(false); setPreview(false); setTick(t => t + 1)
+          }, remaining)
+        }
       } catch (e) {
         if (generation !== epoch.current || controller.signal.aborted) return
         setReview(null); setPreview(false); setError(e instanceof Error ? e.message : 'Review is unavailable.')
@@ -56,10 +67,10 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
       }
     }
     void update()
-    return () => { ++epoch.current; controller.abort(); window.clearTimeout(timer) }
-  }, [session, signedIn, scenario, preferences, tick])
+    return () => { ++epoch.current; controller.abort(); window.clearTimeout(timer); window.clearTimeout(expiryTimer) }
+  }, [session, signedIn, scenario, preferences, tick, attemptId])
   useEffect(() => () => { ++epoch.current }, [])
-  const reset = () => { ++epoch.current; setReview(null); reviewRef.current = null; setPreview(false); setChecked(false); setError('') }
+  const reset = () => { ++epoch.current; setReview(null); reviewRef.current = null; setPreview(false); setChecked(false); setError(''); setAttemptId(null); setNotice('') }
   const signIn = async () => {
     if (!session) return
     setBusy(true); setError('')
@@ -71,7 +82,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
     reset(); acting.current = false; setSignedIn(false); setBusy(false)
     await session?.signOut().catch(() => setError('Session ended. Reload before signing in again.'))
   }
-  const act = async (action: 'approve' | 'revoke' | 'export') => {
+  const act = async (action: 'approve' | 'revoke' | 'export' | 'draft') => {
     if (!session || !review || busy || !checked) return
     // Stop the polling effect from accepting an older response over this action.
     const generation = ++epoch.current
@@ -79,15 +90,20 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
     setBusy(true); setChecked(false); setPreview(false); setError('')
     try {
       if (action === 'export') {
-        const blob = await session.download(scenario, preferences, review.fingerprint)
+        const blob = await session.download(scenario, preferences, review.fingerprint, attemptId)
         if (generation !== epoch.current) return
         const url = URL.createObjectURL(blob), link = document.createElement('a')
         link.href = url; link.download = 'counterpress-producer-snapshot.html'; link.click()
         window.setTimeout(() => URL.revokeObjectURL(url), 1000)
       } else {
-        const next = await session.call(action, scenario, preferences, review.fingerprint)
+        const next = await session.call(action, scenario, preferences, review.fingerprint, undefined, attemptId)
         if (generation !== epoch.current) return
         reviewRef.current = next; setReview(next)
+        if (action === 'draft') {
+          setAttemptId(next.attempt_id ?? null)
+          const messages: Record<string, string> = { completed: 'AI draft ready. Check every statement before approval.', cached: 'Reused the current result; no new model request.', pending: 'A request is already running. Factual wording remains available; retry explicitly later.', busy: 'AI editing is busy. Factual wording remains available.', quota_exceeded: 'AI allowance reached. Factual wording remains available.', stale: 'Evidence changed during editing. Review the current factual wording.', fallback: 'AI editing did not produce a usable draft. Factual wording remains available.', ineligible: 'There is no eligible story for AI editing.' }
+          setNotice(messages[next.editorial_status ?? 'fallback'] ?? messages.fallback)
+        }
       }
     } catch (e) {
       if (generation === epoch.current) { setReview(null); setError(e instanceof Error ? e.message : 'Review could not be saved.') }
@@ -95,7 +111,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
       if (generation === epoch.current) { acting.current = false; setBusy(false); setTick(t => t + 1) }
     }
   }
-  const ready = checked && !busy && review?.recap.state === 'ready'
+  const ready = checked && !busy && review?.recap.state === 'ready' && review?.status !== 'unavailable'
   const approved = ready && review?.status === 'approved'
   return <div className="studio">
     <header className="studio-top"><a href="#matchday">← Matchday</a><strong>COUNTERPRESS <span>/ STUDIO</span></strong>
@@ -103,7 +119,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
     <main className="studio-main">
       <div className="studio-intro"><p className="studio-eyebrow">THE PRODUCER’S DESK</p><h1>A story you can stand behind.</h1>
         <p>Check the facts. Review the wording. Approve one exact version.</p></div>
-      <p className="studio-disclosure">Synthetic football · Fictional clubs and players · Factual templates · No AI calls</p>
+      <p className="studio-disclosure">Synthetic football · Fictional clubs and players · Verified facts · AI editing only when explicitly requested</p>
       {error && <p className="studio-alert" role="alert">{error}</p>}
       {!signedIn ? <section className="studio-welcome"><div><h2>From match story to producer snapshot</h2>
         <ol><li>Choose a story and audience.</li><li>Check the evidence and limits of the claim.</li><li>Approve, preview and download a snapshot.</li></ol>
@@ -117,6 +133,13 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
           <label>Story language<select disabled={busy} value={preferences.language} onChange={e => { reset(); setPreferences({ ...preferences, language: e.target.value as Preferences['language'] }) }}><option value="en">English</option><option value="zh-Hans">简体中文</option></select></label>
           <label>Detail<select disabled={busy} value={preferences.depth} onChange={e => { reset(); setPreferences({ ...preferences, depth: e.target.value as Preferences['depth'] }) }}><option value="casual">Quick catch-up</option><option value="analyst">Full explanation</option></select></label>
           <button disabled={busy} onClick={() => { setChecked(false); setTick(t => t + 1) }}>Refresh evidence</button>
+        </section>
+        <section className="studio-editor" aria-label="AI editing">
+          <h2>Optional AI editor</h2><p>The editor selects from verified stories and wording. It cannot add football facts. A draft expires within 60 seconds; approval expires with it.</p>
+          {review?.editor_enabled ? <button disabled={!ready} onClick={() => void act('draft')}>Request AI draft</button> : <p>AI editing is not enabled. Factual wording is available.</p>}
+          {attemptId && <button disabled={busy} onClick={() => { reset(); setTick(t => t + 1) }}>Use factual wording</button>}
+          {notice && <p role="status">{notice}</p>}
+          {attemptId && <p>{review?.workflow?.applied ? 'AI-assisted selection · Review before expiry' : 'AI draft expired or changed · Factual fallback shown; return to factual wording to approve.'}</p>}
         </section>
         <div className="studio-desk"><section aria-label="Story review">
           <div className="studio-section-title"><h2>1. Review the story</h2><span>{checked ? 'Latest check complete' : 'Checking current evidence…'}</span></div>
@@ -134,7 +157,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
           </> : <p>{error ? 'Refresh evidence to continue.' : 'Loading the latest story…'}</p>}
         </section><aside className="studio-approval"><p className="studio-eyebrow">PRODUCER CHECKPOINT</p><h2>2. Make the call</h2>
           <p className={`studio-status ${approved ? 'is-approved' : ''}`} role="status">{busy ? 'Saving and checking…' : !checked ? 'Approval not verified' : review ? statusText[review.status] : 'Waiting for evidence'}</p>
-          <p>Approval covers the displayed wording, evidence revisions, language and detail level. New source events require a fresh review.</p>
+          <p>Approval covers the displayed wording, evidence revisions, language and detail level. New source events or AI expiry require a fresh review.</p>
           {approved ? <button disabled={!approved} onClick={() => void act('revoke')}>Revoke this approval</button> : <button className="studio-primary" disabled={!ready} onClick={() => void act('approve')}>I reviewed this version · Approve</button>}
           <hr /><h2>3. Prepare your snapshot</h2><p>Preview and export unlock after approval. Neither sends content to a broadcast system.</p>
           <button disabled={!approved} onClick={() => setPreview(p => !p)}>{preview ? 'Close clean preview' : 'Open clean preview'}</button>

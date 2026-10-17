@@ -3,3 +3,5 @@
 .studio-desk>section,.studio-desk>aside{min-width:0}
 /* Keep the shared Analysis table/reset styles out of the light Studio surface. */
 .studio p{margin:1em 0}.studio h2{margin:.83em 0}.studio-events th{background:#e5eadf;color:#173d34;letter-spacing:.03em;font-size:.72rem}.studio-events td{background:#fffef8;color:#173d34}
+
+.studio-editor{padding:20px 24px;border:1px solid #bac6b8;border-radius:10px;margin-bottom:28px;background:#fffef8}.studio-editor button{margin:0 12px 8px 0}

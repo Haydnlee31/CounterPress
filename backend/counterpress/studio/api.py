@@ -10,6 +10,7 @@ from starlette.concurrency import run_in_threadpool
 
 from counterpress.audience import PreferenceError
 from counterpress.editorial.auth import AccessDenied, EntraSettings, EntraVerifier
+from counterpress.editorial.service import EditorialRequest
 from counterpress.history import HistoryStorageError, SQLiteHistoryStore
 from counterpress.studio.service import DecisionRequest, ReviewConflict, ReviewRequest, ReviewView, StudioService
 
@@ -39,9 +40,12 @@ def configure_studio(snapshots):
     return StudioAccess(EntraVerifier(settings), client)
 
 
-def install_studio(application, snapshots, configured):
+def install_studio(application, snapshots, configured, editorial=None):
     router = APIRouter(prefix='/api/studio', tags=['studio'])
     service, bearer = StudioService(snapshots), HTTPBearer(auto_error=False)
+    enabled = bool(configured and editorial and configured.client_id in editorial[1].settings.client_ids
+                   and configured.verifier.settings.tenant_id == editorial[1].settings.tenant_id
+                   and configured.verifier.settings.audience == editorial[1].settings.audience)
 
     @application.middleware('http')
     async def headers(request: Request, call_next):
@@ -73,7 +77,10 @@ def install_studio(application, snapshots, configured):
 
     async def invoke(function, *args):
         try:
-            return await run_in_threadpool(function, *args)
+            result = await run_in_threadpool(function, *args)
+            if isinstance(result, ReviewView):
+                return result.model_copy(update={'editor_enabled': enabled})
+            return result
         except ReviewConflict as exc:
             raise HTTPException(409, str(exc)) from None
         except KeyError:
@@ -86,6 +93,28 @@ def install_studio(application, snapshots, configured):
     @router.post('/{scenario}/review', response_model=ReviewView)
     async def review(scenario: str, request: ReviewRequest, actor=Depends(authorize)):
         return await invoke(service.review, scenario, request)
+
+    @router.post('/{scenario}/draft', response_model=ReviewView)
+    async def draft(scenario: str, request: DecisionRequest, actor=Depends(authorize)):
+        if not enabled:
+            raise HTTPException(503, 'AI editing is not enabled. Factual wording remains available.')
+        current = await invoke(service.review, scenario, request)
+        if current.fingerprint != request.fingerprint:
+            raise HTTPException(409, 'Evidence changed. Review the latest version before requesting AI.')
+        # Only this explicit authenticated action invokes the shared quota/cache controller.
+        controller = editorial[0]
+        try:
+            context = await controller.context(scenario, current.recap.cutoff.elapsed_ms, request.preferences)
+            latest = await invoke(service.review, scenario, request)
+            if latest.fingerprint != current.fingerprint:
+                raise HTTPException(409, 'Evidence changed before AI admission. Review the latest version.')
+            result = await controller.run(scenario, EditorialRequest(at_ms=current.recap.cutoff.elapsed_ms,
+                preferences=request.preferences, fingerprint=context.fingerprint), actor)
+        except (ValueError, OSError, sqlite3.Error, HistoryStorageError):
+            raise HTTPException(503, 'AI editing is unavailable. Return to factual wording.') from None
+        selected = result.workflow.attempt_id if result.workflow and result.workflow.applied else None
+        view = await invoke(service.review, scenario, ReviewRequest(preferences=request.preferences, attempt_id=selected))
+        return view.model_copy(update={'editorial_status': result.status})
 
     @router.post('/{scenario}/approve', response_model=ReviewView)
     async def approve(scenario: str, request: DecisionRequest, actor=Depends(authorize)):

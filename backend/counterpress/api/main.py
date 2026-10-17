@@ -49,9 +49,10 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
     application.state.snapshots = service
     application.state.revision_publisher = revision_publisher
     from counterpress.editorial.api import configure_editorial, install_editorial
-    install_editorial(application, editorial if editorial is not None else configure_editorial(service))
+    editorial_config = editorial if editorial is not None else configure_editorial(service)
+    install_editorial(application, editorial_config)
     from counterpress.studio.api import configure_studio, install_studio
-    install_studio(application, service, studio if studio is not None else configure_studio(service))
+    install_studio(application, service, studio if studio is not None else configure_studio(service), editorial_config)
     negotiations: list[float] = []
 
     @application.get('/api/revisions/negotiate')
