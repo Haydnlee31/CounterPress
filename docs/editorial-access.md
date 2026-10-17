@@ -1,7 +1,8 @@
 # Authenticated editorial requests
 
 This increment adds the backend controls for an explicit single-editor request.
-It is disabled by default and has not been activated in the public demo. Fan
+It is disabled by default locally. The assigned-editor Studio pilot is now enabled
+on the hosted app; see [release verification](verification/studio-editorial-live.json). Fan
 snapshots, playback, health checks and revision notifications never start a model
 call. The factual recap is always available independently of the editor.
 
@@ -110,8 +111,8 @@ URL, source file, screenshot, shell command history or browser local storage.
 | 503 | Disabled, signing keys unavailable or storage unavailable; no permissive fallback to paid work. |
 
 Public polling remains the existing snapshot API and is free of model calls.
-This backend increment does not yet add a sign-in button, Studio interface or
-broadcast approval/export. Do not paste access tokens into the public demo.
+The later [Studio integration](studio.md) supplies Microsoft sign-in, exact-attempt
+review and approval/export. Do not paste access tokens into the public demo.
 
 ## Activation prerequisites — still pending
 

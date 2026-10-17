@@ -113,6 +113,8 @@ describe('Studio producer flow', () => {
     fireEvent.click(screen.getByText('Open clean preview'))
     expired = true
     await waitFor(() => expect((screen.getByText('Download approved snapshot') as HTMLButtonElement).disabled).toBe(true))
+    await screen.findByText('AI approval expired or changed')
+    expect(screen.queryByText('AI draft ready. Check every statement before approval.')).toBeNull()
     expect(screen.queryByLabelText('Approved clean preview')).toBeNull()
     expect(s.call.mock.calls.filter(c => c[0] === 'draft')).toHaveLength(1)
     fireEvent.click(screen.getByText('Use factual wording'))

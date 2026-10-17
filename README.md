@@ -110,13 +110,14 @@ a single Microsoft Agent Framework editor and the existing Analyst/Producer pair
 It runs locally, defaults to no model calls, and separates supported factual output
 from actual AI success and human usefulness. The [fan usability kit](docs/evaluation/fan-usability.md)
 provides tasks and blank anonymous forms; no human study has been completed.
-Hosted AI remains disabled until the separate activation gates are met.
+The assigned-editor [Studio AI pilot](docs/studio.md) is enabled on the hosted app.
+Matchday remains factual and makes no model calls; human usefulness review remains pending.
 
 The [editorial access guide](docs/editorial-access.md) describes the opt-in Entra
 API, shared Cosmos/SQLite quotas, duplicate-request prevention and revision-bound
 cache. Real Entra/local API and managed-identity Cosmos integration checks passed;
-hosted authorization, authenticated model verification and participant review
-remain pending. The current evaluation CLI is
+hosted Studio authorization and a bounded authenticated model check have also passed.
+Participant review remains pending. The current evaluation CLI is
 a separately frozen regression suite; the original paid pilot report is unchanged.
 The [integration guide](docs/editorial-integration.md) records the real Entra
 sign-in check and repeatable identity/Cosmos verification commands.
@@ -203,7 +204,7 @@ detection now provides independent controls and source-linked CLI/API attributio
 Durable player publications and bilingual replay cards are now implemented.
 The [Cosmos DB adapter](docs/cosmos.md) adds atomic shared history, conflict
 detection and a live restart-check command. See the progress log for live
-verification; cloud model adaptation remains disabled. The optional
+verification. The optional Studio AI action is separately authenticated and quota-limited. The optional
 [streaming path](docs/streaming.md) adds Event Hubs ingestion, Blob checkpoints
 and Web PubSub revision notices with snapshot resynchronization.
 

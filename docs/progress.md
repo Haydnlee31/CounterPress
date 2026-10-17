@@ -1,6 +1,15 @@
 # Progress
 
-Current milestone: Stage 9 streaming and release operations. The hosted React/FastAPI
+Latest redesign verification: [Studio AI pilot](verification/studio-editorial-live.json),
+17 October 2026. Real hosted sign-in, explicit draft, approval, preview, download and
+expiry lock passed. The release reuses existing services and limits. CI: 562 backend
+tests, 58 frontend tests, container smoke and Bicep compilation. One local and one
+hosted model request were used; no human usefulness rating is claimed. An Azure
+null-secret response stopped the first deployment before mutation; a regression-tested
+guard fix allowed the retry. The browser check also prompted clearer expiry/loading
+status wording. Human fan and producer testing remains pending.
+
+Current milestone: fan redesign and the assigned-editor Studio AI pilot. The hosted React/FastAPI
 app uses serverless Cosmos DB, Event Hubs ingestion, Web PubSub revision delivery
 and Blob checkpoints through managed identities. Live checks cover duplicate
 replay, correction/withdrawal history, frozen evidence and replica replacement.
@@ -12,7 +21,9 @@ Resolved identifiers remain in ignored local configuration.
 
 Stage 8's scoped local detector, generator and recap path remains complete,
 including one live Azure acceptance of bounded Microsoft Agent Framework recap
-adaptation. The hosted model path remains off. Full-match coverage and broader
+adaptation. An explicit authenticated Studio AI action is now live; public fan
+reading remains factual. See [release evidence](verification/studio-editorial-live.json).
+Full-match coverage and broader
 player attribution remain extensions. Stage 10 measured evaluation and the final
 Microsoft-platform architecture review are the next work. After each task, report
 the result and best next move.
