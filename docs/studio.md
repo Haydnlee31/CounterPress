@@ -203,7 +203,7 @@ previews, story selection, revocation, Chinese text at 200% sizing, session end 
 page errors. Stop the dev server after use. The [broadcast verification record](verification/studio-broadcast-local.json)
 captures 576 backend and 60 frontend passing tests and the local browser checks.
 
-The editorial **regression** source lock is now `studio-broadcast-regression-v1` because
+The editorial **regression** source lock is now `matchday-pitch-regression-v1` because
 history/API source changed. The original paid pilot lock and report are preserved;
 no new model benchmark or human usability score is claimed. Vitest was updated to
 the patched 5.x line after npm audit identified vulnerabilities in its older

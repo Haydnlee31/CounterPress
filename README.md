@@ -5,9 +5,11 @@
 **Using or judging the demo? Start with the [demo user guide](docs/demo-guide.md)**
 for the live link, a five-minute walkthrough, scenario results and evidence explanations.
 
-The default **Matchday** experience opens at a useful comparison, with inline
-catch-up, readable evidence, fictional player names and saved team/language
-preferences. **Explore data** keeps the detailed analysis workspace available.
+The default **Matchday** experience opens with club colours, original crests, an
+interactive 22-player pitch and plain-language stories. Play the recent sequence,
+select players, catch up and inspect readable evidence without leaving Matchday.
+Team, language and explanation preferences are saved on this device.
+**Analysis & presenter tools** keeps the detailed analysis workspace available.
 See the [redesign delivery plan](docs/redesign-implementation.md) for the remaining
 bounded AI, Studio and evaluation stages.
 

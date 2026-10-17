@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-18",
+  "scope": "Matchday club themes, full-team pitch and fan-facing copy",
+  "checks": [
+    {
+      "command": ".venv/bin/python -m pytest -q",
+      "output": "578 passed, 1 warning in 24.16s",
+      "warning": "Existing Microsoft Agent Framework evaluator ExperimentalWarning"
+    },
+    {
+      "command": "npm --prefix frontend test -- --reporter=dot",
+      "output": "Test Files 11 passed (11); Tests 64 passed (64)"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "output": "tsc --noEmit passed; 213 modules transformed; built in 731ms"
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_matchday.cjs http://127.0.0.1:8010",
+      "output": "PASS: HTTP Matchday, 22-player moving pitch, keyboard names, club colours, footer-only disclosure, no JSON, bilingual stories, mobile portrait/200% text, rewind and analyst navigation"
+    }
+  ],
+  "coverage": [
+    "Canonical pitch events bounded to 24 and available at replay cutoff",
+    "Correction availability and unique event identities",
+    "Both explanation levels retain the pitch",
+    "22 unique visual players, involved actors and ball endpoints",
+    "Reduced motion and keyboard player selection",
+    "Mobile portrait, club themes, no Matchday JSON, footer disclosure"
+  ],
+  "new_azure_resources": 0,
+  "live_model_calls": 0,
+  "regression_lock": "matchday-pitch-regression-v1",
+  "limits": [
+    "Off-ball formation and movement are illustrative, not tracking data",
+    "Fifteen additional visual identities are not recorded event actors",
+    "No new human usability or accessibility-audit claim",
+    "Original paid pilot lock/report and Studio qualifications are preserved"
+  ]
+}

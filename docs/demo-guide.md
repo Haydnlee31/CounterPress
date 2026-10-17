@@ -13,21 +13,27 @@ around 30 seconds to wake after being idle; allow it to load before presenting.
 
 The new home screen starts paused at **58:00**, with a useful comparison already
 visible. **Catch me up** opens the segment's supported stories on the same page.
-**Show the moments** opens readable events and a pitch illustration. Select an
-event to see its recorded location; technical JSON is optional, inside details.
+The pitch is available at both explanation levels. **Play sequence** animates the
+recent plays; arrow buttons step between them. Hover, focus or tap any of the 22
+players to see their full name. Involved players have a gold ring. On phones the
+pitch turns portrait; reduced-motion settings replace animation with a manual
+ball-position control. **Show the moments** opens readable events and a pitch
+illustration. Matchday does not display JSON.
 
 ![Matchday desktop view](screenshots/matchday-desktop.png)
 
 Choose **Neutral · choose a side** to follow Eastbridge or Northport, or follow a
 player from **Who was involved?**. Your choice changes story priority and the
-accent colour. Numbers and evidence stay the same. Team, player, language and
+background, scoreboard colour and original club crest. Numbers and evidence stay the same. Team, player, language and
 explanation depth are saved on this device; **Clear preferences** resets them.
 If browser storage is unavailable, the app says preferences last for this visit.
-The teams and display names are fictional; no real match or endorsement is implied.
+The footer's **About this match** note explains the fictional identities and
+synthetic source. Ball actions follow recorded events; the rest of the full-team
+formation and movement is illustrative, not player-tracking data.
 
 Use **Explore a story** for winning the ball back, pressure, progression or a
 player spotlight. Each selection starts at its comparison. Use **Explore replay**
-for play, pause, speed or a historical time. **Facts through** identifies the
+for play, pause, speed or a historical time. **Updated to** identifies the
 loaded snapshot, which may trail the clock during playback. Rewinding removes
 facts that were not available at the selected time.
 
@@ -36,13 +42,13 @@ For corrections, choose **When the story changes**. At 58:00 the recovery count 
 never jumps automatically. The timeline also exposes 1 → 3 at 58:05 and the
 withdrawal at 58:10. Other supported stories can remain when one is withdrawn.
 
-**Explore data** opens the original analysis workspace, including negative
+**Analysis & presenter tools** opens the original analysis workspace, including negative
 controls and detailed presenter settings. **Matchday / 比赛故事** returns home.
 The detailed walkthrough below applies to that analysis workspace.
 
 ## Five-minute analysis walkthrough
 
-Start by selecting **Explore data**.
+Start by selecting **Analysis & presenter tools**.
 
 ### 1. See the change
 

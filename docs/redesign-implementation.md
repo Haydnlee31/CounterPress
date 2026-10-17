@@ -80,3 +80,20 @@ server-side approval/correction/expiry checks and provenance. No new service, ag
 or model call is involved. See [workflow](studio.md#presenter-cues-and-lower-thirds)
 and [local verification](verification/studio-broadcast-local.json). Editable rundowns,
 live broadcast playout, human studies and the final demo video remain subsequent work.
+
+## Matchday fan refresh
+
+The requested visual refresh adds original bridge/compass crests, persisted club
+background colours, a 22-player interactive pitch at both explanation levels and
+plain-language bilingual stories. Player initials expand to names on hover/focus
+or selection. Playback animates ball actions and illustrative off-ball movement;
+mobile uses a portrait pitch and reduced-motion users have a manual position control.
+Disclosure is consolidated at the footer, and Matchday no longer exposes JSON.
+
+The API adds at most 24 canonical events, ordered by occurrence and bounded by the
+snapshot cutoff. Corrections appear only when available. Only seven original actors
+are recorded in the fixture; additional pitch identities are display-only, and the
+footer explains the distinction from tracking data. Studio's approved wording and
+qualification requirements remain unchanged. No new service or model call is needed.
+See [verification](verification/matchday-pitch-local.json). Human usability testing
+is still required before making claims about fan comprehension or commercial readiness.
