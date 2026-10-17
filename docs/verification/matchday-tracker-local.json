@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-18",
+  "scope": "Broadcast-style Matchday tracker and illustrative team shape",
+  "checks": [
+    {
+      "command": ".venv/bin/python -m pytest -q",
+      "output": "578 passed, 1 warning in 24.28s",
+      "warning": "Existing Microsoft Agent Framework evaluator ExperimentalWarning"
+    },
+    {
+      "command": "npm --prefix frontend test -- --reporter=dot",
+      "output": "Test Files 11 passed (11); Tests 68 passed (68)"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "output": "tsc --noEmit passed; 213 modules transformed; built in 726ms"
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_matchday.cjs http://127.0.0.1:8010",
+      "output": "PASS: HTTP Matchday, 22-player moving pitch, ball spotlight, synchronised commentary, keyboard names, club colours, footer-only disclosure, no JSON, bilingual stories, mobile portrait/200% text, rewind and analyst navigation"
+    }
+  ],
+  "coverage": [
+    "Keepers near goal and wider attacking/compact defensive shapes at both pitch ends",
+    "No random drifting for static actions",
+    "Ball spotlight radius with participants always visible",
+    "Commentary and pitch share playhead; no future entries after rewind",
+    "Revision replacement removes stale commentary",
+    "Playback restarts and stops at sequence end",
+    "Mobile playback controls above commentary"
+  ],
+  "new_azure_resources": 0,
+  "live_model_calls": 0,
+  "limits": [
+    "Off-ball positions are illustrative, not measured or inferred tracking",
+    "No proprietary vendor widgets, data or attack-momentum metric",
+    "No human usability or accessibility-audit claim"
+  ]
+}

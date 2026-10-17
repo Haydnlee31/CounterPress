@@ -1,13 +1,13 @@
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, expect, test, vi } from 'vitest'
-import { pitchScene, actionText } from './pitchScene'
+import { pitchScene, actionText, fieldPoint, BALL_FOCUS_RADIUS } from './pitchScene'
 import { knownPlayer, initials } from './identity'
 import { MatchPitch } from './MatchPitch'
 import type { Event } from '../types'
 const pass: Event={schema_version:'1.0',match_id:'match',event_id:'pass-1',revision:1,source_delivery_sequence:1,occurrence_order:1,
   occurred_at:{period:2,elapsed_ms:180000},available_at:{period:2,elapsed_ms:180000},actor:{team_id:'northport',player_id:'np06'},
   position:{x:20,y:34},action:{kind:'pass',outcome:'completed',end_position:{x:28,y:25},recipient:{team_id:'northport',player_id:'np08'}}}
-afterEach(()=>{cleanup();vi.unstubAllGlobals()})
+afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.restoreAllMocks()})
 test('22 display players, accurate mirrored pass endpoints, involved actors and readable identities',()=>{
   const start=pitchScene(pass,0),end=pitchScene(pass,1)
   expect(start.players).toHaveLength(22)
@@ -33,6 +33,9 @@ test('keyboard player selection, manual stepping, and revision reset preserve ac
   expect(pitch.getAllByRole('button')).toHaveLength(22)
   fireEvent.keyDown(pitch.getByRole('button',{name:'Sam Linden, Northport'}),{key:'Enter'})
   expect(screen.getByText('Back to play')).toBeTruthy()
+  expect(screen.getByText('2 / 2')).toBeTruthy()
+  fireEvent.click(screen.getByRole('button',{name:'Previous play'}))
+  expect(screen.getByText('1 / 2')).toBeTruthy()
   fireEvent.click(screen.getByRole('button',{name:'Next play'}))
   expect(screen.getByText('2 / 2')).toBeTruthy()
   ui.rerender(<MatchPitch events={[{...pass,revision:2}]}/>)
@@ -46,4 +49,59 @@ test('reduced motion provides a deliberate static start/end control',()=>{
   fireEvent.click(screen.getByRole('button',{name:'Show ball movement'}))
   expect(ui.container.querySelector('.fan-ball')!.getAttribute('transform')).not.toBe(before)
   expect(screen.queryByRole('button',{name:/Pause play/})).toBeNull()
+})
+
+// Shape checks protect football-like constraints without treating generated positions as measurements.
+test('keepers stay near goal, teams respond to possession, and static actions do not drift',()=>{
+  for (const team of ['eastbridge','northport']) for (const x of [3,52,99]) {
+    const event={...pass,actor:{team_id:team,player_id:team==='eastbridge'?'eb08':'np08'},position:{x,y:12},action:{kind:'recovery'}}
+    const first=pitchScene(event,0),last=pitchScene(event,1)
+    expect(last.players).toEqual(first.players)
+    for(const p of first.players.filter(p=>p.number===1)) {
+      const local=fieldPoint(p,p.team_id)
+      expect(local.x).toBeGreaterThanOrEqual(4);expect(local.x).toBeLessThanOrEqual(10)
+      expect(local.y).toBeGreaterThanOrEqual(29);expect(local.y).toBeLessThanOrEqual(39)
+    }
+    expect(first.players.every(p=>p.x>=0&&p.x<=105&&p.y>=0&&p.y<=68)).toBe(true)
+    const width=(id:string)=>{const ys=first.players.filter(p=>p.team_id===id&&!p.involved&&p.number!==1).map(p=>p.y);return Math.max(...ys)-Math.min(...ys)}
+    expect(width(team)).toBeGreaterThan(width(team==='eastbridge'?'northport':'eastbridge'))
+  }
+})
+test('ball spotlight uses the radius while always keeping participants visible',()=>{
+  const ui=render(<MatchPitch events={[pass]}/>)
+  const scene=pitchScene(pass,0)
+  for(const player of scene.players){
+    const marker=ui.container.querySelector(`[data-player-id="${player.player_id}"]`)!
+    expect(marker.classList.contains('is-distant')).toBe(!player.involved&&Math.hypot(player.x-scene.ball.x,player.y-scene.ball.y)>BALL_FOCUS_RADIUS)
+  }
+  fireEvent.click(screen.getByRole('button',{name:'All players'}))
+  expect(ui.container.querySelectorAll('.is-distant')).toHaveLength(0)
+})
+test('commentary follows the playhead, rewinds without future entries and resets corrected wording',()=>{
+  const next: Event={...pass,event_id:'pass-2',occurrence_order:2,occurred_at:{period:2,elapsed_ms:185000},available_at:{period:2,elapsed_ms:185000},action:{kind:'carry',end_position:{x:32,y:34}}}
+  const ui=render(<MatchPitch events={[pass,next]}/>)
+  const feed=within(screen.getByRole('complementary',{name:'Match commentary'}))
+  expect(feed.getByRole('button',{name:/Replay 48:05: Sam Linden carries/}).getAttribute('aria-current')).toBe('step')
+  fireEvent.click(feed.getByRole('button',{name:/Replay 48:00:/}))
+  expect(feed.queryByRole('button',{name:/Replay 48:05:/})).toBeNull()
+  fireEvent.click(screen.getByRole('button',{name:/Latest play/}))
+  expect(feed.getByRole('button',{name:/Replay 48:05:/})).toBeTruthy()
+  ui.rerender(<MatchPitch events={[{...pass,revision:2,actor:{team_id:'eastbridge',player_id:'eb09'}}]}/>)
+  expect(feed.queryByRole('button',{name:/Sam Linden/})).toBeNull()
+  expect(feed.getByRole('button',{name:/Rory Ellis/})).toBeTruthy()
+})
+
+test('playback restarts from the first play and stops at the end instead of silently looping',()=>{
+  let callback: FrameRequestCallback=()=>{}
+  vi.spyOn(performance,'now').mockReturnValue(0)
+  vi.stubGlobal('requestAnimationFrame',vi.fn((cb:FrameRequestCallback)=>{callback=cb;return 1}))
+  vi.stubGlobal('cancelAnimationFrame',vi.fn())
+  render(<MatchPitch events={[pass,{...pass,event_id:'pass-2'}]}/>)
+  expect(screen.getByText('2 / 2')).toBeTruthy()
+  fireEvent.click(screen.getByRole('button',{name:/Play sequence/}))
+  expect(screen.getByText('1 / 2')).toBeTruthy()
+  for(let now=100;now<=6600;now+=100)act(()=>callback(now))
+  expect(screen.getByText('2 / 2')).toBeTruthy()
+  expect(screen.queryByRole('button',{name:/Pause play/})).toBeNull()
+  expect(screen.getByRole('button',{name:/Play sequence/})).toBeTruthy()
 })
