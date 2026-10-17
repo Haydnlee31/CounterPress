@@ -13,12 +13,20 @@ around 30 seconds to wake after being idle; allow it to load before presenting.
 
 The new home screen starts paused at **58:00**, with a useful comparison already
 visible. **Catch me up** opens the segment's supported stories on the same page.
-The pitch is available at both explanation levels. **Play sequence** animates the
-recent plays; arrow buttons step between them. Hover, focus or tap any of the 22
+The pitch is available at both explanation levels and opens at the latest play.
+**Play sequence** starts the recent sequence and stops at its end; arrow buttons
+step between plays. **Near the ball** highlights a 26-metre area, retaining distant
+players as quiet dots. **All players** restores every label. Hover, focus or tap any of the 22
 players to see their full name. Involved players have a gold ring. On phones the
 pitch turns portrait; reduced-motion settings replace animation with a manual
 ball-position control. **Show the moments** opens readable events and a pitch
 illustration. Matchday does not display JSON.
+
+On desktop, the left panel identifies the current player and field area, and the
+right panel provides **Match commentary**. Select a commentary entry to replay it;
+**Latest play** returns to the newest event in the loaded snapshot. Commentary
+shows only the selected play and earlier entries, and follows playback. On mobile,
+the controls remain directly under the pitch and commentary follows below.
 
 ![Matchday desktop view](screenshots/matchday-desktop.png)
 

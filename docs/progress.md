@@ -1,5 +1,13 @@
 # Progress
 
+Latest tracker refinement ([verification](verification/matchday-tracker-local.json), 578 backend and 68 frontend tests passed): desktop now pairs player context, pitch and synchronised
+commentary; mobile keeps controls directly below the field. A default 26-metre
+spotlight reduces visual clutter while retaining all 22 selectable players.
+Wider attacking support, compact defending lines and bounded keepers replace
+random drifting. Playback starts from the latest-event view, rewinds on request
+and stops at the end. Off-ball positioning remains illustrative. Design references
+and scope are in [the redesign record](redesign-implementation.md#broadcast-style-tracker-refinement).
+
 Latest fan refresh: Matchday has original club crests and background themes, a
 responsive interactive 22-player pitch at both explanation levels, moving ball
 actions, keyboard/touch player selection and plain-language bilingual stories.

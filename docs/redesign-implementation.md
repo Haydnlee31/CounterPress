@@ -97,3 +97,30 @@ footer explains the distinction from tracking data. Studio's approved wording an
 qualification requirements remain unchanged. No new service or model call is needed.
 See [verification](verification/matchday-pitch-local.json). Human usability testing
 is still required before making claims about fan comprehension or commercial readiness.
+
+## Broadcast-style tracker refinement
+
+The tracker opens at the latest available event, with a current-player panel,
+central pitch and timestamped commentary rail on desktop. On phones, playback
+controls sit immediately below the portrait pitch and commentary follows them.
+Selecting an entry seeks both the pitch and feed; only the selected event and
+earlier entries are shown. Playback starts at the beginning when opened at the
+latest event and stops at the end. Corrections replace the feed using canonical
+snapshot events rather than appending duplicate commentary.
+
+The default 26-metre ball spotlight retains distant players as subtle dots; all
+22 remain selectable and the full-label view is one click away. Team shapes now
+respond to ball position and the actor's team: wider attacking support, compact
+defensive lines, a goal-side defender and bounded goalkeepers. Random drifting
+was removed. Exact ball/actor/recipient anchors still come from source events;
+the rest is illustrative and is not a tracking reconstruction or tactical measurement.
+
+Design references reviewed on 18 October 2026:
+
+- [Sportradar Live Match Tracker](https://widgets.sir.sportradar.com/sportradar/en/live-match-tracker), visually inspected in its public demo: pitch action, compact score/time and surrounding context. Its [official layout documentation](https://apidocs.sportradar.com/resources/widgets/docs/lmt/lmt-plus) supports split desktop and stacked mobile compositions.
+- [FotMob match centre](https://www.fotmob.com/matches/paredes-vs-torreense/ane10ht): documented commentary/ticker alongside match information informed the readable, timestamped feed.
+- [Sofascore Attack Momentum](https://www.sofascore.com/news/how-sofascores-attack-momentum-changed-sport-analysis): visual emphasis helps explain match flow. CounterPress uses this as a hierarchy reference; it does not reproduce or claim an attack-momentum metric.
+
+These are design references only. No vendor widget, artwork, tracking feed or
+proprietary statistic is embedded. The changes reuse the current snapshot and
+revision delivery; there is no additional service, subscription or model call.
