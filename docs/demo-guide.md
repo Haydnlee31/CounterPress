@@ -3,7 +3,7 @@
 ## Watch the last-second turnaround
 
 Open [the showcase](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/?story=last-gasp#matchday)
-and press **Play sequence**. Watch Ashford's two saves, the run down the wing,
+and press **Play highlight**. Watch Ashford's two saves, the run down the wing,
 Hart's cross, Vale's header and Ellis's finish. The scoreboard moves from **2–1 to
 3–1** when the ball reaches the goal. Previous/next controls let you inspect each
 play; rewinding also rewinds the displayed score. With reduced motion enabled,
@@ -15,14 +15,16 @@ cross, knockdown and finish are clear. The app uses fictional names and approxim
 authored positions, with its clock rebased to 57:40–58:00. It is not measured or
 frame-synchronised tracking. The reference link and provenance are also in the app.
 
-Find this sequence from any Matchday story using the **Pick a moment** cards
-or **Explore a story → Last-second turnaround**. The existing analytical stories
-remain available separately.
+The home page opens with **Last-second turnaround**, labelled **Highlight of the day**.
+Original clip links and reconstruction details are in the footer. **Match analysis**
+in the footer opens the existing analytical stories.
 
-## Switch between three moments
+## Watch more highlights
 
-The three **Pick a moment** cards sit above the pitch. Each opens paused at the
-start, with its own score and a short suggestion of which runner to watch.
+Below the pitch and commentary, **More highlights** shows the other two plays.
+Each card has a pitch illustration, title, description and duration. Select a card
+to return to the new headline and a paused replay. The address updates so refreshing
+keeps that highlight. The featured turnaround appears here when watching another play.
 
 | Replay | Action span | Reference clip |
 | --- | --- | --- |
@@ -30,7 +32,7 @@ start, with its own score and a short suggestion of which runner to watch.
 | [Pass, move, finish](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/?story=one-touch#matchday) | 10 seconds | [FIFA: Brazil–Korea · 0:48](https://www.youtube.com/watch?v=c0-ZhEkEFtA&t=48s) |
 | [From halfway to goal](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/?story=breakaway#matchday) | 12 seconds | [FIFA: Argentina–France · 2:54](https://www.youtube.com/watch?v=agrGb25mJzs&t=174s) |
 
-Press **Play sequence** above the field. The final shot has a short animation/hold
+Press **Play highlight** above the field. The final shot has a short animation/hold
 beyond the listed first-to-last-event span. Speed changes keep playback running;
 seeking pauses it. The score and goal announcement follow the ball, including when
 rewinding. The original clips open separately so judges can compare the passing
@@ -39,8 +41,10 @@ identities, not continuous optical tracking. See [source coverage](replay.md#cli
 
 CounterPress turns recorded football events into comparisons that you can check
 against their source evidence. This guide is for demo users and hackathon judges.
-The match, teams and players are synthetic. The replay covers a ten-minute
-second-half segment, with Eastbridge trailing Northport 0–1.
+The match, teams and players are synthetic. The analytical replay covers a ten-minute
+second-half segment, with Eastbridge trailing Northport 0–1. The three short
+highlights retain separate authored event histories and scores; the “Today”
+presentation is editorial framing, not a claim of a live real-world match.
 
 **[Open the live CounterPress demo](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/).**
 No installation, sign-in, Azure account or API key is needed. The app can take
@@ -48,8 +52,8 @@ around 30 seconds to wake after being idle; allow it to load before presenting.
 
 ## Start with Matchday — 30 seconds
 
-The new home screen starts paused at **58:00**, with a useful comparison already
-visible. **Catch me up** opens the segment's supported stories on the same page.
+The home screen leads with the featured highlight, paused at its first action.
+For comparisons, open **Match analysis** in the footer; this view starts at **58:00**. **Catch me up** opens the segment's supported stories on the same page.
 The pitch is available at both explanation levels and opens at the latest play.
 **Play sequence** starts the recent sequence and stops at its end; arrow buttons
 step between plays. All 22 players stay visible with initials throughout playback.
