@@ -1,8 +1,8 @@
+import { replayShapes } from './replayGallery'
 import type { Event } from '../types'
 import { playerName, squads } from './identity'
 
 export type Point = { x: number; y: number }
-export const BALL_FOCUS_RADIUS = 26
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
 
 /** Both sides share one stadium view; each source event attacks in its own +x direction. */
@@ -77,7 +77,7 @@ export function pitchScene(event: Event | undefined, progress: number) {
   const rawEnd = event?.action.end_position
   const end = event && point(rawEnd) ? fieldPoint(rawEnd, event.actor.team_id) : start
   const isShot = event?.action.kind === 'shot'
-  const amount = clamp((progress - .2) / (isShot ? .4 : .6), 0, 1), smooth = amount * amount * (3 - 2 * amount)
+  const amount = event?.action.kind==='carry' ? clamp(progress,0,1) : clamp((progress - .2) / (isShot ? .4 : .6), 0, 1), smooth = amount * amount * (3 - 2 * amount)
   let ball = { x: start.x + (end.x - start.x) * smooth, y: start.y + (end.y - start.y) * smooth }
   const rawRebound = event?.action.rebound_position
   if (event && isShot && point(rawRebound) && progress > .6) {
@@ -144,4 +144,49 @@ export function scoreAtPlayhead(score: Record<string,number>, events: Event[], i
     if(event.action.kind==='shot' && event.action.outcome==='goal' && (i>index || (i===index&&!resolved))) result[event.actor.team_id]-=1
   })
   return result
+}
+
+/** A single persistent trajectory per identity, shared at adjacent event boundaries.
+ * Event touch anchors take precedence over the illustrative off-ball formation.
+ * Interpolation is presentation only and never enters metrics or evidence.
+ */
+export function sequenceScene(events: Event[], index: number, progress: number, timed=true) {
+  const event=events[index], scene=pitchScene(event,progress)
+  if (!event || events.length < 2) return scene
+  const durations=events.map((e,i)=>timed?Math.max(1000,Math.min(10000,(events[i+1]?.occurred_at.elapsed_ms ?? e.occurred_at.elapsed_ms+2500)-e.occurred_at.elapsed_ms)):3200)
+  const starts=[0];durations.forEach(d=>starts.push(starts.at(-1)!+d))
+  const now=starts[index]+progress*durations[index], total=starts.at(-1)!
+  const first=pitchScene(events[0],0), last=pitchScene(events.at(-1),1)
+  const authored=replayShapes[event.match_id]
+  const players=scene.players.map(p=>{
+    const anchors: {time:number; point:Point}[]=[]
+    const add=(time:number,position:Point)=>anchors.push({time,point:position})
+    events.forEach((e,i)=>{
+      const start=fieldPoint(e.position,e.actor.team_id), rawEnd=e.action.end_position
+      const end=point(rawEnd)?fieldPoint(rawEnd,e.actor.team_id):start
+      if(e.actor.player_id===p.player_id){
+        add(starts[i],start);add(starts[i]+durations[i]*.2,start)
+        if(e.action.kind==='carry') add(starts[i]+durations[i]*.8,end)
+      }
+      if(recipient(e)===p.player_id && e.action.outcome==='completed') add(starts[i]+durations[i]*.8,end)
+      if((e.action.goalkeeper as {player_id?:string}|undefined)?.player_id===p.player_id){
+        add(starts[i]+durations[i]*.2,fieldPoint({x:104,y:34},e.actor.team_id))
+        add(starts[i]+durations[i]*.6,e.action.outcome==='saved'?end:fieldPoint({x:102.5,y:35.5},e.actor.team_id))
+      }
+    })
+    anchors.sort((a,b)=>a.time-b.time)
+    const team=authored?.[p.team_id as 'eastbridge'|'northport']
+    const initial=team?{x:team[0][p.number-1][0],y:team[0][p.number-1][1]}:first.players.find(v=>v.player_id===p.player_id)!
+    const final=team?{x:team[1][p.number-1][0],y:team[1][p.number-1][1]}:last.players.find(v=>v.player_id===p.player_id)!
+    // For the generic formation, establish a participant at their first touch
+    // rather than rushing them from an unrelated generated slot.
+    if(!anchors.length || anchors[0].time>0) anchors.unshift({time:0,point:team?initial:anchors[0]?.point??initial})
+    if(anchors.at(-1)!.time<total) anchors.push({time:total,point:anchors.length>1?anchors.at(-1)!.point:final})
+    const after=anchors.findIndex(a=>a.time>=now)
+    const b=anchors[after<0?anchors.length-1:after],a=anchors[Math.max(0,after-1)]
+    const t=b.time===a.time?1:clamp((now-a.time)/(b.time-a.time),0,1)
+    if(p.player_id===event.actor.player_id && event.action.kind==='carry') return {...p,...scene.ball}
+    return {...p,x:a.point.x+(b.point.x-a.point.x)*t,y:a.point.y+(b.point.y-a.point.y)*t}
+  })
+  return {...scene,players}
 }

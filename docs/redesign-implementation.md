@@ -108,8 +108,8 @@ earlier entries are shown. Playback starts at the beginning when opened at the
 latest event and stops at the end. Corrections replace the feed using canonical
 snapshot events rather than appending duplicate commentary.
 
-The default 26-metre ball spotlight retains distant players as subtle dots; all
-22 remain selectable and the full-label view is one click away. Team shapes now
+The initial 26-metre spotlight was removed in the replay-gallery iteration below;
+all 22 players now retain their full markers and labels. Team shapes now
 respond to ball position and the actor's team: wider attacking support, compact
 defensive lines, a goal-side defender and bounded goalkeepers. Random drifting
 was removed. Exact ball/actor/recipient anchors still come from source events;
@@ -124,3 +124,37 @@ Design references reviewed on 18 October 2026:
 These are design references only. No vendor widget, artwork, tracking feed or
 proprietary statistic is embedded. The changes reuse the current snapshot and
 revision delivery; there is no additional service, subscription or model call.
+
+
+## Replay gallery: designer and football-fan review
+
+The review found four problems: hiding distant labels made players appear to pop
+in; formation resets broke movement continuity; the strongest demo was buried
+behind a single promotion; and the play button was below a tall pitch. A current
+shot also revealed its outcome in commentary before the ball arrived.
+
+Implemented changes:
+
+- Three selected-state replay cards above the action, with brief descriptions,
+  action spans and direct source-clip links. Mobile cards omit secondary copy to
+  keep titles readable; the selected play retains its context below the cards.
+- All 22 players remain visible. Persistent identity trajectories join at action
+  boundaries, and active markers render above background markers. Carry motion
+  uses the full action duration to avoid implausibly fast bursts.
+- Playback controls above the field: pause/resume, previous/next, restart, speed
+  and a keyboard-operable scrubber. Reduced-motion users retain manual start/end
+  control. English and Chinese labels remain supported.
+- A tighter header and less repeated explanatory content. Goal wording, including
+  accessible commentary labels, waits for the shot; score rewinds with the pitch.
+
+The first screenshot review prompted a second pass: controls moved above the
+field on mobile as well as desktop, the large secondary explanation card was
+removed, and two crowded illustrative starting slots were separated. Source
+coverage and estimation limits remain in the footer rather than interrupting play.
+
+The new stories reference Brazil's Richarlison combination and Argentina's Di María
+counterattack. See [coverage and role mapping](replay.md#clip-reconstruction-source-coverage).
+Automated and visual checks verify operation, not whether a fan understands the
+play. The next human test is to ask a viewer to switch moments, identify the
+runner/assist and rewind one pass without guidance, then compare their account
+against the source clip. No new agent, model call or Azure service was required.

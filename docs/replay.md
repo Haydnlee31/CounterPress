@@ -98,9 +98,9 @@ distance sums; this is not ball trajectory distance or player running distance.
 High recoveries require established open-play control at normalized x >= 70.
 Restarts, duels and below-threshold locations are excluded.
 
-The current actions contain no goals, so score is preserved from the declared
-initial state. Goals, substitutions and active-player changes need explicit future
-event types. The local clock supports one period per replay. MatchTime ordering
+Canonical goal shots increment the declared initial score. Rewinds and later
+shot corrections rebuild that score. Substitutions and active-player changes still
+need explicit future event types. The local clock supports one period per replay. MatchTime ordering
 supports periods, but multi-period clock traversal requires declared period lengths
 and halftime/media mapping; the clock rejects such intervals for now.
 
@@ -118,3 +118,40 @@ pass distances, reset/repeatability, pause/resume, speed changes and fractional 
 cutoffs, duplicates, corrections, out-of-order/late records, stable tie breaking,
 conflicting revisions, threshold/restart exclusions, invalid actors and bad control
 transitions. It also runs the console command and checks its output.
+
+
+## Clip reconstruction source coverage
+
+These are independently authored synthetic sequences, viewed against official
+footage on 18 October 2026. Coordinates estimate visible pitch landmarks and lanes;
+no camera calibration, provider event records or tracking measurements are used.
+All 22 identities persist. Positions outside the camera view and intermediate
+movement are illustrative. The action order, ball endpoints and role mapping live
+in `fixtures/showcases`; separate expected results live in `tests/expected_replay_gallery.json`.
+Short showcase IDs are explicitly excluded from five-minute insight publications.
+
+| Sequence / source | Visible action coverage | Fictional role mapping |
+| --- | --- | --- |
+| Watford–Leicester, 12 May 2013: [official Watford clip, 9:20 onward](https://www.youtube.com/watch?v=ETXv-SvOk9g&t=560s) | Penalty, rebound save, outlet, right-wing break, cross, header, finish. Existing reconstruction retained. | Ashford saves; Mercer breaks; Hart crosses; Vale heads down; Ellis shoots. |
+| Brazil–Korea Republic, 5 December 2022: [FIFA highlights, about 0:48–0:55](https://www.youtube.com/watch?v=c0-ZhEkEFtA&t=48s) | Initial control under pressure; wide view around 0:51 shows Marquinhos on the right edge of the area, defensive line and support; around 0:52 shows Thiago Silva near the arc and Richarlison running through. Finish follows, with alternate-angle replays later. The opening juggling touches are abstracted as one control/carry event. | Richarlison → Ellis (`eb09`); Marquinhos → Rowan (`eb04`); Thiago Silva → Vale (`eb06`); Kim Seung-gyu → Wells (`np01`). |
+| Argentina–France, 18 December 2022: [FIFA extended highlights, about 2:54–3:05](https://www.youtube.com/watch?v=agrGb25mJzs&t=174s) | Wide build-up at 2:54; through-ball and central runner near halfway around 2:59; square ball and far-side finish around 3:02–3:04. Visible recovering defenders and keeper constrain the illustrative shape. The reconstruction starts at Messi's release, after the earlier build-up. | Messi → West (`eb10`); Álvarez → Ellis (`eb09`); Mac Allister → Mercer (`eb08`); Di María → Hart (`eb07`); Lloris → Wells (`np01`). |
+
+Each new replay has eleven authored starting and finishing slots per side in
+`frontend/src/matchday/replayGallery.ts`. Touch anchors from the canonical events
+control participants; other players interpolate between their illustrative slots.
+All positions share a 105 × 68 m stadium view. The source event model still uses
+each actor team's positive-x attacking direction; Northport is mirrored on both axes.
+The match clocks are rebased to end at 58:00 and the names, timings and positions
+are deliberately authored, so this is not a frame-synchronised recreation.
+No original video, audio, crest, screenshot or provider dataset is shipped.
+
+Public StatsBomb event/360 data was considered but not incorporated. Its
+[published licence](https://raw.githubusercontent.com/statsbomb/open-data/master/LICENSE.pdf)
+restricts modification/redistribution and commercial exploitation. No such records
+were used to author the shipped fixtures. Source videos remain external links.
+
+Verification covers independent action/score expectations, strict fixture validation,
+ball-path continuity, all 22 identities, player bounds, adjacent-action continuity,
+sub-12 m/s sampled player speeds at normal playback, score correction/rewind, and
+no five-minute publications. This verifies internal consistency, not positional
+accuracy against a tracking ground truth that the footage does not supply.

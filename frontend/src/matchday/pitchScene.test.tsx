@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, expect, test, vi } from 'vitest'
-import { pitchScene, actionText, fieldPoint, BALL_FOCUS_RADIUS } from './pitchScene'
+import { pitchScene, actionText, fieldPoint, sequenceScene } from './pitchScene'
 import { knownPlayer, initials } from './identity'
 import { MatchPitch } from './MatchPitch'
 import type { Event } from '../types'
@@ -67,15 +67,12 @@ test('keepers stay near goal, teams respond to possession, and static actions do
     expect(width(team)).toBeGreaterThan(width(team==='eastbridge'?'northport':'eastbridge'))
   }
 })
-test('ball spotlight uses the radius while always keeping participants visible',()=>{
+test('all 22 players remain full size and labelled without a spotlight control',()=>{
   const ui=render(<MatchPitch events={[pass]}/>)
-  const scene=pitchScene(pass,0)
-  for(const player of scene.players){
-    const marker=ui.container.querySelector(`[data-player-id="${player.player_id}"]`)!
-    expect(marker.classList.contains('is-distant')).toBe(!player.involved&&Math.hypot(player.x-scene.ball.x,player.y-scene.ball.y)>BALL_FOCUS_RADIUS)
-  }
-  fireEvent.click(screen.getByRole('button',{name:'All players'}))
+  expect(screen.queryByRole('button',{name:'Near the ball'})).toBeNull()
+  expect(ui.container.querySelectorAll('.fan-pitch-player')).toHaveLength(22)
   expect(ui.container.querySelectorAll('.is-distant')).toHaveLength(0)
+  expect([...ui.container.querySelectorAll('.player-disc')].every(p=>p.getAttribute('r')==='2.7')).toBe(true)
 })
 test('commentary follows the playhead, rewinds without future entries and resets corrected wording',()=>{
   const next: Event={...pass,event_id:'pass-2',occurrence_order:2,occurred_at:{period:2,elapsed_ms:185000},available_at:{period:2,elapsed_ms:185000},action:{kind:'carry',end_position:{x:32,y:34}}}

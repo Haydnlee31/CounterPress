@@ -1,0 +1,4 @@
+{
+  "one-touch": {"file":"one_touch.json", "initial":2, "final":3, "seconds":10, "passes":3, "scorer":"eb09", "actors":["eb09","eb09","eb04","eb06","eb09"], "kinds":["carry","pass","pass","pass","shot"]},
+  "breakaway": {"file":"breakaway.json", "initial":1, "final":2, "seconds":12, "passes":3, "scorer":"eb07", "actors":["eb10","eb09","eb08","eb08","eb07"], "kinds":["pass","pass","carry","pass","shot"]}
+}

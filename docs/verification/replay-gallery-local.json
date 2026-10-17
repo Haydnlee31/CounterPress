@@ -1,0 +1,37 @@
+{
+  "checked_at_utc": "2026-10-17T19:08:53.788836+00:00",
+  "checks": [
+    {
+      "command": ".venv/bin/python -m pytest -q",
+      "output": "592 passed, 1 warning in 23.92s"
+    },
+    {
+      "command": "npm --prefix frontend test -- --reporter=dot",
+      "output": "Test Files 12 passed (12); Tests 77 passed (77)"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "output": "TypeScript and Vite production build passed; 214 modules transformed"
+    },
+    {
+      "command": ".venv/bin/python scripts/container_smoke.py http://127.0.0.1:8010",
+      "output": "PASS: health, readiness, frontend/assets, Studio callback/access boundary, 1-to-4 evidence, control, bilingual recap, three replay goals/rewind, private-path 404s"
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_replay_gallery.cjs http://127.0.0.1:8010",
+      "output": "PASS: three replay cards, both new deep links and full animations, 22 persistent players, score/goal timing, keyboard scrub/rewind, restart, speed, mobile, bilingual and reduced motion; no browser errors."
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_matchday.cjs http://127.0.0.1:8010",
+      "output": "PASS: HTTP Matchday, 22-player moving pitch, persistent full-team view, synchronised commentary, keyboard names, club colours, footer-only disclosure, no JSON, bilingual stories, mobile portrait/200% text, rewind and analyst navigation"
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_last_gasp.cjs http://127.0.0.1:8010",
+      "output": "PASS: last-gasp deep link, 22 players, full animated sequence, 2:1 \u2192 3:1, rewind, reduced motion, mobile, bilingual, story switching; no browser errors."
+    }
+  ],
+  "new_azure_resources": 0,
+  "live_model_calls": 0,
+  "human_usability_test": "pending",
+  "position_ground_truth": "not available; hand-authored visual approximation, off-camera players illustrative"
+}
