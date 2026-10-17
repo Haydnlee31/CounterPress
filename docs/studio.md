@@ -1,8 +1,9 @@
 # Producer Studio
 
-Studio is the authenticated producer review workspace at `#studio`. This slice is
-controlled by a separate deployment switch. The protected release workflow records
-when it is enabled on the hosted app. Public Matchday remains available without sign-in. Studio uses factual templates;
+Studio is the authenticated producer review workspace at `#studio`. It is
+enabled on the hosted app as of 17 October 2026; [release evidence](verification/studio-live.json)
+records the deployed commit and real hosted sign-in, approval, export and revocation checks.
+A separate deployment switch controls activation. Public Matchday remains available without sign-in. Studio uses factual templates;
 opening it, reviewing, approving and exporting never invokes a model.
 
 ## Using Studio
@@ -65,7 +66,7 @@ This slice intentionally does not approve expiring AI presentations. Integrating
 a model attempt requires binding that attempt and its expiry to approval first.
 The existing private editorial API remains independently disabled.
 
-## Local startup and later Azure activation
+## Local startup and Azure activation
 
 Default startup remains safe and requires no Azure configuration:
 
