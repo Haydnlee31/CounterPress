@@ -4,19 +4,19 @@ export type ReplayStory = { title: Labels; hook: Labels; context: Labels; durati
 export const replayGallery: Record<string, ReplayStory> = {
   'last-gasp': {
     title: ['Last-second turnaround', '最后一刻的逆转'], hook: ['Two saves. A race to the other end.', '两次扑救，随即全速反击。'], duration: '20s',
-    context: ['Northport have a penalty. Watch Ashford, then follow Mercer down the wing as Eastbridge look for Ellis in the middle.', 'Northport获得点球。关注Ashford的扑救，再跟随Mercer沿边路反击，寻找中路的Ellis。'],
+    context: ['A penalty saved. A second chance denied. Eastbridge race upfield and Ellis supplies the finish.', '扑出点球，再挡补射。Eastbridge迅速反击，Ellis完成致命一击。'],
     source: 'https://www.youtube.com/watch?v=ETXv-SvOk9g&t=560s', sourceLabel: 'Watford–Leicester · 9:20',
     note: ['Inspired by Watford–Leicester, 12 May 2013.', '灵感来自2013年5月12日Watford对Leicester。'],
   },
   'one-touch': {
-    title: ['Pass, move, finish', '传球、跑位、射门'], hook: ['A crowded defence. A clever way through.', '密集防守中的巧妙配合。'], duration: '10s',
-    context: ['Ellis has a defender on his shoulder. Watch his run after the lay-off: Rowan and Vale keep the ball moving, looking for the return pass.', 'Ellis身后有防守球员。注意他回传后的跑位：Rowan和Vale连续传递，寻找回传机会。'],
+    title: ['Pass, move, finish', '传球、跑位、射门'], hook: ['Rowan and Vale combine to put Ellis through on goal.', 'Rowan与Vale巧妙配合，助Ellis突破防线。'], duration: '10s',
+    context: ['Ellis slips away from his marker as Rowan and Vale trade quick passes to unlock the defence.', 'Rowan与Vale快速传递撕开防线，Ellis摆脱盯防完成射门。'],
     source: 'https://www.youtube.com/watch?v=c0-ZhEkEFtA&t=48s', sourceLabel: 'Brazil–Korea Republic · 0:48',
     note: ['Inspired by Richarlison’s combination goal against Korea Republic, 5 December 2022; FIFA highlights, approximately 0:48–0:58, with alternate-angle replays after it.', '灵感来自2022年12月5日Richarlison对韩国的配合进球；FIFA集锦约0:48–0:58，随后有其他角度回放。'],
   },
   breakaway: {
-    title: ['From halfway to goal', '从中场直奔球门'], hook: ['One release opens up the whole pitch.', '一次出球，打开整片空间。'], duration: '12s',
-    context: ['West releases the ball under pressure. Follow Mercer through the middle — and keep an eye on Hart arriving on the far side.', 'West在压力下出球。关注Mercer的中路前插，以及远端跟进的Hart。'],
+    title: ['From halfway to goal', '从中场直奔球门'], hook: ['Mercer leads the break. Hart races in to finish.', 'Mercer带领反击，Hart跟进完成破门。'], duration: '12s',
+    context: ['West finds a way out of pressure, Mercer drives through the middle and Hart arrives to finish at the far side.', 'West在逼抢中找到出球路线，Mercer从中路突进，Hart在远端跟进破门。'],
     source: 'https://www.youtube.com/watch?v=agrGb25mJzs&t=174s', sourceLabel: 'Argentina–France · 2:54',
     note: ['Inspired by Di María’s counterattack goal in the 18 December 2022 World Cup final; FIFA extended highlights, approximately 2:54–3:05.', '灵感来自2022年12月18日世界杯决赛Di María的反击进球；FIFA加长集锦约2:54–3:05。'],
   },

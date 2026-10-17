@@ -158,3 +158,20 @@ Automated and visual checks verify operation, not whether a fan understands the
 play. The next human test is to ask a viewer to switch moments, identify the
 runner/assist and rewind one pass without guidance, then compare their account
 against the source clip. No new agent, model call or Azure service was required.
+
+## Featured highlight refinement — 18 October 2026
+
+The previous top-row chooser gave three plays equal priority and asked the fan to
+configure the page before watching. Matchday now uses an editorial hierarchy:
+today’s featured headline, score and pitch, then related content at the bottom.
+The main action says Play highlight; secondary cards contain original pitch
+illustrations, readable descriptions and durations, including on phones. Clip
+references and reconstruction provenance sit in the footer. Analysis is still
+reachable through the header and footer, without a scenario selector in the
+highlight flow. Switching returns focus to the updated headline and keeps a
+refreshable URL. No fabricated popularity counts or live badges were added.
+
+Technical checks cannot establish fan usability. The next validation is to ask
+participants to watch the featured play, discover another highlight and return
+without instructions. Existing source fixtures remain separately authored
+reconstructions; this UI change does not merge them into one measured match feed.

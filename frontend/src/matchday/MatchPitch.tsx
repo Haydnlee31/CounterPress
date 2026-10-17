@@ -58,7 +58,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
     <div className="fan-pitch-heading"><div><p className="fan-kicker">{t('ON THE PITCH','球场上')}</p><h2>{t('Watch the play','观看回放')}</h2></div>
       <div className="fan-tracker-clock"><span>{t(playing?'Playing':'Replay',playing?'播放中':'回放')}</span><span className="fan-pitch-time">{event ? clock(event.occurred_at.elapsed_ms,event.occurred_at.period) : '—'}</span></div></div>
     <div className="fan-pitch-controls">
-      <button className="fan-primary" disabled={!events.length} onClick={startPlayback}>{reduced?t('Show ball movement','查看传球落点'):playing?t('Pause play','暂停'):t('Play sequence','播放片段')} <span aria-hidden="true">{playing?'Ⅱ':'▶'}</span></button>
+      <button className="fan-primary" disabled={!events.length} onClick={startPlayback}>{reduced?t('Show ball movement','查看传球落点'):playing?t('Pause play','暂停'):fromStart?t('Play highlight','播放集锦'):t('Play sequence','播放片段')} <span aria-hidden="true">{playing?'Ⅱ':'▶'}</span></button>
       <button className="fan-secondary" disabled={!events.length || index===0} onClick={()=>select(index-1)} aria-label={t('Previous play','上一次进攻')}>←</button>
       <button className="fan-secondary" disabled={!events.length || index===events.length-1} onClick={()=>select(index+1)} aria-label={t('Next play','下一次进攻')}>→</button>
       <span>{events.length ? `${index+1} / ${events.length}` : '—'}</span>

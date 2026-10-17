@@ -199,7 +199,7 @@ beforeEach(() => {
       clear: () => entries.clear(),
     },
   })
-  window.history.replaceState(null, '', '/')
+  window.history.replaceState(null, '', '/?story=increase')
   vi.mocked(api.fetchScenarios).mockResolvedValue([
     {
       scenario_id: 'increase',
@@ -457,7 +457,7 @@ test('analysis deep link keeps the existing presenter tools accessible', async (
   ).toBeTruthy()
   window.location.hash = '#matchday'
   fireEvent(window, new HashChangeEvent('hashchange'))
-  await screen.findByLabelText('1 to 4')
+  await screen.findByRole('heading', {level:1,name:'Last-second turnaround'})
   expect(screen.queryByLabelText('Local viewer')).toBeNull()
 })
 
@@ -496,4 +496,25 @@ test('slow replay requests finish while the clock advances; accepted facts remai
   ).not.toContain('Updated to 48:00')
   expect(screen.queryByLabelText('1 to 4')).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Pause replay' }))
+})
+
+test('home leads with the featured highlight and keeps only related highlights below the action', async () => {
+  window.history.replaceState(null, '', '/')
+  render(<App />)
+  const title = await screen.findByRole('heading', {level:1,name:'Last-second turnaround'})
+  expect(screen.getByText('Highlight of the day')).toBeTruthy()
+  expect(screen.queryByText('Pick a moment')).toBeNull()
+  expect(screen.queryByLabelText('Explore a story')).toBeNull()
+  const more = screen.getByRole('region', {name:'More highlights'})
+  expect(within(more).getAllByRole('button')).toHaveLength(2)
+  expect(within(more).queryByText('Last-second turnaround')).toBeNull()
+  expect(screen.getByRole('link', {name:/Original clip/}).closest('footer')).toBeTruthy()
+  const card = within(more).getByRole('button', {name:/Pass, move, finish/})
+  fireEvent.click(card)
+  expect(await screen.findByRole('heading', {level:1,name:'Pass, move, finish'})).toBe(title)
+  expect(document.activeElement).toBe(title)
+  expect(window.location.search).toBe('?story=one-touch')
+  expect(within(more).getAllByRole('button')).toHaveLength(2)
+  fireEvent.click(within(more).getByRole('button', {name:/Last-second turnaround/}))
+  expect(await screen.findByRole('heading', {level:1,name:'Last-second turnaround'})).toBeTruthy()
 })

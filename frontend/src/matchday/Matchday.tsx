@@ -26,6 +26,14 @@ export function Matchday() {
   const t = (en: string, zh: string) => (p.language === 'zh-Hans' ? zh : en)
   const replayStory=replayGallery[m.request.scenario]
   const isReplayStory=!!replayStory
+  const highlightTitle = useRef<HTMLHeadingElement>(null)
+  const focusHighlight = useRef(false)
+  useEffect(() => {
+    if (!focusHighlight.current) return
+    focusHighlight.current = false
+    highlightTitle.current?.focus({preventScroll:true})
+    highlightTitle.current?.scrollIntoView?.({block:'start',behavior:'instant'})
+  }, [m.request.scenario])
   const [pitchHead,setPitchHead]=useState({index:0,resolved:false})
   const pitchEvents=snapshot?.pitch_events ?? []
   const shownScore=isReplayStory&&snapshot?scoreAtPlayhead(snapshot.state.score,pitchEvents,pitchHead.index,pitchHead.resolved):snapshot?.state.score
@@ -59,6 +67,11 @@ export function Matchday() {
   const changed = stories.some((s) => s.citation.revision > 1)
   function chooseShowcase(value: string) {
     setMomentKey(null)
+    setPitchHead({index:0,resolved:false})
+    const url = new URL(window.location.href)
+    url.searchParams.set('story', value)
+    window.history.replaceState(null, '', url)
+    focusHighlight.current = true
     m.scenario(value)
   }
   function showMoments(key: string) {
@@ -103,9 +116,11 @@ export function Matchday() {
         <div className="fan-intro">
           <div>
             <p className="fan-kicker">
-              {t('EASTBRIDGE × NORTHPORT', 'EASTBRIDGE × NORTHPORT')}
+              {isReplayStory ? t('TODAY · EASTBRIDGE × NORTHPORT', '今日 · EASTBRIDGE × NORTHPORT') : 'EASTBRIDGE × NORTHPORT'}
             </p>
-            <h1>{t('Match centre', '比赛中心')}</h1>
+            {isReplayStory && <p className="fan-featured-label">{m.request.scenario === 'last-gasp' ? t('Highlight of the day', '今日最佳集锦') : t('Match highlights', '比赛集锦')}</p>}
+            <h1 ref={highlightTitle} tabIndex={-1}>{replayStory ? t(...replayStory.title) : t('Match centre', '比赛中心')}</h1>
+            {replayStory && <p className="fan-highlight-description">{t(...replayStory.context)}</p>}
           </div>
           <button
             className="fan-follow"
@@ -271,14 +286,6 @@ export function Matchday() {
             </button>}
           </div>
         </section>
-        <section className="fan-replay-gallery" aria-label={t('Choose a replay','选择回放')}>
-          <div className="fan-gallery-heading"><h2>{t('Pick a moment','选择精彩片段')}</h2><span>{t('Three plays to explore','三个精彩片段')}</span></div>
-          <div className="fan-replay-cards">{Object.entries(replayGallery).map(([id,story],i)=><button key={id} className={`fan-replay-card ${id===m.request.scenario?'is-active':''}`} aria-pressed={id===m.request.scenario} onClick={()=>chooseShowcase(id)}>
-            <span className="fan-card-meta"><span>0{i+1}</span><span>{story.duration} <span aria-hidden="true">▶</span></span></span>
-            <strong>{t(...story.title)}</strong><span>{t(...story.hook)}</span>
-          </button>)}</div>
-        </section>
-        {replayStory && <div className="fan-replay-context"><p>{t(...replayStory.context)}</p><a href={replayStory.source} target="_blank" rel="noreferrer">{t('Original clip','原始片段')} · {replayStory.sourceLabel} ↗</a></div>}
         {snapshot && <MatchPitch key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} fromStart={isReplayStory} onPlayhead={isReplayStory?setPitchHead:undefined} />}
         {replayOpen && !isReplayStory && (
           <section
@@ -379,9 +386,9 @@ export function Matchday() {
             </div>
           </div>
         )}
-        <div className="fan-section-heading fan-story-heading">
+        {!isReplayStory && <div className="fan-section-heading fan-story-heading">
           <h2>
-            {isReplayStory ? t('More match stories','更多比赛故事') : p.club_id
+            {p.club_id
               ? t('What changed for your side?', '你关注的一方有哪些变化？')
               : t('What changed?', '发生了什么变化？')}
           </h2>
@@ -405,7 +412,7 @@ export function Matchday() {
                 ))}
             </select>
           </label>
-        </div>
+        </div>}
         {m.error ? (
           <section className="fan-empty" role="alert">
             <h3>{t('We couldn’t load this moment.', '暂时无法加载此刻。')}</h3>
@@ -429,9 +436,7 @@ export function Matchday() {
               )}
             </p>
           </section>
-        ) : isReplayStory ? (
-          <article className="fan-turnaround-story"><p>{t('Use “Explore a story” to see how pressure, winning the ball back and individual players change a match.', '通过“选择故事”探索施压、夺回球权和球员表现如何改变比赛。')}</p></article>
-        ) : first ? (
+        ) : isReplayStory ? null : first ? (
           <article className="fan-hero">
             <div className="fan-hero-copy">
               <p className="fan-kicker">
@@ -632,7 +637,37 @@ export function Matchday() {
             }}
           />
         )}
+        <section className="fan-more-highlights" aria-labelledby="more-highlights-title">
+          <div className="fan-gallery-heading">
+            <h2 id="more-highlights-title">{t('More highlights', '更多精彩')}</h2>
+            <span>{t('Eastbridge × Northport', 'Eastbridge × Northport')}</span>
+          </div>
+          <div className="fan-highlight-cards">
+            {Object.entries(replayGallery).filter(([id]) => id !== m.request.scenario).map(([id,story]) => (
+              <button key={id} className="fan-highlight-card" onClick={() => chooseShowcase(id)}>
+                <span className={`fan-highlight-art fan-highlight-art--${id}`} aria-hidden="true">
+                  <svg viewBox="0 0 240 140" fill="none">
+                    <path d="M12 12H228V128H12Z M120 12V128 M12 40H46V100H12 M228 40H194V100H228" />
+                    <circle cx="120" cy="70" r="23" />
+                    <path className="fan-highlight-route" d={id === 'one-touch' ? 'M135 95L155 42L182 85L206 60' : id === 'breakaway' ? 'M65 105L110 80L155 100L202 45' : 'M30 70L65 110L175 110L205 70'} />
+                    {(id === 'one-touch' ? [[135,95],[155,42],[182,85],[206,60]] : id === 'breakaway' ? [[65,105],[110,80],[155,100],[202,45]] : [[30,70],[65,110],[175,110],[205,70]]).map(([cx,cy],i)=><circle key={i} className="fan-highlight-dot" cx={cx} cy={cy} r="5" />)}
+                  </svg>
+                  <span className="fan-highlight-play">▶</span>
+                  <span className="fan-highlight-duration">{story.duration}</span>
+                </span>
+                <span className="fan-highlight-copy">
+                  <span className="fan-highlight-category">{id === 'last-gasp' ? t('Highlight of the day', '今日最佳集锦') : t('Match highlight', '比赛集锦')}</span>
+                  <strong>{t(...story.title)}</strong>
+                  <span>{t(...story.hook)}</span>
+                  <span className="fan-highlight-watch">{t('Watch highlight', '观看集锦')} <span aria-hidden="true">↗</span></span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
         <footer className="fan-footer">
+          {replayStory && <a href={replayStory.source} target="_blank" rel="noreferrer">{t('Original clip', '原始片段')} · {replayStory.sourceLabel} ↗</a>}
+          {isReplayStory && <a href="?story=increase#matchday">{t('Match analysis', '比赛分析')} ↗</a>}
           {replayStory && <small className="fan-data-note">{t(...replayStory.note)} {t('Hand-authored reconstruction with fictional identities, approximate positions and a rebased clock. Visible actions and lanes are estimated from the linked footage; off-camera positions and motion are illustrative, not measured tracking. No footage or audio is reproduced. Short replays are excluded from five-minute comparisons.', '手工重建使用虚构身份、近似位置和重设时钟。可见动作和线路参考所链接影像；镜头外的位置和移动为示意，并非追踪测量。未复制影像或音频。短回放不计入五分钟比较。')}</small>}
           <a href="#studio">{t("Producer Studio", "制作人工作室")} ↗</a>
           <p>

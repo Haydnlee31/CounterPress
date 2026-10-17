@@ -1,5 +1,20 @@
 # Progress
 
+## 18 October 2026 — featured Matchday highlight
+
+Home now leads with “Last-second turnaround” as Highlight of the day. Removed the
+upper replay chooser and replay tutorial; related highlights appear only below
+the action as two illustrated cards with titles, descriptions and durations.
+Selecting a card resets playback, focuses the new headline and updates the URL.
+Sources stay in the footer; Match analysis remains available there. No backend,
+Azure resources or AI configuration changed. Existing authored event histories
+remain independent reconstructions.
+
+Validation: 79 frontend tests, 592 backend tests, production build and browser
+checks for default home, deep links, keyboard/focus, refresh, 22-player animation,
+score rewind, mobile, Chinese and reduced motion. Screenshots and command output
+are recorded in `docs/verification/featured-highlight-local.json`.
+
 Latest replay-gallery refinement: all 22 players stay visible; continuous player
 trajectories replace per-action formation resets. Three cards expose the existing
 turnaround plus a 10-second Brazil-inspired combination and a 12-second

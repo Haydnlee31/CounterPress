@@ -1127,24 +1127,40 @@
 .fan-turnaround-story p:not(.fan-kicker){max-width:65ch;line-height:1.7}
 .fan-turnaround-story a{color:var(--fan-ink);font-weight:700;display:inline-block;margin-top:.7rem}
 
-/* Replay choices stay beside the action, with one stable full-team pitch. */
-.fan-replay-gallery{margin:1.5rem 0 .75rem}
-.fan-gallery-heading{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.65rem}
-.fan-gallery-heading h2{font-size:1.15rem;margin:0}.fan-gallery-heading>span{font-size:.8rem;color:#53655b}
-.fan-replay-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem}
-.fan-replay-card{display:flex;flex-direction:column;gap:.4rem;text-align:left;padding:.85rem 1rem;border:1px solid #c7d5c9;border-radius:14px;background:#ffffffad;color:var(--fan-ink);cursor:pointer;min-height:120px}
-.fan-replay-card strong{font-size:1.05rem;line-height:1.3}.fan-replay-card>span:last-child{font-size:.82rem;line-height:1.45}
-.fan-card-meta{display:flex;justify-content:space-between;font-size:.75rem;font-weight:700;opacity:.8;letter-spacing:.05em}
-.fan-replay-card.is-active{background:var(--fan-ink);color:white;border-color:var(--fan-ink);box-shadow:inset 0 -3px var(--fan-accent)}
-.fan-replay-card:hover{border-color:var(--fan-ink);transform:translateY(-1px)}
-.fan-replay-context{display:flex;align-items:center;gap:1.5rem;padding:.6rem .2rem 1rem;line-height:1.6;font-size:.9rem}
-.fan-replay-context p{margin:0;flex:1}.fan-replay-context a{max-width:260px;color:var(--fan-ink);font-size:.8rem;font-weight:650}
+/* The featured story leads; related highlights follow the full match action. */
+.fan-featured-label{display:inline-flex;align-items:center;gap:8px;margin:0 0 10px;color:var(--fan-ink);font-size:12px;font-weight:750}
+.fan-featured-label::before{content:'★';color:#876a24;font-size:15px}
+.fan-intro h1{scroll-margin-top:24px}
+.fan-intro h1:focus{outline:none}
+.fan-highlight-description{font-size:15px;line-height:1.65;max-width:65ch;margin:12px 0 0;color:#496253}
+.fan-more-highlights{margin:36px 0 12px;padding-top:28px;border-top:1px solid #c9d8cb}
+.fan-gallery-heading{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:18px}
+.fan-gallery-heading h2{font-size:22px;letter-spacing:-.6px;margin:0}.fan-gallery-heading>span{font-size:12px;color:#53655b}
+.fan-highlight-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.fan-highlight-card{display:grid;grid-template-columns:minmax(130px,.85fr) minmax(0,1.15fr);text-align:left;padding:0;overflow:hidden;border:1px solid #cbd8cc;border-radius:18px;background:#fffdf8;color:var(--fan-ink);cursor:pointer;box-shadow:0 3px 12px #163d2506;transition:border-color .15s,box-shadow .15s}
+.fan-highlight-card:hover{border-color:var(--fan-ink);box-shadow:0 6px 24px #163d2512}
+.fan-highlight-card:focus-visible{outline:3px solid var(--fan-ink);outline-offset:4px}
+.fan-highlight-art{position:relative;display:flex;align-items:center;justify-content:center;min-height:180px;background:radial-gradient(ellipse at 80% 20%,#42725b,#173e31);overflow:hidden}
+.fan-highlight-art--breakaway{background:radial-gradient(ellipse at 20% 80%,#386c69,#153c3b)}
+.fan-highlight-art--last-gasp{background:radial-gradient(ellipse at 80% 20%,#766539,#293e2c)}
+.fan-highlight-art svg{width:120%;max-width:none;flex-shrink:0;opacity:.65;transform:rotate(-14deg)}
+.fan-highlight-art svg path,.fan-highlight-art svg circle{stroke:#b6d2bd;stroke-width:1}
+.fan-highlight-art svg .fan-highlight-route{stroke:#f6d47c;stroke-width:2;stroke-dasharray:5 5}
+.fan-highlight-art svg .fan-highlight-dot{fill:#f6d47c;stroke:#274d39;stroke-width:2}
+.fan-highlight-play{position:absolute;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#fffef0ec;color:#204634;font-size:14px;padding-left:2px;box-shadow:0 2px 12px #102a3655}
+.fan-highlight-duration{position:absolute;bottom:12px;right:12px;background:#09281bcc;color:white;border-radius:5px;padding:3px 7px;font-size:11px;font-variant-numeric:tabular-nums}
+.fan-highlight-copy{display:flex;flex-direction:column;align-items:flex-start;padding:20px;gap:7px;min-width:0}
+.fan-highlight-category{font-size:10px;font-weight:700;color:#617464;letter-spacing:.7px;text-transform:uppercase}
+.fan-highlight-copy strong{font-size:19px;line-height:1.25;letter-spacing:-.5px}
+.fan-highlight-copy>span:not([class]){font-size:12px;line-height:1.6;color:#4f6357}
+.fan-highlight-watch{font-size:12px;font-weight:750;margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-self:stretch}
+@media(max-width:900px){.fan-highlight-card{grid-template-columns:1fr}.fan-highlight-art{min-height:140px;max-height:160px}.fan-highlight-art svg{width:100%}.fan-highlight-copy{padding:17px}.fan-highlight-copy strong{font-size:18px}}
+@media(max-width:540px){.fan-highlight-cards{grid-template-columns:1fr;gap:12px}.fan-highlight-card{grid-template-columns:112px minmax(0,1fr)}.fan-highlight-art{min-height:164px;max-height:none}.fan-highlight-art svg{width:230%}.fan-highlight-copy{padding:15px}.fan-highlight-copy strong{font-size:17px}.fan-gallery-heading>span{display:none}.fan-more-highlights{margin-top:28px;padding-top:22px}.fan-highlight-description{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.fan-highlight-card{transition:none}}
 .fan-pitch-scrubber{flex:1;min-width:120px;display:flex;align-items:center}.fan-pitch-scrubber input{width:100%;accent-color:var(--fan-ink);min-height:36px}
 .fan-speed{display:flex;align-items:center;gap:.4rem;font-size:.8rem}.fan-speed select{padding:.5rem;border:1px solid #bbccbf;border-radius:8px;background:white;color:#183c2e}
 .fan-pitch-controls{flex-wrap:wrap}.fan-pitch-controls button{min-height:42px}
-@media(max-width:760px){.fan-replay-context{display:block}.fan-replay-context a{display:inline-block;margin-top:.5rem}.fan-replay-card{padding:.75rem;min-height:135px}.fan-replay-card strong{font-size:.95rem}.fan-replay-card>span:last-child{font-size:.75rem}.fan-pitch-scrubber{flex-basis:100%}}
-@media(max-width:420px){.fan-gallery-heading>span{display:none}.fan-replay-cards{gap:.4rem}.fan-replay-card{padding:.6rem;min-height:145px}.fan-replay-card strong{font-size:.88rem}.fan-replay-card>span:last-child{font-size:.73rem}}
-@media(prefers-reduced-motion:reduce){.fan-replay-card:hover{transform:none}}
+@media(max-width:760px){.fan-pitch-scrubber{flex-basis:100%}}
 /* Second design pass: the play button is visible before the field, not below it. */
 .fan-intro{padding:0;margin:22px 0}
 .fan-intro h1{font-size:36px}.fan-score{padding-top:18px;padding-bottom:12px}
@@ -1152,6 +1168,8 @@
 .fan-pitch-caption{border-bottom:0}.fan-turnaround-story{padding:16px 20px!important;border:0!important;background:transparent!important}
 .fan-turnaround-story p{font-size:14px!important;margin:0!important}
 @media(min-width:1051px){.fan-tracker-grid{grid-template-columns:125px minmax(0,1fr) 225px}.fan-play-board{padding:18px 12px}.fan-board-name{font-size:18px}.fan-pitch-heading h2{font-size:20px}}
-@media(max-width:640px){.fan-intro{padding:0;margin:18px 0}.fan-intro h1{font-size:29px}.fan-replay-gallery{margin-top:1rem}.fan-pitch-controls{gap:8px;padding:10px 14px}.fan-pitch-controls .fan-primary{padding-left:14px;padding-right:14px}}
+@media(max-width:640px){.fan-intro{padding:0;margin:18px 0}.fan-intro h1{font-size:29px}.fan-pitch-controls{gap:8px;padding:10px 14px}.fan-pitch-controls .fan-primary{padding-left:14px;padding-right:14px}}
 
-@media(max-width:640px){.fan-replay-card{min-height:94px}.fan-replay-card>span:last-child{display:none}.fan-replay-card strong{font-size:.88rem}.fan-replay-context{padding-bottom:.35rem}}
+.fan-intro{align-items:flex-start;gap:24px}.fan-intro h1{font-size:clamp(29px,3.3vw,44px);line-height:1.12;letter-spacing:-1.5px}.fan-intro .fan-follow{flex-shrink:0}.fan-intro>div{min-width:0}
+
+@media(max-width:640px){.fan-intro .fan-kicker{display:block;font-size:9px;letter-spacing:1px;margin-bottom:8px}}

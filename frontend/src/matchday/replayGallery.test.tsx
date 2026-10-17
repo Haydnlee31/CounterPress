@@ -52,10 +52,10 @@ test('pausing the last shot resumes it instead of restarting the sequence',()=>{
  vi.spyOn(performance,'now').mockReturnValue(0)
  const {events}=load('one_touch');render(<MatchPitch events={events} fromStart/>)
  fireEvent.change(screen.getByRole('slider',{name:'Replay position'}),{target:{value:'420'}})
- fireEvent.click(screen.getByRole('button',{name:/Play sequence/}));act(()=>callback(100))
+ fireEvent.click(screen.getByRole('button',{name:/Play highlight/}));act(()=>callback(100))
  fireEvent.click(screen.getByRole('button',{name:/Pause play/}))
  const paused=(screen.getByRole('slider',{name:'Replay position'}) as HTMLInputElement).value
- fireEvent.click(screen.getByRole('button',{name:/Play sequence/}))
+ fireEvent.click(screen.getByRole('button',{name:/Play highlight/}))
  expect((screen.getByRole('slider',{name:'Replay position'}) as HTMLInputElement).value).toBe(paused)
  expect(screen.getByText('5 / 5')).toBeTruthy()
 })

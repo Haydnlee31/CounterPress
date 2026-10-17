@@ -16,7 +16,7 @@ const assert = require('node:assert/strict')
     const errors = []
     page.on('pageerror', (e) => errors.push(e.message))
     const base = process.argv[2] || 'http://127.0.0.1:8010'
-    await page.goto(base)
+    await page.goto(`${base}/?story=increase#matchday`)
     await page.getByLabel('1 to 4', { exact: true }).waitFor()
     assert.equal(
       await page.getByLabel('Local viewer', { exact: true }).count(),

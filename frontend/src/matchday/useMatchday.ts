@@ -14,12 +14,17 @@ import {
 export const SEGMENT_START = 180000,
   COMPARISON_TIME = 780000
 export function useMatchday() {
-  const [request, setRequest] = useState(() => ({
-    scenario: (['last-gasp','one-touch','breakaway'].includes(new URLSearchParams(window.location.search).get('story') ?? '') ? new URLSearchParams(window.location.search).get('story')! : 'increase'),
-    atMs: COMPARISON_TIME,
-    preferences: readPreferences(),
-    scope: new PlaybackScope(),
-  }))
+  const [request, setRequest] = useState(() => {
+    const story = new URLSearchParams(window.location.search).get('story') ?? ''
+    const supported = ['last-gasp', 'one-touch', 'breakaway', 'increase',
+      'pressure-increase', 'progression-increase', 'contribution-increase', 'stream-recovery']
+    return {
+      scenario: supported.includes(story) ? story : 'last-gasp',
+      atMs: COMPARISON_TIME,
+      preferences: readPreferences(),
+      scope: new PlaybackScope(),
+    }
+  })
   const [data, setData] = useState<Snapshot | null>(null)
   const [scenarios, setScenarios] = useState<Scenario[]>([])
   const [error, setError] = useState(false)
