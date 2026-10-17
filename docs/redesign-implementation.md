@@ -40,7 +40,8 @@ have passed. Hosted authorization, a bounded authenticated model check, human
 usefulness remain pending. The [Studio factual review slice](studio.md) now implements
 authenticated producer review, exact-version durable approval, revocation, clean preview
 and checked export. Its [real browser SPA and live Cosmos checks](verification/studio-integration.json)
-have passed. Hosted activation is controlled by the protected deployment workflow. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
+have passed. [Studio is now live](verification/studio-live.json), with hosted Microsoft sign-in,
+approval, preview, download and revocation verified. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
 is ready and no human ratings have been fabricated.
 
 The Matchday implementation is in `frontend/src/matchday/`. The previous workspace
@@ -66,5 +67,6 @@ The script writes the two Matchday screenshots under `docs/screenshots/`.
 reads API data and changes browser-local preferences only; it sends no events.
 
 Hosted model adaptation remains disabled. Matchday currently presents factual
-recap statements, not generated editorial wording. Studio is implemented behind a separate disabled-by-default activation switch;
-Studio cloud activation and user research remain subsequent release work.
+recap statements, not generated editorial wording. Studio is enabled on the hosted app
+through its separate activation switch; local startup stays disabled by default.
+Human fan and producer usability research remains pending.

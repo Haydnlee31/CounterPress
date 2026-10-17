@@ -1,0 +1,35 @@
+{
+  "checked_at_utc": "2026-10-17T07:29:09.706678+00:00",
+  "commit": "e8cb4aaccb8ec775a8ef0a8b34a140faf11f8e7d",
+  "workflow_run": 39013660674,
+  "image_digest": "sha256:ccd7b3c8b7efa2cf85e81ff06ceb2914aaccb1644b24b1be170b243ef25be210",
+  "ready_revision": "counterpress--gh-39013660674-1",
+  "studio_enabled": true,
+  "paid_editorial_enabled": false,
+  "runtime_invariants_preserved": true,
+  "new_billable_resources": 0,
+  "result": "passed",
+  "implementation_pr": "https://github.com/Haydnlee31/CounterPress/pull/25",
+  "ci_run": "https://github.com/Haydnlee31/CounterPress/actions/runs/39013478664",
+  "deployment_run": "https://github.com/Haydnlee31/CounterPress/actions/runs/39013660674",
+  "backend_tests": 553,
+  "frontend_tests": 57,
+  "hosted_checks": [
+    "Public HTTPS smoke and historical corrections 4/3/withdrawn/2",
+    "Anonymous review/approve/revoke/export rejected with 401 and no-store",
+    "Real Microsoft SPA sign-in using the existing editor account",
+    "Cosmos-backed latest evidence and supporting event table",
+    "Exact-version approval unlocks clean preview and HTML download",
+    "Actual downloaded synthetic snapshot contains no scripts",
+    "Revocation persists and locks preview/export",
+    "End Studio session hides private review"
+  ],
+  "test_approval_final_state": "revoked",
+  "model_calls": 0,
+  "human_usability_study": false,
+  "limits": [
+    "A separate real unassigned-user account was not tested; signed-token tests cover missing-role and wrong-client rejection.",
+    "Downloaded snapshots are static and cannot be recalled.",
+    "Source-correction invalidation was verified in isolated local and live Cosmos histories, not by mutating public source history."
+  ]
+}
