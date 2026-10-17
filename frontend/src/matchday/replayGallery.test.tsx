@@ -73,3 +73,10 @@ test('reconstructed player trajectories stay below 12 m/s at normal playback spe
   }
  }
 })
+
+test('turnaround attackers start outside the penalty area and run upfield instead of waiting at their future touch',()=>{
+ const {events}=load('last_gasp'), first=sequenceScene(events,0,0)
+ for(const p of first.players.filter(p=>p.number!==1&&p.player_id!=='np08')) expect(p.x).toBeGreaterThanOrEqual(21)
+ for(const id of ['eb06','eb07','eb09']) expect(first.players.find(p=>p.player_id===id)!.x).toBeLessThan(40)
+ expect(sequenceScene(events,events.length-1,0).players.find(p=>p.player_id==='eb09')).toMatchObject({x:92,y:34})
+})

@@ -27,6 +27,16 @@ export const replayGallery: Record<string, ReplayStory> = {
  * players and intermediate motion are illustrative. These are not measurements.
  */
 export const replayShapes: Record<string, {eastbridge: number[][][]; northport: number[][][]}> = {
+  'showcase-last-gasp-v1': {
+    eastbridge: [
+      [[1,34],[24,8],[21,18],[21,27],[25,60],[23,44],[35,9],[24,52],[23,35],[33,44],[38,59]],
+      [[9,34],[52,12],[45,24],[33,27],[54,57],[96,43],[87,11],[65,15],[92,34],[78,48],[82,59]],
+    ],
+    northport: [
+      [[101,34],[30,15],[30,23],[30,37],[32,55],[37,29],[39,39],[11,34],[39,49],[44,19],[47,43]],
+      [[103,34],[93,18],[97,29],[96,39],[91,52],[82,28],[85,40],[6,35],[76,50],[78,20],[80,59]],
+    ],
+  },
   'showcase-one-touch-v1': {
     eastbridge: [
       [[9,34],[65,8],[57,26],[88,46],[66,60],[82,29],[89,9],[72,48],[79,43],[85,51],[92,59]],
