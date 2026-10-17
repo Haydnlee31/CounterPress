@@ -1,8 +1,9 @@
 # Editorial identity and cloud integration
 
-The editor API remains disabled on the public application. These checks prepare
-activation; they do not publish an editor UI, enable paid requests or complete
-participant review.
+This document records the pre-activation identity/storage checks. The later
+[Studio AI pilot](verification/studio-editorial-live.json) adds verified hosted
+authorization and an explicit model action for the assigned editor. Participant
+review remains pending; these integration checks do not establish usefulness.
 
 **Real Entra sign-in and both managed-identity Cosmos phases passed.** The
 [sanitized verification record](verification/editorial-integration.json) separates
@@ -100,7 +101,6 @@ dependency; its pinned version is unchanged. The current regression lock is
 
 ## Remaining activation gates
 
-The next product step is the Studio sign-in and review interface. Keep hosted AI
-disabled while that interface, participant review and a bounded authenticated
-live-model check remain pending. Verify authorization on the hosted route before
-enabling it. No new hosting service is needed for this integration work.
+Studio sign-in, exact-version review and the bounded authenticated hosted model
+check are now complete for the assigned-editor pilot. Human usefulness research
+remains the gate for broader use. No new hosting service was added.

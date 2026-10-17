@@ -7,6 +7,8 @@ A separate deployment switch controls activation. Public Matchday remains availa
 Studio opens with factual templates. Reviewing, approving, exporting and polling never
 invoke a model. The optional **Request AI draft** action is a separately enabled,
 authenticated pilot; human usefulness evaluation remains pending.
+The assigned-editor pilot is now live; [hosted verification](verification/studio-editorial-live.json)
+records real sign-in, one successful AI request, approval, preview, download and expiry lock.
 
 ## Using Studio
 

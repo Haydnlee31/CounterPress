@@ -50,6 +50,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
         const next = await session.call('review', scenario, preferences, undefined, controller.signal, attemptId)
         if (generation !== epoch.current) return
         if (reviewRef.current?.fingerprint !== next.fingerprint || next.status !== 'approved') setPreview(false)
+        if (next.attempt_id && !next.workflow?.applied) setNotice('')
         reviewRef.current = next
         setReview(next); setError(''); setChecked(true)
         if (next.valid_for_ms != null) {
@@ -136,7 +137,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
         </section>
         <section className="studio-editor" aria-label="AI editing">
           <h2>Optional AI editor</h2><p>The editor selects from verified stories and wording. It cannot add football facts. A draft expires within 60 seconds; approval expires with it.</p>
-          {review?.editor_enabled ? <button disabled={!ready} onClick={() => void act('draft')}>Request AI draft</button> : <p>AI editing is not enabled. Factual wording is available.</p>}
+          {review?.editor_enabled ? <button disabled={!ready} onClick={() => void act('draft')}>Request AI draft</button> : <p>{review ? 'AI editing is not enabled. Factual wording is available.' : 'Checking editor availability…'}</p>}
           {attemptId && <button disabled={busy} onClick={() => { reset(); setTick(t => t + 1) }}>Use factual wording</button>}
           {notice && <p role="status">{notice}</p>}
           {attemptId && <p>{review?.workflow?.applied ? 'AI-assisted selection · Review before expiry' : 'AI draft expired or changed · Factual fallback shown; return to factual wording to approve.'}</p>}
@@ -156,7 +157,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
             </article>) : <div className="studio-story"><h3>No supported story in this view</h3><p>There is nothing to approve. Choose another story or wait for new evidence.</p></div>}
           </> : <p>{error ? 'Refresh evidence to continue.' : 'Loading the latest story…'}</p>}
         </section><aside className="studio-approval"><p className="studio-eyebrow">PRODUCER CHECKPOINT</p><h2>2. Make the call</h2>
-          <p className={`studio-status ${approved ? 'is-approved' : ''}`} role="status">{busy ? 'Saving and checking…' : !checked ? 'Approval not verified' : review ? statusText[review.status] : 'Waiting for evidence'}</p>
+          <p className={`studio-status ${approved ? 'is-approved' : ''}`} role="status">{busy ? 'Saving and checking…' : !checked ? 'Approval not verified' : attemptId && review?.status === 'unavailable' ? 'AI approval expired or changed' : review ? statusText[review.status] : 'Waiting for evidence'}</p>
           <p>Approval covers the displayed wording, evidence revisions, language and detail level. New source events or AI expiry require a fresh review.</p>
           {approved ? <button disabled={!approved} onClick={() => void act('revoke')}>Revoke this approval</button> : <button className="studio-primary" disabled={!ready} onClick={() => void act('approve')}>I reviewed this version · Approve</button>}
           <hr /><h2>3. Prepare your snapshot</h2><p>Preview and export unlock after approval. Neither sends content to a broadcast system.</p>

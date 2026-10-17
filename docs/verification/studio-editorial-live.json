@@ -1,0 +1,45 @@
+{
+  "checked_at_utc": "2026-10-17T12:24:42.383290+00:00",
+  "commit": "1f1419b063a3f30eb04a14b40ec65b2b25dad105",
+  "workflow_run": 39032271585,
+  "image_digest": "sha256:8d157aa3b463ee138e047492032a187e3961fb0ba3debfd66ff758f8adfedca6",
+  "editorial_enabled": true,
+  "model_configuration_uses_secret_references": true,
+  "runtime_invariants_preserved": true,
+  "new_billable_resources": 0,
+  "human_usefulness_evaluation": false,
+  "result": "passed",
+  "implementation_pr": "https://github.com/Haydnlee31/CounterPress/pull/27",
+  "deployment_fix_pr": "https://github.com/Haydnlee31/CounterPress/pull/28",
+  "ci_run": "https://github.com/Haydnlee31/CounterPress/actions/runs/39032182545",
+  "deployment_run": "https://github.com/Haydnlee31/CounterPress/actions/runs/39032271585",
+  "backend_tests": 562,
+  "frontend_tests": 58,
+  "local_model_probe": {
+    "command": "uv run --env-file .env --frozen python scripts/check_studio_editorial.py --live --database var/studio-editorial-probe-01.sqlite3",
+    "model_requests": 1,
+    "approval_export": true,
+    "expiry_blocks_export": true,
+    "storage": "isolated local SQLite"
+  },
+  "hosted_browser_checks": [
+    "Real Microsoft SPA sign-in with the original assigned editor",
+    "One explicit AI draft request completed successfully",
+    "Exact selected attempt approved through the real authenticated API",
+    "Approved clean preview displayed",
+    "Actual HTML download contains AI provenance, expiry and evidence; no scripts",
+    "Expiry removes preview and locks approval/export",
+    "Return to factual wording without another model request",
+    "End Studio session hides private review"
+  ],
+  "hosted_model_requests": 1,
+  "test_ai_approval_final_state": "expired",
+  "secret_scan": "source and release logs passed; model configuration and private identity identifiers not exposed",
+  "limits": [
+    "Human usefulness ratings remain pending; this is an assigned-editor technical pilot.",
+    "A separate real unassigned-user account was not tested; signed-token tests cover missing-role and wrong-client rejection.",
+    "Exact-boundary server export rejection was exercised locally; hosted browser verification observed the automatic expiry lock.",
+    "Azure Cost Management refresh returned HTTP 429; no fresh spend figure is claimed."
+  ],
+  "observed_ui_followup": "Clear stale draft-ready notice at expiry and distinguish unavailable AI approval from absent factual evidence; covered by the frontend expiry test."
+}

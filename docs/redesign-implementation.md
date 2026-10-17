@@ -25,7 +25,8 @@ proposal are local working artifacts, not application assets.
 Develop and verify each slice locally before pushing. Do not batch every redesign
 feature into one late cloud deployment. Do not enable anonymous paid AI or add
 recurring services without checking current credits and limits. Hosted model
-adaptation remains off until step 2 is implemented and verified.
+adaptation is available only through the explicit assigned-editor Studio pilot;
+fan reading and polling never trigger model work.
 
 ## First release verification
 
@@ -36,8 +37,8 @@ the exact deployed commit and passing local/CI/live checks. Step 2's
 public default. The [editorial access controls](editorial-access.md) now implement
 Entra authorization, shared durable admission, revision-bound reuse and stale-task
 cancellation locally. [Real Entra/local API and managed-identity Cosmos checks](editorial-integration.md)
-have passed. Hosted authorization, a bounded authenticated model check, human
-usefulness remain pending. The [Studio factual review slice](studio.md) now implements
+have passed. Hosted Studio authorization and a bounded authenticated model check
+have also passed; human usefulness remains pending. The [Studio review slice](studio.md) now implements
 authenticated producer review, exact-version durable approval, revocation, clean preview
 and checked export. Its [real browser SPA and live Cosmos checks](verification/studio-integration.json)
 have passed. [Studio is now live](verification/studio-live.json), with hosted Microsoft sign-in,
@@ -66,7 +67,9 @@ The script writes the two Matchday screenshots under `docs/screenshots/`.
 `stream-recovery` correction history to also check 4/3/withdrawn/2. The script
 reads API data and changes browser-local preferences only; it sends no events.
 
-Hosted model adaptation remains disabled. Matchday currently presents factual
-recap statements, not generated editorial wording. Studio is enabled on the hosted app
-through its separate activation switch; local startup stays disabled by default.
+Matchday presents factual recap statements without model calls. The assigned-editor
+Studio AI pilot is now enabled: an explicit action invokes the single editor through
+shared quotas and cache, and approval binds the chosen attempt, wording, evidence
+and expiry. See [release verification](verification/studio-editorial-live.json).
+Local startup stays disabled by default.
 Human fan and producer usability research remains pending.
