@@ -1,8 +1,8 @@
 # Producer Studio
 
 Studio is the authenticated producer review workspace at `#studio`. This slice is
-implemented and tested locally; it is **not activated on the hosted app**. The
-public Matchday remains available without sign-in. Studio uses factual templates;
+controlled by a separate deployment switch. The protected release workflow records
+when it is enabled on the hosted app. Public Matchday remains available without sign-in. Studio uses factual templates;
 opening it, reviewing, approving and exporting never invokes a model.
 
 ## Using Studio
@@ -104,9 +104,11 @@ To activate real browser sign-in later:
    [deployment runbook](deployment.md#studio-activation-through-the-protected-workflow).
    Do not enable it on an older incompatible image.
 
-Browser SPA sign-in, the new Studio decisions against live Cosmos, hosted
-activation and human producer review remain pending. Earlier desktop Entra and
-Cosmos editorial integration evidence does not count as those checks.
+[Real browser SPA sign-in and new Studio decisions against live Cosmos](verification/studio-integration.json)
+have now passed, including local browser download/revocation/correction handling
+and restoration in a fresh cloud process. The protected release records hosted
+activation and anonymous-access smoke results separately. Human producer review
+and a separate real unassigned-account test remain pending.
 
 ## Verification
 
