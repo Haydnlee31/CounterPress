@@ -109,6 +109,9 @@ Cosmos editorial integration evidence does not count as those checks.
 
 ## Verification
 
+[Local verification results](verification/studio-local.json) record the tested source,
+commands, output and limits: 550 backend tests, 57 frontend tests, build and browser QA.
+
 ```sh
 UV_CACHE_DIR=.uv-cache uv run --frozen --offline pytest -q
 npm --prefix frontend test -- --reporter=dot
