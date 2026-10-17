@@ -22,6 +22,21 @@ const assert = require('node:assert/strict')
       await page.getByLabel('Local viewer', { exact: true }).count(),
       0,
     )
+    const pitch=page.getByRole('region',{name:'Match pitch',exact:true}).first()
+    assert.equal(await pitch.locator('.fan-pitch-player').count(),22)
+    assert.equal(await page.locator('pre').count(),0)
+    assert.equal(await page.locator('.fan-data-note').evaluate(e=>e.closest('footer')!==null),true)
+    const green=await page.locator('.matchday').evaluate(e=>getComputedStyle(e).backgroundColor)
+    await pitch.getByRole('button',{name:'Sam Linden, Northport',exact:true}).focus()
+    assert.equal(await pitch.locator('.fan-pitch-player:focus .player-tooltip').evaluate(e=>getComputedStyle(e).opacity),'1')
+    await pitch.getByRole('button',{name:'Sam Linden, Northport',exact:true}).press('Enter')
+    await pitch.getByRole('button',{name:'Back to play',exact:true}).click()
+    await page.emulateMedia({reducedMotion:'no-preference'})
+    const initialBall=await pitch.locator('.fan-ball').getAttribute('transform')
+    await pitch.getByRole('button',{name:/Play sequence/}).click()
+    await page.waitForFunction(initial=>document.querySelector('.fan-pitch .fan-ball').getAttribute('transform')!==initial,initialBall)
+    await pitch.getByRole('button',{name:/Pause play/}).click()
+    await page.emulateMedia({reducedMotion:'reduce'})
     await page.screenshot({
       path: 'docs/screenshots/matchday-desktop.png',
       fullPage: true,
@@ -39,6 +54,8 @@ const assert = require('node:assert/strict')
     await page
       .getByLabel('Follow a team', { exact: true })
       .selectOption('northport')
+    await page.waitForFunction(old=>getComputedStyle(document.querySelector('.matchday')).backgroundColor!==old,green)
+    assert.equal(await page.getByRole('img',{name:'Northport crest'}).count(),1)
     await page.getByLabel('Language', { exact: true }).selectOption('zh-Hans')
     await page.getByRole('region', { name: '几个事件，了解故事' }).waitFor()
     await page.locator('.fan-hero').waitFor()
@@ -55,7 +72,7 @@ const assert = require('node:assert/strict')
       await page.getByLabel('Language', { exact: true }).inputValue(),
       'zh-Hans',
     )
-    await page.getByRole('button', { name: /Northport/ }).click()
+    await page.getByRole('button', { name: /正在关注/ }).click()
     assert.equal(
       await page.getByLabel('Follow a team', { exact: true }).inputValue(),
       'northport',
@@ -71,6 +88,9 @@ const assert = require('node:assert/strict')
         .getByLabel('Explore a story', { exact: true })
         .selectOption(scenario)
       await page.locator('.fan-hero').waitFor()
+      assert.equal(await page.locator('pre').count(),0)
+      const copy=await page.locator('.fan-hero').innerText()
+      assert(!/possession without progression|does not measure|proxy|evidence_id/i.test(copy))
       await page
         .getByRole('button', { name: 'Show the moments', exact: true })
         .click()
@@ -85,6 +105,7 @@ const assert = require('node:assert/strict')
       path: 'docs/screenshots/matchday-mobile.png',
       fullPage: true,
     })
+    assert.equal(await pitch.getByRole('group',{name:'Interactive football pitch'}).getAttribute('viewBox'),'-7 -5 82 115')
     for (const width of [360, 390, 640, 1365]) {
       await page.setViewportSize({ width, height: 900 })
       assert(
@@ -111,7 +132,7 @@ const assert = require('node:assert/strict')
       .getByRole('button', { name: 'Back to 48:00', exact: true })
       .click()
     await page
-      .getByRole('heading', { name: 'The comparison is still unfolding.' })
+      .getByRole('heading', { name: 'Earlier in the match' })
       .waitFor()
     assert.equal(await page.getByLabel('1 to 4', { exact: true }).count(), 0)
     await page.evaluate(() => (document.documentElement.style.fontSize = ''))
@@ -127,7 +148,7 @@ const assert = require('node:assert/strict')
       for (let i = 0; i < 5; i++) await timeline.press('ArrowLeft')
       await page
         .getByText(
-          'An earlier story was withdrawn because the revised events no longer support it. Other supported stories are shown below.',
+          'A match update changed an earlier story. Here’s the latest.',
           { exact: true },
         )
         .waitFor()
@@ -143,7 +164,7 @@ const assert = require('node:assert/strict')
     if (process.env.COUNTERPRESS_CHECK_CORRECTIONS === '1')
       console.log('PASS: historical recovery 4/3/withdrawn/2')
     console.log(
-      'PASS: actual HTTP fan view, inline evidence, persistent bilingual preferences, all four story families, mobile widths, rewind and analysis navigation',
+      'PASS: HTTP Matchday, 22-player moving pitch, keyboard names, club colours, footer-only disclosure, no JSON, bilingual stories, mobile portrait/200% text, rewind and analyst navigation',
     )
   } finally {
     await browser.close()

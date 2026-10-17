@@ -5,6 +5,8 @@ import { clubs, clubName, displayText, playerName } from './identity'
 import { useMatchday, SEGMENT_START, COMPARISON_TIME } from './useMatchday'
 import { storiesFor } from './stories'
 import { Moments } from './Moments'
+import { ClubCrest } from './ClubCrest'
+import { MatchPitch } from './MatchPitch'
 import './matchday.css'
 
 const showcases: Record<string, [string, string]> = {
@@ -53,14 +55,12 @@ export function Matchday() {
   function showMoments(key: string) {
     setMomentKey(key)
   }
-  const accent = p.club_id
-    ? clubs[p.club_id as keyof typeof clubs]?.accent
-    : undefined
+  const theme = clubs[(p.club_id ?? 'eastbridge') as keyof typeof clubs]
   return (
     <div
       className="matchday"
       lang={p.language}
-      style={{ '--fan-accent': accent ?? '#c4ed91' } as CSSProperties}
+      style={{ '--fan-accent': theme.accent, '--fan-ink': theme.ink, '--fan-background': theme.background, '--fan-soft': theme.soft } as CSSProperties}
     >
       <a className="fan-skip" href="#matchday-content">
         {t('Skip to match story', '跳至比赛故事')}
@@ -91,28 +91,12 @@ export function Matchday() {
         </label>
       </header>
       <main id="matchday-content">
-        <div className="fan-disclosure">
-          <span aria-hidden="true">◈</span>
-          {t('FICTIONAL MATCH SIMULATION', '虚构比赛模拟')}
-          <span>
-            {t(
-              'Generated events. Not a real result.',
-              '事件由模拟生成，非真实比赛结果。',
-            )}
-          </span>
-        </div>
         <div className="fan-intro">
           <div>
             <p className="fan-kicker">
-              {t('YOUR MATCHDAY COMPANION', '你的比赛故事伙伴')}
+              {t('EASTBRIDGE × NORTHPORT', 'EASTBRIDGE × NORTHPORT')}
             </p>
-            <h1>{t('Back in the game.', '回到比赛之中。')}</h1>
-            <p>
-              {t(
-                'Catch up on what changed. See the moments that explain it.',
-                '快速了解变化，查看背后的关键事件。',
-              )}
-            </p>
+            <h1>{t('Match centre', '比赛中心')}</h1>
           </div>
           <button
             className="fan-follow"
@@ -150,8 +134,8 @@ export function Matchday() {
             </div>
             <p>
               {t(
-                'Following changes which stories come first. The match facts stay the same. All identities here are fictional.',
-                '关注偏好会调整故事顺序，比赛事实不会改变。这里的身份均为虚构。',
+                'Choose your team and the players you want to keep up with.',
+                '选择你关注的球队和球员。',
               )}
             </p>
             <div className="fan-preference-grid">
@@ -237,37 +221,12 @@ export function Matchday() {
             </div>
           </section>
         )}
-        {first && (
-          <div className="fan-quick-actions">
-            <div className="fan-actions">
-              <button
-                ref={actionButton}
-                className="fan-primary"
-                aria-expanded={recapOpen}
-                aria-controls="fan-recap"
-                onClick={() => setRecapOpen((v) => !v)}
-              >
-                {recapOpen
-                  ? t('Close catch-up', '收起回顾')
-                  : t('Catch me up', '快速回顾')}{' '}
-                <span aria-hidden="true">↗</span>
-              </button>
-              <button
-                className="fan-secondary"
-                aria-expanded={!!selectedStory}
-                onClick={() => showMoments(first.key)}
-              >
-                {t('Show the moments', '查看关键事件')}
-              </button>
-            </div>
-          </div>
-        )}
         <section
           className="fan-score"
           aria-label={t('Match scoreboard', '比赛记分牌')}
         >
           <div className="fan-team">
-            <span className="fan-monogram">EB</span>
+            <ClubCrest club="eastbridge" />
             <strong>{clubName('eastbridge')}</strong>
           </div>
           <div className="fan-score-center">
@@ -281,15 +240,15 @@ export function Matchday() {
           </div>
           <div className="fan-team away">
             <strong>{clubName('northport')}</strong>
-            <span className="fan-monogram away">NP</span>
+            <ClubCrest club="northport" />
           </div>
           <div className="fan-score-foot">
             <span>
-              {t('Recorded segment', '记录片段')} · 48:00–{clock(m.end)}
+              {t('Match highlights', '比赛集锦')} · 48:00–{clock(m.end)}
               {snapshot && (
                 <>
                   <br />
-                  {t('Facts through', '数据截至')}{' '}
+                  {t('Updated to', '更新至')}{' '}
                   {clock(snapshot.state.at.elapsed_ms)}
                 </>
               )}
@@ -303,6 +262,7 @@ export function Matchday() {
             </button>
           </div>
         </section>
+        {snapshot && <MatchPitch key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} />}
         {replayOpen && (
           <section
             id="fan-replay"
@@ -372,10 +332,35 @@ export function Matchday() {
         {snapshot && correction && first && (
           <p className="fan-correction" role="status">
             {t(
-              'An earlier story was withdrawn because the revised events no longer support it. Other supported stories are shown below.',
-              '修订后的事件不再支持先前的故事，因此已将其撤回。下方展示其他有证据支持的故事。',
+              'A match update changed an earlier story. Here’s the latest.',
+              '比赛更新改变了之前的故事。以下是最新情况。',
             )}
           </p>
+        )}
+        {first && (
+          <div className="fan-quick-actions">
+            <div className="fan-actions">
+              <button
+                ref={actionButton}
+                className="fan-primary"
+                aria-expanded={recapOpen}
+                aria-controls="fan-recap"
+                onClick={() => setRecapOpen((v) => !v)}
+              >
+                {recapOpen
+                  ? t('Close catch-up', '收起回顾')
+                  : t('Catch me up', '快速回顾')}{' '}
+                <span aria-hidden="true">↗</span>
+              </button>
+              <button
+                className="fan-secondary"
+                aria-expanded={!!selectedStory}
+                onClick={() => showMoments(first.key)}
+              >
+                {t('Show the moments', '查看关键事件')}
+              </button>
+            </div>
+          </div>
         )}
         <div className="fan-section-heading fan-story-heading">
           <h2>
@@ -422,8 +407,8 @@ export function Matchday() {
             <h3>{t('Bringing you the match story…', '正在加载比赛故事…')}</h3>
             <p>
               {t(
-                'Checking the recorded moments for this view.',
-                '正在核对当前视角的记录事件。',
+                'Loading the latest plays.',
+                '正在加载最新回放。',
               )}
             </p>
           </section>
@@ -438,9 +423,6 @@ export function Matchday() {
               </p>
               <h3>{first.narrative.title}</h3>
               <p className="fan-explanation">{first.narrative.explanation}</p>
-              <p className="fan-qualification">
-                {first.narrative.qualification}
-              </p>
               <button
                 className="fan-text-button"
                 aria-expanded={peopleOpen}
@@ -473,28 +455,28 @@ export function Matchday() {
           <section className="fan-empty" role="status">
             <h3>
               {correction
-                ? t('This story was withdrawn.', '此故事已撤回。')
+                ? t('This story has changed.', '这则故事有变化。')
                 : m.request.atMs < COMPARISON_TIME
-                  ? t('The comparison is still unfolding.', '比较仍在进行中。')
+                  ? t('Earlier in the match', '比赛的较早时刻')
                   : p.player_id
                     ? t(
-                        'No supported story for this player here.',
-                        '这里暂无支持该球员故事的证据。',
+                        'No highlights for this player yet.',
+                        '这位球员暂时还没有集锦。',
                       )
                     : t(
-                        'No supported change in this view.',
-                        '此视角暂无证据支持的变化。',
+                        'No new talking points just yet.',
+                        '暂时还没有新的比赛焦点。',
                       )}
             </h3>
             <p>
               {correction
                 ? t(
-                    'The revised events no longer support the earlier claim. We removed it rather than leave an outdated story on screen.',
-                    '修订后的事件不再支持原有结论，因此已将其移除。',
+                    'The match details were updated. Check back for the next talking point.',
+                    '比赛详情已更新，稍后回来查看新的焦点。',
                   )
                 : t(
-                    'This does not mean nothing happened. We only show changes supported by the recorded events.',
-                    '这并不表示没有事件发生。我们只展示记录事件所支持的变化。',
+                    'Watch the play or choose another story to keep exploring.',
+                    '观看回放或选择其他故事，继续了解比赛。',
                   )}
             </p>
             {m.request.atMs < COMPARISON_TIME && (
@@ -518,8 +500,8 @@ export function Matchday() {
         {snapshot && changed && (
           <p className="fan-correction" role="status">
             {t(
-              'Updated from revised events. Earlier versions are available in Explore replay; your chosen time never moves automatically.',
-              '已依据修订事件更新。可通过探索回放查看历史版本；你选择的时间不会自动改变。',
+              'Updated match details. Use the replay to revisit an earlier moment.',
+              '比赛详情已更新。可通过回放查看之前的时刻。',
             )}
           </p>
         )}
@@ -531,8 +513,8 @@ export function Matchday() {
             <h2>{t('The people in these moments', '这些事件中的球员')}</h2>
             <p>
               {t(
-                'Fictional players appearing in this story’s evidence. Following a player never changes the team totals.',
-                '以下为故事证据中出现的虚构球员。关注球员不会改变球队总数。',
+                'Tap a player to follow their part in the match.',
+                '选择球员，关注他们在比赛中的表现。',
               )}
             </p>
             <div>
@@ -592,8 +574,8 @@ export function Matchday() {
             </div>
             <p>
               {t(
-                'A factual recap of this simulated segment, not the full match. Only supported changes are included.',
-                '这是模拟片段的事实回顾，并非整场比赛。仅包含有证据支持的变化。',
+                'The talking points from the last ten minutes.',
+                '过去十分钟的比赛焦点。',
               )}
             </p>
             {stories.length ? (
@@ -602,9 +584,6 @@ export function Matchday() {
                   <li key={story.key}>
                     <h3>{story.narrative.title}</h3>
                     <p>{displayText(story.narrative.explanation)}</p>
-                    <p className="fan-qualification">
-                      {story.narrative.qualification}
-                    </p>
                     <button
                       className="fan-text-button"
                       onClick={() => showMoments(story.key)}
@@ -638,20 +617,21 @@ export function Matchday() {
           <a href="#studio">{t("Producer Studio", "制作人工作室")} ↗</a>
           <p>
             {t(
-              'One match. Different perspectives. The same facts.',
-              '同一场比赛，不同视角，相同事实。',
+              'About this match',
+              '关于这场比赛',
             )}
           </p>
           <span>
             {m.status === 'connected'
-              ? t('Revision updates connected', '修订更新已连接')
-              : t('Checking for revised events', '正在检查修订事件')}{' '}
-            · {t('Facts through', '事实截至')}{' '}
+              ? t('Match updates connected', '比赛更新已连接')
+              : t('Checking for match updates', '正在检查比赛更新')}{' '}
+            · {t('Updated to', '更新至')}{' '}
             {snapshot ? clock(snapshot.state.at.elapsed_ms) : '—'}
           </span>
           <a href="#analysis">
             {t('Analysis & presenter tools', '分析与演示工具')} ↗
           </a>
+          <small className="fan-data-note">{t('This showcase uses fictional clubs, players and synthetic match events. The 22-player pitch is an illustration: ball actions follow the event records; off-ball positions and movement are animated, not tracking data. Comparisons cover the displayed five-minute windows, excluding the start and including the end.', '本展示使用虚构球队、球员和合成比赛事件。22人球场为示意动画：有球动作来自事件记录，无球位置和移动并非追踪数据。比较覆盖画面中的五分钟时段，不含起点、包含终点。')}</small>
         </footer>
       </main>
     </div>

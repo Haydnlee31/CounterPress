@@ -1,5 +1,15 @@
 # Progress
 
+Latest fan refresh: Matchday has original club crests and background themes, a
+responsive interactive 22-player pitch at both explanation levels, moving ball
+actions, keyboard/touch player selection and plain-language bilingual stories.
+Disclosure is consolidated in the footer; Matchday renders no JSON. Recent pitch
+events are bounded to 24 canonical records available at the replay cutoff.
+[Local verification](verification/matchday-pitch-local.json): 578 backend tests,
+64 frontend tests, production build and responsive browser QA passed. Off-ball
+movement is illustrative; this does not add tracking data, Azure resources or AI
+calls. Human fan testing remains pending.
+
 Latest broadcaster slice: Studio now supports selecting one approved story for a
 presenter cue or lower-third HTML preview/download. Full qualifications and provenance
 travel with both formats. Fresh checks reject correction, revocation and AI expiry,

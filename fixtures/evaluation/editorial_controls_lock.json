@@ -1,5 +1,5 @@
 {
-  "version": "studio-broadcast-regression-v1",
+  "version": "matchday-pitch-regression-v1",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -9,7 +9,7 @@
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
     "backend/counterpress/api/main.py": "68b77767ba68e1cb05adafaa4b3e89abb792970fec52398c2e1fd521294a9b5e",
-    "backend/counterpress/api/snapshots.py": "dddc9572cee2098d52c271fb26d1b6a88df53dd9dae436e0c4fe593bfe0cf04d",
+    "backend/counterpress/api/snapshots.py": "1f7a642038c3ce078f533e7681767ce49a2455cde892fdc64363282abd632c6d",
     "backend/counterpress/audience.py": "08e8d5d0977040fc47e0b701cbb0d5b0014565ae19c601ab5d7600f9bb387d79",
     "backend/counterpress/clock.py": "dc56c2b6f04ef1ec2eeb8998b96150f7dbb938b95a7b59c5e54869c9620ba8b1",
     "backend/counterpress/contribution_publications.py": "5c530f1d7625966ca62091f33f820a54925bf09ccc787f71733ea5ebf07341d9",

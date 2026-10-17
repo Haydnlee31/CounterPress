@@ -72,6 +72,7 @@ class ScreenSnapshot(Contract):
     workflow: WorkflowView | None = None
     audience: AudienceView | None = None
     teams: tuple[Team, ...] = ()
+    pitch_events: tuple[Event, ...] = ()
     pressure: PressureView | None = None
     pressure_lifecycle: tuple[PressureChange, ...] = ()
     contribution: ContributionView | None = None
@@ -302,6 +303,7 @@ class SnapshotService:
             recap=recap, recap_workflow=recap_workflow,
             adapted_recap=adapted_recap if recap_workflow and recap_workflow.applied else None,
             teams=history.fixture.teams,
+            pitch_events=replay.events[-24:],
         )
 
     def evidence(self, scenario_id: str, version: int, at_ms: int) -> EvidenceBundle:

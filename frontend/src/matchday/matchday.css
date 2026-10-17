@@ -1016,3 +1016,38 @@
 .fan-quick-actions .fan-actions {
   margin: 0 0 24px;
 }
+
+/* Club-led colour, original crests and a full match replay surface. */
+.matchday{background:var(--fan-background,#e6eee7);transition:background-color .35s ease;--fan-muted:#52626a}
+.fan-crest{width:58px;height:66px;flex-shrink:0;filter:drop-shadow(0 3px 3px #071e2540)}
+.fan-follow,.fan-hero,.fan-empty{background:var(--fan-soft,#d8e6d8)}
+.fan-comparison{background:color-mix(in srgb,var(--fan-ink) 9%,var(--fan-background))}
+.fan-comparison>div>span,.fan-comparison small,.fan-comparison>p{color:var(--fan-ink)}
+.fan-team.away .fan-crest{order:1}
+.fan-footer .fan-data-note{display:block;flex-basis:100%;font-size:12px;line-height:1.8;font-weight:400;max-width:900px}
+.fan-footer p{font-size:13px}
+.fan-pitch{border:1px solid #c3d1c4;border-radius:18px;background:#fcfdf8;overflow:hidden;margin:24px 0;color:var(--fan-ink);min-width:0;box-shadow:0 10px 35px #18382b0a}
+.fan-pitch-heading{display:flex;justify-content:space-between;align-items:center;padding:22px 26px;gap:16px}
+.fan-pitch-heading .fan-kicker{color:#5e7366;font-size:10px;margin-bottom:5px}
+.fan-pitch-heading h2{font-size:22px;letter-spacing:-.6px}
+.fan-pitch-time{font-variant-numeric:tabular-nums;font-size:18px;font-weight:700;padding:8px 13px;background:#edf1e7;border-radius:8px}
+.fan-pitch-canvas{background:#173d32;padding:12px 20px}
+.fan-pitch-canvas svg{display:block;width:100%;max-height:500px;overflow:visible}
+.fan-pitch-player{cursor:pointer;outline:none}
+.fan-pitch-player .player-tooltip{opacity:0;transition:opacity .15s}
+.fan-pitch-player:hover .player-tooltip,.fan-pitch-player:focus .player-tooltip{opacity:1}
+.fan-pitch-player:hover .player-halo,.fan-pitch-player:focus .player-halo{opacity:1;stroke:#fff9d5;stroke-width:.8}
+.fan-pitch-player.selected .player-halo{stroke:#fff9d5;stroke-width:.8}
+.fan-pitch-caption{display:flex;gap:12px;align-items:center;padding:17px 26px;border-bottom:1px solid #e1e7dd;min-height:62px;font-size:15px}
+.fan-pitch-caption p{flex:1}
+.fan-pitch-caption button{background:transparent;color:var(--fan-ink);text-decoration:underline;min-height:44px}
+.fan-play-dot{width:8px;height:8px;background:#bda451;border-radius:50%;flex-shrink:0}
+.fan-pitch-controls{display:flex;align-items:center;gap:10px;padding:18px 26px;flex-wrap:wrap}
+.fan-pitch-controls>span{font-size:12px;font-variant-numeric:tabular-nums;color:#53675b;margin-left:3px}
+.fan-pitch-controls small{margin-left:auto;font-size:12px;color:#53675b}
+.fan-pitch.is-compact{margin:0;box-shadow:none}
+.is-compact .fan-pitch-heading,.is-compact .fan-pitch-controls,.is-compact .fan-pitch-caption{padding:16px}
+.is-compact .fan-pitch-heading h2{font-size:18px}
+.is-compact .fan-pitch-canvas{padding:8px}
+.fan-event-list strong{font-size:14px;text-align:left;flex:1;font-weight:600}
+@media(max-width:640px){.fan-crest{width:46px;height:54px}.fan-team.away .fan-crest{order:0}.fan-pitch-heading,.fan-pitch-controls,.fan-pitch-caption{padding:16px}.fan-pitch-canvas{padding:6px}.fan-pitch-controls small{margin:0;flex-basis:100%}.fan-pitch-canvas svg{max-height:540px}.fan-pitch{margin:18px 0}.fan-moment-grid .fan-pitch{width:100%}.fan-moment-grid{flex-direction:column-reverse}.fan-pitch-controls .fan-secondary{min-width:44px}.fan-score-center>span{font-size:34px}.fan-team{font-size:14px}}

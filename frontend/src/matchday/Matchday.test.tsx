@@ -138,6 +138,7 @@ function fixture(
       },
       { team_id: 'northport', name: 'Northport', player_ids: ['np08'] },
     ],
+    pitch_events: evidence.records,
     metrics: [],
     windows,
     comparison_status: ready
@@ -217,7 +218,7 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-test('first visit starts with a useful comparison, clear simulation label and readable inline evidence', async () => {
+test('first visit has a full pitch, footer-only disclosure and readable moments without JSON', async () => {
   const user = userEvent.setup()
   render(<App />)
   await screen.findByLabelText('1 to 4')
@@ -228,7 +229,10 @@ test('first visit starts with a useful comparison, clear simulation label and re
     expect.any(String),
     fanDefaults,
   )
-  expect(screen.getByText('Generated events. Not a real result.')).toBeTruthy()
+  expect(screen.getByText(/This showcase uses fictional/).closest('footer')).toBeTruthy()
+  expect(document.querySelectorAll('.fan-pitch-player')).toHaveLength(22)
+  expect(document.querySelectorAll('pre')).toHaveLength(0)
+  expect(screen.queryByText('Recorded counts do not establish tactical cause.')).toBeNull()
   expect(screen.queryByLabelText('Local viewer')).toBeNull()
   expect(screen.queryByRole('slider')).toBeNull()
   await user.click(screen.getByRole('button', { name: /Catch me up/ }))
@@ -278,7 +282,7 @@ test('team and language changes preserve open recap and shared numbers; profile 
     expect.any(String),
     { ...fanDefaults, club_id: 'northport', language: 'zh-Hans' },
   )
-  await user.click(screen.getByRole('button', { name: /Northport/ }))
+  await user.click(screen.getByRole('button', { name: /正在关注/ }))
   await user.click(screen.getByRole('button', { name: '清除偏好' }))
   await screen.findByLabelText('1 to 4')
   expect(window.localStorage.getItem(preferenceKey)).toBeNull()
@@ -334,7 +338,7 @@ test('withdrawal removes story and evidence; stale poll cannot revive it; rewind
     vi.advanceTimersByTime(2000)
   })
   expect(
-    screen.getByRole('heading', { name: 'This story was withdrawn.' }),
+    screen.getByRole('heading', { name: 'This story has changed.' }),
   ).toBeTruthy()
   expect(
     screen.queryByRole('region', { name: 'See it for yourself' }),
@@ -349,7 +353,7 @@ test('withdrawal removes story and evidence; stale poll cannot revive it; rewind
   fireEvent.click(screen.getByRole('button', { name: 'Back to 48:00' }))
   await act(async () => {})
   expect(
-    screen.getByRole('heading', { name: 'The comparison is still unfolding.' }),
+    screen.getByRole('heading', { name: 'Earlier in the match' }),
   ).toBeTruthy()
   expect(screen.queryByLabelText('1 to 4')).toBeNull()
 })
@@ -386,7 +390,7 @@ test('following a player has an honest no-evidence exit back to the team', async
   )
   await user.selectOptions(screen.getByLabelText('Follow a player'), 'eb04')
   await screen.findByRole('heading', {
-    name: 'No supported story for this player here.',
+    name: 'No highlights for this player yet.',
   })
   await user.click(screen.getByRole('button', { name: 'Show the team story' }))
   await screen.findByLabelText('1 to 4')
@@ -486,9 +490,9 @@ test('slow replay requests finish while the clock advances; accepted facts remai
   })
   expect(
     within(screen.getByRole('region', { name: 'Match scoreboard' })).getByText(
-      /Facts through/,
+      /Updated to/,
     ).textContent,
-  ).not.toContain('Facts through 48:00')
+  ).not.toContain('Updated to 48:00')
   expect(screen.queryByLabelText('1 to 4')).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Pause replay' }))
 })

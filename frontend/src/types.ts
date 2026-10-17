@@ -21,6 +21,7 @@ export type Insight = {
   eligible_at: MatchTime
 }
 export type Snapshot = {
+  pitch_events?: Event[];
   recap?: SegmentRecap | null;
   adapted_recap?: SegmentRecap | null;
   recap_workflow?: RecapWorkflow | null;
