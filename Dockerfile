@@ -2,7 +2,7 @@ FROM node:24-bookworm-slim@sha256:a5f4366e834695d5f363b920c104953a535d3a9864d1bd
 WORKDIR /build
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
-COPY frontend/index.html frontend/tsconfig.json frontend/vite.config.ts ./
+COPY frontend/index.html frontend/auth.html frontend/tsconfig.json frontend/vite.config.ts ./
 COPY frontend/src ./src
 RUN npm run build
 
