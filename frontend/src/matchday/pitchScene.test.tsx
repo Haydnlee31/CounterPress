@@ -109,6 +109,7 @@ test('playback restarts from the first play and stops at the end instead of sile
 test('saved shots reach the keeper then rebound continuously across the possession change',()=>{
   const shot:Event={...pass,actor:{team_id:'northport',player_id:'np08'},position:{x:94,y:34},action:{kind:'shot',situation:'penalty',outcome:'saved',end_position:{x:103,y:32},rebound_position:{x:99,y:33},goalkeeper:{team_id:'eastbridge',player_id:'eb01'}}}
   const contact=pitchScene(shot,.6),rebound=pitchScene(shot,1)
+  for(const player of pitchScene(shot,0).players.filter(p=>p.number!==1&&!p.involved)) expect(fieldPoint(player,'northport').x).toBeLessThanOrEqual(84)
   expect(contact.ball).toEqual({x:2,y:36})
   expect(contact.players.find(p=>p.player_id==='eb01')).toMatchObject({...contact.ball,involved:true})
   expect(rebound.ball).toEqual({x:6,y:35})

@@ -74,6 +74,8 @@ def test_goals_follow_availability_rewind_revision_and_exact_retransmission():
 ])
 def test_invalid_shots_rejected(change):
     raw = fixture().events[0].model_dump()
+    if change.get('outcome') == 'goal':
+        raw['action']['rebound_position'] = None
     raw['action'].update(change)
     with pytest.raises(ValidationError):
         Event.model_validate(raw)
