@@ -260,3 +260,39 @@ The `CI` workflow builds, tests and compiles templates without cloud credentials
 The separate manually dispatched `Deploy Azure` workflow uses OIDC to push an image
 and update the existing app; it does not provision resources. The full architecture review
 and Microsoft-platform extension proposal follow completion of Stages 9 and 10.
+
+## Studio activation through the protected workflow
+
+`Deploy Azure` accepts `studio_mode`: `preserve` (default), `enable`, or `disable`.
+Preserve changes only the image. Enable/disable additionally change only the four
+Studio identity/mode settings; all storage, streaming, telemetry, identities,
+network settings and replica limits must match the reviewed expected template.
+The paid editorial API must remain off and model credentials are rejected.
+
+Enable requires the `CP_STUDIO_IDENTITY` secret in the existing `azure-demo`
+environment. Its JSON has exactly `tenant_id`, `api_client_id`, and `client_id`,
+all canonical UUIDs from the single-tenant API and Studio SPA registrations.
+These are identity metadata, not API keys; keep actual values out of the repo.
+The workflow masks them and never uploads raw Azure responses. Normal builds
+contain no environment-specific identity or model configuration.
+
+Before enabling, complete local real-SPA sign-in and isolated live Cosmos checks
+with `scripts/check_studio_cosmos.py seed` followed by `verify` in a new process.
+The probe uses `verify-studio-<scope>-increase`, refuses to reset an existing
+scope, records a clearly synthetic probe actor and makes no model calls. It
+checks approval, revocation, correction invalidation, current export, rejected
+old export and fixture-free restoration. Verification records are retained.
+
+After merge and successful exact-main CI, dispatch the reviewed mode:
+
+```sh
+gh workflow run deploy.yml --repo Haydnlee31/CounterPress --ref main -f studio_mode=enable
+```
+
+The HTTPS smoke checks that anonymous review, approval, revocation and export are
+all denied. Then verify the signed-in browser workflow against the hosted app.
+Use `studio_mode=disable` to close Studio without rolling back its history schema.
+Once decisions exist, retain a schema-compatible image. The runner saves the old
+image and full template privately during deployment; never publish that file.
+For a Bicep redeployment, explicitly preserve `useStudio` and the secure
+`studioIdentity` object alongside the existing Cosmos/streaming settings.

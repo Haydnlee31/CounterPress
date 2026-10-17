@@ -1,0 +1,59 @@
+{
+  "source_commit": "b6c308d3c123e119f6cd8dcaed6f6c6788ad06d0",
+  "local_browser": {
+    "real_msal_spa_sign_in": true,
+    "authenticated_review": true,
+    "approval": true,
+    "clean_preview": true,
+    "actual_html_download": true,
+    "revocation_locks_export": true,
+    "source_correction_4_to_3_invalidates_approval": true,
+    "session_end_hides_review": true,
+    "token_capture_or_persistence": false,
+    "storage": "isolated local SQLite",
+    "human_usability_study": false
+  },
+  "live_cosmos": {
+    "scope": "cp-20261017-studio-01",
+    "seed": {
+      "phase": "seed",
+      "isolated_partition": true,
+      "durable_decisions": 4,
+      "source_records": 93,
+      "current_approval_export": true,
+      "old_approval_rejected": true,
+      "fixture_free_restore": false,
+      "synthetic_probe_actor": true,
+      "model_calls": 0,
+      "source_commit": "b6c308d3c123e119f6cd8dcaed6f6c6788ad06d0",
+      "execution": "standalone process in existing app container using managed identity",
+      "app_revision_changed": false
+    },
+    "fresh_process_verify": {
+      "phase": "verify",
+      "isolated_partition": true,
+      "durable_decisions": 4,
+      "source_records": 93,
+      "current_approval_export": true,
+      "old_approval_rejected": true,
+      "fixture_free_restore": true,
+      "synthetic_probe_actor": true,
+      "model_calls": 0,
+      "source_commit": "b6c308d3c123e119f6cd8dcaed6f6c6788ad06d0",
+      "execution": "standalone process in existing app container using managed identity",
+      "app_revision_changed": false
+    }
+  },
+  "local_checks": {
+    "backend": "553 passed, 1 existing warning",
+    "frontend": "57 passed",
+    "build": "passed",
+    "responsive_fixture": "360/390/760/1365px; includes shared CSS and evidence text contrast assertion"
+  },
+  "limits": [
+    "No separate real unassigned-user account was used; missing-role and wrong-client rejection is covered by signed-token tests.",
+    "This report covers pre-release integration; hosted release status is recorded separately by the protected Deploy Azure workflow."
+  ],
+  "model_calls": 0,
+  "new_billable_resources": 0
+}

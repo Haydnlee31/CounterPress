@@ -25,7 +25,7 @@ export async function createSession(): Promise<Session | null> {
   const app = new PublicClientApplication({
     auth: { clientId: config.client_id, authority: config.authority, redirectUri: `${location.origin}/auth.html` },
     cache: { cacheLocation: 'memoryStorage' },
-    system: { loggerOptions: { loggerCallback: () => {}, piiLoggingEnabled: false } },
+    system: { popupBridgeTimeout: 300000, loggerOptions: { loggerCallback: () => {}, piiLoggingEnabled: false } },
   })
   await app.initialize()
   let account: AccountInfo | null = null

@@ -13,6 +13,7 @@ view = StudioService(SnapshotService(ROOT/'fixtures')).review('increase', Review
 (target/'studio-qa.tsx').write_text('''import React from 'react'
 import { createRoot } from 'react-dom/client'
 import Studio from '../src/studio/Studio'
+import '../src/styles.css'
 import review from './studio-review.json'
 let current = review
 const session = { async signIn() {}, async signOut() {}, async call(action) {

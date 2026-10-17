@@ -39,7 +39,8 @@ cancellation locally. [Real Entra/local API and managed-identity Cosmos checks](
 have passed. Hosted authorization, a bounded authenticated model check, human
 usefulness remain pending. The [Studio factual review slice](studio.md) now implements
 authenticated producer review, exact-version durable approval, revocation, clean preview
-and checked export. Its browser SPA/live Cosmos/hosted activation checks remain pending. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
+and checked export. Its [real browser SPA and live Cosmos checks](verification/studio-integration.json)
+have passed. Hosted activation is controlled by the protected deployment workflow. Human participants will be arranged later; the [test kit](evaluation/fan-usability.md)
 is ready and no human ratings have been fabricated.
 
 The Matchday implementation is in `frontend/src/matchday/`. The previous workspace

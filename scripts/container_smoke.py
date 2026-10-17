@@ -3,7 +3,7 @@ import json
 import re
 import sys
 from urllib.error import HTTPError
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 base = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8000"
 
@@ -32,7 +32,20 @@ callback, callback_headers = get("/auth.html")
 assert callback_headers.get("Cache-Control") == "no-store"
 assert callback_headers.get("Referrer-Policy") == "no-referrer"
 assert b"/assets/" in callback
-assert data("/api/studio/config") == {"enabled": False}
+studio = data("/api/studio/config")
+if '--studio-enabled' in sys.argv:
+    assert studio['enabled'] is True and set(studio) == {'enabled', 'client_id', 'authority', 'scope'}
+    for action in ('review', 'approve', 'revoke', 'export'):
+        payload = {} if action == 'review' else {'fingerprint': 'a'*64}
+        request = Request(base+'/api/studio/increase/'+action, data=json.dumps(payload).encode(),
+                          headers={'Content-Type': 'application/json'})
+        try:
+            urlopen(request, timeout=20)
+            raise AssertionError('Studio accepted an anonymous request')
+        except HTTPError as error:
+            assert error.code == 401 and error.headers.get('Cache-Control') == 'no-store'
+else:
+    assert studio == {"enabled": False}
 positive = data("/api/scenarios/increase/snapshot?at_ms=780000")
 assert positive["insight"]["facts"]["baseline_count"] == 1
 assert positive["insight"]["facts"]["current_count"] == 4
@@ -50,4 +63,4 @@ for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/
         raise AssertionError(f"Unexpected public file: {path}")
     except HTTPError as error:
         assert error.code == 404
-print("PASS: health, readiness, frontend/assets, Studio callback/disabled config, 1-to-4 evidence, control, bilingual recap, private-path 404s")
+print("PASS: health, readiness, frontend/assets, Studio callback/access boundary, 1-to-4 evidence, control, bilingual recap, private-path 404s")

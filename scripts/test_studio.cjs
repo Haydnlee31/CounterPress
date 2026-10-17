@@ -11,6 +11,7 @@ const assert = require('node:assert/strict');
   assert.equal(await page.getByText('Download approved snapshot',{exact:true}).isDisabled(),true);
   await page.getByText('Evidence reference · revision 1').first().click();
   await page.getByRole('table').first().waitFor();
+  assert.equal(await page.locator('.studio-events td').first().evaluate(e=>getComputedStyle(e).color),'rgb(23, 61, 52)');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`overflow at ${width}`);
   if(width===1365)await page.screenshot({path:'var/studio-desktop.png',fullPage:true});
   if(width===390)await page.screenshot({path:'var/studio-mobile.png',fullPage:true});

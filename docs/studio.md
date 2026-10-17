@@ -1,8 +1,8 @@
 # Producer Studio
 
 Studio is the authenticated producer review workspace at `#studio`. This slice is
-implemented and tested locally; it is **not activated on the hosted app**. The
-public Matchday remains available without sign-in. Studio uses factual templates;
+controlled by a separate deployment switch. The protected release workflow records
+when it is enabled on the hosted app. Public Matchday remains available without sign-in. Studio uses factual templates;
 opening it, reviewing, approving and exporting never invokes a model.
 
 ## Using Studio
@@ -33,7 +33,7 @@ are valid at their canonical read, not a promise that facts never change afterwa
 ## Architecture and authorization
 
 React loads Microsoft Authentication Library for JavaScript only when Studio opens.
-MSAL uses authorization-code/PKCE popup sign-in, a dedicated `/auth.html` redirect
+MSAL uses authorization-code/PKCE popup sign-in with a five-minute interaction timeout, a dedicated `/auth.html` redirect
 bridge and memory-only access-token caching. No token, account identity, model key
 or model endpoint is saved in app preferences or bundled into the frontend.
 The callback follows [Microsoft's redirect bridge guidance](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/login-user#redirecturi-considerations).
@@ -99,13 +99,16 @@ To activate real browser sign-in later:
 4. Verify an assigned account, a rejected unassigned account, approval/revocation,
    correction invalidation and restart using isolated history. Then release the
    reviewed image through the protected workflow and verify hosted behavior.
-   Existing Bicep/deployment workflows do not yet configure Studio activation;
-   add those runtime settings in that release, rather than enabling it manually
-   on an older incompatible image.
+   The protected deployment workflow now supports explicit `studio_mode`
+   enable/disable/preserve and a private identity-metadata secret; see the
+   [deployment runbook](deployment.md#studio-activation-through-the-protected-workflow).
+   Do not enable it on an older incompatible image.
 
-Browser SPA sign-in, the new Studio decisions against live Cosmos, hosted
-activation and human producer review remain pending. Earlier desktop Entra and
-Cosmos editorial integration evidence does not count as those checks.
+[Real browser SPA sign-in and new Studio decisions against live Cosmos](verification/studio-integration.json)
+have now passed, including local browser download/revocation/correction handling
+and restoration in a fresh cloud process. The protected release records hosted
+activation and anonymous-access smoke results separately. Human producer review
+and a separate real unassigned-account test remain pending.
 
 ## Verification
 

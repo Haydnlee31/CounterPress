@@ -44,3 +44,31 @@ def test_previous_ready_revision_cannot_satisfy_new_image_readiness():
     assert deploy.revision_is_ready(app,'new')
     app['properties']['provisioningState']='Updating'
     assert not deploy.revision_is_ready(app,'new')
+
+
+def test_studio_activation_changes_only_four_identity_settings_and_preserves_bounds():
+    identity = dict(tenant_id='11111111-1111-4111-8111-111111111111',
+                    api_client_id='22222222-2222-4222-8222-222222222222',
+                    client_id='33333333-3333-4333-8333-333333333333')
+    template={'containers':[{'image':'unchanged','env':[{'name':'COUNTERPRESS_STORAGE','value':'cosmos'},
+        {'name':'COUNTERPRESS_EDITORIAL','value':'off'}]}], 'scale':{'minReplicas':0,'maxReplicas':1}}
+    old=copy.deepcopy(template)
+    enabled=deploy.studio_template(template,'enable',identity)
+    assert template == old and enabled['scale'] == old['scale']
+    env={v['name']:v['value'] for v in enabled['containers'][0]['env']}
+    assert env['COUNTERPRESS_STUDIO']=='entra' and env['COUNTERPRESS_STORAGE']=='cosmos'
+    assert env['COUNTERPRESS_EDITORIAL']=='off' and len(env)==6
+    assert deploy.studio_template(enabled,'preserve')==enabled
+    disabled=deploy.studio_template(enabled,'disable')
+    assert disabled['containers'][0]['env']==[*template['containers'][0]['env'],{'name':'COUNTERPRESS_STUDIO','value':'off'}]
+
+
+def test_studio_activation_rejects_unexpected_secrets_invalid_identity_and_active_ai():
+    import pytest
+    template={'containers':[{'env':[]}]}
+    for identity in (None,{}, {'tenant_id':'bad','api_client_id':'bad','client_id':'bad'},
+                     {'tenant_id':None,'api_client_id':None,'client_id':None}, {'api_key':'forbidden'}):
+        with pytest.raises(deploy.DeploymentError):deploy.studio_template(template,'enable',identity)
+    with pytest.raises(deploy.DeploymentError):deploy.studio_template(template,'unexpected')
+    with pytest.raises(deploy.DeploymentError):
+        deploy.studio_template({'containers':[{'env':[{'name':'COUNTERPRESS_EDITORIAL','value':'entra'}]}]},'disable')
