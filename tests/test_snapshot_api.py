@@ -106,7 +106,7 @@ def test_invalid_requests(path, status):
 def test_catalog_has_no_event_feed_and_missing_fixture_is_reported(tmp_path):
     app = create_app(tmp_path)
     catalog = request(app, "/api/scenarios").json()
-    assert [item["scenario_id"] for item in catalog] == ["increase", "control", "stream-recovery", "pressure-increase", "pressure-control", "progression-increase", "progression-control", "contribution-increase", "contribution-control"]
+    assert [item["scenario_id"] for item in catalog] == ["increase", "control", "stream-recovery", "pressure-increase", "pressure-control", "progression-increase", "progression-control", "contribution-increase", "contribution-control", "last-gasp"]
     assert all("events" not in item for item in catalog)
     response = request(app, "/api/scenarios/increase/snapshot")
     assert response.status_code == 503

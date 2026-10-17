@@ -1,5 +1,5 @@
 {
-  "version": "matchday-pitch-regression-v1",
+  "version": "last-gasp-regression-v1",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -9,7 +9,7 @@
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
     "backend/counterpress/api/main.py": "68b77767ba68e1cb05adafaa4b3e89abb792970fec52398c2e1fd521294a9b5e",
-    "backend/counterpress/api/snapshots.py": "1f7a642038c3ce078f533e7681767ce49a2455cde892fdc64363282abd632c6d",
+    "backend/counterpress/api/snapshots.py": "e7290dd88622968f709540351c0022275d5ec2d3e3ec30d38eac9e95200f1d75",
     "backend/counterpress/audience.py": "08e8d5d0977040fc47e0b701cbb0d5b0014565ae19c601ab5d7600f9bb387d79",
     "backend/counterpress/clock.py": "dc56c2b6f04ef1ec2eeb8998b96150f7dbb938b95a7b59c5e54869c9620ba8b1",
     "backend/counterpress/contribution_publications.py": "5c530f1d7625966ca62091f33f820a54925bf09ccc787f71733ea5ebf07341d9",
@@ -20,10 +20,10 @@
     "backend/counterpress/domain/__init__.py": "9c1af1bd4cd8654a10178703546e9298f5e42791b68f89c0d3da8f7267716c59",
     "backend/counterpress/domain/contributions.py": "097f038eaca43925c4cbf743c9154540957a617e6efbadcd18236c502ac30cf2",
     "backend/counterpress/domain/metrics.py": "ecacf3e1c880355d2ebfce40c11e86b3d360b4ba020ca545c6d06117859f7965",
-    "backend/counterpress/domain/models.py": "59ade4f6bde8d4821720ed662f1916a71e278329927ab8c6d398b9b4914a9c12",
+    "backend/counterpress/domain/models.py": "b56f2d65faf4046d8731238cf1bd0ab6d801f8f24938161fbcbdd59b837f51a8",
     "backend/counterpress/domain/pressure.py": "4ce2f97640eebf7075af8e0b828d44903e8325e007f54da68bc3ec313b5fcfb8",
     "backend/counterpress/domain/progression.py": "bd7a795692dcfd2fd495d604bed0f1b0a4cda8e417c2f3a8423d24ba9f877235",
-    "backend/counterpress/domain/replay.py": "4e3db0bac9485c426b474d2934c5fc8781af6c02b9c2a6853c3c814536664334",
+    "backend/counterpress/domain/replay.py": "7982eec116d06b42e04776782a36b32b19e52a346f40241108cd22c3cf1ff8a9",
     "backend/counterpress/editorial/__init__.py": "e5eb72274910bc5370298ca50836d85172de8742ea5baab09a51f2361de35f61",
     "backend/counterpress/editorial/api.py": "07b830790ad6840cf0ba0f73b6e9fa2ea83bd6c0ace24fb2538831152a7423a0",
     "backend/counterpress/editorial/auth.py": "6a16be01221b8f59c6ad4306d7f270ba26a2c7406716f64b273a1ac61634b119",
@@ -32,7 +32,7 @@
     "backend/counterpress/evaluation/__init__.py": "ab0d4e4ae97a1bbcef0d286ecd53bd753bc7830ac761eac9e5d416cc9d8d6fc6",
     "backend/counterpress/evaluation/editorial.py": "844c5d6f69c09e700dac031e6a5c498f824ab02ce8999a8434e672b81d61517d",
     "backend/counterpress/evaluation/meter.py": "17cf0e295548e886e19357c09971dc7213dbd284454f2366aa013d9c0a0e2f30",
-    "backend/counterpress/fixture.py": "542dc9ff0cf009ea3f412c6a238ed1f15b3c0d4fe22e0c3ffd5489b6ea98f413",
+    "backend/counterpress/fixture.py": "8e751f3b268ccf435586196897ab24d544b34e1b36686d6e591162308f5ad0d6",
     "backend/counterpress/generator/__init__.py": "27c761068b15a2dc0d5c07834cdec34fe239f8761cb0c39a39c7cab55f82bdd7",
     "backend/counterpress/generator/__main__.py": "daad26eafc1d70796dcca3f439ddc5842da1550ddfba53f30911ebf264df31c7",
     "backend/counterpress/generator/engine.py": "c441ba2d1bbd26773d68cbe684848ddedf0e9dff73c098f5e5d9d84b9dca803d",
@@ -46,7 +46,7 @@
     "backend/counterpress/progression.py": "8b3c9f90b8fc98acf8b1a918b794e7057d40167df7a6b5efea775258a09974bf",
     "backend/counterpress/recap_adaptation.py": "5a32cd4f21442610375ea745f8c27e644d621150e12ca4a623cd5f894aeee92e",
     "backend/counterpress/recaps.py": "0e34fae562d96b1ccf4c375414969625f2bd27c49fd9d51782dc11e1441bbf34",
-    "backend/counterpress/replay.py": "a5231d0a6db7749a205dc5ad2d08f79e3d00f192c1e822404389ea102e99dea1",
+    "backend/counterpress/replay.py": "9447cdf28587a6c46159f008a3f6f43c1d1b2747590c0f3fcb4112d6a44dd603",
     "backend/counterpress/storage.py": "ed26f1f0042475f467560e9d0a293d529b0a1d988ccc8d041a67a686bd79f68f",
     "backend/counterpress/streaming/__init__.py": "1b98fac600496555bf5a05dd8403e885464f1257ab08a4924fef264323790239",
     "backend/counterpress/streaming/azure.py": "ba110d625b4820dd8ba0441fa8296312620e1e5c7a3297474bc10b988474be63",
@@ -80,6 +80,7 @@
     "fixtures/progression/increase.json": "daecf9455fec1950d623e5dc7ec3f6bb669cdd630da3ff7c664fe43bc1f8d327",
     "fixtures/recovery_control.json": "6dbbfa120f9d3389422168ebf6a0481cdce46517e04da34f15154dc056b048f5",
     "fixtures/recovery_increase.json": "63f1878b818288ac8602e06d75c495c3bd869a31139479bbe50570bd991e803f",
+    "fixtures/showcases/last_gasp.json": "651a89f17d9ecf0e0b32567a3bf19a4f51c72501031cf544feb3ab729249c0f4",
     "uv.lock": "fcd26ffd0a3b0918bac98771922ad55b48cbd305b056b04111965a436bc0e914"
   }
 }

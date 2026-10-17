@@ -86,3 +86,40 @@ This includes schema checks, exact oracle comparisons, possession transitions,
 player-to-player continuity, physical ball-position continuity in a common frame,
 and all four fault cases. Individual valid fixtures can also be loaded with the
 existing `python -m counterpress.fixture <path>` command.
+
+## Clip-inspired last-second turnaround
+
+`fixtures/showcases/last_gasp.json` is a separate, hand-authored demonstration.
+Its reference is Watford FC's official [Watford 3–1 Leicester highlights, starting
+at 9:20](https://www.youtube.com/watch?v=ETXv-SvOk9g&t=560s): the penalty, double
+save, counterattack, cross, knockdown and Deeney finish from 12 May 2013.
+The source supports the action pattern, not the authored coordinates or timing.
+No video, audio, commentary transcript, club badge or player likeness is copied.
+
+The fictional version uses Eastbridge and Northport. Theo Ashford makes the two
+saves, Alex Rowan sends the ball out, Kai Mercer advances and finds Lucas Hart,
+Hart crosses to Jamie Vale, and Vale heads down for Rory Ellis. These are narrative
+roles, not assertions about the real players' measured movements. The attacking
+moves are compressed into ten explicit records over 20 seconds, rebased to
+57:40–58:00 for the existing demo clock. This is not a frame-synchronised tracking
+reconstruction. Off-ball team shapes remain illustrative.
+
+The declared starting score is 2–1. Canonical `shot/outcome=goal` records increment
+that team's score; saved, blocked and off-target shots do not. Saved shots require
+an opposing, registered goalkeeper. Optional rebound coordinates use the shooter's
+attacking coordinate frame. Goals end at x=105 within the 7.32-metre goal mouth.
+Passes can identify a ground pass, cross or header. Existing fixtures default to
+ground passes and retain their original event data and expected results.
+
+`tests/expected_last_gasp.json` is a separately written oracle: two saves, one
+recovery, four completed passes, two carries and one goal. Tests check ball
+continuity across the coordinate inversion, roster validation, score before/after
+the goal, exact retransmissions, correction availability and rewind. The short
+showcase is excluded from recovery/pressure/contribution publication: it does not
+supply coverage for a five-minute comparison. The frozen paid editorial pilot is
+unchanged; the offline regression lock is separately versioned.
+
+After this scenario is seeded in durable storage, an older image that predates
+`ShotDetails` cannot parse its records. Roll forward with this additive contract
+for fixes; do not roll back to an image without shot support while serving this
+scenario. No existing history is rewritten or deleted.

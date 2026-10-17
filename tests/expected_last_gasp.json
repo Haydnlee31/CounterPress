@@ -1,0 +1,14 @@
+{
+  "initial_score": {"eastbridge": 2, "northport": 1},
+  "final_score": {"eastbridge": 3, "northport": 1},
+  "event_ids": ["lg-penalty", "lg-rebound", "lg-recovery", "lg-outlet", "lg-break", "lg-wide-pass", "lg-wing-run", "lg-cross", "lg-knockdown", "lg-winner"],
+  "kinds": ["shot", "shot", "recovery", "pass", "carry", "pass", "carry", "pass", "pass", "shot"],
+  "shot_outcomes": ["saved", "saved", "goal"],
+  "goal_id": "lg-winner",
+  "scorer": "eb09",
+  "goalkeeper_with_two_saves": "eb01",
+  "eastbridge_passes_completed": 4,
+  "northport_pass_attempts": 0,
+  "high_recoveries": 0,
+  "duration_ms": 20000
+}

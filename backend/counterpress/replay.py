@@ -8,7 +8,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from counterpress.clock import VirtualClock
 from counterpress.domain.metrics import RecoveryComparison, TeamMetrics, compare_recoveries, team_metrics
-from counterpress.domain.models import Contract, DuelDetails, Event, MatchState, MatchTime, ObservationWindow, PassDetails
+from counterpress.domain.models import Contract, DuelDetails, Event, MatchState, MatchTime, ObservationWindow, PassDetails, ShotDetails
 from counterpress.domain.replay import EventJournal, reduce_state
 from counterpress.fixture import PossessionFixture, load_fixture
 
@@ -35,6 +35,8 @@ class ReplaySession:
             actors = [event.actor]
             if isinstance(event.action, PassDetails) and event.action.recipient:
                 actors.append(event.action.recipient)
+            if isinstance(event.action, ShotDetails) and event.action.goalkeeper:
+                actors.append(event.action.goalkeeper)
             if isinstance(event.action, DuelDetails):
                 actors.append(event.action.opponent)
             if any(actor.player_id not in rosters.get(actor.team_id, set()) for actor in actors):

@@ -1,5 +1,16 @@
 # Progress
 
+Latest showcase: **Last-second turnaround** adds a clip-inspired ten-event attack,
+two typed saves, a rebound, cross/header and goal. The score follows canonical
+goal revisions and the pitch playhead. Fictional identities and approximate
+coordinates are attributed to Watford FC’s official 2013 highlights in the app
+footer and guide. Existing comparison fixtures are unchanged; the short sequence
+does not publish five-minute comparisons. Local verification: 588 backend tests,
+70 frontend tests, production build and both browser suites pass. See
+[the scenario contract](fixtures.md#clip-inspired-last-second-turnaround).
+No new Azure resources or AI calls. Best next move: compare the original clip and
+replay with football fans and ask them to describe the change of possession and finish.
+
 Latest tracker refinement ([verification](verification/matchday-tracker-local.json), 578 backend and 68 frontend tests passed): desktop now pairs player context, pitch and synchronised
 commentary; mobile keeps controls directly below the field. A default 26-metre
 spotlight reduces visual clutter while retaining all 22 selectable players.

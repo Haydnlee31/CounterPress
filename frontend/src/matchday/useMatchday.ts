@@ -15,7 +15,7 @@ export const SEGMENT_START = 180000,
   COMPARISON_TIME = 780000
 export function useMatchday() {
   const [request, setRequest] = useState(() => ({
-    scenario: 'increase',
+    scenario: new URLSearchParams(window.location.search).get('story')==='last-gasp'?'last-gasp':'increase',
     atMs: COMPARISON_TIME,
     preferences: readPreferences(),
     scope: new PlaybackScope(),

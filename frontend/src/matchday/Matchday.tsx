@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { clock, windowLabel } from '../types'
-import { clubs, clubName, displayText, playerName } from './identity'
+import { clubs, clubName, displayText, playerName, knownPlayer } from './identity'
 import { useMatchday, SEGMENT_START, COMPARISON_TIME } from './useMatchday'
 import { storiesFor } from './stories'
 import { Moments } from './Moments'
 import { ClubCrest } from './ClubCrest'
 import { MatchPitch } from './MatchPitch'
+import { scoreAtPlayhead } from './pitchScene'
 import './matchday.css'
 
 const showcases: Record<string, [string, string]> = {
+  'last-gasp': ['Last-second turnaround', '最后一刻的逆转'],
   increase: ['Winning it back', '前场夺回球权'],
   'pressure-increase': ['Playing under pressure', '在压力下控球'],
   'progression-increase': ['Moving the ball forward', '向前推进'],
@@ -21,6 +23,11 @@ export function Matchday() {
     p = m.request.preferences,
     snapshot = m.snapshot
   const t = (en: string, zh: string) => (p.language === 'zh-Hans' ? zh : en)
+  const isTurnaround=m.request.scenario==='last-gasp'
+  const [pitchHead,setPitchHead]=useState({index:0,resolved:false})
+  const pitchEvents=snapshot?.pitch_events ?? []
+  const shownScore=isTurnaround&&snapshot?scoreAtPlayhead(snapshot.state.score,pitchEvents,pitchHead.index,pitchHead.resolved):snapshot?.state.score
+  const shownTime=isTurnaround?(pitchEvents[pitchHead.index]?.occurred_at.elapsed_ms ?? 760000):m.request.atMs
   const [preferencesOpen, setPreferencesOpen] = useState(false)
   const [recapOpen, setRecapOpen] = useState(false)
   const [replayOpen, setReplayOpen] = useState(false)
@@ -169,7 +176,7 @@ export function Matchday() {
                 >
                   <option value="">{t('Everyone', '所有球员')}</option>
                   {teams.flatMap((team) =>
-                    team.player_ids.map((id) => (
+                    team.player_ids.filter(knownPlayer).map((id) => (
                       <option key={id} value={id}>
                         {playerName(id)} · {team.name}
                       </option>
@@ -231,11 +238,11 @@ export function Matchday() {
           </div>
           <div className="fan-score-center">
             <span>
-              {snapshot?.state.score.eastbridge ?? '–'} <i>:</i>{' '}
-              {snapshot?.state.score.northport ?? '–'}
+              {shownScore?.eastbridge ?? '–'} <i>:</i>{' '}
+              {shownScore?.northport ?? '–'}
             </span>
             <time>
-              {clock(m.request.atMs)} · {t('2nd half', '下半场')}
+              {clock(shownTime)} · {t('2nd half', '下半场')}
             </time>
           </div>
           <div className="fan-team away">
@@ -244,8 +251,8 @@ export function Matchday() {
           </div>
           <div className="fan-score-foot">
             <span>
-              {t('Match highlights', '比赛集锦')} · 48:00–{clock(m.end)}
-              {snapshot && (
+              {isTurnaround?t('Last-second turnaround · 57:40–58:00','最后一刻的逆转 · 57:40–58:00'):<>{t('Match highlights', '比赛集锦')} · 48:00–{clock(m.end)}</>}
+              {snapshot && !isTurnaround && (
                 <>
                   <br />
                   {t('Updated to', '更新至')}{' '}
@@ -253,17 +260,18 @@ export function Matchday() {
                 </>
               )}
             </span>
-            <button
+            {!isTurnaround && <button
               onClick={() => setReplayOpen((v) => !v)}
               aria-expanded={replayOpen}
               aria-controls="fan-replay"
             >
               {t('Explore replay', '探索回放')} ↗
-            </button>
+            </button>}
           </div>
         </section>
-        {snapshot && <MatchPitch key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} />}
-        {replayOpen && (
+        {!isTurnaround && <button className="fan-turnaround-link" onClick={()=>chooseShowcase('last-gasp')}>{t('Two saves. One last attack. Watch the turnaround →','两次扑救，最后一击。观看逆转 →')}</button>}
+        {snapshot && <MatchPitch key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} fromStart={isTurnaround} onPlayhead={isTurnaround?setPitchHead:undefined} />}
+        {replayOpen && !isTurnaround && (
           <section
             id="fan-replay"
             className="fan-replay"
@@ -412,6 +420,13 @@ export function Matchday() {
               )}
             </p>
           </section>
+        ) : isTurnaround ? (
+          <article className="fan-turnaround-story">
+            <p className="fan-kicker">{t('LAST-SECOND TURNAROUND','最后一刻的逆转')}</p>
+            <h3>{t('From a double save to a chance at the other end','从两连扑到另一端的机会')}</h3>
+            <p>{t('Northport have a penalty. Ashford stands in their way. Follow the ball as Eastbridge break down the wing, send in a cross and look for Ellis in the middle.','Northport获得点球，Ashford挺身而出。跟随球的轨迹，看Eastbridge沿边路反击、传中，在中路寻找Ellis。')}</p>
+            <a href="https://www.youtube.com/watch?v=ETXv-SvOk9g&t=560s" target="_blank" rel="noreferrer">{t('Watch the original moment · Watford FC ↗','观看原始片段 · Watford FC ↗')}</a>
+          </article>
         ) : first ? (
           <article className="fan-hero">
             <div className="fan-hero-copy">
@@ -614,6 +629,7 @@ export function Matchday() {
           />
         )}
         <footer className="fan-footer">
+          {isTurnaround && <small className="fan-data-note">{t('Inspired by Watford–Leicester, 12 May 2013. Original club highlights: start at 9:20. This is a hand-authored reconstruction with fictional identities, approximate positions and a rebased match clock; it is not measured tracking. No footage or audio is reproduced. This short sequence is excluded from the five-minute comparison benchmarks.','灵感来自2013年5月12日Watford对Leicester。俱乐部原片从9:20开始。此手工重建使用虚构身份、近似位置和重设的比赛时钟，并非追踪测量；未复制影像或音频，亦不计入五分钟比较基准。')}</small>}
           <a href="#studio">{t("Producer Studio", "制作人工作室")} ↗</a>
           <p>
             {t(

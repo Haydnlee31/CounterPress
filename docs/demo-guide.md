@@ -1,5 +1,24 @@
 # CounterPress demo guide
 
+## Watch the last-second turnaround
+
+Open [the showcase](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/?story=last-gasp#matchday)
+and press **Play sequence**. Watch Ashford's two saves, the run down the wing,
+Hart's cross, Vale's header and Ellis's finish. The scoreboard moves from **2–1 to
+3–1** when the ball reaches the goal. Previous/next controls let you inspect each
+play; rewinding also rewinds the displayed score. With reduced motion enabled,
+use **Show ball movement** to reveal the action's end.
+
+For a judge comparison, first open [Watford FC's original clip at 9:20](https://www.youtube.com/watch?v=ETXv-SvOk9g&t=560s),
+then play CounterPress. Compare whether the double save, change of direction,
+cross, knockdown and finish are clear. The app uses fictional names and approximate
+authored positions, with its clock rebased to 57:40–58:00. It is not measured or
+frame-synchronised tracking. The reference link and provenance are also in the app.
+
+Find this sequence from any Matchday story using **Two saves. One last attack.**
+or **Explore a story → Last-second turnaround**. The existing analytical stories
+remain available separately.
+
 CounterPress turns recorded football events into comparisons that you can check
 against their source evidence. This guide is for demo users and hackathon judges.
 The match, teams and players are synthetic. The replay covers a ten-minute

@@ -8,7 +8,7 @@ from pydantic import Field, model_validator
 
 from counterpress.domain.models import (
     Actor, Contract, DuelDetails, Event, Identifier, InitialState,
-    PassDetails, RecoveryDetails,
+    PassDetails, RecoveryDetails, ShotDetails,
 )
 
 
@@ -73,6 +73,8 @@ class PossessionFixture(Contract):
             action = event.action
             if isinstance(action, PassDetails) and action.recipient:
                 check_actor(action.recipient)
+            if isinstance(action, ShotDetails) and action.goalkeeper:
+                check_actor(action.goalkeeper)
             if isinstance(action, DuelDetails):
                 check_actor(action.opponent)
                 if control not in (event.actor.team_id, action.opponent.team_id):
@@ -82,7 +84,7 @@ class PossessionFixture(Contract):
                     raise ValueError("recovery must name the previous controlling team")
                 control = event.actor.team_id
             elif event.actor.team_id != control:
-                raise ValueError("pass or carry requires controlled possession")
+                raise ValueError("action requires controlled possession")
             ids.add(event.event_id)
             orders.add(event.occurrence_order)
             previous_sequence = event.source_delivery_sequence

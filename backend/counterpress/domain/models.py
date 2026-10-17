@@ -39,6 +39,7 @@ class Actor(Contract):
 
 class PassDetails(Contract):
     kind: Literal["pass"]
+    technique: Literal["ground", "cross", "header"] = "ground"
     outcome: Literal["completed", "incomplete"]
     end_position: PitchPosition
     recipient: Actor | None = None
@@ -47,6 +48,25 @@ class PassDetails(Contract):
     def completed_has_recipient(self) -> Self:
         if self.outcome == "completed" and self.recipient is None:
             raise ValueError("completed pass requires a recipient")
+        return self
+
+
+class ShotDetails(Contract):
+    kind: Literal["shot"]
+    outcome: Literal["goal", "saved", "off_target", "blocked"]
+    end_position: PitchPosition
+    situation: Literal["open_play", "penalty"] = "open_play"
+    goalkeeper: Actor | None = None
+    rebound_position: PitchPosition | None = None
+
+    @model_validator(mode="after")
+    def coherent_shot(self) -> Self:
+        if self.outcome == "saved" and self.goalkeeper is None:
+            raise ValueError("saved shot requires the goalkeeper")
+        if self.rebound_position is not None and self.outcome not in ("saved", "blocked"):
+            raise ValueError("only saved or blocked shots can have a rebound")
+        if self.outcome == "goal" and (self.end_position.x != 105 or not 30.34 <= self.end_position.y <= 37.66):
+            raise ValueError("goal must end on the attacking goal line inside the posts")
         return self
 
 
@@ -69,7 +89,7 @@ class RecoveryDetails(Contract):
 
 
 Action = Annotated[
-    PassDetails | CarryDetails | DuelDetails | RecoveryDetails,
+    PassDetails | CarryDetails | DuelDetails | RecoveryDetails | ShotDetails,
     Field(discriminator="kind"),
 ]
 
@@ -99,6 +119,9 @@ class Event(Contract):
         if isinstance(self.action, DuelDetails):
             if self.action.opponent.team_id == self.actor.team_id:
                 raise ValueError("duel opponent must belong to another team")
+        if isinstance(self.action, ShotDetails) and self.action.goalkeeper:
+            if self.action.goalkeeper.team_id == self.actor.team_id:
+                raise ValueError("shot goalkeeper must belong to the opposing team")
         if isinstance(self.action, RecoveryDetails):
             if self.action.from_team_id == self.actor.team_id:
                 raise ValueError("recovery must change controlled possession")
