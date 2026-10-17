@@ -19,8 +19,16 @@ param useStreaming bool = false
 @description('Emit bounded numeric streaming telemetry; provision monitoring.bicep and telemetry-ingestion.bicep first.')
 param useTelemetry bool = false
 
-@description('Enable factual Studio only after browser/identity and Cosmos verification. Paid editorial remains off.')
+@description('Enable Studio after browser/identity and Cosmos verification.')
 param useStudio bool = false
+
+@description('Explicit authenticated AI pilot; requires useStudio and useCosmos. Keep false unless reviewed.')
+param useEditorial bool = false
+
+@secure()
+param editorialModel object = {}
+
+var editorialEnabled = useEditorial && useStudio && useCosmos
 
 @secure()
 @description('Private runtime metadata with tenant_id, api_client_id and client_id; no keys or model endpoints.')
@@ -74,6 +82,11 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
     configuration: {
       activeRevisionsMode: 'Single'
       maxInactiveRevisions: 1
+      secrets: editorialEnabled ? [
+        { name: 'editorial-endpoint', value: editorialModel.AZURE_OPENAI_ENDPOINT }
+        { name: 'editorial-deployment', value: editorialModel.AZURE_OPENAI_DEPLOYMENT }
+        { name: 'editorial-key', value: editorialModel.AZURE_OPENAI_API_KEY }
+      ] : []
       ingress: {
         external: true
         targetPort: 8000
@@ -114,7 +127,12 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
             { name: 'COUNTERPRESS_STUDIO_CLIENT_ID', value: studioIdentity.client_id }
             { name: 'COUNTERPRESS_ENTRA_TENANT_ID', value: studioIdentity.tenant_id }
             { name: 'COUNTERPRESS_ENTRA_AUDIENCE', value: studioIdentity.api_client_id }
-            { name: 'COUNTERPRESS_EDITORIAL', value: 'off' }
+            { name: 'COUNTERPRESS_EDITORIAL', value: editorialEnabled ? 'entra' : 'off' }
+          ] : [], editorialEnabled ? [
+            { name: 'COUNTERPRESS_ENTRA_CLIENT_IDS', value: studioIdentity.client_id }
+            { name: 'AZURE_OPENAI_ENDPOINT', secretRef: 'editorial-endpoint' }
+            { name: 'AZURE_OPENAI_DEPLOYMENT', secretRef: 'editorial-deployment' }
+            { name: 'AZURE_OPENAI_API_KEY', secretRef: 'editorial-key' }
           ] : [])
           probes: [
             {

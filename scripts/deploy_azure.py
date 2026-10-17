@@ -9,6 +9,7 @@ import sys
 import time
 from urllib.request import urlopen
 from uuid import UUID
+from urllib.parse import urlsplit
 
 
 class DeploymentError(RuntimeError):
@@ -39,12 +40,57 @@ def invariants(app):
     template['containers'][0].pop('image')
     config = copy.deepcopy(properties['configuration'])
     config.get('ingress', {}).pop('traffic', None)
+    # Azure never returns secret values. Compare names/Key Vault metadata only.
+    for secret in config.get('secrets', []):
+        secret.pop('value', None)
+    if 'secrets' in config:
+        config['secrets'].sort(key=lambda secret: secret['name'])
     return {'template':template, 'configuration':config,
             'identity':app['identity'], 'environmentId':properties['environmentId']}
 
 
 STUDIO_KEYS = {'COUNTERPRESS_STUDIO', 'COUNTERPRESS_STUDIO_CLIENT_ID',
                'COUNTERPRESS_ENTRA_TENANT_ID', 'COUNTERPRESS_ENTRA_AUDIENCE'}
+
+MODEL_SECRETS = {'AZURE_OPENAI_ENDPOINT': 'editorial-endpoint',
+                 'AZURE_OPENAI_DEPLOYMENT': 'editorial-deployment',
+                 'AZURE_OPENAI_API_KEY': 'editorial-key'}
+
+
+def editorial_settings(app, mode, model=None):
+    """Explicit opt-in on existing resources; model values only in app secrets."""
+    result = copy.deepcopy(app)
+    if mode == 'preserve':
+        return result
+    if mode not in ('enable', 'disable'):
+        raise DeploymentError('Unknown editorial deployment mode')
+    container = result['properties']['template']['containers'][0]
+    env = {v['name']: v.get('value') for v in container.get('env', [])}
+    additions = [{'name': 'COUNTERPRESS_EDITORIAL', 'value': 'off'}]
+    if mode == 'enable':
+        if env.get('COUNTERPRESS_STUDIO') != 'entra':
+            raise DeploymentError('Editorial activation requires Studio')
+        if not isinstance(model, dict) or set(model) != set(MODEL_SECRETS):
+            raise DeploymentError('Private model settings are incomplete')
+        if not all(isinstance(v, str) and v.strip() and '\n' not in v and '\r' not in v for v in model.values()):
+            raise DeploymentError('Private model settings are invalid')
+        url = urlsplit(model['AZURE_OPENAI_ENDPOINT'])
+        if (url.scheme != 'https' or not url.hostname or not url.hostname.endswith(('.openai.azure.com', '.services.ai.azure.com'))
+                or url.port not in (None, 443) or url.username or url.password or url.query or url.fragment
+                or url.path.rstrip('/') not in ('', '/openai/v1')):
+            raise DeploymentError('Private model destination is invalid')
+        client = env.get('COUNTERPRESS_STUDIO_CLIENT_ID')
+        if not client or str(UUID(client)) != client:
+            raise DeploymentError('Studio client must be configured')
+        additions = [{'name': 'COUNTERPRESS_EDITORIAL', 'value': 'entra'},
+                     {'name': 'COUNTERPRESS_ENTRA_CLIENT_IDS', 'value': client},
+                     *[{'name': name, 'secretRef': secret} for name, secret in MODEL_SECRETS.items()]]
+        config = result['properties']['configuration']
+        config['secrets'] = [s for s in config.get('secrets', []) if s['name'] not in MODEL_SECRETS.values()] + [
+            {'name': secret, 'value': model[name]} for name, secret in MODEL_SECRETS.items()]
+    removed = {*MODEL_SECRETS, 'COUNTERPRESS_EDITORIAL', 'COUNTERPRESS_ENTRA_CLIENT_IDS'}
+    container['env'] = [v for v in container.get('env', []) if v['name'] not in removed] + additions
+    return result
 
 
 def studio_template(template, mode, identity=None):
@@ -90,9 +136,17 @@ def validate_app(app):
     assert env.get('COUNTERPRESS_STORAGE')=='cosmos'
     assert env.get('COUNTERPRESS_STREAMING')=='azure'
     assert env.get('COUNTERPRESS_TELEMETRY')=='on'
-    assert not p['configuration'].get('secrets')
-    assert not any(k.startswith('AZURE_OPENAI') for k in env)
-    assert env.get('COUNTERPRESS_EDITORIAL', 'off') == 'off'
+    secrets = {s['name'] for s in p['configuration'].get('secrets', [])}
+    assert secrets <= set(MODEL_SECRETS.values())
+    assert env.get('COUNTERPRESS_EDITORIAL', 'off') in ('off', 'entra')
+    model_env = {v['name']: v for v in container.get('env', []) if v['name'].startswith('AZURE_OPENAI')}
+    if env.get('COUNTERPRESS_EDITORIAL', 'off') == 'entra':
+        assert env.get('COUNTERPRESS_STUDIO') == 'entra'
+        assert env.get('COUNTERPRESS_ENTRA_CLIENT_IDS') == env['COUNTERPRESS_STUDIO_CLIENT_ID']
+        assert set(model_env) == set(MODEL_SECRETS) and secrets == set(MODEL_SECRETS.values())
+        assert all(model_env[k] == {'name': k, 'secretRef': v} for k, v in MODEL_SECRETS.items())
+    else:
+        assert not model_env
     assert env.get('COUNTERPRESS_STUDIO', 'off') in ('off', 'entra')
     assert p['configuration']['activeRevisionsMode']=='Single'
     assert p['template']['scale']['minReplicas']==0 and p['template']['scale']['maxReplicas']==1
@@ -127,6 +181,12 @@ def deploy():
             if isinstance(value, str):print('::add-mask::'+value, flush=True)
     expected=copy.deepcopy(before)
     expected['properties']['template']=studio_template(before['properties']['template'], mode, identity)
+    editorial_mode=os.environ.get('CP_EDITORIAL_MODE', 'preserve')
+    model=json.loads(os.environ['CP_EDITORIAL_MODEL']) if editorial_mode == 'enable' else None
+    expected=editorial_settings(expected, editorial_mode, model)
+    if model:
+        for value in model.values():
+            if isinstance(value, str):print('::add-mask::'+value, flush=True)
     validate_app(expected)
     baseline=invariants(expected)
     old_image=before['properties']['template']['containers'][0]['image']
@@ -145,9 +205,15 @@ def deploy():
     template=copy.deepcopy(expected['properties']['template'])
     template['containers'][0]['image']=image
     template['revisionSuffix']='gh-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
-    body=json.dumps({'properties':{'template':template}})
+    properties={'template':template}
+    if editorial_mode == 'enable':
+        properties['configuration'] = expected['properties']['configuration']
+    payload_path=Path(os.environ['RUNNER_TEMP'], 'counterpress-update.json')
+    payload_path.touch(mode=0o600)
+    payload_path.write_text(json.dumps({'properties':properties}))
     run(['az','rest','--method','patch','--url',before['id']+'?api-version=2025-07-01',
-         '--body',body,'--only-show-errors','-o','json'],timeout=300)
+         '--body','@'+str(payload_path),'--only-show-errors','-o','json'],timeout=300)
+    payload_path.unlink()
     print('Deploy phase: waiting for the requested revision',flush=True)
     for _ in range(36):
         current=app();p=current['properties']
@@ -171,7 +237,7 @@ def deploy():
     if summary:
         with open(summary,'a') as f:
             f.write(f'## Verified CounterPress deployment\n\nCommit: `{sha}`\n\nImage digest: `{digest}`\n\n'
-                    f'Public HTTPS smoke and historical correction checks passed. Studio mode: {mode}. Paid editorial API remains off. Cosmos, streaming, telemetry, identities and scale limits preserved.\n')
+                    f'Public HTTPS smoke and historical correction checks passed. Studio mode: {mode}. Editorial mode: {editorial_mode}. Cosmos, streaming, telemetry, identities and scale limits preserved.\n')
 
 
 if __name__=='__main__':

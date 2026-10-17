@@ -43,7 +43,7 @@ describe('Studio producer flow', () => {
     expect((screen.getByText('Download approved snapshot') as HTMLButtonElement).disabled).toBe(true)
     fireEvent.click(screen.getByText('I reviewed this version · Approve'))
     await screen.findByText('Approved for this snapshot')
-    expect(s.call).toHaveBeenCalledWith('approve', 'increase', expect.anything(), 'a'.repeat(64))
+    expect(s.call).toHaveBeenCalledWith('approve', 'increase', expect.anything(), 'a'.repeat(64), undefined, null)
     fireEvent.click(screen.getByText('Open clean preview'))
     expect(screen.getByLabelText('Approved clean preview')).toBeTruthy()
     fireEvent.click(screen.getByText('Revoke this approval'))
@@ -89,5 +89,33 @@ describe('Studio producer flow', () => {
     fireEvent.click(screen.getByText('End Studio session'))
     await act(async () => finish(view('approved')))
     expect(screen.queryByText('Approved for this snapshot')).toBeNull()
+  })
+  it('requests AI only on click, carries the selected attempt, and locks expired approval', async () => {
+    const s = session({ ...view(), editor_enabled: true })
+    let ai = false, approved = false, expired = false
+    s.call.mockImplementation(async (action: string) => {
+      if (action === 'draft') ai = true
+      if (action === 'approve') approved = true
+      if (!ai) return { ...view(), editor_enabled: true }
+      return { ...view(expired ? 'unavailable' : approved ? 'approved' : 'unreviewed', 'b'.repeat(64)),
+        editor_enabled: true, attempt_id: 'editor-1', editorial_status: 'completed',
+        workflow: { applied: !expired, status: expired ? 'expired' : 'accepted', expires_at_unix_ms: Date.now()+500 },
+        valid_for_ms: expired ? null : 500 }
+    })
+    await start(s)
+    expect(s.call.mock.calls.every(c => c[0] === 'review')).toBe(true)
+    fireEvent.click(screen.getByText('Request AI draft'))
+    await screen.findByText('AI-assisted selection · Review before expiry')
+    await waitFor(() => expect((screen.getByText('I reviewed this version · Approve') as HTMLButtonElement).disabled).toBe(false))
+    fireEvent.click(screen.getByText('I reviewed this version · Approve'))
+    await screen.findByText('Approved for this snapshot')
+    expect(s.call).toHaveBeenCalledWith('approve', 'increase', expect.anything(), 'b'.repeat(64), undefined, 'editor-1')
+    fireEvent.click(screen.getByText('Open clean preview'))
+    expired = true
+    await waitFor(() => expect((screen.getByText('Download approved snapshot') as HTMLButtonElement).disabled).toBe(true))
+    expect(screen.queryByLabelText('Approved clean preview')).toBeNull()
+    expect(s.call.mock.calls.filter(c => c[0] === 'draft')).toHaveLength(1)
+    fireEvent.click(screen.getByText('Use factual wording'))
+    await waitFor(() => expect(s.call).toHaveBeenLastCalledWith('review', 'increase', expect.anything(), undefined, expect.any(AbortSignal), null))
   })
 })

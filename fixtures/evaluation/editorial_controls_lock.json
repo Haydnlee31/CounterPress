@@ -1,5 +1,5 @@
 {
-  "version": "studio-regression-v1",
+  "version": "studio-editorial-regression-v3",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -8,7 +8,7 @@
     "backend/counterpress/adaptation/contracts.py": "9f023a23292524f4bead40259988842f4d78abc2ca429842bd9b70f746616aa3",
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
-    "backend/counterpress/api/main.py": "22c52791cdd05e1d6ca24425bdaccd9b61d7dd71c31f465ec7d7503af6b426f0",
+    "backend/counterpress/api/main.py": "68b77767ba68e1cb05adafaa4b3e89abb792970fec52398c2e1fd521294a9b5e",
     "backend/counterpress/api/snapshots.py": "dddc9572cee2098d52c271fb26d1b6a88df53dd9dae436e0c4fe593bfe0cf04d",
     "backend/counterpress/audience.py": "08e8d5d0977040fc47e0b701cbb0d5b0014565ae19c601ab5d7600f9bb387d79",
     "backend/counterpress/clock.py": "dc56c2b6f04ef1ec2eeb8998b96150f7dbb938b95a7b59c5e54869c9620ba8b1",
@@ -57,9 +57,9 @@
     "backend/counterpress/streaming/send.py": "2462bb23e1a0fba7d42330bff0b8406b7668f3058d335814e03404e973fc802d",
     "backend/counterpress/streaming/telemetry.py": "e978859df1fbdcca4d614737579d050f5a52397fab4b4c2dcda07cc651ec0904",
     "backend/counterpress/studio/__init__.py": "dd4c2f22b2c1354cdfd4fe0beb46e94baa623134a2bf3b7f68c6dc990201ed46",
-    "backend/counterpress/studio/api.py": "f054b67269e4b31b65c22906d058f63543dfd739c5e4c390b11132593fa26f0c",
+    "backend/counterpress/studio/api.py": "a001ce1a00e5f7e2d9bb20714349307bc0fa3522b73c1b93dbe08406d3fa6631",
     "backend/counterpress/studio/contracts.py": "a1812504c119311a21e5d4bd2589a9dd3dcd0bc3c78c73320bfca3d4e60ef9fa",
-    "backend/counterpress/studio/service.py": "565a84092b00114a02d2d2f2d63d56ee69eb3593c3b79d0ab610e9da72ddea8c",
+    "backend/counterpress/studio/service.py": "3c5485c4e55cf3b8891e8d5b6bed8394bfe6f404508627522727d85d5f57ac26",
     "backend/counterpress/workflow/__init__.py": "2873a69ef3020882011db849b0e522bf8cea370aed0bcf01ce094c40f3b13a51",
     "backend/counterpress/workflow/__main__.py": "3dc41e16e0d8728c8a1afcc24069dac8bc4ac57f84647693deaf6734e03d6c72",
     "backend/counterpress/workflow/budget.py": "ffc19929283a886ac1a4ca84d48330b31e2fb1a0ea310e1ac59e8b912fa78c5b",
