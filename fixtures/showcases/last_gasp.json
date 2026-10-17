@@ -1,0 +1,416 @@
+{
+  "schema_version": "1.0",
+  "synthetic": true,
+  "match_id": "showcase-last-gasp-v1",
+  "pitch": {
+    "length_m": 105,
+    "width_m": 68,
+    "coordinates": "actor_team_attacks_positive_x"
+  },
+  "teams": [
+    {
+      "team_id": "eastbridge",
+      "name": "Eastbridge",
+      "player_ids": [
+        "eb01",
+        "eb02",
+        "eb03",
+        "eb04",
+        "eb05",
+        "eb06",
+        "eb07",
+        "eb08",
+        "eb09",
+        "eb10",
+        "eb11"
+      ]
+    },
+    {
+      "team_id": "northport",
+      "name": "Northport",
+      "player_ids": [
+        "np01",
+        "np02",
+        "np03",
+        "np04",
+        "np05",
+        "np06",
+        "np07",
+        "np08",
+        "np09",
+        "np10",
+        "np11"
+      ]
+    }
+  ],
+  "initial_state": {
+    "at": {
+      "period": 2,
+      "elapsed_ms": 180000
+    },
+    "score": {
+      "eastbridge": 2,
+      "northport": 1
+    },
+    "controlled_possession_team_id": "northport"
+  },
+  "events": [
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-penalty",
+      "revision": 1,
+      "source_delivery_sequence": 1,
+      "occurrence_order": 1,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 760000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 760000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np08"
+      },
+      "position": {
+        "x": 94.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "shot",
+        "outcome": "saved",
+        "end_position": {
+          "x": 103.0,
+          "y": 32.0
+        },
+        "goalkeeper": {
+          "team_id": "eastbridge",
+          "player_id": "eb01"
+        },
+        "situation": "penalty",
+        "rebound_position": {
+          "x": 99.0,
+          "y": 33.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-rebound",
+      "revision": 1,
+      "source_delivery_sequence": 2,
+      "occurrence_order": 2,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 762000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 762000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np08"
+      },
+      "position": {
+        "x": 99.0,
+        "y": 33.0
+      },
+      "action": {
+        "kind": "shot",
+        "outcome": "saved",
+        "end_position": {
+          "x": 103.0,
+          "y": 35.0
+        },
+        "goalkeeper": {
+          "team_id": "eastbridge",
+          "player_id": "eb01"
+        },
+        "situation": "open_play",
+        "rebound_position": {
+          "x": 93.0,
+          "y": 42.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-recovery",
+      "revision": 1,
+      "source_delivery_sequence": 3,
+      "occurrence_order": 3,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 764000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 764000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 12.0,
+        "y": 26.0
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-outlet",
+      "revision": 1,
+      "source_delivery_sequence": 4,
+      "occurrence_order": 4,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 765000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 765000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb04"
+      },
+      "position": {
+        "x": 12.0,
+        "y": 26.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 39.0,
+          "y": 10.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-break",
+      "revision": 1,
+      "source_delivery_sequence": 5,
+      "occurrence_order": 5,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 768000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 768000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 39.0,
+        "y": 10.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 58.0,
+          "y": 10.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-wide-pass",
+      "revision": 1,
+      "source_delivery_sequence": 6,
+      "occurrence_order": 6,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 771000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 771000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 58.0,
+        "y": 10.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 69.0,
+          "y": 11.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb07"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-wing-run",
+      "revision": 1,
+      "source_delivery_sequence": 7,
+      "occurrence_order": 7,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 773000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 773000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb07"
+      },
+      "position": {
+        "x": 69.0,
+        "y": 11.0
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 85.0,
+          "y": 10.0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-cross",
+      "revision": 1,
+      "source_delivery_sequence": 8,
+      "occurrence_order": 8,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 776000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 776000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb07"
+      },
+      "position": {
+        "x": 85.0,
+        "y": 10.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 96.0,
+          "y": 43.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb06"
+        },
+        "technique": "cross"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-knockdown",
+      "revision": 1,
+      "source_delivery_sequence": 9,
+      "occurrence_order": 9,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 778000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 778000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb06"
+      },
+      "position": {
+        "x": 96.0,
+        "y": 43.0
+      },
+      "action": {
+        "kind": "pass",
+        "outcome": "completed",
+        "end_position": {
+          "x": 92.0,
+          "y": 34.0
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        },
+        "technique": "header"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-last-gasp-v1",
+      "event_id": "lg-winner",
+      "revision": 1,
+      "source_delivery_sequence": 10,
+      "occurrence_order": 10,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb09"
+      },
+      "position": {
+        "x": 92.0,
+        "y": 34.0
+      },
+      "action": {
+        "kind": "shot",
+        "outcome": "goal",
+        "end_position": {
+          "x": 105.0,
+          "y": 33.0
+        },
+        "goalkeeper": {
+          "team_id": "northport",
+          "player_id": "np01"
+        },
+        "situation": "open_play"
+      }
+    }
+  ]
+}

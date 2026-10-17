@@ -105,3 +105,38 @@ test('playback restarts from the first play and stops at the end instead of sile
   expect(screen.queryByRole('button',{name:/Pause play/})).toBeNull()
   expect(screen.getByRole('button',{name:/Play sequence/})).toBeTruthy()
 })
+
+test('saved shots reach the keeper then rebound continuously across the possession change',()=>{
+  const shot:Event={...pass,actor:{team_id:'northport',player_id:'np08'},position:{x:94,y:34},action:{kind:'shot',situation:'penalty',outcome:'saved',end_position:{x:103,y:32},rebound_position:{x:99,y:33},goalkeeper:{team_id:'eastbridge',player_id:'eb01'}}}
+  const contact=pitchScene(shot,.6),rebound=pitchScene(shot,1)
+  expect(contact.ball).toEqual({x:2,y:36})
+  expect(contact.players.find(p=>p.player_id==='eb01')).toMatchObject({...contact.ball,involved:true})
+  expect(rebound.ball).toEqual({x:6,y:35})
+  expect(actionText(shot)).toContain('penalty — saved by Theo Ashford')
+  expect(contact.players.every(p=>p.x>=0&&p.x<=105&&p.y>=0&&p.y<=68)).toBe(true)
+})
+
+test('goal reveal and playhead score wait for the ball, undo on rewind and respect correction',async()=>{
+  const {scoreAtPlayhead}=await import('./pitchScene')
+  const goal:Event={...pass,event_id:'goal-1',actor:{team_id:'eastbridge',player_id:'eb09'},action:{kind:'shot',outcome:'goal',end_position:{x:105,y:33},goalkeeper:{team_id:'northport',player_id:'np01'}}}
+  vi.stubGlobal('matchMedia',vi.fn((q:string)=>({matches:q.includes('reduced-motion'),addEventListener:vi.fn(),removeEventListener:vi.fn()})))
+  const head=vi.fn(), events=[pass,goal], score={eastbridge:3,northport:1}
+  const ui=render(<MatchPitch events={events} fromStart onPlayhead={head}/>)
+  expect(screen.getByText('1 / 2')).toBeTruthy()
+  expect(scoreAtPlayhead(score,events,0,true)).toEqual({eastbridge:2,northport:1})
+  fireEvent.click(screen.getByRole('button',{name:'Next play'}))
+  expect(ui.container.querySelector('.fan-goal-banner')).toBeNull()
+  expect(scoreAtPlayhead(score,events,1,false)).toEqual({eastbridge:2,northport:1})
+  fireEvent.click(screen.getByRole('button',{name:'Show ball movement'}))
+  expect(ui.container.querySelector('.fan-goal-banner')?.textContent).toContain('GOAL!')
+  expect(head).toHaveBeenLastCalledWith({index:1,resolved:true})
+  expect(scoreAtPlayhead(score,events,1,true)).toEqual(score)
+  fireEvent.click(screen.getByRole('button',{name:'Previous play'}))
+  expect(ui.container.querySelector('.fan-goal-banner')).toBeNull()
+  const corrected={...goal,revision:2,action:{...goal.action,outcome:'saved',end_position:{x:103,y:33}}}
+  ui.rerender(<MatchPitch events={[corrected]} fromStart onPlayhead={head}/>)
+  fireEvent.click(screen.getByRole('button',{name:'Show ball movement'}))
+  expect(ui.container.querySelector('.fan-goal-banner')).toBeNull()
+  expect(scoreAtPlayhead({eastbridge:2,northport:1},[corrected],0,true)).toEqual({eastbridge:2,northport:1})
+  expect(pitchScene(goal,1).ball).toEqual({x:105,y:33})
+})

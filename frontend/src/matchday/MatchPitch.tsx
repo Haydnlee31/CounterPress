@@ -5,9 +5,9 @@ import { clubName, initials, playerName } from './identity'
 import { actionLabel, actionText, BALL_FOCUS_RADIUS, pitchScene, pitchZone, recipient } from './pitchScene'
 import { ClubCrest } from './ClubCrest'
 
-export function MatchPitch({events,language='en',compact=false}:{events:Event[];language?:string;compact?:boolean}) {
+export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void}) {
   const zh=language==='zh-Hans', t=(en:string,cn:string)=>zh?cn:en
-  const [index,setIndex]=useState(Math.max(0,events.length-1)), [progress,setProgress]=useState(0), [playing,setPlaying]=useState(false)
+  const [index,setIndex]=useState(fromStart?0:Math.max(0,events.length-1)), [progress,setProgress]=useState(0), [playing,setPlaying]=useState(false)
   const [selected,setSelected]=useState<string|null>(null), [reduced,setReduced]=useState(false)
   const id=useId().replaceAll(':','')
   const [portrait,setPortrait]=useState(false)
@@ -18,8 +18,8 @@ export function MatchPitch({events,language='en',compact=false}:{events:Event[];
     const update=()=>setPortrait(query.matches); update();query.addEventListener('change',update)
     return()=>query.removeEventListener('change',update)
   },[])
-  const signature=events.map(e=>`${e.event_id}:${e.revision}`).join('|')
-  useEffect(()=>{setIndex(Math.max(0,events.length-1));setProgress(0);setPlaying(false);setSelected(null)},[signature])
+  const signature=events.map(e=>`${e.match_id}:${e.event_id}:${e.revision}`).join('|')
+  useEffect(()=>{setIndex(fromStart?0:Math.max(0,events.length-1));setProgress(0);setPlaying(false);setSelected(null)},[signature,fromStart])
   useEffect(()=>{
     const query=window.matchMedia?.('(prefers-reduced-motion: reduce)')
     if (!query) return
@@ -30,7 +30,8 @@ export function MatchPitch({events,language='en',compact=false}:{events:Event[];
     if(!playing || reduced || !events.length) return
     let frame:number,previous=performance.now(),value=progress,current=index
     const step=(now:number)=>{
-      value+=Math.min(now-previous,100)/3200;previous=now
+      const duration=fromStart ? Math.max(1000,Math.min(3200,(events[current+1]?.occurred_at.elapsed_ms ?? events[current].occurred_at.elapsed_ms+2500)-events[current].occurred_at.elapsed_ms)) : 3200
+      value+=Math.min(now-previous,100)/duration;previous=now
       if(value>=1){
         if(current>=events.length-1){setProgress(1);setPlaying(false);return}
         value=0;current++;setIndex(current);setSelected(null)
@@ -40,7 +41,10 @@ export function MatchPitch({events,language='en',compact=false}:{events:Event[];
     frame=requestAnimationFrame(step);return()=>cancelAnimationFrame(frame)
   },[playing,reduced,signature]) // Progress is owned by the animation until paused.
   const event=events[Math.min(index,Math.max(0,events.length-1))]
+  const resolved=progress >= (event?.action.kind === 'shot' ? .6 : .8)
+  useEffect(()=>{onPlayhead?.({index,resolved})},[index,resolved,onPlayhead,signature])
   const scene=pitchScene(event,progress)
+  const goal=event?.action.kind==='shot'&&event.action.outcome==='goal'&&resolved
   const history=events.slice(Math.max(0,index-4),index+1).map((record,i)=>({record,index:Math.max(0,index-4)+i})).reverse()
   const target=recipient(event)
   const startPlayback=()=>{
@@ -70,7 +74,8 @@ export function MatchPitch({events,language='en',compact=false}:{events:Event[];
           <div className="fan-board-key"><span className="fan-team-dot eastbridge"/> Eastbridge<br/><span className="fan-team-dot northport"/> Northport</div>
         </>}
       </aside>}
-      <div className="fan-pitch-canvas">
+      <div className={`fan-pitch-canvas ${goal?'has-goal':''}`}>
+      {goal && <div className="fan-goal-banner" role="status">{t('GOAL!','进球！')} <span>{playerName(event.actor.player_id)}</span></div>}
       <svg viewBox={portrait?"-7 -5 82 115":"-5 -7 115 82"} aria-label={t('Interactive football pitch','互动足球场')} role="group">
         <defs><pattern id={`${id}-grass`} width="21" height="68" patternUnits="userSpaceOnUse"><rect width="21" height="68" fill="#285e4a"/><rect width="10.5" height="68" fill="#2d6851"/></pattern></defs>
         <g transform={portrait?"translate(68 0) rotate(90)":undefined}>
@@ -103,7 +108,7 @@ export function MatchPitch({events,language='en',compact=false}:{events:Event[];
           <g className="player-tooltip" pointerEvents="none"><rect x="-11" y="-8" width="22" height="3.8" rx="1" fill="#0c251f"/><text y="-5.4" textAnchor="middle" fontSize="1.8" fill="white">{playerName(p.player_id)}</text></g>
           </g>
         </g>})}
-        <g className="fan-ball" transform={`translate(${scene.ball.x+1.2} ${scene.ball.y+1.2})`} pointerEvents="none">
+        <g className="fan-ball" transform={`translate(${scene.ball.x} ${scene.ball.y})`} pointerEvents="none">
           <circle cy=".7" r="1.15" fill="#051d16" opacity=".45"/><circle r="1.05" fill="#fffdf0" stroke="#172d25" strokeWidth=".25"/><path d="m0-.5.5.4-.2.6h-.6l-.2-.6Z" fill="#21362d"/>
         </g>
         </g>
@@ -121,7 +126,7 @@ export function MatchPitch({events,language='en',compact=false}:{events:Event[];
       </aside>}
     </div>
     <div className="fan-pitch-caption" aria-live={playing?'off':'polite'}><span className="fan-play-dot"/>
-      <p>{selected ? `${playerName(selected)} · ${clubName(selected.startsWith('eb')?'eastbridge':'northport')}` : event ? actionText(event,zh) : t('Waiting for the next play','等待下一次进攻')}</p>
+      <p>{selected ? `${playerName(selected)} · ${clubName(selected.startsWith('eb')?'eastbridge':'northport')}` : event ? (event.action.kind==='shot'&&!resolved ? t(`${playerName(event.actor.player_id)} lines up the shot…`,`${playerName(event.actor.player_id)}准备射门…`) : actionText(event,zh)) : t('Waiting for the next play','等待下一次进攻')}</p>
       {selected && <button onClick={()=>setSelected(null)}>{t('Back to play','返回回放')}</button>}</div>
     <div className="fan-pitch-controls">
       <button className="fan-primary" disabled={!events.length} onClick={startPlayback}>{reduced?t('Show ball movement','查看传球落点'):playing?t('Pause play','暂停'):t('Play sequence','播放片段')} <span aria-hidden="true">{playing?'Ⅱ':'▶'}</span></button>

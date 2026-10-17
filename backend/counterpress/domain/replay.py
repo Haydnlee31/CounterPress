@@ -4,7 +4,7 @@ from collections.abc import Iterable
 
 from counterpress.domain.models import (
     DuelDetails, Event, EventReference, InitialState, MatchState, MatchTime,
-    RecoveryDetails,
+    RecoveryDetails, ShotDetails,
 )
 
 
@@ -64,9 +64,10 @@ def reduce_state(
     initial: InitialState, match_id: str, events: tuple[Event, ...],
     cutoff: MatchTime, source_delivery_cursor: int,
 ) -> MatchState:
-    """Rebuild observed team possession from canonical records; preserve declared score."""
+    """Rebuild possession and score from the initial state and canonical goal records."""
     if cutoff.key() < initial.at.key():
         raise ValueError("cutoff cannot precede initial state")
+    score = dict(initial.score)
     control = initial.controlled_possession_team_id
     if control not in initial.score:
         raise ValueError("initial controlling team must have a declared score")
@@ -87,9 +88,11 @@ def reduce_state(
                 raise ValueError(f"{event.event_id}: duel does not involve controlling team")
         elif event.actor.team_id != control:
             raise ValueError(f"{event.event_id}: action contradicts controlled possession")
+        if isinstance(action, ShotDetails) and action.outcome == "goal":
+            score[event.actor.team_id] += 1
         previous_key = key
     return MatchState(
-        match_id=match_id, at=cutoff, score=dict(initial.score),
+        match_id=match_id, at=cutoff, score=score,
         controlled_possession_team_id=control, source_delivery_cursor=source_delivery_cursor,
         applied_events=tuple(EventReference(event_id=event.event_id, revision=event.revision) for event in events),
     )

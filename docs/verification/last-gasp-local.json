@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-18",
+  "scope": "Clip-inspired last-second turnaround; no AI calls or new Azure resources",
+  "source": "https://www.youtube.com/watch?v=ETXv-SvOk9g&t=560s",
+  "source_note": "Official Watford FC highlights; timestamp opens penalty build-up. Authored event positions/pacing are approximate, not tracking measurements.",
+  "checks": [
+    {
+      "command": ".venv/bin/python -m pytest -q",
+      "output": "588 passed, 1 warning in 25.72s"
+    },
+    {
+      "command": "npm --prefix frontend test -- --reporter=dot",
+      "output": "Test Files 11 passed (11); Tests 70 passed (70)"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "output": "TypeScript and production build passed"
+    },
+    {
+      "command": "node scripts/test_last_gasp.cjs http://127.0.0.1:8010",
+      "output": "PASS: last-gasp deep link, 22 players, full animated sequence, 2:1 \u2192 3:1, rewind, reduced motion, mobile, bilingual, story switching; no browser errors."
+    },
+    {
+      "command": "node scripts/test_matchday.cjs http://127.0.0.1:8010",
+      "output": "PASS: existing Matchday browser regression suite"
+    }
+  ],
+  "browser_environment": "Isolated Playwright browser with installed Google Chrome; NODE_PATH points to local runtime dependencies. No personal browser profile used.",
+  "limitations": [
+    "Fictional names and approximate authored coordinates; illustrative off-ball shape.",
+    "Clock rebased to 57:40\u201358:00; not frame-synchronised with the video.",
+    "Human judge/fan comprehension has not been measured.",
+    "Original paid evaluation is unchanged; offline regression lock separately versioned."
+  ]
+}

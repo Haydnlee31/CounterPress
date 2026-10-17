@@ -58,10 +58,15 @@ assert len(pressure["recap"]["statements"]) == 2
 assert pressure["adapted_recap"] is None
 chinese = data("/api/scenarios/pressure-increase/snapshot?at_ms=780000&language=zh-Hans")
 assert chinese["recap"]["preferences"]["language"] == "zh-Hans"
+showcase = data("/api/scenarios/last-gasp/snapshot?at_ms=780000")
+assert showcase["state"]["score"] == {"eastbridge": 3, "northport": 1}
+assert [e["action"]["outcome"] for e in showcase["pitch_events"] if e["action"]["kind"] == "shot"] == ["saved", "saved", "goal"]
+assert not showcase["recap"]["statements"]
+assert data("/api/scenarios/last-gasp/snapshot?at_ms=779999")["state"]["score"] == {"eastbridge": 2, "northport": 1}
 for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/missing", "/assets/missing.js"):
     try:
         get(path)
         raise AssertionError(f"Unexpected public file: {path}")
     except HTTPError as error:
         assert error.code == 404
-print("PASS: health, readiness, frontend/assets, Studio callback/access boundary, 1-to-4 evidence, control, bilingual recap, private-path 404s")
+print("PASS: health, readiness, frontend/assets, Studio callback/access boundary, 1-to-4 evidence, control, bilingual recap, last-gasp shots/goal/rewind, private-path 404s")
