@@ -11,6 +11,7 @@ def test_same_origin_frontend_preserves_api_and_file_boundaries(tmp_path):
     static = tmp_path / "dist"
     (static / "assets").mkdir(parents=True)
     (static / "index.html").write_text('<html><script src="/assets/app.js"></script></html>')
+    (static / "auth.html").write_text("<html>Sign-in callback</html>")
     (static / "assets/app.js").write_text('console.log("synthetic")')
     (static / ".env").write_text("PRIVATE_CANARY=not-for-http")
     (tmp_path / "outside.txt").write_text("outside-canary")
@@ -18,6 +19,8 @@ def test_same_origin_frontend_preserves_api_and_file_boundaries(tmp_path):
     app = create_app(static_dir=static)
     assert request(app, "/").headers["cache-control"] == "no-store"
     assert request(app, "/assets/app.js").text == 'console.log("synthetic")'
+    assert request(app, "/auth.html").headers["referrer-policy"] == "no-referrer"
+    assert request(app, "/api/studio/config").json() == {"enabled": False}
     snapshot = request(app, "/api/scenarios/increase/snapshot?at_ms=780000")
     assert snapshot.json()["insight"]["facts"]["current_count"] == 4
     assert snapshot.headers["cache-control"] == "no-store"

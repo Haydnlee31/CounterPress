@@ -635,6 +635,7 @@ export function Matchday() {
           />
         )}
         <footer className="fan-footer">
+          <a href="#studio">{t("Producer Studio", "制作人工作室")} ↗</a>
           <p>
             {t(
               'One match. Different perspectives. The same facts.',

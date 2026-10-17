@@ -28,7 +28,7 @@ class HealthResponse(Contract):
 
 def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:",
                static_dir: Path | None = None, store: HistoryStore | None = None,
-               revision_publisher=None, editorial=None) -> FastAPI:
+               revision_publisher=None, editorial=None, studio=None) -> FastAPI:
     root = fixture_dir or Path(os.environ.get("COUNTERPRESS_FIXTURE_DIR", Path(__file__).resolve().parents[3] / "fixtures"))
     service = SnapshotService(root, store if store is not None else configured_store(db_path))
     @asynccontextmanager
@@ -50,6 +50,8 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
     application.state.revision_publisher = revision_publisher
     from counterpress.editorial.api import configure_editorial, install_editorial
     install_editorial(application, editorial if editorial is not None else configure_editorial(service))
+    from counterpress.studio.api import configure_studio, install_studio
+    install_studio(application, service, studio if studio is not None else configure_studio(service))
     negotiations: list[float] = []
 
     @application.get('/api/revisions/negotiate')
@@ -174,6 +176,12 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
         @application.get("/", include_in_schema=False)
         def frontend() -> FileResponse:
             return FileResponse(static_dir / "index.html", headers={"Cache-Control": "no-store"})
+
+        @application.get("/auth.html", include_in_schema=False)
+        def studio_callback() -> FileResponse:
+            if not (static_dir / "auth.html").is_file():
+                raise HTTPException(404, 'Sign-in callback unavailable.')
+            return FileResponse(static_dir / "auth.html", headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
 
         # Only expose compiled assets. No catch-all, source files or repository root.
         application.mount("/assets", StaticFiles(directory=static_dir / "assets"), name="assets")

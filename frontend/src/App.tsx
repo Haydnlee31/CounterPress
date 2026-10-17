@@ -1,22 +1,25 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import AnalysisApp from './AnalysisApp'
 import { Matchday } from './matchday/Matchday'
 
+const Studio = lazy(() => import('./studio/Studio'))
+
 /** Explicit deep link keeps the existing analysis workspace available. */
 export default function App() {
-  const [analysis, setAnalysis] = useState(
-    () => window.location.hash === '#analysis',
+  const [route, setRoute] = useState(
+    () => window.location.hash,
   )
   useEffect(() => {
-    const update = () => setAnalysis(window.location.hash === '#analysis')
+    const update = () => setRoute(window.location.hash)
     window.addEventListener('hashchange', update)
     return () => window.removeEventListener('hashchange', update)
   }, [])
-  return analysis ? (
+  if (route === '#studio') return <Suspense fallback={<p>Opening Studio…</p>}><Studio /></Suspense>
+  return route === '#analysis' ? (
     <>
       <nav className="workspace-return" aria-label="Workspace">
         <a href="#matchday">← Matchday / 比赛故事</a>
-        <span>Analysis & presenter tools · 分析与演示工具</span>
+        <a href="#studio">Producer Studio ↗</a>
       </nav>
       <AnalysisApp />
     </>

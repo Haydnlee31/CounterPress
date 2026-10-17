@@ -8,6 +8,7 @@ from typing import Literal, Protocol, Self
 
 from pydantic import model_validator
 
+from counterpress.studio.contracts import ReviewDecision
 from counterpress.adaptation.contracts import AdaptationAttempt
 from counterpress.workflow.contracts import WorkflowAttempt
 from counterpress.workflow.recap_contracts import RecapWorkflowAttempt
@@ -70,6 +71,7 @@ class History(Contract):
     contribution_changes: tuple[ContributionChange, ...] = ()
     contribution_version: int = 0
     recap_workflows: tuple[RecapWorkflowAttempt, ...] = ()
+    studio_decisions: tuple[ReviewDecision, ...] = ()
 
 
 class HistoryStore(Protocol):
@@ -87,7 +89,7 @@ class HistoryStorageError(RuntimeError):
 def validate_history_update(previous: History | None, result: History) -> None:
     """Shared append-only and uniqueness rules for local and cloud stores."""
     collections = ("records", "changes", "adaptations", "workflows", "recap_workflows",
-                   "pressure_changes", "contribution_changes")
+                   "pressure_changes", "contribution_changes", "studio_decisions")
     if previous and (result.fixture != previous.fixture
                      or any(getattr(result, field)[:len(getattr(previous, field))] != getattr(previous, field)
                             for field in collections)
@@ -95,6 +97,7 @@ def validate_history_update(previous: History | None, result: History) -> None:
                             for field in ("contribution_version", "pressure_version", "episode_rules_version"))):
         raise ValueError("persisted history cannot be rewritten")
     keys = [
+        [d.decision_id for d in result.studio_decisions],
         [(e.event_id, e.revision) for e in result.records],
         [e.source_delivery_sequence for e in result.records],
         [c.revision for c in result.changes],
@@ -129,6 +132,11 @@ class SQLiteHistoryStore:
             self._memory = connection
         connection.execute("PRAGMA foreign_keys = ON")
         connection.executescript("""
+            CREATE TABLE IF NOT EXISTS studio_decisions (
+                scenario_id TEXT NOT NULL REFERENCES scenarios(scenario_id),
+                ordinal INTEGER NOT NULL, decision_id TEXT NOT NULL, payload TEXT NOT NULL,
+                PRIMARY KEY (scenario_id, decision_id), UNIQUE (scenario_id, ordinal)
+            );
             CREATE TABLE IF NOT EXISTS scenarios (
                 scenario_id TEXT PRIMARY KEY, fixture TEXT NOT NULL
             );
@@ -199,6 +207,8 @@ class SQLiteHistoryStore:
         row = connection.execute("SELECT fixture FROM scenarios WHERE scenario_id = ?", (scenario_id,)).fetchone()
         if row is None:
             return None
+        decisions = tuple(ReviewDecision.model_validate_json(item[0]) for item in connection.execute(
+            "SELECT payload FROM studio_decisions WHERE scenario_id = ? ORDER BY ordinal", (scenario_id,)))
         records = tuple(Event.model_validate_json(item[0]) for item in connection.execute(
             "SELECT payload FROM events WHERE scenario_id = ? ORDER BY ordinal", (scenario_id,)))
         changes = tuple(InsightChange.model_validate_json(item[0]) for item in connection.execute(
@@ -215,7 +225,7 @@ class SQLiteHistoryStore:
             "SELECT payload FROM contribution_changes WHERE scenario_id = ? ORDER BY ordinal", (scenario_id,)))
         contribution_checkpoint = connection.execute("SELECT source_version FROM contribution_checkpoints WHERE scenario_id = ?", (scenario_id,)).fetchone()
         checkpoint = connection.execute("SELECT source_version, rules_version FROM pressure_checkpoints WHERE scenario_id = ?", (scenario_id,)).fetchone()
-        return History(fixture=PossessionFixture.model_validate_json(row[0]), records=records, changes=changes,
+        return History(fixture=PossessionFixture.model_validate_json(row[0]), records=records, changes=changes, studio_decisions=decisions,
             adaptations=adaptations, workflows=workflows, recap_workflows=recap_workflows, pressure_changes=pressure_changes,
             contribution_changes=contribution_changes, contribution_version=contribution_checkpoint[0] if contribution_checkpoint else 0,
             pressure_version=checkpoint[0] if checkpoint else 0, episode_rules_version=checkpoint[1] if checkpoint else 0)
@@ -252,6 +262,10 @@ class SQLiteHistoryStore:
                 validate_history_update(previous, result)
                 if previous is None:
                     connection.execute("INSERT INTO scenarios VALUES (?, ?)", (scenario_id, result.fixture.model_dump_json()))
+                old_decisions = previous.studio_decisions if previous else ()
+                for index, decision in enumerate(result.studio_decisions[len(old_decisions):], len(old_decisions) + 1):
+                    connection.execute("INSERT INTO studio_decisions VALUES (?, ?, ?, ?)",
+                        (scenario_id, index, decision.decision_id, decision.model_dump_json()))
                 for index, event in enumerate(result.records[len(old_records):], len(old_records) + 1):
                     connection.execute("INSERT INTO events VALUES (?, ?, ?, ?, ?, ?)", (
                         scenario_id, index, event.event_id, event.revision,

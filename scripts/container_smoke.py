@@ -28,6 +28,11 @@ assets = re.findall(rb'(?:src|href)="(/assets/[^\"]+)"', html)
 assert len(assets) >= 2
 for asset in assets:
     assert len(get(asset.decode())[0]) > 100
+callback, callback_headers = get("/auth.html")
+assert callback_headers.get("Cache-Control") == "no-store"
+assert callback_headers.get("Referrer-Policy") == "no-referrer"
+assert b"/assets/" in callback
+assert data("/api/studio/config") == {"enabled": False}
 positive = data("/api/scenarios/increase/snapshot?at_ms=780000")
 assert positive["insight"]["facts"]["baseline_count"] == 1
 assert positive["insight"]["facts"]["current_count"] == 4
@@ -45,4 +50,4 @@ for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/
         raise AssertionError(f"Unexpected public file: {path}")
     except HTTPError as error:
         assert error.code == 404
-print("PASS: health, readiness, frontend/assets, 1-to-4 evidence, control, bilingual recap, private-path 404s")
+print("PASS: health, readiness, frontend/assets, Studio callback/disabled config, 1-to-4 evidence, control, bilingual recap, private-path 404s")
