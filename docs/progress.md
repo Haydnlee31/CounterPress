@@ -6,7 +6,7 @@ turnaround plus a 10-second Brazil-inspired combination and a 12-second
 Argentina-inspired counterattack. Playback controls above the pitch include
 scrubbing, restart and speed; shot commentary and score follow the finish.
 Source links and estimation limits remain in the footer. Local validation covers
-592 backend and 77 frontend tests, production build and three browser suites.
+592 backend and 78 frontend tests, production build and three browser suites.
 See [source coverage](replay.md#clip-reconstruction-source-coverage) and
 [the design critique](redesign-implementation.md#replay-gallery-designer-and-football-fan-review).
 No new Azure resources or AI calls. Human comprehension testing remains pending.

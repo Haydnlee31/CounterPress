@@ -7,7 +7,7 @@
     },
     {
       "command": "npm --prefix frontend test -- --reporter=dot",
-      "output": "Test Files 12 passed (12); Tests 77 passed (77)"
+      "output": "Test Files 12 passed (12); Tests 78 passed (78)"
     },
     {
       "command": "npm --prefix frontend run build",

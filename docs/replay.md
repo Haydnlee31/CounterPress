@@ -136,7 +136,7 @@ Short showcase IDs are explicitly excluded from five-minute insight publications
 | Brazil–Korea Republic, 5 December 2022: [FIFA highlights, about 0:48–0:55](https://www.youtube.com/watch?v=c0-ZhEkEFtA&t=48s) | Initial control under pressure; wide view around 0:51 shows Marquinhos on the right edge of the area, defensive line and support; around 0:52 shows Thiago Silva near the arc and Richarlison running through. Finish follows, with alternate-angle replays later. The opening juggling touches are abstracted as one control/carry event. | Richarlison → Ellis (`eb09`); Marquinhos → Rowan (`eb04`); Thiago Silva → Vale (`eb06`); Kim Seung-gyu → Wells (`np01`). |
 | Argentina–France, 18 December 2022: [FIFA extended highlights, about 2:54–3:05](https://www.youtube.com/watch?v=agrGb25mJzs&t=174s) | Wide build-up at 2:54; through-ball and central runner near halfway around 2:59; square ball and far-side finish around 3:02–3:04. Visible recovering defenders and keeper constrain the illustrative shape. The reconstruction starts at Messi's release, after the earlier build-up. | Messi → West (`eb10`); Álvarez → Ellis (`eb09`); Mac Allister → Mercer (`eb08`); Di María → Hart (`eb07`); Lloris → Wells (`np01`). |
 
-Each new replay has eleven authored starting and finishing slots per side in
+Each of the three replays has eleven authored starting and finishing slots per side in
 `frontend/src/matchday/replayGallery.ts`. Touch anchors from the canonical events
 control participants; other players interpolate between their illustrative slots.
 All positions share a 105 × 68 m stadium view. The source event model still uses
