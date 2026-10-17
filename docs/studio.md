@@ -24,7 +24,10 @@ records real sign-in, one successful AI request, approval, preview, download and
 5. Open the clean preview or download the approved, script-free HTML snapshot.
    Neither operation publishes to a broadcaster. The downloaded file includes
    synthetic-data disclosure, citations, cutoff, comparison windows and approval ID.
-6. **Revoke this approval** disables preview/export. **End Studio session** clears
+6. In **One story. Two ways to tell it.**, choose a **Broadcast story** and either
+   **Presenter cue** or **Lower-third preview**. Preview it, then select
+   **Download broadcast format** for a self-contained HTML file.
+7. **Revoke this approval** disables preview/export. **End Studio session** clears
    the in-memory app token cache and hides the review; it does not sign out of the
    wider Microsoft account or cancel a request already accepted by the server.
 
@@ -34,6 +37,34 @@ five seconds, hides preview during rechecks, and locks actions on failed checks.
 Background browser throttling can delay polling. Approval and export always check
 current server state; an already downloaded snapshot cannot be recalled. Exports
 are valid at their canonical read, not a promise that facts never change afterwards.
+
+## Presenter cues and lower-thirds
+
+Both layouts reproduce one complete statement from the approved recap: subject,
+title, explanation and qualification. Choosing a story or layout does not rewrite
+the claim and therefore uses the existing exact-wording approval. There is no
+free-text editor, model request, timing guarantee or broadcast playout integration.
+Rehearse reading time with the full caveat; text is never trimmed to fit a duration.
+English and Simplified Chinese story wording are supported; desk labels remain English.
+
+The protected `POST /api/studio/{scenario}/broadcast` accepts only preferences,
+fingerprint, optional selected AI attempt, approved `insight_id`, and a format of
+`presenter-cue` or `lower-third`. It selects canonical server wording; client prose,
+unknown stories and arbitrary formats are rejected. The server checks current
+approval before rendering and again afterwards, including the approval ID, source
+fingerprint and AI expiry. Every response is `no-store`; downloaded HTML is escaped,
+script-free and carries a restrictive content security policy.
+
+Each file includes the evidence ID/revision, match and source version, comparison
+windows, approval ID/time, preparation time, fingerprint, and AI attempt/expiry when
+applicable. Synthetic/fictional-data labels and the full qualification stay visible.
+Downloads cannot be recalled after revocation or a correction: return to Studio
+before use. External edits are outside the approval. The preview adapts its height
+to preserve long qualifications; it is not a fixed broadcast graphics specification.
+
+This uses the existing React/FastAPI service, Entra editor authorization and Cosmos
+approval history. No database migration, new Azure resource, model call or additional
+agent is required. An editable rundown and broadcast-system integration remain future work.
 
 ## Architecture and authorization
 
@@ -167,10 +198,12 @@ node scripts/test_studio.cjs http://127.0.0.1:5173
 `CHROME_EXECUTABLE` optionally selects installed Chrome. This generates only ignored
 `frontend/var/` fixture files and `var/studio-*.png` screenshots. Authentication is
 mocked in this harness; it is never a production auth bypass or bundled build entry.
-It checks 360/390/760/1365px layouts, source evidence, approval, preview, revocation,
-session end and page errors. Stop the dev server after use.
+It checks 360/390/760/1365px layouts, source evidence, approval, clean/presenter/lower-third
+previews, story selection, revocation, Chinese text at 200% sizing, session end and
+page errors. Stop the dev server after use. The [broadcast verification record](verification/studio-broadcast-local.json)
+captures 576 backend and 60 frontend passing tests and the local browser checks.
 
-The editorial **regression** source lock is now `studio-editorial-regression-v3` because
+The editorial **regression** source lock is now `studio-broadcast-regression-v1` because
 history/API source changed. The original paid pilot lock and report are preserved;
 no new model benchmark or human usability score is claimed. Vitest was updated to
 the patched 5.x line after npm audit identified vulnerabilities in its older

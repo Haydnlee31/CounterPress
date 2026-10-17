@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { clock, defaultPreferences, windowLabel, type Preferences } from '../types'
-import { createSession, type Review, type Session } from './session'
+import { createSession, type BroadcastSelection, type Review, type Session } from './session'
+import Broadcast from './Broadcast'
 import { playerName } from '../matchday/identity'
 import './studio.css'
 
@@ -83,7 +84,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
     reset(); acting.current = false; setSignedIn(false); setBusy(false)
     await session?.signOut().catch(() => setError('Session ended. Reload before signing in again.'))
   }
-  const act = async (action: 'approve' | 'revoke' | 'export' | 'draft') => {
+  const act = async (action: 'approve' | 'revoke' | 'export' | 'draft', broadcast?: BroadcastSelection) => {
     if (!session || !review || busy || !checked) return
     // Stop the polling effect from accepting an older response over this action.
     const generation = ++epoch.current
@@ -91,10 +92,10 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
     setBusy(true); setChecked(false); setPreview(false); setError('')
     try {
       if (action === 'export') {
-        const blob = await session.download(scenario, preferences, review.fingerprint, attemptId)
+        const blob = await session.download(scenario, preferences, review.fingerprint, attemptId, broadcast)
         if (generation !== epoch.current) return
         const url = URL.createObjectURL(blob), link = document.createElement('a')
-        link.href = url; link.download = 'counterpress-producer-snapshot.html'; link.click()
+        link.href = url; link.download = `counterpress-${broadcast?.format ?? 'producer-snapshot'}.html`; link.click()
         window.setTimeout(() => URL.revokeObjectURL(url), 1000)
       } else {
         const next = await session.call(action, scenario, preferences, review.fingerprint, undefined, attemptId)
@@ -165,6 +166,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
           <button disabled={!approved} onClick={() => void act('export')}>Download approved snapshot</button>
           <p className="studio-muted">Downloads are static HTML. Recheck Studio before use; later changes cannot recall a downloaded file.</p>
         </aside></div>
+        {review && <Broadcast key={review.fingerprint} review={review} enabled={Boolean(approved)} download={selection => void act('export', selection)} />}
         {preview && approved && review && <section className="studio-preview" aria-label="Approved clean preview"><p className="studio-eyebrow">COUNTERPRESS / APPROVED SNAPSHOT</p><p>Synthetic football · Facts through {clock(review.recap.cutoff.elapsed_ms)}</p>
           {review.recap.statements.map(s => <article key={s.citation.insight_id} lang={s.narrative.language}><h2>{s.narrative.title}</h2><p>{s.narrative.explanation}</p><p>{s.narrative.qualification}</p><small>Evidence revision {s.citation.revision}</small></article>)}<p>Preview only · Revalidated every five seconds while this page is active.</p></section>}
       </>}

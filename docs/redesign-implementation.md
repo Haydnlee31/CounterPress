@@ -73,3 +73,10 @@ shared quotas and cache, and approval binds the chosen attempt, wording, evidenc
 and expiry. See [release verification](verification/studio-editorial-live.json).
 Local startup stays disabled by default.
 Human fan and producer usability research remains pending.
+
+The broadcaster slice adds a per-story presenter cue and lower-third preview/download
+to Studio. Both preserve the complete approved wording and qualification, with
+server-side approval/correction/expiry checks and provenance. No new service, agent
+or model call is involved. See [workflow](studio.md#presenter-cues-and-lower-thirds)
+and [local verification](verification/studio-broadcast-local.json). Editable rundowns,
+live broadcast playout, human studies and the final demo video remain subsequent work.

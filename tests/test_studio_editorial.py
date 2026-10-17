@@ -112,5 +112,8 @@ def test_authenticated_explicit_action_shared_cache_and_no_polling_calls(signing
             approved=choice|{'fingerprint':result['fingerprint']}
             assert (await client.post(url+'approve',json=approved,headers=headers)).json()['status']=='approved'
             assert (await client.post(url+'export',json=approved,headers=headers)).status_code==200
+            for format in ('presenter-cue', 'lower-third'):
+                choice = approved | {'format': format, 'insight_id': result['recap']['statements'][0]['citation']['insight_id']}
+                assert (await client.post(url+'broadcast',json=choice,headers=headers)).status_code==200
             assert len(calls)==1
     asyncio.run(check())

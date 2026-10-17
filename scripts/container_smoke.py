@@ -35,8 +35,9 @@ assert b"/assets/" in callback
 studio = data("/api/studio/config")
 if '--studio-enabled' in sys.argv:
     assert studio['enabled'] is True and set(studio) == {'enabled', 'client_id', 'authority', 'scope'}
-    for action in ('review', 'approve', 'revoke', 'export', 'draft'):
+    for action in ('review', 'approve', 'revoke', 'export', 'draft', 'broadcast'):
         payload = {} if action == 'review' else {'fingerprint': 'a'*64}
+        if action == 'broadcast': payload.update(insight_id='test-story', format='lower-third')
         request = Request(base+'/api/studio/increase/'+action, data=json.dumps(payload).encode(),
                           headers={'Content-Type': 'application/json'})
         try:

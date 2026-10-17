@@ -112,6 +112,9 @@ from actual AI success and human usefulness. The [fan usability kit](docs/evalua
 provides tasks and blank anonymous forms; no human study has been completed.
 The assigned-editor [Studio AI pilot](docs/studio.md) is enabled on the hosted app.
 Matchday remains factual and makes no model calls; human usefulness review remains pending.
+Studio also offers [presenter cues and lower-third previews](docs/studio.md#presenter-cues-and-lower-thirds)
+from one approved story, with checked HTML downloads and complete qualifications.
+These formats make no model calls and do not publish to a broadcast system.
 
 The [editorial access guide](docs/editorial-access.md) describes the opt-in Entra
 API, shared Cosmos/SQLite quotas, duplicate-request prevention and revision-bound
