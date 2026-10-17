@@ -33,7 +33,7 @@ are valid at their canonical read, not a promise that facts never change afterwa
 ## Architecture and authorization
 
 React loads Microsoft Authentication Library for JavaScript only when Studio opens.
-MSAL uses authorization-code/PKCE popup sign-in, a dedicated `/auth.html` redirect
+MSAL uses authorization-code/PKCE popup sign-in with a five-minute interaction timeout, a dedicated `/auth.html` redirect
 bridge and memory-only access-token caching. No token, account identity, model key
 or model endpoint is saved in app preferences or bundled into the frontend.
 The callback follows [Microsoft's redirect bridge guidance](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/login-user#redirecturi-considerations).
@@ -99,9 +99,10 @@ To activate real browser sign-in later:
 4. Verify an assigned account, a rejected unassigned account, approval/revocation,
    correction invalidation and restart using isolated history. Then release the
    reviewed image through the protected workflow and verify hosted behavior.
-   Existing Bicep/deployment workflows do not yet configure Studio activation;
-   add those runtime settings in that release, rather than enabling it manually
-   on an older incompatible image.
+   The protected deployment workflow now supports explicit `studio_mode`
+   enable/disable/preserve and a private identity-metadata secret; see the
+   [deployment runbook](deployment.md#studio-activation-through-the-protected-workflow).
+   Do not enable it on an older incompatible image.
 
 Browser SPA sign-in, the new Studio decisions against live Cosmos, hosted
 activation and human producer review remain pending. Earlier desktop Entra and

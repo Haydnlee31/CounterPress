@@ -2,6 +2,13 @@ name: Deploy Azure
 
 on:
   workflow_dispatch:
+    inputs:
+      studio_mode:
+        description: 'Studio factual review access (paid editorial API remains off)'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, enable, disable]
 
 permissions:
   contents: read
@@ -44,5 +51,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Push exact image, update existing app and verify
         env:
+          CP_STUDIO_MODE: ${{ inputs.studio_mode }}
+          CP_STUDIO_IDENTITY: ${{ secrets.CP_STUDIO_IDENTITY }}
           CP_AZURE_TARGET: ${{ secrets.CP_AZURE_TARGET }}
         run: python3 scripts/deploy_azure.py deploy

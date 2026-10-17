@@ -19,6 +19,13 @@ param useStreaming bool = false
 @description('Emit bounded numeric streaming telemetry; provision monitoring.bicep and telemetry-ingestion.bicep first.')
 param useTelemetry bool = false
 
+@description('Enable factual Studio only after browser/identity and Cosmos verification. Paid editorial remains off.')
+param useStudio bool = false
+
+@secure()
+@description('Private runtime metadata with tenant_id, api_client_id and client_id; no keys or model endpoints.')
+param studioIdentity object = {}
+
 resource registry 'Microsoft.ContainerRegistry/registries@2025-11-01' existing = {
   name: 'cp${uniqueString(resourceGroup().id)}'
 }
@@ -102,6 +109,12 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
           ] : [], useTelemetry ? [
             { name: 'COUNTERPRESS_MONITOR_ENDPOINT', value: monitorRule!.properties.endpoints.logsIngestion }
             { name: 'COUNTERPRESS_MONITOR_DCR_ID', value: monitorRule!.properties.immutableId }
+          ] : [], useStudio ? [
+            { name: 'COUNTERPRESS_STUDIO', value: 'entra' }
+            { name: 'COUNTERPRESS_STUDIO_CLIENT_ID', value: studioIdentity.client_id }
+            { name: 'COUNTERPRESS_ENTRA_TENANT_ID', value: studioIdentity.tenant_id }
+            { name: 'COUNTERPRESS_ENTRA_AUDIENCE', value: studioIdentity.api_client_id }
+            { name: 'COUNTERPRESS_EDITORIAL', value: 'off' }
           ] : [])
           probes: [
             {
