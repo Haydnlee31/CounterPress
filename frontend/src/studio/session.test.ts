@@ -37,3 +37,16 @@ it('does not open a new login popup automatically when silent renewal fails', as
   await expect(session.call('review', 'increase', defaultPreferences)).rejects.toThrow('new sign-in')
   expect(mocks.loginPopup).toHaveBeenCalledTimes(1)
 })
+it('sends broadcast selection and exact approval/attempt to the protected same-origin endpoint', async () => {
+  const fetch = vi.fn().mockResolvedValueOnce(new Response(JSON.stringify(config)))
+    .mockResolvedValueOnce(new Response('<html>approved</html>', { headers: { 'Content-Type': 'text/html' } }))
+  vi.stubGlobal('fetch', fetch)
+  const session = (await createSession())!
+  await session.signIn()
+  const blob = await session.download('increase', defaultPreferences, 'a'.repeat(64), 'editor-1',
+    { insight_id: 'story-2', format: 'lower-third' })
+  expect(blob.size).toBeGreaterThan(0)
+  expect(fetch.mock.calls[1][0]).toBe('/api/studio/increase/broadcast')
+  expect(JSON.parse(fetch.mock.calls[1][1].body)).toEqual({ preferences: defaultPreferences,
+    fingerprint: 'a'.repeat(64), attempt_id: 'editor-1', insight_id: 'story-2', format: 'lower-third' })
+})

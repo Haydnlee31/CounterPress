@@ -12,7 +12,7 @@ from counterpress.audience import PreferenceError
 from counterpress.editorial.auth import AccessDenied, EntraSettings, EntraVerifier
 from counterpress.editorial.service import EditorialRequest
 from counterpress.history import HistoryStorageError, SQLiteHistoryStore
-from counterpress.studio.service import DecisionRequest, ReviewConflict, ReviewRequest, ReviewView, StudioService
+from counterpress.studio.service import BroadcastRequest, DecisionRequest, ReviewConflict, ReviewRequest, ReviewView, StudioService
 
 
 @dataclass(frozen=True)
@@ -129,6 +129,13 @@ def install_studio(application, snapshots, configured, editorial=None):
         content = await invoke(service.export, scenario, request)
         return Response(content, media_type='text/html', headers={
             'Content-Disposition': 'attachment; filename="counterpress-producer-snapshot.html"',
+            'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'"})
+
+    @router.post('/{scenario}/broadcast')
+    async def broadcast(scenario: str, request: BroadcastRequest, actor=Depends(authorize)):
+        content = await invoke(service.broadcast, scenario, request)
+        return Response(content, media_type='text/html', headers={
+            'Content-Disposition': f'attachment; filename="counterpress-{request.format}.html"',
             'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'"})
 
     application.include_router(router)

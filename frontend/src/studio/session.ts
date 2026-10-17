@@ -12,8 +12,9 @@ export type Review = {
 export type Session = {
   signIn(): Promise<void>; signOut(): Promise<void>
   call(action: 'review' | 'approve' | 'revoke' | 'draft', scenario: string, preferences: Preferences, fingerprint?: string, signal?: AbortSignal, attemptId?: string | null): Promise<Review>
-  download(scenario: string, preferences: Preferences, fingerprint: string, attemptId?: string | null): Promise<Blob>
+  download(scenario: string, preferences: Preferences, fingerprint: string, attemptId?: string | null, broadcast?: BroadcastSelection): Promise<Blob>
 }
+export type BroadcastSelection = { insight_id: string; format: 'presenter-cue' | 'lower-third' }
 
 export async function createSession(): Promise<Session | null> {
   const response = await fetch('/api/studio/config', { cache: 'no-store', referrerPolicy: 'no-referrer' })
@@ -32,7 +33,7 @@ export async function createSession(): Promise<Session | null> {
   await app.initialize()
   let account: AccountInfo | null = null
   const scopes = [config.scope]
-  const request = async (action: string, scenario: string, preferences: Preferences, fingerprint?: string, signal?: AbortSignal, attemptId?: string | null) => {
+  const request = async (action: string, scenario: string, preferences: Preferences, fingerprint?: string, signal?: AbortSignal, attemptId?: string | null, broadcast?: BroadcastSelection) => {
     if (!account) throw new Error('Sign in to review this version.')
     let accessToken: string
     try { accessToken = (await app.acquireTokenSilent({ scopes, account })).accessToken }
@@ -42,7 +43,7 @@ export async function createSession(): Promise<Session | null> {
       method: 'POST', cache: 'no-store', referrerPolicy: 'no-referrer',
       signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(action === 'draft' ? 25000 : 15000)]) : AbortSignal.timeout(action === 'draft' ? 25000 : 15000),
       headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ preferences, ...(fingerprint ? { fingerprint } : {}), ...(attemptId ? { attempt_id: attemptId } : {}) }),
+      body: JSON.stringify({ preferences, ...(fingerprint ? { fingerprint } : {}), ...(attemptId ? { attempt_id: attemptId } : {}), ...broadcast }),
     })
     if (!result.ok) {
       const messages: Record<number, string> = {
@@ -65,8 +66,8 @@ export async function createSession(): Promise<Session | null> {
     async call(action, scenario, preferences, fingerprint, signal, attemptId) {
       return (await request(action, scenario, preferences, fingerprint, signal, attemptId)).json()
     },
-    async download(scenario, preferences, fingerprint, attemptId) {
-      return (await request('export', scenario, preferences, fingerprint, undefined, attemptId)).blob()
+    async download(scenario, preferences, fingerprint, attemptId, broadcast) {
+      return (await request(broadcast ? 'broadcast' : 'export', scenario, preferences, fingerprint, undefined, attemptId, broadcast)).blob()
     },
   }
 }

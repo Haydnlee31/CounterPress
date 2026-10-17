@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-17",
+  "scope": "Approved-story presenter cue and lower-third preview/download",
+  "checks": [
+    {"command": ".venv/bin/python -m pytest -q", "output": "576 passed, 1 warning in 23.24s", "warning": "Existing Microsoft Agent Framework evaluator ExperimentalWarning"},
+    {"command": "npm --prefix frontend test -- --reporter=dot", "output": "Test Files 10 passed (10); Tests 60 passed (60)"},
+    {"command": "npm --prefix frontend run build", "output": "tsc --noEmit passed; 210 modules transformed; built in 665ms"},
+    {"command": ".venv/bin/python scripts/prepare_studio_qa.py", "output": "PASS prepared local Studio fixture; authentication is mocked, no Azure configuration used."},
+    {"command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_studio.cjs http://127.0.0.1:5173", "output": "PASS Studio fixture browser QA: 360/390/760/1365px, evidence table, approve, clean/cue/lower-third previews, story selection, revoke, Chinese/200% text, session end; no overflow or page errors. Authentication is mocked."}
+  ],
+  "coverage": ["SQLite and Cosmos service-double approval persistence", "Complete canonical wording and qualification", "Unauthorized and wrong-client requests", "Unknown or cross-scenario story rejection", "Client prose and invalid-format rejection", "Correction and withdrawal rejection", "Revocation, correction and AI expiry during rendering", "HTML escaping and Chinese content", "Exact attempt carried in browser requests", "No additional model calls when exporting either format"],
+  "new_azure_resources": 0,
+  "live_model_calls": 0,
+  "regression_lock": "studio-broadcast-regression-v1",
+  "limits": ["Local browser authentication is mocked; hosted verification is separate", "Cosmos unit tests use a service double", "No human usefulness or accessibility-audit claim", "No fixed reading duration, editable rundown or broadcast playout", "Static files cannot be recalled", "Original paid pilot lock and report remain unchanged"]
+}

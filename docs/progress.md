@@ -1,5 +1,13 @@
 # Progress
 
+Latest broadcaster slice: Studio now supports selecting one approved story for a
+presenter cue or lower-third HTML preview/download. Full qualifications and provenance
+travel with both formats. Fresh checks reject correction, revocation and AI expiry,
+including changes during rendering. [Local verification](verification/studio-broadcast-local.json):
+576 backend tests, 60 frontend tests, production build and responsive bilingual browser
+QA passed. No new Azure resources or model calls were needed. Human producer/fan
+testing, editable rundowns and broadcast playout integration remain pending.
+
 Latest redesign verification: [Studio AI pilot](verification/studio-editorial-live.json),
 17 October 2026. Real hosted sign-in, explicit draft, approval, preview, download and
 expiry lock passed. The release reuses existing services and limits. CI: 562 backend

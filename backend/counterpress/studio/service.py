@@ -15,6 +15,7 @@ from counterpress.workflow.recap_contracts import RecapWorkflowView
 from counterpress.recaps import SegmentRecap, build_recap
 from counterpress.replay import display_time
 from counterpress.studio.contracts import ReviewDecision
+from counterpress.studio.broadcast import render_broadcast
 
 
 class ReviewRequest(Contract):
@@ -24,6 +25,11 @@ class ReviewRequest(Contract):
 
 class DecisionRequest(ReviewRequest):
     fingerprint: str = Field(pattern=r'^[a-f0-9]{64}$')
+
+
+class BroadcastRequest(DecisionRequest):
+    insight_id: Identifier
+    format: Literal['presenter-cue', 'lower-third']
 
 
 class SupportingEvidence(Contract):
@@ -128,6 +134,21 @@ class StudioService:
         body = render_export(view)
         if view.workflow and self.now() >= view.workflow.expires_at_unix_ms:
             raise ReviewConflict('AI wording expired. Review factual wording or request a new draft.')
+        return body
+
+    def broadcast(self, scenario, request):
+        view = self.review(scenario, request)
+        if view.fingerprint != request.fingerprint or view.status != 'approved':
+            raise ReviewConflict('Approval is no longer current. Review the latest version.')
+        statement = next((s for s in view.recap.statements if s.citation.insight_id == request.insight_id), None)
+        if statement is None:
+            raise ReviewConflict('This story is not part of the approved snapshot.')
+        body = render_broadcast(view, statement, request.format, self.now())
+        # Rendering must not carry a revoked, corrected or expired approval through.
+        latest = self.review(scenario, request)
+        if (latest.status != 'approved' or latest.fingerprint != view.fingerprint
+                or latest.approval_id != view.approval_id):
+            raise ReviewConflict('Approval changed while preparing the download. Review again.')
         return body
 
 

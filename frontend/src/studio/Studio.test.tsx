@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import Studio from './Studio'
 import type { Review, Session } from './session'
@@ -41,14 +41,23 @@ describe('Studio producer flow', () => {
     const s = session(); await start(s)
     expect(s.call.mock.calls.map(c => c[0])).toEqual(['review'])
     expect((screen.getByText('Download approved snapshot') as HTMLButtonElement).disabled).toBe(true)
+    expect((screen.getByText('Download broadcast format') as HTMLButtonElement).disabled).toBe(true)
     fireEvent.click(screen.getByText('I reviewed this version · Approve'))
     await screen.findByText('Approved for this snapshot')
     expect(s.call).toHaveBeenCalledWith('approve', 'increase', expect.anything(), 'a'.repeat(64), undefined, null)
     fireEvent.click(screen.getByText('Open clean preview'))
     expect(screen.getByLabelText('Approved clean preview')).toBeTruthy()
+    fireEvent.click(screen.getByText('Preview broadcast format'))
+    const broadcast = within(screen.getByLabelText('Approved broadcast preview'))
+    expect(broadcast.getByText('Four recoveries, up from one.')).toBeTruthy()
+    expect(broadcast.getByText('No claim about pressing effectiveness.')).toBeTruthy()
+    fireEvent.change(screen.getByLabelText('Output format'), { target: { value: 'lower-third' } })
+    expect(broadcast.getByRole('heading', { name: 'Lower-third preview' })).toBeTruthy()
     fireEvent.click(screen.getByText('Revoke this approval'))
     await screen.findByText('Approval revoked')
     expect(screen.queryByLabelText('Approved clean preview')).toBeNull()
+    expect(screen.queryByLabelText('Approved broadcast preview')).toBeNull()
+    expect((screen.getByText('Download broadcast format') as HTMLButtonElement).disabled).toBe(true)
   })
   it('clears approval immediately when language changes or the session ends', async () => {
     const s = session(); await start(s)
@@ -67,9 +76,11 @@ describe('Studio producer flow', () => {
     fireEvent.click(screen.getByText('I reviewed this version · Approve'))
     await screen.findByText('Approved for this snapshot')
     fireEvent.click(screen.getByText('Open clean preview'))
+    fireEvent.click(screen.getByText('Preview broadcast format'))
     s.change(view('changed', 'b'.repeat(64)))
     fireEvent.click(screen.getByText('Refresh evidence'))
     expect(screen.queryByLabelText('Approved clean preview')).toBeNull()
+    expect(screen.queryByLabelText('Approved broadcast preview')).toBeNull()
     await screen.findByText('New version · review again')
     expect((screen.getByText('Download approved snapshot') as HTMLButtonElement).disabled).toBe(true)
   })
@@ -111,13 +122,35 @@ describe('Studio producer flow', () => {
     await screen.findByText('Approved for this snapshot')
     expect(s.call).toHaveBeenCalledWith('approve', 'increase', expect.anything(), 'b'.repeat(64), undefined, 'editor-1')
     fireEvent.click(screen.getByText('Open clean preview'))
+    fireEvent.click(screen.getByText('Preview broadcast format'))
     expired = true
     await waitFor(() => expect((screen.getByText('Download approved snapshot') as HTMLButtonElement).disabled).toBe(true))
     await screen.findByText('AI approval expired or changed')
     expect(screen.queryByText('AI draft ready. Check every statement before approval.')).toBeNull()
     expect(screen.queryByLabelText('Approved clean preview')).toBeNull()
+    expect(screen.queryByLabelText('Approved broadcast preview')).toBeNull()
     expect(s.call.mock.calls.filter(c => c[0] === 'draft')).toHaveLength(1)
     fireEvent.click(screen.getByText('Use factual wording'))
     await waitFor(() => expect(s.call).toHaveBeenLastCalledWith('review', 'increase', expect.anything(), undefined, expect.any(AbortSignal), null))
+  })
+  it('downloads the selected approved story and format and fails closed on rejection', async () => {
+    const s = session()
+    await start(s)
+    const approved = view('approved')
+    const first = approved.recap.statements[0]
+    approved.recap.statements.push({ ...first, citation: { ...first.citation, insight_id: 'insight-2', evidence_id: 'evidence-2' },
+      narrative: { ...first.narrative, insight_id: 'insight-2', title: 'Another approved story' } })
+    s.change(approved)
+    fireEvent.click(screen.getByText('Refresh evidence'))
+    await screen.findByText('Approved for this snapshot')
+    fireEvent.change(screen.getByLabelText('Broadcast story'), { target: { value: 'insight-2' } })
+    fireEvent.change(screen.getByLabelText('Output format'), { target: { value: 'lower-third' } })
+    // Rejected server validation must discard the previously approved preview.
+    s.download.mockRejectedValueOnce(new Error('Approval changed.'))
+    fireEvent.click(screen.getByText('Download broadcast format'))
+    await screen.findByRole('alert')
+    expect(s.download).toHaveBeenCalledWith('increase', expect.anything(), 'a'.repeat(64), null,
+      { insight_id: 'insight-2', format: 'lower-third' })
+    expect(screen.queryByLabelText('Approved broadcast preview')).toBeNull()
   })
 })
