@@ -93,7 +93,7 @@ export function Matchday() {
         </a>
         <nav aria-label={t('Workspace', '工作区')}>
           <span aria-current="page">{t('Matchday', '比赛故事')}</span>
-          <a href="#analysis">{t('Explore data', '探索数据')}</a>
+          <a href={`?story=${isReplayStory ? m.request.scenario : 'last-gasp'}#explore`}>{t('Explore data', '探索数据')}</a>
         </nav>
         <label className="fan-language">
           <span className="sr-only">{t('Language', '语言')}</span>

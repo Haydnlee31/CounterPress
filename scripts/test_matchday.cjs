@@ -177,6 +177,8 @@ const assert = require('node:assert/strict')
       await page.getByLabel('1 to 4', { exact: true }).waitFor()
     }
     await page.getByRole('link', { name: 'Explore data', exact: true }).click()
+    await page.getByRole('link', { name: /Advanced analysis/ }).waitFor()
+    await page.getByRole('link', { name: /Advanced analysis/ }).click()
     await page.getByLabel('Local viewer', { exact: true }).waitFor()
     assert.deepEqual(errors, [])
     if (process.env.COUNTERPRESS_CHECK_CORRECTIONS === '1')

@@ -175,3 +175,28 @@ Technical checks cannot establish fan usability. The next validation is to ask
 participants to watch the featured play, discover another highlight and return
 without instructions. Existing source fixtures remain separately authored
 reconstructions; this UI change does not merge them into one measured match feed.
+
+## Explore Data — highlight journey
+
+Matchday’s Explore data link now preserves the selected highlight and opens a
+light, pitch-centred analysis workspace at `#explore`. A large interactive pitch
+and action timeline sit beside a question-led panel: Build-up, Players and Compare.
+All three authored highlights have three evidence-linked phases. The panel follows
+playback, while selecting an explanation or supporting action seeks the pitch.
+Player selection includes actor, recipient and goalkeeper roles, with no inferred
+off-ball ratings. Comparison tables count actions in discrete phase event sets;
+they do not reuse the backend’s five-minute rate comparisons for short clips.
+
+An optional phase/player passing-route overlay shares the stadium coordinate
+conversion used by the pitch. Phase text is authored editorial copy for the
+fixture’s revision-one records and is suppressed for changed or incomplete
+supporting records. Aggregate counts and player evidence always derive from the
+loaded snapshot. The older evidence workspace remains reachable through Advanced
+analysis & presenter tools. This is a client presentation change using the existing
+snapshot API, without a new service, model invocation or deployment configuration.
+
+Desktop places context beside the pitch. On mobile the sections stack, and action
+selection brings the pitch into view while player selection brings the insight
+panel into view. A return control and route-preserving skip link support keyboard
+and touch navigation. The next human test is whether a fan can explain the final
+passing sequence and identify the goalkeeper’s contribution without guidance.
