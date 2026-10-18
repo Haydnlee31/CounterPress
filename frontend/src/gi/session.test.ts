@@ -14,3 +14,10 @@ it('continues when browser storage is unavailable',()=>{
  vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{throw Error()})
  expect(()=>saveGIWorkspace(readGIWorkspace())).not.toThrow()
 })
+
+it('isolates the saved selection for each full match',()=>{
+ const saved=readGIWorkspace()
+ saveGIWorkspace({...saved,selected:'wyscout-123'},'wyscout-2058007')
+ expect(readGIWorkspace('wyscout-2058007').selected).toBe('wyscout-123')
+ expect(readGIWorkspace().selected).not.toBe('wyscout-123')
+})

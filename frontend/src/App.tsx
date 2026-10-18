@@ -17,7 +17,7 @@ export default function App() {
     window.addEventListener('hashchange', update)
     return () => window.removeEventListener('hashchange', update)
   }, [])
-  if (route === '#gi') return <Suspense fallback={<p>Opening GI…</p>}><GI /></Suspense>
+  if (route === '#gi') return <Suspense fallback={<p>Opening Match Centre…</p>}><GI /></Suspense>
   if (route === '#explore') return <Suspense fallback={<p>Opening match analysis…</p>}><ExploreData /></Suspense>
   if (route === '#studio') return <Suspense fallback={<p>Opening Studio…</p>}><Studio /></Suspense>
   return route === '#analysis' ? (

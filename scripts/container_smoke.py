@@ -73,6 +73,11 @@ assert len(gi['events']) == 1462 and len(gi['players']) == 27
 assert [team['score'] for team in gi['teams']] == [4, 2]
 assert gi['source']['license'] == 'CC BY 4.0'
 assert gi['video_alignment'] == 'unverified'
+comeback = json.loads(get('/api/gi/matches/wyscout-2058007')[0])
+assert len(comeback['events']) == 1682 and len(comeback['players']) == 26
+assert [team['score'] for team in comeback['teams']] == [3, 2]
+assert [e['goal_for'] for e in comeback['events'] if e['goal_for']] == [9598, 9598, 4418, 4418, 4418]
+assert comeback['source']['license'] == 'CC BY 4.0'
 for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/missing", "/assets/missing.js"):
     try:
         get(path)

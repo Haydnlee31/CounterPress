@@ -56,3 +56,28 @@ def test_corrupt_source_fails_closed(tmp_path):
         read_match(root)
     with TestClient(create_app(fixture_dir=tmp_path)) as client:
         assert client.get('/api/gi/matches/wyscout-2058017').status_code == 503
+
+
+def test_comeback_match_independent_counts_and_masking():
+    match = read_match(ROOT / 'gi', 'wyscout-2058007')
+    assert match.match_id == 'wyscout-2058007'
+    assert [t.name for t in match.teams] == ['Eastbridge', 'Northport']
+    assert [t.score for t in match.teams] == [3, 2]
+    assert len(match.events) == len({e.event_id for e in match.events}) == 1682
+    assert len(match.players) == len({p.alias_id for p in match.players}) == 26
+    assert [sum(e.period == p for e in match.events) for p in (1, 2)] == [890, 792]
+    assert [e.goal_for for e in match.events if e.goal_for] == [9598, 9598, 4418, 4418, 4418]
+    for tid, passes, complete, incomplete, shots in [(4418,572,501,71,24),(9598,432,377,55,9)]:
+        rows = [e for e in match.events if e.team_id == tid]
+        assert sum(e.kind == 'Pass' for e in rows) == passes
+        assert sum(e.kind == 'Pass' and e.outcome == 'complete' for e in rows) == complete
+        assert sum(e.kind == 'Pass' and e.outcome == 'incomplete' for e in rows) == incomplete
+        assert sum(e.kind == 'Shot' for e in rows) == shots
+    assert match.source.license == 'CC BY 4.0'
+    assert match.source_label == 'Belgium–Japan, 2018'
+    assert all(e.team_id in {4418,9598} for e in match.events)
+    assert {e.player_id for e in match.events} <= {p.player_id for p in match.players}
+    assert not ({e.event_id for e in match.events} & {e.event_id for e in read_match(ROOT / 'gi').events})
+    with TestClient(create_app()) as client:
+        assert client.get('/api/gi/matches/wyscout-2058007').json()['teams'][0]['score'] == 3
+        assert client.get('/api/gi/matches/wyscout-2058017').json()['teams'][0]['score'] == 4

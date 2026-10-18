@@ -6,7 +6,7 @@ it('keeps highlight identity in every workspace link and identifies the active r
  render(<AppHeader active="explore" story="breakaway"/>)
  expect(screen.getByRole('link',{name:'Matchday'}).getAttribute('href')).toBe('?story=breakaway#matchday')
  expect(screen.getByRole('link',{name:'Explore data'}).getAttribute('aria-current')).toBe('page')
- expect(screen.getByRole('link',{name:'GI'}).getAttribute('href')).toBe('?story=breakaway#gi')
+ expect(screen.getByRole('link',{name:'Match Centre'}).getAttribute('href')).toBe('?story=breakaway#gi')
  expect(document.querySelector('.cp-context-label')?.textContent).toContain('From halfway to goal')
 })
 it('offers separate highlight and full-match collections and closes with Escape',()=>{

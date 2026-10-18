@@ -5,7 +5,7 @@ export type GIEvent = {
   start:{x:number;y:number}|null; end:{x:number;y:number}|null; goal_for:number|null; review:boolean; tags:number[];
 }
 export type GIPlayer={player_id:string;provider_player_id:number;team_id:number;alias_id:string}
-export type GIMatch={match_id:string; title:string; competition:string;date:string;
+export type GIMatch={match_id:string; title:string; headline:string; summary:string; source_label:string; competition:string;date:string;
   teams:{team_id:number;name:string;score:number}[]; players:GIPlayer[]; events:GIEvent[];
   source:{provider:string;source:string;license:string;license_url:string;changes:string;fixture_sha256:string};
   video_url:string;video_alignment:'unverified';metric_policy:string;
