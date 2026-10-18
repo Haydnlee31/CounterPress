@@ -118,17 +118,17 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
   const approved = ready && review?.status === 'approved'
   return <div className="studio">
     <AppHeader active="studio"/>
-    <header className="studio-top"><strong>Producer Studio</strong>
+    <header className="studio-top"><a href={`${window.location.search}#tools`}>← All tools</a>
       {signedIn ? <button onClick={signOut}>End Studio session</button> : <span>Producer workspace</span>}</header>
     <main className="studio-main">
-      <div className="studio-intro"><p className="studio-eyebrow">THE PRODUCER’S DESK</p><h1>A story you can stand behind.</h1>
-        <p>Check the facts. Review the wording. Approve one exact version.</p></div>
-      <p className="studio-disclosure">Synthetic football · Fictional clubs and players · Verified facts · AI editing only when explicitly requested</p>
+      <div className="studio-intro"><p className="studio-eyebrow">COUNTERPRESS / PRODUCTION</p><h1>Producer Studio</h1>
+        <p>Review match stories and prepare presenter cues, graphics and approved snapshots.</p></div>
+      <ol className="studio-steps" aria-label="Production steps"><li aria-current={!checked?'step':undefined}><span>01</span> Review the story</li><li aria-current={checked&&!approved?'step':undefined}><span>02</span> Approve the wording</li><li aria-current={approved?'step':undefined}><span>03</span> Prepare coverage</li></ol>
       {error && <p className="studio-alert" role="alert">{error}</p>}
-      {!signedIn ? <section className="studio-welcome"><div><h2>From match story to producer snapshot</h2>
+      {!signedIn ? <section className="studio-welcome"><div><h2>Your production workflow</h2>
         <ol><li>Choose a story and audience.</li><li>Check the evidence and limits of the claim.</li><li>Approve, preview and download a snapshot.</li></ol>
         <p>Revised events invalidate the earlier approval. Studio always checks the latest available version.</p></div>
-        <div className="studio-signin"><h2>Your review starts here</h2><p>Use the Microsoft account assigned CounterPress editor access.</p>
+        <div className="studio-signin"><h2>Open your desk</h2><p>Use the Microsoft account assigned CounterPress editor access.</p>
           <button className="studio-primary" disabled={!configured || busy} onClick={signIn}>{busy ? 'Opening Microsoft sign-in…' : 'Sign in with Microsoft'}</button>
           <p>{configured === null ? 'Checking availability…' : configured === false ? 'Studio is not enabled on this deployment yet. Matchday remains available.' : 'Ending this Studio session clears its local token cache. Your Microsoft account stays signed in.'}</p></div>
       </section> : <>
@@ -172,7 +172,7 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
         {preview && approved && review && <section className="studio-preview" aria-label="Approved clean preview"><p className="studio-eyebrow">COUNTERPRESS / APPROVED SNAPSHOT</p><p>Synthetic football · Facts through {clock(review.recap.cutoff.elapsed_ms)}</p>
           {review.recap.statements.map(s => <article key={s.citation.insight_id} lang={s.narrative.language}><h2>{s.narrative.title}</h2><p>{s.narrative.explanation}</p><p>{s.narrative.qualification}</p><small>Evidence revision {s.citation.revision}</small></article>)}<p>Preview only · Revalidated every five seconds while this page is active.</p></section>}
       </>}
-      <footer className="studio-footer">One match. Different perspectives. The same facts. <a href="#analysis">Analysis workspace ↗</a></footer>
+      <footer className="studio-footer"><span>Synthetic football · Fictional clubs and players. AI editing runs only when requested.</span><a href={`${window.location.search}#analysis`}>Evidence desk ↗</a></footer>
     </main>
   </div>
 }
