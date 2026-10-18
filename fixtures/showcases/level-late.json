@@ -1,0 +1,279 @@
+{
+  "schema_version": "1.0",
+  "synthetic": true,
+  "match_id": "showcase-level-late-v1",
+  "pitch": {
+    "length_m": 105,
+    "width_m": 68,
+    "coordinates": "actor_team_attacks_positive_x"
+  },
+  "teams": [
+    {
+      "team_id": "eastbridge",
+      "name": "Eastbridge",
+      "player_ids": [
+        "eb01",
+        "eb02",
+        "eb03",
+        "eb04",
+        "eb05",
+        "eb06",
+        "eb07",
+        "eb08",
+        "eb09",
+        "eb10",
+        "eb11"
+      ]
+    },
+    {
+      "team_id": "northport",
+      "name": "Northport",
+      "player_ids": [
+        "np01",
+        "np02",
+        "np03",
+        "np04",
+        "np05",
+        "np06",
+        "np07",
+        "np08",
+        "np09",
+        "np10",
+        "np11"
+      ]
+    }
+  ],
+  "initial_state": {
+    "at": {
+      "period": 2,
+      "elapsed_ms": 180000
+    },
+    "score": {
+      "eastbridge": 2,
+      "northport": 1
+    },
+    "controlled_possession_team_id": "northport"
+  },
+  "events": [
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-late-v1",
+      "event_id": "a01042",
+      "revision": 1,
+      "source_delivery_sequence": 1,
+      "occurrence_order": 1,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 752505
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 752505
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np02"
+      },
+      "position": {
+        "x": 22.567,
+        "y": 50.381
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 41.495,
+          "y": 35.825
+        },
+        "recipient": {
+          "team_id": "northport",
+          "player_id": "np04"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-late-v1",
+      "event_id": "a01043",
+      "revision": 1,
+      "source_delivery_sequence": 2,
+      "occurrence_order": 2,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 756308
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 756308
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np04"
+      },
+      "position": {
+        "x": 41.495,
+        "y": 35.825
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 45.863,
+          "y": 54.509
+        },
+        "recipient": {
+          "team_id": "northport",
+          "player_id": "np08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-late-v1",
+      "event_id": "a01044",
+      "revision": 1,
+      "source_delivery_sequence": 3,
+      "occurrence_order": 3,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 760680
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 760680
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np08"
+      },
+      "position": {
+        "x": 45.863,
+        "y": 54.509
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 54.373,
+          "y": 47.502
+        },
+        "recipient": {
+          "team_id": "northport",
+          "player_id": "np03"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-late-v1",
+      "event_id": "a01045",
+      "revision": 1,
+      "source_delivery_sequence": 4,
+      "occurrence_order": 4,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 767054
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 767054
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np03"
+      },
+      "position": {
+        "x": 54.373,
+        "y": 47.502
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 66.113,
+          "y": 26.269
+        },
+        "recipient": {
+          "team_id": "northport",
+          "player_id": "np10"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-late-v1",
+      "event_id": "a01046",
+      "revision": 1,
+      "source_delivery_sequence": 5,
+      "occurrence_order": 5,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 769642
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 769642
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np10"
+      },
+      "position": {
+        "x": 66.113,
+        "y": 26.269
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 90.228,
+          "y": 38.048
+        },
+        "recipient": {
+          "team_id": "northport",
+          "player_id": "np02"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-late-v1",
+      "event_id": "a01047",
+      "revision": 1,
+      "source_delivery_sequence": 6,
+      "occurrence_order": 6,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np02"
+      },
+      "position": {
+        "x": 90.228,
+        "y": 38.048
+      },
+      "action": {
+        "kind": "shot",
+        "outcome": "goal",
+        "end_position": {
+          "x": 105.0,
+          "y": 32.891
+        },
+        "situation": "open_play",
+        "goalkeeper": null,
+        "rebound_position": null
+      }
+    }
+  ]
+}

@@ -9,7 +9,7 @@ import { Moments } from './Moments'
 import { ClubCrest } from './ClubCrest'
 import { MatchPitch } from './MatchPitch'
 import { scoreAtPlayhead } from './pitchScene'
-import { replayGallery } from './replayGallery'
+import { replayGallery, highlightTag, replayTime, replayClock } from './replayGallery'
 import './matchday.css'
 
 const showcases: Record<string, [string, string]> = {
@@ -38,6 +38,8 @@ export function Matchday() {
   const [pitchHead,setPitchHead]=useState({index:0,resolved:false})
   const pitchEvents=snapshot?.pitch_events ?? []
   const shownScore=isReplayStory&&snapshot?scoreAtPlayhead(snapshot.state.score,pitchEvents,pitchHead.index,pitchHead.resolved):snapshot?.state.score
+  const displayedEvent=isReplayStory?pitchEvents[pitchHead.index]:undefined
+  const displayedTime=displayedEvent?replayTime(displayedEvent):undefined
   const shownTime=isReplayStory?(pitchEvents[pitchHead.index]?.occurred_at.elapsed_ms ?? 760000):m.request.atMs
   const [preferencesOpen, setPreferencesOpen] = useState(false)
   const [recapOpen, setRecapOpen] = useState(false)
@@ -71,6 +73,8 @@ export function Matchday() {
     setPitchHead({index:0,resolved:false})
     const url = new URL(window.location.href)
     url.searchParams.set('story', value)
+    if(replayGallery[value]?.matchId)url.searchParams.set('match',replayGallery[value].matchId!)
+    else url.searchParams.delete('match')
     window.history.replaceState(null, '', url)
     focusHighlight.current = true
     m.scenario(value)
@@ -109,7 +113,7 @@ export function Matchday() {
         <div className="fan-intro">
           <div>
             <p className="fan-kicker">
-              {isReplayStory ? t('TODAY · EASTBRIDGE × NORTHPORT', '今日 · EASTBRIDGE × NORTHPORT') : 'EASTBRIDGE × NORTHPORT'}
+              {isReplayStory ? highlightTag(replayStory) : 'EASTBRIDGE × NORTHPORT'}
             </p>
             {isReplayStory && <p className="fan-featured-label">{m.request.scenario === 'last-gasp' ? t('Highlight of the day', '今日最佳集锦') : t('Match highlights', '比赛集锦')}</p>}
             <h1 ref={highlightTitle} tabIndex={-1}>{replayStory ? t(...replayStory.title) : t('Match centre', '比赛中心')}</h1>
@@ -252,7 +256,7 @@ export function Matchday() {
               {shownScore?.northport ?? '–'}
             </span>
             <time>
-              {clock(shownTime)} · {t('2nd half', '下半场')}
+              {displayedEvent?replayClock(displayedEvent):clock(shownTime)} · {displayedTime?.period===1?t('1st half','上半场'):t('2nd half', '下半场')}
             </time>
           </div>
           <div className="fan-team away">
@@ -649,7 +653,7 @@ export function Matchday() {
                   <span className="fan-highlight-duration">{story.duration}</span>
                 </span>
                 <span className="fan-highlight-copy">
-                  <span className="fan-highlight-category">{id === 'last-gasp' ? t('Highlight of the day', '今日最佳集锦') : t('Match highlight', '比赛集锦')}</span>
+                  <span className="fan-highlight-category">{highlightTag(story)}</span>
                   <strong>{t(...story.title)}</strong>
                   <span>{t(...story.hook)}</span>
                   <span className="fan-highlight-watch">{t('Watch highlight', '观看集锦')} <span aria-hidden="true">↗</span></span>
@@ -659,9 +663,9 @@ export function Matchday() {
           </div>
         </section>
         <footer className="fan-footer">
-          {replayStory && <a href={replayStory.source} target="_blank" rel="noreferrer">{t('Original clip', '原始片段')} · {replayStory.sourceLabel} ↗</a>}
+          {replayStory?.source && <a href={replayStory.source} target="_blank" rel="noreferrer">{t('Original clip', '原始片段')} · {replayStory.sourceLabel} ↗</a>}
           {isReplayStory && <a href="?story=increase#matchday">{t('Match analysis', '比赛分析')} ↗</a>}
-          {replayStory && <small className="fan-data-note">{t(...replayStory.note)} {t('Hand-authored reconstruction with fictional identities, approximate positions and a rebased clock. Visible actions and lanes are estimated from the linked footage; off-camera positions and motion are illustrative, not measured tracking. No footage or audio is reproduced. Short replays are excluded from five-minute comparisons.', '手工重建使用虚构身份、近似位置和重设时钟。可见动作和线路参考所链接影像；镜头外的位置和移动为示意，并非追踪测量。未复制影像或音频。短回放不计入五分钟比较。')}</small>}
+          {replayStory && <small className="fan-data-note">{t(...replayStory.note)} {!replayStory.matchId&&t('Hand-authored reconstruction with fictional identities, approximate positions and a rebased clock. Visible actions and lanes are estimated from the linked footage; off-camera positions and motion are illustrative, not measured tracking. No footage or audio is reproduced. Short replays are excluded from five-minute comparisons.', '手工重建使用虚构身份、近似位置和重设时钟。可见动作和线路参考所链接影像；镜头外的位置和移动为示意，并非追踪测量。未复制影像或音频。短回放不计入五分钟比较。')}</small>}
           <a href="#studio">{t("Producer Studio", "制作人工作室")} ↗</a>
           <p>
             {t(
@@ -674,7 +678,7 @@ export function Matchday() {
               ? t('Match updates connected', '比赛更新已连接')
               : t('Checking for match updates', '正在检查比赛更新')}{' '}
             · {t('Updated to', '更新至')}{' '}
-            {snapshot ? clock(snapshot.state.at.elapsed_ms) : '—'}
+            {isReplayStory&&pitchEvents.length ? replayClock(pitchEvents[pitchEvents.length-1]) : snapshot ? clock(snapshot.state.at.elapsed_ms) : '—'}
           </span>
           <a href="#analysis">
             {t('Analysis & presenter tools', '分析与演示工具')} ↗

@@ -16,7 +16,7 @@ export const SEGMENT_START = 180000,
 export function useMatchday() {
   const [request, setRequest] = useState(() => {
     const story = new URLSearchParams(window.location.search).get('story') ?? ''
-    const supported = ['last-gasp', 'one-touch', 'breakaway', 'increase',
+    const supported = ['last-gasp', 'one-touch', 'breakaway', 'level-first', 'take-lead', 'level-late', 'increase',
       'pressure-increase', 'progression-increase', 'contribution-increase', 'stream-recovery']
     return {
       scenario: supported.includes(story) ? story : 'last-gasp',

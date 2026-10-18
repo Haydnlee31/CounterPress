@@ -1,8 +1,8 @@
 import { useEffect, useId, useState } from 'react'
 import type { Event } from '../types'
-import { clock } from '../types'
+import { replayClock } from '../matchday/replayGallery'
 import { clubName, initials, playerName } from './identity'
-import { actionLabel, actionText, sequenceScene, pitchZone, recipient, fieldPoint } from './pitchScene'
+import { playDuration, actionLabel, actionText, sequenceScene, pitchZone, recipient, fieldPoint } from './pitchScene'
 import { ClubCrest } from './ClubCrest'
 
 export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[]}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[]}) {
@@ -37,7 +37,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
     if(!playing || reduced || !events.length) return
     let frame:number,previous=performance.now(),value=progress,current=index
     const step=(now:number)=>{
-      const duration=fromStart ? Math.max(1000,Math.min(10000,(events[current+1]?.occurred_at.elapsed_ms ?? events[current].occurred_at.elapsed_ms+2500)-events[current].occurred_at.elapsed_ms)) : 3200
+      const duration=fromStart ? playDuration(events[current],events[current+1]) : 3200
       value+=Math.min(now-previous,100)*speed/duration;previous=now
       if(value>=1){
         if(current>=events.length-1){setProgress(1);setPlaying(false);return}
@@ -63,7 +63,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   const select=(next:number)=>{setPlaying(false);setIndex(next);setProgress(0);setSelected(null)}
   return <section className={`fan-pitch ${compact?'is-compact':''}`} aria-label={t('Match pitch','比赛球场')}>
     <div className="fan-pitch-heading"><div><p className="fan-kicker">{t('ON THE PITCH','球场上')}</p><h2>{t('Watch the play','观看回放')}</h2></div>
-      <div className="fan-tracker-clock"><span>{t(playing?'Playing':'Replay',playing?'播放中':'回放')}</span><span className="fan-pitch-time">{event ? clock(event.occurred_at.elapsed_ms,event.occurred_at.period) : '—'}</span></div></div>
+      <div className="fan-tracker-clock"><span>{t(playing?'Playing':'Replay',playing?'播放中':'回放')}</span><span className="fan-pitch-time">{event ? replayClock(event) : '—'}</span></div></div>
     <div className="fan-pitch-controls">
       <button className="fan-primary" disabled={!events.length} onClick={startPlayback}>{reduced?t('Show ball movement','查看传球落点'):playing?t('Pause play','暂停'):fromStart?t('Play highlight','播放集锦'):t('Play sequence','播放片段')} <span aria-hidden="true">{playing?'Ⅱ':'▶'}</span></button>
       <button className="fan-secondary" disabled={!events.length || index===0} onClick={()=>select(index-1)} aria-label={t('Previous play','上一次进攻')}>←</button>
@@ -131,8 +131,8 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       {!compact && <aside className="fan-commentary" aria-label={t('Match commentary','比赛解说')}>
         <div className="fan-commentary-heading"><h3>{t('Match commentary','比赛解说')}</h3><span>{t('Play by play','逐次回放')}</span></div>
         <ol>{history.map(({record,index:at})=><li key={`${record.event_id}:${record.revision}`}>
-          <button aria-current={at===index?'step':undefined} onClick={()=>select(at)} aria-label={`${t('Replay','回放')} ${clock(record.occurred_at.elapsed_ms,record.occurred_at.period)}: ${narration(record,at)}`}>
-            <span className="fan-feed-meta"><time>{clock(record.occurred_at.elapsed_ms,record.occurred_at.period)}</time><span>{at===index?t('On the pitch','球场上'):clubName(record.actor.team_id)}</span></span>
+          <button aria-current={at===index?'step':undefined} onClick={()=>select(at)} aria-label={`${t('Replay','回放')} ${replayClock(record)}: ${narration(record,at)}`}>
+            <span className="fan-feed-meta"><time>{replayClock(record)}</time><span>{at===index?t('On the pitch','球场上'):clubName(record.actor.team_id)}</span></span>
             <strong>{narration(record,at)}</strong>
           </button>
         </li>)}</ol>

@@ -1,0 +1,257 @@
+{
+  "schema_version": "1.0",
+  "synthetic": true,
+  "match_id": "showcase-level-first-v1",
+  "pitch": {
+    "length_m": 105,
+    "width_m": 68,
+    "coordinates": "actor_team_attacks_positive_x"
+  },
+  "teams": [
+    {
+      "team_id": "eastbridge",
+      "name": "Eastbridge",
+      "player_ids": [
+        "eb01",
+        "eb02",
+        "eb03",
+        "eb04",
+        "eb05",
+        "eb06",
+        "eb07",
+        "eb08",
+        "eb09",
+        "eb10",
+        "eb11"
+      ]
+    },
+    {
+      "team_id": "northport",
+      "name": "Northport",
+      "player_ids": [
+        "np01",
+        "np02",
+        "np03",
+        "np04",
+        "np05",
+        "np06",
+        "np07",
+        "np08",
+        "np09",
+        "np10",
+        "np11"
+      ]
+    }
+  ],
+  "initial_state": {
+    "at": {
+      "period": 2,
+      "elapsed_ms": 180000
+    },
+    "score": {
+      "eastbridge": 0,
+      "northport": 1
+    },
+    "controlled_possession_team_id": "northport"
+  },
+  "events": [
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-first-v1",
+      "event_id": "a00495",
+      "revision": 1,
+      "source_delivery_sequence": 1,
+      "occurrence_order": 1,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 759616
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 759616
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np09"
+      },
+      "position": {
+        "x": 21.445,
+        "y": 56.654
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 27.643,
+          "y": 54.755
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-first-v1",
+      "event_id": "a00496",
+      "revision": 1,
+      "source_delivery_sequence": 2,
+      "occurrence_order": 2,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 764123
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 764123
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np09"
+      },
+      "position": {
+        "x": 27.643,
+        "y": 54.755
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 31.103,
+          "y": 51.23
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-first-v1",
+      "event_id": "a00497",
+      "revision": 1,
+      "source_delivery_sequence": 3,
+      "occurrence_order": 3,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 766361
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 766361
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np09"
+      },
+      "position": {
+        "x": 31.103,
+        "y": 51.23
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 31.661,
+          "y": 62.742
+        },
+        "recipient": {
+          "team_id": "northport",
+          "player_id": "np08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-first-v1",
+      "event_id": "a00498",
+      "revision": 1,
+      "source_delivery_sequence": 4,
+      "occurrence_order": 4,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 770814
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 770814
+      },
+      "actor": {
+        "team_id": "northport",
+        "player_id": "np08"
+      },
+      "position": {
+        "x": 31.661,
+        "y": 62.742
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "incomplete",
+        "end_position": {
+          "x": 19.82,
+          "y": 34.894
+        },
+        "recipient": null
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-first-v1",
+      "event_id": "a00499",
+      "revision": 1,
+      "source_delivery_sequence": 5,
+      "occurrence_order": 5,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 772025
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 772025
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb11"
+      },
+      "position": {
+        "x": 85.18,
+        "y": 33.106
+      },
+      "action": {
+        "kind": "recovery",
+        "from_team_id": "northport",
+        "control": "established",
+        "origin": "open_play"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-level-first-v1",
+      "event_id": "a00500",
+      "revision": 1,
+      "source_delivery_sequence": 6,
+      "occurrence_order": 6,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb11"
+      },
+      "position": {
+        "x": 85.18,
+        "y": 33.106
+      },
+      "action": {
+        "kind": "shot",
+        "outcome": "goal",
+        "end_position": {
+          "x": 105.0,
+          "y": 31.927
+        },
+        "situation": "open_play",
+        "goalkeeper": null,
+        "rebound_position": null
+      }
+    }
+  ]
+}

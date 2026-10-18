@@ -1,0 +1,11 @@
+{
+  "provider": "CounterPress calibrated generator",
+  "source": "https://doi.org/10.6084/m9.figshare.7770599",
+  "license": "CC BY 4.0 (calibration data)",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "match_source": "https://doi.org/10.6084/m9.figshare.7770422",
+  "source_archive_sha256": "7aeb46fd5faaaeed4edfd6944a7d0f1b6858b7500c88274d92cc08a63be17f6f",
+  "fixture_sha256": "44f6aa9e099db854b64465197db73cc5a37947cb98dea5c061029682b5ffc0aa",
+  "revision": 1,
+  "changes": "New synthetic Event feed from aggregate-possession-v1, seed 74. Calibration uses 15 licensed matches; no historical event sequence or provider identities are copied. Source archive hash here identifies the aggregate calibration model."
+}

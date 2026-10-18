@@ -372,3 +372,5 @@ it. See the [recap guide](docs/recaps.md) for scope, citations and correction ch
 To explicitly adapt a recap using the configured Azure deployment, see the
 [bounded recap workflow](docs/recap-workflow.md). Model choices retain validated
 facts/citations, expire automatically, and fall back to the complete factual recap.
+
+The [aggregate-calibrated full-match generator](docs/calibrated-generator.md) learns from 15 licensed matches, checks five held-out matches, and generates new native Event feeds. Its selected 2–2 match is also available in the Match Centre library.

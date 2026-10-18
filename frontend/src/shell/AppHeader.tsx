@@ -1,7 +1,7 @@
-import { currentMatchId, matchLibrary } from '../gi/catalog'
+import { currentMatchId, matchLibrary, matchDate } from '../gi/catalog'
 import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
-import { replayGallery } from '../matchday/replayGallery'
+import { replayGallery, highlightTag } from '../matchday/replayGallery'
 import './shell.css'
 
 export type Workspace='matchday'|'explore'|'gi'|'studio'|'analysis'
@@ -12,7 +12,7 @@ export function AppHeader({active,story,language='en',controls}:{active:Workspac
   const candidate=story??new URLSearchParams(window.location.search).get('story')??'last-gasp'
   const id=Object.hasOwn(replayGallery,candidate)?candidate:'last-gasp'
   const selected=replayGallery[id]
-  const matchId=currentMatchId()
+  const matchId=active==='matchday'||active==='explore'?selected.matchId??currentMatchId():currentMatchId()
   const href=(route:string)=>`?story=${encodeURIComponent(id)}${matchId!==matchLibrary[0].id?`&match=${matchId}`:''}#${route}`
   const close=()=>{if(library.current)library.current.open=false;if(tools.current)tools.current.open=false}
   return <div className="cp-shell" onKeyDown={e=>{if(e.key==='Escape'){const open=library.current?.open?library.current:tools.current?.open?tools.current:null;close();open?.querySelector('summary')?.focus()}}}>
@@ -23,8 +23,8 @@ export function AppHeader({active,story,language='en',controls}:{active:Workspac
       <div className="cp-tools"><details ref={tools}><summary aria-current={active==='studio'||active==='analysis'?'page':undefined}>{t('Tools','工具')}</summary><div className="cp-tools-menu"><a href={href('studio')} aria-current={active==='studio'?'page':undefined} onClick={close}>{t('Producer Studio','制作人工作室')} ↗</a><a href={href('analysis')} aria-current={active==='analysis'?'page':undefined} onClick={close}>{t('Advanced analysis','高级分析')} ↗</a></div></details>{controls}</div>
     </header>
     <div className="cp-context"><details className="cp-library" ref={library}><summary>{t('Match library','比赛库')} <span aria-hidden="true">⌄</span></summary><div className="cp-library-menu">
-        <p>{t('Highlights','精彩片段')}</p>{Object.entries(replayGallery).map(([key,item])=><a key={key} href={`?story=${key}#${active==='explore'?'explore':'matchday'}`} onClick={close}><span>{zh?item.title[1]:item.title[0]}</span><small>{item.duration} · Eastbridge × Northport</small></a>)}
-        <p>{t('Full-match archive','全场比赛档案')}</p>{matchLibrary.map(match=><a key={match.id} href={`?story=${id}&match=${match.id}#gi`} aria-current={active==='gi'&&matchId===match.id?'page':undefined} onClick={close}><span>Eastbridge {match.score} Northport</span><small>{match.title}</small></a>)}
+        <p>{t('Highlights','精彩片段')}</p>{Object.entries(replayGallery).map(([key,item])=><a key={key} href={`?story=${key}${item.matchId?`&match=${item.matchId}`:''}#${active==='explore'?'explore':'matchday'}`} onClick={close}><span>{zh?item.title[1]:item.title[0]}</span><small>{highlightTag(item)} · {item.duration}</small></a>)}
+        <p>{t('Full-match archive','全场比赛档案')}</p>{matchLibrary.map(match=><a key={match.id} href={`?story=${id}&match=${match.id}#gi`} aria-current={active==='gi'&&matchId===match.id?'page':undefined} onClick={close}><span>Eastbridge {match.score} Northport</span><small>{matchDate(match.date)} · {match.title}</small></a>)}
       </div></details><span className="cp-context-divider"/>
       <div className="cp-context-label"><span>{active==='gi'?t('Full match','全场比赛'):active==='studio'?t('Producer workspace','制作人工作区'):active==='analysis'?t('Advanced workspace','高级工作区'):t('Highlight','精彩片段')}</span><strong>{active==='gi'?'Eastbridge × Northport':active==='studio'?t('Review & publish','审核与发布'):active==='analysis'?t('Evidence & revisions','证据与修订'):zh?selected.title[1]:selected.title[0]}</strong></div>
       {active==='matchday'&&<a className="cp-context-action" href={href('explore')}>{t('Explore this highlight','分析这个片段')} ↗</a>}

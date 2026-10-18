@@ -1,5 +1,5 @@
 {
-  "version": "gi-match-library-regression-v2",
+  "version": "generated-highlights-pacing-v1",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -9,7 +9,7 @@
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
     "backend/counterpress/api/main.py": "ac5ef078e636cdc1eafd3807752d59acdd8f308dafe12c31249951b38c4694c8",
-    "backend/counterpress/api/snapshots.py": "723a5cca09a22629d8137a6265ace0510d6809bf9d0d8339570d765fcc50fbad",
+    "backend/counterpress/api/snapshots.py": "7660f6430475f783e9faeb37983f5ccde28368e30135a3952f94f2bfa40eed6e",
     "backend/counterpress/audience.py": "08e8d5d0977040fc47e0b701cbb0d5b0014565ae19c601ab5d7600f9bb387d79",
     "backend/counterpress/clock.py": "dc56c2b6f04ef1ec2eeb8998b96150f7dbb938b95a7b59c5e54869c9620ba8b1",
     "backend/counterpress/contribution_publications.py": "5c530f1d7625966ca62091f33f820a54925bf09ccc787f71733ea5ebf07341d9",
@@ -35,12 +35,14 @@
     "backend/counterpress/fixture.py": "8e751f3b268ccf435586196897ab24d544b34e1b36686d6e591162308f5ad0d6",
     "backend/counterpress/generator/__init__.py": "27c761068b15a2dc0d5c07834cdec34fe239f8761cb0c39a39c7cab55f82bdd7",
     "backend/counterpress/generator/__main__.py": "daad26eafc1d70796dcca3f439ddc5842da1550ddfba53f30911ebf264df31c7",
+    "backend/counterpress/generator/calibrated.py": "d6b7f2c7540b549ea7e1588bbf67b9c8c3d3ed49f1679bd9b32a2430686c1227",
     "backend/counterpress/generator/engine.py": "c441ba2d1bbd26773d68cbe684848ddedf0e9dff73c098f5e5d9d84b9dca803d",
     "backend/counterpress/generator/models.py": "eeabe601d165726e6ee9a91c0a7295a22f6a4c1935c6d279778ef53c091229c1",
     "backend/counterpress/generator/suite.py": "ae798f9d253f29e35112988b49303eb74854c59173f6549aa681e486a9560546",
     "backend/counterpress/gi/__init__.py": "2fb085b545a0bb17649902592a63e8afb6aa73b6d7fb87e09436b0783fa1fc7a",
-    "backend/counterpress/gi/api.py": "7bcf3ef1d3a845a6bf95027fe730c09939f59cb4006e86e3310f0cb061b9a8a1",
-    "backend/counterpress/gi/service.py": "d832342d6c8f6267cc1e65f0b2b1280bbc4742d4434cd804531c92fcf004cb2d",
+    "backend/counterpress/gi/api.py": "fb9831584c299b4ad502ed000be14297c6e9fe6ff3bdb14ce74e31a74d259c7f",
+    "backend/counterpress/gi/service.py": "4d1bf7af1bd691c62242eeedf18cd30627b6fe2851780843554ffb5391d06df1",
+    "backend/counterpress/gi/synthetic.py": "d3853c471f1956a5d0532c0b2f74849e967bb57a4d77e03a85965121ed5351c7",
     "backend/counterpress/history.py": "0afd8f2793bad51837e59745d9d936a2fe17be22b919b580384e6bfe0174c3a6",
     "backend/counterpress/ingest.py": "3f2ebd623f82456ecb41762cf4447dc30c2b0e94cf3a2bcc7d6237f74d482c0c",
     "backend/counterpress/pressure.py": "a4ea92179feded985965eec11a9f80d3e05d177cd69386a1a548ddaf5ea8759e",
@@ -85,7 +87,10 @@
     "fixtures/recovery_increase.json": "63f1878b818288ac8602e06d75c495c3bd869a31139479bbe50570bd991e803f",
     "fixtures/showcases/breakaway.json": "e31265c166a11f7911a5029840ab632a776a40b8a1686e484706d4e08433f445",
     "fixtures/showcases/last_gasp.json": "651a89f17d9ecf0e0b32567a3bf19a4f51c72501031cf544feb3ab729249c0f4",
+    "fixtures/showcases/level-first.json": "4bb2d5b17e9d1ac0170127bae0a42d9fcf61f05a2d58e3ad97b71a9d6be3eb22",
+    "fixtures/showcases/level-late.json": "cd5ffd86ce1b366f2b933d71ee685aa7d520efa4afd2d33f807d7a5a723aa84f",
     "fixtures/showcases/one_touch.json": "51ac8149002c424e2a48caffdc4def870e1f27696748de4bd7bd6150dd87a9be",
+    "fixtures/showcases/take-lead.json": "686b1b93e4d153d0b68ea343977996b6c892ed003fc692b7ea24157478cc6d69",
     "uv.lock": "fcd26ffd0a3b0918bac98771922ad55b48cbd305b056b04111965a436bc0e914"
   }
 }

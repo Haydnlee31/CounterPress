@@ -1,0 +1,273 @@
+{
+  "schema_version": "1.0",
+  "synthetic": true,
+  "match_id": "showcase-take-lead-v1",
+  "pitch": {
+    "length_m": 105,
+    "width_m": 68,
+    "coordinates": "actor_team_attacks_positive_x"
+  },
+  "teams": [
+    {
+      "team_id": "eastbridge",
+      "name": "Eastbridge",
+      "player_ids": [
+        "eb01",
+        "eb02",
+        "eb03",
+        "eb04",
+        "eb05",
+        "eb06",
+        "eb07",
+        "eb08",
+        "eb09",
+        "eb10",
+        "eb11"
+      ]
+    },
+    {
+      "team_id": "northport",
+      "name": "Northport",
+      "player_ids": [
+        "np01",
+        "np02",
+        "np03",
+        "np04",
+        "np05",
+        "np06",
+        "np07",
+        "np08",
+        "np09",
+        "np10",
+        "np11"
+      ]
+    }
+  ],
+  "initial_state": {
+    "at": {
+      "period": 2,
+      "elapsed_ms": 180000
+    },
+    "score": {
+      "eastbridge": 1,
+      "northport": 1
+    },
+    "controlled_possession_team_id": "eastbridge"
+  },
+  "events": [
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-take-lead-v1",
+      "event_id": "a00999",
+      "revision": 1,
+      "source_delivery_sequence": 1,
+      "occurrence_order": 1,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 753527
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 753527
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb11"
+      },
+      "position": {
+        "x": 35.368,
+        "y": 9.909
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 57.619,
+          "y": 22.037
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb07"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-take-lead-v1",
+      "event_id": "a01000",
+      "revision": 1,
+      "source_delivery_sequence": 2,
+      "occurrence_order": 2,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 755997
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 755997
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb07"
+      },
+      "position": {
+        "x": 57.619,
+        "y": 22.037
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 72.338,
+          "y": 19.933
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb03"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-take-lead-v1",
+      "event_id": "a01001",
+      "revision": 1,
+      "source_delivery_sequence": 3,
+      "occurrence_order": 3,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 759295
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 759295
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb03"
+      },
+      "position": {
+        "x": 72.338,
+        "y": 19.933
+      },
+      "action": {
+        "kind": "carry",
+        "end_position": {
+          "x": 71.921,
+          "y": 19.958
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-take-lead-v1",
+      "event_id": "a01002",
+      "revision": 1,
+      "source_delivery_sequence": 4,
+      "occurrence_order": 4,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 766820
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 766820
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb03"
+      },
+      "position": {
+        "x": 71.921,
+        "y": 19.958
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 76.941,
+          "y": 23.305
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-take-lead-v1",
+      "event_id": "a01003",
+      "revision": 1,
+      "source_delivery_sequence": 5,
+      "occurrence_order": 5,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 774451
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 774451
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb08"
+      },
+      "position": {
+        "x": 76.941,
+        "y": 23.305
+      },
+      "action": {
+        "kind": "pass",
+        "technique": "ground",
+        "outcome": "completed",
+        "end_position": {
+          "x": 90.988,
+          "y": 35.673
+        },
+        "recipient": {
+          "team_id": "eastbridge",
+          "player_id": "eb03"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "match_id": "showcase-take-lead-v1",
+      "event_id": "a01004",
+      "revision": 1,
+      "source_delivery_sequence": 6,
+      "occurrence_order": 6,
+      "occurred_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "available_at": {
+        "period": 2,
+        "elapsed_ms": 780000
+      },
+      "actor": {
+        "team_id": "eastbridge",
+        "player_id": "eb03"
+      },
+      "position": {
+        "x": 90.988,
+        "y": 35.673
+      },
+      "action": {
+        "kind": "shot",
+        "outcome": "goal",
+        "end_position": {
+          "x": 105.0,
+          "y": 31.205
+        },
+        "situation": "open_play",
+        "goalkeeper": null,
+        "rebound_position": null
+      }
+    }
+  ]
+}
