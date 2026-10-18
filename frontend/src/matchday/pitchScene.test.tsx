@@ -78,7 +78,7 @@ test('commentary follows the playhead, rewinds without future entries and resets
   const next: Event={...pass,event_id:'pass-2',occurrence_order:2,occurred_at:{period:2,elapsed_ms:185000},available_at:{period:2,elapsed_ms:185000},action:{kind:'carry',end_position:{x:32,y:34}}}
   const ui=render(<MatchPitch events={[pass,next]}/>)
   const feed=within(screen.getByRole('complementary',{name:'Match commentary'}))
-  expect(feed.getByRole('button',{name:/Replay 48:05: Sam Linden carries/}).getAttribute('aria-current')).toBe('step')
+  expect(feed.getByRole('button',{name:/Replay 48:05: Sam Linden moves with the ball/}).getAttribute('aria-current')).toBe('step')
   fireEvent.click(feed.getByRole('button',{name:/Replay 48:00:/}))
   expect(feed.queryByRole('button',{name:/Replay 48:05:/})).toBeNull()
   fireEvent.click(screen.getByRole('button',{name:/Latest play/}))

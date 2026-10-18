@@ -2,10 +2,12 @@ import { useEffect, useId, useState } from 'react'
 import type { Event } from '../types'
 import { replayClock } from '../matchday/replayGallery'
 import { clubName, initials, playerName } from './identity'
-import { playDuration, actionLabel, actionText, sequenceScene, pitchZone, recipient, fieldPoint } from './pitchScene'
+import { playDuration, actionLabel, sequenceScene, pitchZone, recipient, fieldPoint } from './pitchScene'
+import { LiveCompanion } from '../companion/LiveCompanion'
+import { cue } from '../companion/evidence'
 import { ClubCrest } from './ClubCrest'
 
-export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[]}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[]}) {
+export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[],companion=false}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[];companion?:boolean}) {
   const zh=language==='zh-Hans', t=(en:string,cn:string)=>zh?cn:en
   const [index,setIndex]=useState(fromStart?0:Math.max(0,events.length-1)), [progress,setProgress]=useState(0), [playing,setPlaying]=useState(false)
   const [localSelected,setSelected]=useState<string|null>(null), [reduced,setReduced]=useState(false)
@@ -54,7 +56,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   const goal=event?.action.kind==='shot'&&event.action.outcome==='goal'&&resolved
   const history=events.slice(Math.max(0,index-4),index+1).map((record,i)=>({record,index:Math.max(0,index-4)+i})).reverse()
   const target=recipient(event)
-  const narration=(record:Event,at:number)=>at===index && record.action.kind==='shot' && !resolved ? t(`${playerName(record.actor.player_id)} lines up the shot…`,`${playerName(record.actor.player_id)}准备射门…`) : actionText(record,zh)
+  const narration=(record:Event,at:number)=>cue(record,at!==index || resolved,zh)
   const startPlayback=()=>{
     if(reduced){setProgress(p=>p===0?1:0);return}
     if(!playing && (index===events.length-1 && (progress>=1 || (!fromStart && progress===0)))){setIndex(0);setProgress(0);setSelected(null)}
@@ -140,8 +142,9 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       </aside>}
     </div>
     <div className="fan-pitch-caption" aria-live={playing?'off':'polite'}><span className="fan-play-dot"/>
-      <p>{selected ? `${playerName(selected)} · ${clubName(selected.startsWith('eb')?'eastbridge':'northport')}` : event ? (event.action.kind==='shot'&&!resolved ? t(`${playerName(event.actor.player_id)} lines up the shot…`,`${playerName(event.actor.player_id)}准备射门…`) : actionText(event,zh)) : t('Waiting for the next play','等待下一次进攻')}</p>
+      <p>{selected ? `${playerName(selected)} · ${clubName(selected.startsWith('eb')?'eastbridge':'northport')}` : event ? cue(event,resolved,zh) : t('Waiting for the next play','等待下一次进攻')}</p>
       {selected && <button onClick={()=>{setSelected(null);onPlayerSelect?.(null)}}>{t('Back to play','返回回放')}</button>}</div>
 
+    {companion && <LiveCompanion events={events} index={index} resolved={resolved} playing={playing} finished={progress>=1 && index===events.length-1} language={language}/>}
   </section>
 }

@@ -283,7 +283,7 @@ export function Matchday() {
             </button>}
           </div>
         </section>
-        {snapshot && <MatchPitch key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} fromStart={isReplayStory} onPlayhead={isReplayStory?setPitchHead:undefined} />}
+        {snapshot && <MatchPitch companion key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} fromStart={isReplayStory} onPlayhead={isReplayStory?setPitchHead:undefined} />}
         {replayOpen && !isReplayStory && (
           <section
             id="fan-replay"
