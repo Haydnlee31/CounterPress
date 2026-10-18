@@ -134,8 +134,10 @@ def install_studio(application, snapshots, configured, editorial=None):
     @router.post('/{scenario}/broadcast')
     async def broadcast(scenario: str, request: BroadcastRequest, actor=Depends(authorize)):
         content = await invoke(service.broadcast, scenario, request)
-        return Response(content, media_type='text/html', headers={
-            'Content-Disposition': f'attachment; filename="counterpress-{request.format}.html"',
+        plain = request.format == 'presenter-text'
+        extension = 'txt' if plain else 'html'
+        return Response(content, media_type='text/plain' if plain else 'text/html', headers={
+            'Content-Disposition': f'attachment; filename="counterpress-{request.format}.{extension}"',
             'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'"})
 
     application.include_router(router)

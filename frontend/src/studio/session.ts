@@ -14,7 +14,7 @@ export type Session = {
   call(action: 'review' | 'approve' | 'revoke' | 'draft', scenario: string, preferences: Preferences, fingerprint?: string, signal?: AbortSignal, attemptId?: string | null): Promise<Review>
   download(scenario: string, preferences: Preferences, fingerprint: string, attemptId?: string | null, broadcast?: BroadcastSelection): Promise<Blob>
 }
-export type BroadcastSelection = { insight_id: string; format: 'presenter-cue' | 'lower-third' }
+export type BroadcastSelection = { insight_id: string; format: 'presenter-cue' | 'lower-third' | 'presenter-text' }
 
 export async function createSession(): Promise<Session | null> {
   const response = await fetch('/api/studio/config', { cache: 'no-store', referrerPolicy: 'no-referrer' })

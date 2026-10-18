@@ -1,5 +1,5 @@
 {
-  "version": "generated-highlights-pacing-v1",
+  "version": "studio-cue-workflow-v1",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -62,10 +62,10 @@
     "backend/counterpress/streaming/send.py": "2462bb23e1a0fba7d42330bff0b8406b7668f3058d335814e03404e973fc802d",
     "backend/counterpress/streaming/telemetry.py": "e978859df1fbdcca4d614737579d050f5a52397fab4b4c2dcda07cc651ec0904",
     "backend/counterpress/studio/__init__.py": "dd4c2f22b2c1354cdfd4fe0beb46e94baa623134a2bf3b7f68c6dc990201ed46",
-    "backend/counterpress/studio/api.py": "f9456363e81093c5f3a38bf7e44ba1b1a4cf235145114f3484e3ef706c19d12c",
-    "backend/counterpress/studio/broadcast.py": "07ea01713218924bb5e006094a82b76ae8c73b90e8a2295f66bbe204aa36580a",
+    "backend/counterpress/studio/api.py": "2c976b693cde22920b0fb6390a2f6c420970fae4ceeb454580bf37a102859adf",
+    "backend/counterpress/studio/broadcast.py": "ea485fcdb6e27fe9fe50a2c3257dc9f3ed7edf625e05d276870926bb1b822b52",
     "backend/counterpress/studio/contracts.py": "a1812504c119311a21e5d4bd2589a9dd3dcd0bc3c78c73320bfca3d4e60ef9fa",
-    "backend/counterpress/studio/service.py": "fbade1a1e6727150bcb97c1fcb285b369cf4bcf1333e0daa459a85f831610cf1",
+    "backend/counterpress/studio/service.py": "14219cc70875ef1c104b7f4e7fc997dd2031800de69161efbd4c9942b439ecb2",
     "backend/counterpress/workflow/__init__.py": "2873a69ef3020882011db849b0e522bf8cea370aed0bcf01ce094c40f3b13a51",
     "backend/counterpress/workflow/__main__.py": "3dc41e16e0d8728c8a1afcc24069dac8bc4ac57f84647693deaf6734e03d6c72",
     "backend/counterpress/workflow/budget.py": "ffc19929283a886ac1a4ca84d48330b31e2fb1a0ea310e1ac59e8b912fa78c5b",

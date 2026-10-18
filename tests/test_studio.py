@@ -154,11 +154,13 @@ def test_api_authentication_and_no_model_configuration(signing_key, tmp_path, mo
             body = {'fingerprint': data['fingerprint']}
             assert (await client.post('/api/studio/increase/approve', json=body, headers=headers)).json()['status'] == 'approved'
             assert (await client.post('/api/studio/increase/export', json=body, headers=headers)).status_code == 200
-            for format in ('presenter-cue', 'lower-third'):
+            for format in ('presenter-cue', 'lower-third', 'presenter-text'):
                 choice = body | {'insight_id': data['recap']['statements'][0]['citation']['insight_id'], 'format': format}
                 output = await client.post('/api/studio/increase/broadcast', json=choice, headers=headers)
                 assert output.status_code == 200 and output.headers['Cache-Control'] == 'no-store'
-                assert output.headers['Content-Disposition'] == f'attachment; filename="counterpress-{format}.html"'
+                extension = 'txt' if format == 'presenter-text' else 'html'
+                assert output.headers['Content-Disposition'] == f'attachment; filename="counterpress-{format}.{extension}"'
+                assert output.headers['Content-Type'].startswith('text/plain' if format == 'presenter-text' else 'text/html')
                 assert "default-src 'none'" in output.headers['Content-Security-Policy']
                 for invalid in (choice | {'text': 'forged'}, choice | {'format': '../../bad'}):
                     assert (await client.post('/api/studio/increase/broadcast', json=invalid, headers=headers)).status_code == 422
