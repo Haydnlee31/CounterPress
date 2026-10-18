@@ -8,7 +8,7 @@ answers reset on seeking or revision changes. Speech is opt-in and cancels stale
 queues. No model calls or new Azure services. This first increment covers existing
 highlights; full-match streaming and conversational AI remain planned.
 
-Validation: 128 frontend tests, production build, and browser checks at desktop
+Validation: 129 frontend tests, production build, and browser checks at desktop
 and 360/390/760px. See [implementation and next steps](live-companion.md).
 
 ## 18 October 2026 — highlight-linked Explore Data

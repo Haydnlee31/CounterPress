@@ -145,6 +145,6 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       <p>{selected ? `${playerName(selected)} · ${clubName(selected.startsWith('eb')?'eastbridge':'northport')}` : event ? cue(event,resolved,zh) : t('Waiting for the next play','等待下一次进攻')}</p>
       {selected && <button onClick={()=>{setSelected(null);onPlayerSelect?.(null)}}>{t('Back to play','返回回放')}</button>}</div>
 
-    {companion && <LiveCompanion events={events} index={index} resolved={resolved} playing={playing} finished={progress>=1 && index===events.length-1} language={language}/>}
+    {companion && <LiveCompanion events={events} index={index} resolved={resolved} playing={playing || (reduced && resolved)} finished={progress>=1 && index===events.length-1} language={language}/>}
   </section>
 }

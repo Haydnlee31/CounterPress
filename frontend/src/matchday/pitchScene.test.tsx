@@ -138,3 +138,18 @@ test('goal reveal and playhead score wait for the ball, undo on rewind and respe
   expect(scoreAtPlayhead({eastbridge:2,northport:1},[corrected],0,true)).toEqual({eastbridge:2,northport:1})
   expect(pitchScene(goal,1).ball).toEqual({x:105,y:33})
 })
+
+
+test('reduced-motion viewers can listen to a manually completed play',()=>{
+  vi.stubGlobal('matchMedia',vi.fn((q:string)=>({matches:q.includes('reduced-motion'),addEventListener:vi.fn(),removeEventListener:vi.fn()})))
+  const synth={speak:vi.fn(),cancel:vi.fn(),getVoices:()=>[]}
+  vi.stubGlobal('speechSynthesis',synth)
+  vi.stubGlobal('SpeechSynthesisUtterance',class {text:string;constructor(text:string){this.text=text}})
+  render(<MatchPitch events={[pass]} companion fromStart/>)
+  fireEvent.click(screen.getByRole('button',{name:/Listen/}))
+  expect(synth.speak).not.toHaveBeenCalled()
+  fireEvent.click(screen.getByRole('button',{name:'Show ball movement'}))
+  expect(synth.speak.mock.calls.at(-1)![0].text).toContain('passes to Leo Marlow')
+  fireEvent.click(screen.getByRole('button',{name:'Show ball movement'}))
+  expect(synth.cancel).toHaveBeenCalled()
+})
