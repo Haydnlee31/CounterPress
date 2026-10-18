@@ -78,7 +78,7 @@ test('commentary follows the playhead, rewinds without future entries and resets
   const next: Event={...pass,event_id:'pass-2',occurrence_order:2,occurred_at:{period:2,elapsed_ms:185000},available_at:{period:2,elapsed_ms:185000},action:{kind:'carry',end_position:{x:32,y:34}}}
   const ui=render(<MatchPitch events={[pass,next]}/>)
   const feed=within(screen.getByRole('complementary',{name:'Match commentary'}))
-  expect(feed.getByRole('button',{name:/Replay 48:05: Sam Linden carries/}).getAttribute('aria-current')).toBe('step')
+  expect(feed.getByRole('button',{name:/Replay 48:05: Sam Linden moves with the ball/}).getAttribute('aria-current')).toBe('step')
   fireEvent.click(feed.getByRole('button',{name:/Replay 48:00:/}))
   expect(feed.queryByRole('button',{name:/Replay 48:05:/})).toBeNull()
   fireEvent.click(screen.getByRole('button',{name:/Latest play/}))
@@ -137,4 +137,19 @@ test('goal reveal and playhead score wait for the ball, undo on rewind and respe
   expect(ui.container.querySelector('.fan-goal-banner')).toBeNull()
   expect(scoreAtPlayhead({eastbridge:2,northport:1},[corrected],0,true)).toEqual({eastbridge:2,northport:1})
   expect(pitchScene(goal,1).ball).toEqual({x:105,y:33})
+})
+
+
+test('reduced-motion viewers can listen to a manually completed play',()=>{
+  vi.stubGlobal('matchMedia',vi.fn((q:string)=>({matches:q.includes('reduced-motion'),addEventListener:vi.fn(),removeEventListener:vi.fn()})))
+  const synth={speak:vi.fn(),cancel:vi.fn(),getVoices:()=>[]}
+  vi.stubGlobal('speechSynthesis',synth)
+  vi.stubGlobal('SpeechSynthesisUtterance',class {text:string;constructor(text:string){this.text=text}})
+  render(<MatchPitch events={[pass]} companion fromStart/>)
+  fireEvent.click(screen.getByRole('button',{name:/Listen/}))
+  expect(synth.speak).not.toHaveBeenCalled()
+  fireEvent.click(screen.getByRole('button',{name:'Show ball movement'}))
+  expect(synth.speak.mock.calls.at(-1)![0].text).toContain('passes to Leo Marlow')
+  fireEvent.click(screen.getByRole('button',{name:'Show ball movement'}))
+  expect(synth.cancel).toHaveBeenCalled()
 })
