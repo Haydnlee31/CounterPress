@@ -68,10 +68,15 @@ for scenario, final in (("one-touch",3),("breakaway",2)):
     assert show["state"]["score"] == {"eastbridge":final,"northport":0}
     assert len(show["pitch_events"]) == 5 and not show["recap"]["statements"]
     assert data(f"/api/scenarios/{scenario}/snapshot?at_ms=779999")["state"]["score"]["eastbridge"] == final-1
+gi = json.loads(get('/api/gi/matches/wyscout-2058017')[0])
+assert len(gi['events']) == 1462 and len(gi['players']) == 27
+assert [team['score'] for team in gi['teams']] == [4, 2]
+assert gi['source']['license'] == 'CC BY 4.0'
+assert gi['video_alignment'] == 'unverified'
 for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/missing", "/assets/missing.js"):
     try:
         get(path)
         raise AssertionError(f"Unexpected public file: {path}")
     except HTTPError as error:
         assert error.code == 404
-print("PASS: health, readiness, frontend/assets, Studio callback/access boundary, 1-to-4 evidence, control, bilingual recap, three replay goals/rewind, private-path 404s")
+print("PASS: health, readiness, frontend/assets, Studio callback/access boundary, 1-to-4 evidence, control, bilingual recap, three replay goals/rewind, full-match GI events/attribution, private-path 404s")

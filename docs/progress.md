@@ -2492,3 +2492,26 @@ v2, while the original paid pilot is unchanged.
 
 Next: Studio sign-in/review UI, then hosted authorization and a bounded real-model
 route check. Human review is still pending, and hosted AI remains disabled.
+
+
+## GI full-match reader — local, 18 October 2026
+
+Implemented separate `/#gi` navigation and `/api/gi/matches/wyscout-2058017`. The checked, attributed CC BY 4.0 fixture supplies 1,462 events and 27 stable player aliases (existing dashboard names plus five unique substitute labels). GI includes a six-goal timeline, team/player/period filters, scope statistics, paginated action list, pitch locations/pass routes, neighboring actions and provider-flagged review candidates. Own goals, unknown pass outcomes, and same-period context windows are preserved.
+
+No Azure provisioning, AI calls, video download, deployment or production database changes. Current storage is a bundled read-only source, not the highlight history store. The prior research SQLite database stays private under ignored `var/`. The backend source evaluation lock is versioned `gi-reader-regression-v1`; original model prompts/cases are unchanged.
+
+Validation: 595 backend tests, 91 frontend tests, production build and GI/Explore Data browser checks passed. See [GI guide](gi.md) and [exact commands/results](verification/gi-local.json). Next: verify official video playback and rights for embedding, then calibrate per-half seek offsets before adding precise video jumps or uploads.
+
+
+### GI canvas refinement — local
+
+Replaced the country-based presentation with Eastbridge/Northport names, existing crests and club-coloured markers. Historical source identity remains in the footer. Reorganized GI around a dark pitch canvas, a compact action rail, direct team/half chips, keyboard-accessible scoped shot map, whole-match action scrubber, and a running-score goal ribbon. Metrics moved below the canvas as action links. Data and backend contracts are unchanged. ArtCraft's canvas-interaction principle informed the original layout; no third-party assets were copied.
+
+Validation: 91 frontend tests, production build and real-API browser checks passed, including 360/390px layouts, shot-map selection/scoping, empty states and keyboard timeline. [Exact results](verification/gi-canvas-local.json). This refinement is not deployed.
+
+
+### Unified navigation and workspace continuity — local
+
+All five workspaces now use a shared header, library and context strip. Highlight identity persists between Matchday and Explore; GI retains filters, selected action and shot-map mode within the browser session. Existing saved club preferences also theme GI. Studio and advanced analysis are grouped under Tools, with their existing authentication/evidence flows unchanged. The advanced view no longer duplicates the brand header. Source-specific highlight/GI records are kept distinct.
+
+97 frontend tests, production build and full navigation/Explore/GI browser checks pass, including saved Northport theme and 360/390px layouts. See [guide](unified-experience.md) and [verification](verification/unified-experience-local.json). Local only; no Azure resources or model calls.

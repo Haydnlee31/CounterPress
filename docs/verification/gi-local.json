@@ -1,0 +1,33 @@
+{
+  "scope": "Local GI reader; no cloud deployment or model calls",
+  "date": "2026-10-18",
+  "checks": [
+    {
+      "command": ".venv/bin/python -m pytest -q",
+      "output": "595 passed, 1 warning in 29.07s"
+    },
+    {
+      "command": "npm --prefix frontend test",
+      "output": "Test Files 15 passed (15); Tests 91 passed (91)"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "output": "tsc --noEmit passed; vite v7.3.7; 220 modules transformed; built in 718ms"
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_gi.cjs http://127.0.0.1:8010",
+      "output": "PASS GI: real API, six goals, 22 shots, 759 passes, 143 unsuccessful passes; team/player/period filters, pagination, own-goal navigation, review context, mobile 390/360px, keyboard, retry; no page errors."
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_explore_data.cjs http://127.0.0.1:8010",
+      "output": "PASS: all three Matchday-to-analysis journeys, 22-player pitch, phase/evidence seeking, route toggle, factual counts, keyboard player selection, honest empty involvement, phase comparisons, return links, refresh, mobile focus, bilingual and advanced tools; no browser errors."
+    }
+  ],
+  "review": "Desktop and mobile screenshots visually inspected. Initial browser filter-label issue corrected. Backend source lock reviewed and versioned. An existing PressureCard test failed once in the first full run; isolated and full reruns passed without changing that test or component.",
+  "limitations": [
+    "Official replay playback/seek alignment unverified",
+    "No uploads or automatic video analysis",
+    "Read-only bundled source, not a Cosmos full-match migration",
+    "GI is English only"
+  ]
+}

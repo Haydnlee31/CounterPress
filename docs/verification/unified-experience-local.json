@@ -1,0 +1,32 @@
+{
+  "scope": "Local shared UI shell and browser continuity. No backend or cloud changes in this integration.",
+  "checks": [
+    {
+      "command": "npm --prefix frontend test",
+      "output": "Test Files 17 passed (17); Tests 97 passed (97)"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "output": "TypeScript passed; 223 modules transformed; built in 698ms"
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_unified_shell.cjs http://127.0.0.1:8010",
+      "output": "PASS unified shell: highlight context across views, GI filters/shot selection restored, library navigation, Studio/advanced access, single brand header, Escape dismissal, desktop/390/360px; no page errors."
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_explore_data.cjs http://127.0.0.1:8010",
+      "output": "PASS: all three Matchday-to-analysis journeys, 22-player pitch, phase/evidence seeking, route toggle, factual counts, keyboard player selection, honest empty involvement, phase comparisons, return links, refresh, mobile focus, bilingual and advanced tools; no browser errors."
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_gi.cjs http://127.0.0.1:8010",
+      "output": "PASS GI canvas: fictional club labels, keyboard shot map (22 shots), real API, six goals, 22 shots, 759 passes, 143 unsuccessful passes; team/player/period filters, pagination, own-goal navigation, review context, mobile 390/360px, keyboard, retry; no page errors."
+    }
+  ],
+  "visual_review": "Loaded Matchday, Explore and GI screenshots; saved Northport theme; final mobile header spacing corrected and browser checks repeated.",
+  "limitations": [
+    "GI remains English-only",
+    "Different source matches remain separate library records",
+    "Cloud release pending",
+    "Video synchronization and uploads not implemented"
+  ]
+}

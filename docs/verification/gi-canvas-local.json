@@ -1,0 +1,30 @@
+{
+  "scope": "Local GI canvas redesign; no cloud or backend changes",
+  "checks": [
+    {
+      "command": "npm --prefix frontend test",
+      "output": "Test Files 15 passed (15); Tests 91 passed (91)"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "output": "tsc --noEmit passed; 220 modules transformed; built in 689ms"
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_gi.cjs http://127.0.0.1:8010",
+      "output": "PASS GI canvas: fictional club labels, keyboard shot map (22 shots), real API, six goals, 22 shots, 759 passes, 143 unsuccessful passes; team/player/period filters, pagination, own-goal navigation, review context, mobile 390/360px, keyboard, retry; no page errors."
+    }
+  ],
+  "additional_checks": [
+    "14 scoped Northport shots",
+    "Empty first-half substitute view recovers through reset",
+    "Keyboard End on timeline reaches event 1462",
+    "Desktop and mobile screenshots visually reviewed",
+    "Original country labels confined to footer attribution"
+  ],
+  "design_reference": "https://github.com/storytold/artcraft",
+  "screenshots": [
+    "var/gi-desktop.png",
+    "var/gi-shot-map.png",
+    "var/gi-mobile.png"
+  ]
+}
