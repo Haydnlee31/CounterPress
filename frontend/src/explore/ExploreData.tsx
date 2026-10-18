@@ -60,7 +60,7 @@ export default function ExploreData() {
     const at=events.findIndex(e=>phases[index]?.ids.includes(e.event_id))
     if(at>=0) seekEvent(at)
   }
-  function choosePlayer(id:string) {setPlayer(id);setView('players')}
+  function choosePlayer(id:string|null) {setPlayer(id);setView(id?'players':'build')}
   function switchHighlight(id:string) {
     const url=new URL(window.location.href);url.searchParams.set('story',id);window.history.replaceState(null,'',url)
     m.scenario(id)
@@ -82,7 +82,7 @@ export default function ExploreData() {
         <div className="explore-workspace">
           <div className="explore-field" id="explore-pitch" tabIndex={-1} aria-label={t('Selected play','所选回放')}>
             <div className="explore-overlay"><span>{view==='players' ? t('Selected player · passing routes','所选球员 · 传球路线') : t('Selected phase · passing routes','所选阶段 · 传球路线')}</span><label><input type="checkbox" checked={routes} onChange={e=>setRoutes(e.target.checked)}/>{t('Show routes','显示路线')}</label></div>
-            <MatchPitch key={storyId} events={events} language={p.language} compact fromStart onPlayhead={setHead} seekTo={seek} onPlayerSelect={choosePlayer} routes={routes ? records : []}/>
+            <MatchPitch key={storyId} events={events} language={p.language} compact fromStart onPlayhead={setHead} seekTo={seek} onPlayerSelect={choosePlayer} selectedPlayer={view==='players'?player:null} routes={routes ? records : []}/>
             <section className="explore-timeline" aria-label={t('Highlight timeline','集锦时间线')}><h2>{t('Every step of the move','进攻的每一步')}</h2><ol ref={timelineRef}>{events.map((event,index)=><li key={`${event.event_id}:${event.revision}`}><button aria-current={index===head.index?'step':undefined} onClick={()=>seekEvent(index)} aria-label={`${clock(event.occurred_at.elapsed_ms,event.occurred_at.period)}: ${actionText(event,zh)}`}><time>{clock(event.occurred_at.elapsed_ms,event.occurred_at.period)}</time><span className={`explore-event-dot ${event.action.kind==='shot'?'is-shot':''}`}>{index+1}</span><strong>{actionLabel(event,zh)}</strong><span>{playerName(event.actor.player_id)}</span></button></li>)}</ol></section>
           </div>
           <aside id="explore-insights" tabIndex={-1} className="explore-insights" aria-label={t('Highlight insights','集锦解读')}>

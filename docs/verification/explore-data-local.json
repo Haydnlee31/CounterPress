@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-10-18T04:42:58.677471+00:00",
+  "checked_at_utc": "2026-10-18T04:45:27.068437+00:00",
   "checks": [
     {
       "command": ".venv/bin/python -m pytest -q",
@@ -33,5 +33,8 @@
     "docs/screenshots/explore-mobile.png"
   ],
   "live_ai_calls": 0,
-  "new_billable_resources": 0
+  "new_billable_resources": 0,
+  "additional_checks": [
+    "Player selection synchronizes from panel to pitch; Back to play restores the build-up view."
+  ]
 }

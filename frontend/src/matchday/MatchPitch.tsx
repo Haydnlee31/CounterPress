@@ -5,10 +5,11 @@ import { clubName, initials, playerName } from './identity'
 import { actionLabel, actionText, sequenceScene, pitchZone, recipient, fieldPoint } from './pitchScene'
 import { ClubCrest } from './ClubCrest'
 
-export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,routes=[]}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string)=>void;routes?:Event[]}) {
+export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[]}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[]}) {
   const zh=language==='zh-Hans', t=(en:string,cn:string)=>zh?cn:en
   const [index,setIndex]=useState(fromStart?0:Math.max(0,events.length-1)), [progress,setProgress]=useState(0), [playing,setPlaying]=useState(false)
-  const [selected,setSelected]=useState<string|null>(null), [reduced,setReduced]=useState(false)
+  const [localSelected,setSelected]=useState<string|null>(null), [reduced,setReduced]=useState(false)
+  const selected=selectedPlayer===undefined?localSelected:selectedPlayer
   const id=useId().replaceAll(':','')
   const [portrait,setPortrait]=useState(false)
   const [speed,setSpeed]=useState(1)
@@ -140,7 +141,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
     </div>
     <div className="fan-pitch-caption" aria-live={playing?'off':'polite'}><span className="fan-play-dot"/>
       <p>{selected ? `${playerName(selected)} · ${clubName(selected.startsWith('eb')?'eastbridge':'northport')}` : event ? (event.action.kind==='shot'&&!resolved ? t(`${playerName(event.actor.player_id)} lines up the shot…`,`${playerName(event.actor.player_id)}准备射门…`) : actionText(event,zh)) : t('Waiting for the next play','等待下一次进攻')}</p>
-      {selected && <button onClick={()=>setSelected(null)}>{t('Back to play','返回回放')}</button>}</div>
+      {selected && <button onClick={()=>{setSelected(null);onPlayerSelect?.(null)}}>{t('Back to play','返回回放')}</button>}</div>
 
   </section>
 }
