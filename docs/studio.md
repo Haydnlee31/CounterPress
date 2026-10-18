@@ -55,7 +55,7 @@ approval before rendering and again afterwards, including the approval ID, sourc
 fingerprint and AI expiry. Every response is `no-store`; downloaded HTML is escaped,
 script-free and carries a restrictive content security policy.
 
-Each file includes the evidence ID/revision, match and source version, comparison
+Each HTML file includes the evidence ID/revision, match and source version, comparison
 windows, approval ID/time, preparation time, fingerprint, and AI attempt/expiry when
 applicable. Synthetic/fictional-data labels and the full qualification stay visible.
 Downloads cannot be recalled after revocation or a correction: return to Studio
