@@ -153,7 +153,7 @@ export function scoreAtPlayhead(score: Record<string,number>, events: Event[], i
 export function sequenceScene(events: Event[], index: number, progress: number, timed=true) {
   const event=events[index], scene=pitchScene(event,progress)
   if (!event || events.length < 2) return scene
-  const durations=events.map((e,i)=>timed?Math.max(1000,Math.min(10000,(events[i+1]?.occurred_at.elapsed_ms ?? e.occurred_at.elapsed_ms+2500)-e.occurred_at.elapsed_ms)):3200)
+  const durations=events.map((e,i)=>timed?playDuration(e,events[i+1]):3200)
   const starts=[0];durations.forEach(d=>starts.push(starts.at(-1)!+d))
   const now=starts[index]+progress*durations[index], total=starts.at(-1)!
   const first=pitchScene(events[0],0), last=pitchScene(events.at(-1),1)
@@ -178,10 +178,12 @@ export function sequenceScene(events: Event[], index: number, progress: number, 
     const team=authored?.[p.team_id as 'eastbridge'|'northport']
     const initial=team?{x:team[0][p.number-1][0],y:team[0][p.number-1][1]}:first.players.find(v=>v.player_id===p.player_id)!
     const final=team?{x:team[1][p.number-1][0],y:team[1][p.number-1][1]}:last.players.find(v=>v.player_id===p.player_id)!
+    const extracted=/^showcase-(level-first|take-lead|level-late)-v1$/.test(event.match_id)
+    const reachable=(from:Point,to:Point,ms:number)=>{const d=Math.hypot(to.x-from.x,to.y-from.y);const fraction=d?Math.min(1,6.5*ms/1000/d):0;return {x:from.x+(to.x-from.x)*fraction,y:from.y+(to.y-from.y)*fraction}}
     // For the generic formation, establish a participant at their first touch
     // rather than rushing them from an unrelated generated slot.
-    if(!anchors.length || anchors[0].time>0) anchors.unshift({time:0,point:team?initial:anchors[0]?.point??initial})
-    if(anchors.at(-1)!.time<total) anchors.push({time:total,point:anchors.length>1?anchors.at(-1)!.point:final})
+    if(!anchors.length || anchors[0].time>0) anchors.unshift({time:0,point:team?initial:extracted&&anchors.length?reachable(anchors[0].point,initial,anchors[0].time):anchors[0]?.point??initial})
+    if(anchors.at(-1)!.time<total) anchors.push({time:total,point:extracted?reachable(anchors.at(-1)!.point,final,total-anchors.at(-1)!.time):anchors.length>1?anchors.at(-1)!.point:final})
     const after=anchors.findIndex(a=>a.time>=now)
     const b=anchors[after<0?anchors.length-1:after],a=anchors[Math.max(0,after-1)]
     const t=b.time===a.time?1:clamp((now-a.time)/(b.time-a.time),0,1)
@@ -189,4 +191,16 @@ export function sequenceScene(events: Event[], index: number, progress: number, 
     return {...p,x:a.point.x+(b.point.x-a.point.x)*t,y:a.point.y+(b.point.y-a.point.y)*t}
   })
   return {...scene,players}
+}
+
+/** Compress inactive intervals for extracted highlights; source timestamps stay intact. */
+export function playDuration(event:Event,next?:Event) {
+  if(/^showcase-(level-first|take-lead|level-late)-v1$/.test(event.match_id)) {
+    const end=event.action.end_position
+    const distance=point(end)?Math.hypot(end.x-event.position.x,end.y-event.position.y):0
+    return event.action.kind==='shot'?Math.max(1400,Math.min(2200,distance/27*1000+400)):
+      event.action.kind==='carry'?Math.max(1800,Math.min(3500,distance/6*1000)):
+      event.action.kind==='recovery'?1000:Math.max(1600,Math.min(3200,distance/18*1000+500))
+  }
+  return Math.max(1000,Math.min(10000,(next?.occurred_at.elapsed_ms??event.occurred_at.elapsed_ms+2500)-event.occurred_at.elapsed_ms))
 }

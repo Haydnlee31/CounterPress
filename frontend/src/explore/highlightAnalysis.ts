@@ -5,6 +5,18 @@ type Copy = [string, string]
 export type Phase = { title: Copy; explanation: Copy; ids: string[] }
 /** Editorial readings of specific recorded actions, not tracking-derived tactical claims. */
 export const highlightPhases: Record<string, Phase[]> = {
+  'level-first': [
+    {title:['Northport advance','Northport推进'],explanation:['Blake carries forward and brings Marlow into the move.','Blake带球推进，随后找到Marlow。'],ids:['a00495','a00496','a00497']},
+    {title:['Cole takes over','Cole夺回球权'],explanation:['Marlow’s pass goes astray. Cole wins the ball and scores.','Marlow传球失误，Cole夺球并得分。'],ids:['a00498','a00499','a00500']},
+  ],
+  'take-lead': [
+    {title:['Find Hayes','找到Hayes'],explanation:['Cole and Hart move the ball to Hayes, who carries forward.','Cole与Hart将球送到Hayes脚下，后者带球推进。'],ids:['a00999','a01000','a01001']},
+    {title:['The return pass','回传配合'],explanation:['Hayes finds Mercer, receives the return and scores.','Hayes传给Mercer，接到回传后破门。'],ids:['a01002','a01003','a01004']},
+  ],
+  'level-late': [
+    {title:['Work through midfield','中场传递'],explanation:['Fletcher, Arden and Marlow keep the move going.','Fletcher、Arden与Marlow连续传递。'],ids:['a01042','a01043','a01044']},
+    {title:['Fletcher finishes','Fletcher完成射门'],explanation:['Stone finds Lane, whose pass reaches Fletcher for the equalizer.','Stone传给Lane，后者找到Fletcher扳平比分。'],ids:['a01045','a01046','a01047']},
+  ],
   'last-gasp': [
     {title:['Keep the chance alive','守住希望'], explanation:['Ashford saves the penalty and the follow-up. Rowan then takes control of the loose ball, giving Eastbridge a way out.', 'Ashford连续扑出点球和补射，Rowan控制住落点，为Eastbridge找到出球机会。'], ids:['lg-penalty','lg-rebound','lg-recovery']},
     {title:['Take it down the wing','从边路推进'], explanation:['Rowan finds Mercer, who carries forward before releasing Hart. Hart takes the ball farther up the wing.', 'Rowan传给Mercer，后者带球向前，再分给Hart沿边路推进。'], ids:['lg-outlet','lg-break','lg-wide-pass','lg-wing-run']},

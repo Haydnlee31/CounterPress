@@ -6,7 +6,7 @@ from counterpress.gi.service import MATCHES, Match, read_match
 
 
 def install_gi(app, fixture_root: Path):
-    @lru_cache(maxsize=2)
+    @lru_cache(maxsize=3)
     def match(match_id: str):
         return read_match(fixture_root / 'gi', match_id)
 

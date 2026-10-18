@@ -1,7 +1,23 @@
+import { clock, type Event, type MatchTime } from '../types'
+import { matchLibrary, matchDate } from '../gi/catalog'
+
 /** Original, hand-authored presentation metadata. No provider tracking records. */
 type Labels = [string, string]
-export type ReplayStory = { title: Labels; hook: Labels; context: Labels; duration: string; source: string; sourceLabel: string; note: Labels }
+export type ReplayStory = { title: Labels; hook: Labels; context: Labels; duration: string; matchId?: string; source: string; sourceLabel: string; note: Labels }
 export const replayGallery: Record<string, ReplayStory> = {
+  'level-first': {
+    matchId:'synthetic-32fe41c5d304ce68d7d9', title:['Cole brings it level','Cole扳平比分'],hook:['A loose pass. Cole takes his chance.','传球失误，Cole抓住机会。'],
+    context:['Northport lose the ball and Cole turns the recovery into Eastbridge’s equalizer at 34:54.','Northport丢失球权，Cole在34:54为Eastbridge扳平。'],duration:'10s',source:'',sourceLabel:'',note:['Taken from the parent match at 34:34–34:54.','来自所属比赛34:34–34:54。'],
+  },
+  'take-lead': {
+    matchId:'synthetic-32fe41c5d304ce68d7d9', title:['Hayes puts Eastbridge ahead','Hayes帮助Eastbridge领先'],hook:['Hayes and Mercer combine for the lead.','Hayes与Mercer配合取得领先。'],
+    context:['Eastbridge work the ball forward before Mercer finds Hayes for the finish at 71:12.','Eastbridge向前推进，Mercer找到Hayes在71:12完成破门。'],duration:'10s',source:'',sourceLabel:'',note:['Taken from the parent match at 70:46–71:12.','来自所属比赛70:46–71:12。'],
+  },
+  'level-late': {
+    matchId:'synthetic-32fe41c5d304ce68d7d9', title:['Fletcher answers back','Fletcher还以颜色'],hook:['Five passes. Fletcher makes it two apiece.','五次传球后，Fletcher将比分改写为2比2。'],
+    context:['Northport move the ball through midfield and find Fletcher for the equalizer at 75:00.','Northport经过中场传递，找到Fletcher在75:00扳平。'],duration:'10s',source:'',sourceLabel:'',note:['Taken from the parent match at 74:32–75:00.','来自所属比赛74:32–75:00。'],
+  },
+
   'last-gasp': {
     title: ['Last-second turnaround', '最后一刻的逆转'], hook: ['Two saves. A race to the other end.', '两次扑救，随即全速反击。'], duration: '20s',
     context: ['A penalty saved. A second chance denied. Eastbridge race upfield and Ellis supplies the finish.', '扑出点球，再挡补射。Eastbridge迅速反击，Ellis完成致命一击。'],
@@ -57,4 +73,24 @@ export const replayShapes: Record<string, {eastbridge: number[][][]; northport: 
       [[101,30],[98,27],[96,36],[91,42],[83,50],[79,29],[83,40],[77,47],[66,52],[48,28],[53,43]],
     ],
   },
+}
+
+export function highlightTag(story:ReplayStory) {
+  const match=matchLibrary.find(m=>m.id===story.matchId)
+  return match?`Eastbridge ${match.score} Northport · ${matchDate(match.date)}`:'Preloaded'
+}
+
+/** Restore the parent match clock; fixture rebasing is internal to snapshot projection. */
+export function replayTime(event: Event): MatchTime {
+  const offsets: Record<string, MatchTime> = {
+    'showcase-level-first-v1': {period:1, elapsed_ms:1314786},
+    'showcase-take-lead-v1': {period:2, elapsed_ms:792973},
+    'showcase-level-late-v1': {period:2, elapsed_ms:1020261},
+  }
+  const offset=offsets[event.match_id]
+  return offset ? {period:offset.period, elapsed_ms:event.occurred_at.elapsed_ms+offset.elapsed_ms} : event.occurred_at
+}
+export function replayClock(event: Event) {
+  const time=replayTime(event)
+  return clock(time.elapsed_ms,time.period)
 }

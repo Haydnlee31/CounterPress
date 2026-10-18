@@ -3,11 +3,11 @@ import {act,cleanup,fireEvent,render,screen} from '@testing-library/react'
 import {afterEach,expect,test,vi} from 'vitest'
 import type {Event} from '../types'
 import {sequenceScene,scoreAtPlayhead} from './pitchScene'
-import {replayShapes} from './replayGallery'
+import {replayShapes,replayClock} from './replayGallery'
 import {MatchPitch} from './MatchPitch'
 const load=(name:string)=>JSON.parse(readFileSync(`../fixtures/showcases/${name}.json`,'utf8')) as {events:Event[]}
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.restoreAllMocks()})
-for(const name of ['last_gasp','one_touch','breakaway']) test(`${name}: all identities persist, boundaries join, touches meet ball and nothing leaves pitch`,()=>{
+for(const name of ['last_gasp','one_touch','breakaway','level-first','take-lead','level-late']) test(`${name}: all identities persist, boundaries join, touches meet ball and nothing leaves pitch`,()=>{
  const {events}=load(name), original=JSON.stringify(events)
  for(let i=0;i<events.length;i++){
   for(const progress of [0,.2,.5,.8,1]){
@@ -79,4 +79,12 @@ test('turnaround attackers start outside the penalty area and run upfield instea
  for(const p of first.players.filter(p=>p.number!==1&&p.player_id!=='np08')) expect(p.x).toBeGreaterThanOrEqual(21)
  for(const id of ['eb06','eb07','eb09']) expect(first.players.find(p=>p.player_id===id)!.x).toBeLessThan(40)
  expect(sequenceScene(events,events.length-1,0).players.find(p=>p.player_id==='eb09')).toMatchObject({x:92,y:34})
+})
+
+test('derived highlights display their parent match minutes without changing event times',()=>{
+ for(const [name,expected] of [['level-first','34:54'],['take-lead','71:12'],['level-late','75:00']]){
+  const {events}=load(name), event=events[events.length-1], original=JSON.stringify(event)
+  expect(replayClock(event)).toBe(expected)
+  expect(JSON.stringify(event)).toBe(original)
+ }
 })

@@ -1,0 +1,269 @@
+{
+  "version": "aggregate-possession-v1",
+  "fit_match_ids": [
+    2057984,
+    2057994,
+    2057985,
+    2057963,
+    2057955,
+    2057998,
+    2057972,
+    2058016,
+    2057964,
+    2057987,
+    2057960,
+    2057992,
+    2057954,
+    2057956,
+    2057999
+  ],
+  "source_event_count": 23753,
+  "action_counts": [
+    {
+      "pass": 3478,
+      "duel": 276,
+      "carry": 643
+    },
+    {
+      "pass": 6429,
+      "duel": 667,
+      "carry": 695,
+      "shot": 2
+    },
+    {
+      "pass": 3462,
+      "duel": 918,
+      "carry": 356,
+      "shot": 335
+    }
+  ],
+  "action_contexts": {
+    "1:0:1": {
+      "pass": 2575,
+      "carry": 219,
+      "duel": 184,
+      "shot": 2
+    },
+    "1:0:0": {
+      "pass": 3854,
+      "duel": 483,
+      "carry": 476
+    },
+    "2:0:0": {
+      "pass": 1790,
+      "duel": 329,
+      "carry": 156,
+      "shot": 24
+    },
+    "2:1:0": {
+      "duel": 304,
+      "pass": 756,
+      "shot": 30,
+      "carry": 57
+    },
+    "0:0:0": {
+      "pass": 1704,
+      "duel": 204,
+      "carry": 311
+    },
+    "2:1:1": {
+      "duel": 113,
+      "shot": 195,
+      "pass": 129,
+      "carry": 76
+    },
+    "0:0:1": {
+      "pass": 1774,
+      "carry": 332,
+      "duel": 72
+    },
+    "2:0:1": {
+      "pass": 787,
+      "shot": 86,
+      "carry": 67,
+      "duel": 172
+    }
+  },
+  "pass_deltas": {
+    "1:x": {
+      "n": 6428,
+      "mean": 4.22597,
+      "sd": 14.99271
+    },
+    "1:y": {
+      "n": 6428,
+      "mean": 0.07828,
+      "sd": 15.29043
+    },
+    "2:x": {
+      "n": 3462,
+      "mean": -0.57626,
+      "sd": 15.76561
+    },
+    "2:y": {
+      "n": 3462,
+      "mean": -0.43114,
+      "sd": 16.36744
+    },
+    "0:x": {
+      "n": 3478,
+      "mean": 12.27335,
+      "sd": 18.12638
+    },
+    "0:y": {
+      "n": 3478,
+      "mean": 0.33726,
+      "sd": 16.30021
+    }
+  },
+  "pass_outcomes": {
+    "1:0": {
+      "complete": 4545,
+      "incomplete": 380
+    },
+    "1:1": {
+      "complete": 1234,
+      "incomplete": 269
+    },
+    "2:0": {
+      "complete": 2429,
+      "incomplete": 471
+    },
+    "0:0": {
+      "complete": 1980,
+      "incomplete": 274
+    },
+    "2:1": {
+      "complete": 333,
+      "incomplete": 229
+    },
+    "0:1": {
+      "complete": 961,
+      "incomplete": 263
+    }
+  },
+  "shot_outcomes": {
+    "1:0": {
+      "blocked": 10,
+      "goal": 2,
+      "off_target": 11,
+      "saved": 7
+    },
+    "1:1": {
+      "blocked": 55,
+      "goal": 31,
+      "off_target": 72,
+      "saved": 37
+    },
+    "0:1": {
+      "off_target": 38,
+      "saved": 22,
+      "blocked": 28
+    },
+    "0:0": {
+      "off_target": 11,
+      "saved": 6,
+      "blocked": 6,
+      "goal": 1
+    }
+  },
+  "controlled_action_runs": {
+    "n": 3412,
+    "mean": 5.05891,
+    "sd": 5.95787
+  },
+  "action_interval_seconds": 4.692659753200857,
+  "match_metrics": [
+    {
+      "passes": 850,
+      "pass_completion": 0.8529411764705882,
+      "shots": 35,
+      "goals": 1
+    },
+    {
+      "passes": 974,
+      "pass_completion": 0.8850102669404517,
+      "shots": 21,
+      "goals": 1
+    },
+    {
+      "passes": 750,
+      "pass_completion": 0.832,
+      "shots": 19,
+      "goals": 0
+    },
+    {
+      "passes": 961,
+      "pass_completion": 0.8616024973985432,
+      "shots": 17,
+      "goals": 1
+    },
+    {
+      "passes": 1000,
+      "pass_completion": 0.844,
+      "shots": 18,
+      "goals": 1
+    },
+    {
+      "passes": 902,
+      "pass_completion": 0.8270509977827051,
+      "shots": 19,
+      "goals": 3
+    },
+    {
+      "passes": 927,
+      "pass_completion": 0.8802588996763754,
+      "shots": 30,
+      "goals": 2
+    },
+    {
+      "passes": 1139,
+      "pass_completion": 0.8955223880597015,
+      "shots": 25,
+      "goals": 2
+    },
+    {
+      "passes": 772,
+      "pass_completion": 0.8730569948186528,
+      "shots": 15,
+      "goals": 1
+    },
+    {
+      "passes": 777,
+      "pass_completion": 0.8597168597168597,
+      "shots": 27,
+      "goals": 2
+    },
+    {
+      "passes": 1084,
+      "pass_completion": 0.9123616236162362,
+      "shots": 16,
+      "goals": 4
+    },
+    {
+      "passes": 856,
+      "pass_completion": 0.8271028037383178,
+      "shots": 34,
+      "goals": 6
+    },
+    {
+      "passes": 827,
+      "pass_completion": 0.8440145102781137,
+      "shots": 18,
+      "goals": 4
+    },
+    {
+      "passes": 805,
+      "pass_completion": 0.8186335403726708,
+      "shots": 24,
+      "goals": 2
+    },
+    {
+      "passes": 745,
+      "pass_completion": 0.8335570469798658,
+      "shots": 19,
+      "goals": 4
+    }
+  ],
+  "shot_hazard_scale": 0.45
+}

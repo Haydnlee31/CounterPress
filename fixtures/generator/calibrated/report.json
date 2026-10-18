@@ -1,0 +1,210 @@
+{
+  "version": "aggregate-possession-v1",
+  "selection_seed": 20261018,
+  "training_matches": [
+    {
+      "id": 2057984,
+      "label": "Germany - Mexico, 0 - 1"
+    },
+    {
+      "id": 2057994,
+      "label": "England - Belgium, 0 - 1"
+    },
+    {
+      "id": 2057985,
+      "label": "Sweden - Korea Republic, 1 - 0"
+    },
+    {
+      "id": 2057963,
+      "label": "Iran - Spain, 0 - 1"
+    },
+    {
+      "id": 2057955,
+      "label": "Egypt - Uruguay, 0 - 1"
+    },
+    {
+      "id": 2057998,
+      "label": "Poland - Colombia, 0 - 3"
+    },
+    {
+      "id": 2057972,
+      "label": "Argentina - Iceland, 1 - 1"
+    },
+    {
+      "id": 2058016,
+      "label": "Belgium - England, 2 - 0"
+    },
+    {
+      "id": 2057964,
+      "label": "Iran - Portugal, 1 - 1"
+    },
+    {
+      "id": 2057987,
+      "label": "Korea Republic - Mexico, 1 - 2"
+    },
+    {
+      "id": 2057960,
+      "label": "Portugal - Spain, 3 - 3"
+    },
+    {
+      "id": 2057992,
+      "label": "Belgium - Tunisia, 5 - 2"
+    },
+    {
+      "id": 2057954,
+      "label": "Russia - Saudi Arabia, 5 - 0"
+    },
+    {
+      "id": 2057956,
+      "label": "Russia - Egypt, 3 - 1"
+    },
+    {
+      "id": 2057999,
+      "label": "Japan - Senegal, 2 - 2"
+    }
+  ],
+  "holdout_matches": [
+    {
+      "id": 2057976,
+      "label": "Nigeria - Argentina, 1 - 2"
+    },
+    {
+      "id": 2057989,
+      "label": "Mexico - Sweden, 0 - 3"
+    },
+    {
+      "id": 2057973,
+      "label": "Croatia - Nigeria, 2 - 0"
+    },
+    {
+      "id": 2057980,
+      "label": "Brazil - Costa Rica, 2 - 0"
+    },
+    {
+      "id": 2057974,
+      "label": "Argentina - Croatia, 0 - 3"
+    }
+  ],
+  "source": {
+    "authors": "Luca Pappalardo and Emanuele Massucco / Wyscout",
+    "url": "https://doi.org/10.6084/m9.figshare.7770599",
+    "license": "CC BY 4.0",
+    "events_sha256": "d789b7cd80671a0dd1263150e997d1450e1ed22cddc8beb7bb2a6266b374a869"
+  },
+  "training": {
+    "passes": {
+      "mean": 891.2666666666667,
+      "min": 745,
+      "max": 1139
+    },
+    "pass_completion": {
+      "mean": 0.8564553070566054,
+      "min": 0.8186335403726708,
+      "max": 0.9123616236162362
+    },
+    "shots": {
+      "mean": 22.466666666666665,
+      "min": 15,
+      "max": 35
+    },
+    "goals": {
+      "mean": 2.2666666666666666,
+      "min": 0,
+      "max": 6
+    }
+  },
+  "holdout": {
+    "passes": {
+      "mean": 808.4,
+      "min": 656,
+      "max": 960
+    },
+    "pass_completion": {
+      "mean": 0.8301074790667305,
+      "min": 0.8074074074074075,
+      "max": 0.871875
+    },
+    "shots": {
+      "mean": 22.2,
+      "min": 13,
+      "max": 30
+    },
+    "goals": {
+      "mean": 1.6,
+      "min": 0,
+      "max": 3
+    }
+  },
+  "generated_100": {
+    "passes": {
+      "mean": 821.11,
+      "min": 759,
+      "max": 880
+    },
+    "pass_completion": {
+      "mean": 0.8583948945308573,
+      "min": 0.8268292682926829,
+      "max": 0.8973717146433041
+    },
+    "shots": {
+      "mean": 19.58,
+      "min": 9,
+      "max": 31
+    },
+    "goals": {
+      "mean": 2.42,
+      "min": 0,
+      "max": 7
+    }
+  },
+  "selected_seed": 74,
+  "selected_metrics": {
+    "passes": 815,
+    "pass_completion": 0.8588957055214724,
+    "shots": 23,
+    "goals": 4
+  },
+  "candidate_count": 65,
+  "calibration_trials": [
+    {
+      "scale": 0.45,
+      "training_moment_loss": 0.005294551585958692,
+      "means": {
+        "shots": 21.166666666666668,
+        "goals": 2.1666666666666665
+      }
+    },
+    {
+      "scale": 0.6,
+      "training_moment_loss": 0.1367151434827314,
+      "means": {
+        "shots": 24.333333333333332,
+        "goals": 3.0833333333333335
+      }
+    },
+    {
+      "scale": 0.75,
+      "training_moment_loss": 0.42681771079155245,
+      "means": {
+        "shots": 27.25,
+        "goals": 3.6666666666666665
+      }
+    },
+    {
+      "scale": 1.0,
+      "training_moment_loss": 1.1160572467895304,
+      "means": {
+        "shots": 32.916666666666664,
+        "goals": 4.416666666666667
+      }
+    }
+  ],
+  "limitations": [
+    "Single 2018 international tournament, not all football.",
+    "Score-stratified sample overrepresents high-scoring games.",
+    "Event-derived action runs are not measured possession duration.",
+    "Carry geometry, duel success, team style and late risk are authored priors.",
+    "On-target non-goal shots are simplified to saves in the simulator; not a source save measurement.",
+    "Showcase selection biases excitement; generated_100 is the unselected distribution."
+  ]
+}

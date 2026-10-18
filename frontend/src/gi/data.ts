@@ -1,14 +1,14 @@
 import { playerName } from '../matchday/identity'
 export type GIEvent = {
-  event_id:string; provider_event_id:number; revision:number; source_order:number; occurrence_order:number;
+  event_id:string; provider_event_id:number|null; revision:number; source_order:number; occurrence_order:number;
   period:1|2; elapsed_ms:number; team_id:number; player_id:string; kind:string; detail:string; outcome:string;
   start:{x:number;y:number}|null; end:{x:number;y:number}|null; goal_for:number|null; review:boolean; tags:number[];
 }
-export type GIPlayer={player_id:string;provider_player_id:number;team_id:number;alias_id:string}
-export type GIMatch={match_id:string; title:string; headline:string; summary:string; source_label:string; competition:string;date:string;
+export type GIPlayer={player_id:string;provider_player_id:number|null;team_id:number;alias_id:string}
+export type GIMatch={match_id:string; synthetic?:boolean; title:string; headline:string; summary:string; source_label:string; display_date:string; competition:string;date:string;
   teams:{team_id:number;name:string;score:number}[]; players:GIPlayer[]; events:GIEvent[];
   source:{provider:string;source:string;license:string;license_url:string;changes:string;fixture_sha256:string};
-  video_url:string;video_alignment:'unverified';metric_policy:string;
+  video_url:string|null;video_alignment:'unverified';metric_policy:string;
 }
 export type Filter='key'|'all'|'shots'|'off_target'|'passes'|'incomplete'|'review'
 export const filters: [Filter,string][]=[['key','Key moments'],['all','Every action'],['shots','All shots'],['off_target','Shots off target'],['passes','All passes'],['incomplete','Unsuccessful passes'],['review','Moments to review']]

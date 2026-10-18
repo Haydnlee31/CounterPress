@@ -1,12 +1,12 @@
 import { AppHeader } from '../shell/AppHeader'
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { clock } from '../types'
+import { replayClock } from '../matchday/replayGallery'
 import { useMatchday } from '../matchday/useMatchday'
 import { MatchPitch } from '../matchday/MatchPitch'
 import { clubs, initials, playerName } from '../matchday/identity'
 import { actionLabel, actionText } from '../matchday/pitchScene'
-import { replayGallery } from '../matchday/replayGallery'
+import { replayGallery, highlightTag } from '../matchday/replayGallery'
 import { actionCounts, availablePhases, involvedIn, participants, phaseRecords } from './highlightAnalysis'
 import '../matchday/matchday.css'
 import './explore.css'
@@ -81,7 +81,7 @@ export default function ExploreData() {
           <div className="explore-field" id="explore-pitch" tabIndex={-1} aria-label={t('Selected play','所选回放')}>
             <div className="explore-overlay"><span>{view==='players' ? t('Selected player · passing routes','所选球员 · 传球路线') : t('Selected phase · passing routes','所选阶段 · 传球路线')}</span><label><input type="checkbox" checked={routes} onChange={e=>setRoutes(e.target.checked)}/>{t('Show routes','显示路线')}</label></div>
             <MatchPitch key={storyId} events={events} language={p.language} compact fromStart onPlayhead={setHead} seekTo={seek} onPlayerSelect={choosePlayer} selectedPlayer={view==='players'?player:null} routes={routes ? records : []}/>
-            <section className="explore-timeline" aria-label={t('Highlight timeline','集锦时间线')}><h2>{t('Every step of the move','进攻的每一步')}</h2><ol ref={timelineRef}>{events.map((event,index)=><li key={`${event.event_id}:${event.revision}`}><button aria-current={index===head.index?'step':undefined} onClick={()=>seekEvent(index)} aria-label={`${clock(event.occurred_at.elapsed_ms,event.occurred_at.period)}: ${actionText(event,zh)}`}><time>{clock(event.occurred_at.elapsed_ms,event.occurred_at.period)}</time><span className={`explore-event-dot ${event.action.kind==='shot'?'is-shot':''}`}>{index+1}</span><strong>{actionLabel(event,zh)}</strong><span>{playerName(event.actor.player_id)}</span></button></li>)}</ol></section>
+            <section className="explore-timeline" aria-label={t('Highlight timeline','集锦时间线')}><h2>{t('Every step of the move','进攻的每一步')}</h2><ol ref={timelineRef}>{events.map((event,index)=><li key={`${event.event_id}:${event.revision}`}><button aria-current={index===head.index?'step':undefined} onClick={()=>seekEvent(index)} aria-label={`${replayClock(event)}: ${actionText(event,zh)}`}><time>{replayClock(event)}</time><span className={`explore-event-dot ${event.action.kind==='shot'?'is-shot':''}`}>{index+1}</span><strong>{actionLabel(event,zh)}</strong><span>{playerName(event.actor.player_id)}</span></button></li>)}</ol></section>
           </div>
           <aside id="explore-insights" tabIndex={-1} className="explore-insights" aria-label={t('Highlight insights','集锦解读')}>
             <button className="explore-back-pitch" onClick={()=>focusRegion('explore-pitch')}>{t('Back to pitch','返回球场')} ↑</button>
@@ -100,12 +100,12 @@ export default function ExploreData() {
                 <table className="explore-compare-table"><caption>{t('Actions in each phase','各阶段的事件数量')}</caption><thead><tr><th scope="col">{t('Action','事件')}</th><th scope="col">{t(...phases[left].title)}</th><th scope="col">{t(...phases[right].title)}</th></tr></thead><tbody>{[['Passes','传球'],['Carries','带球'],['Shots','射门'],['Saves','扑救']].map(([en,cn],i)=><tr key={en}><th scope="row">{t(en,cn)}</th><td>{actionCounts(phaseRecords(phases[left],events))[i]}</td><td>{actionCounts(phaseRecords(phases[right],events))[i]}</td></tr>)}</tbody></table>
                 <div className="explore-compare-watch"><button onClick={()=>choosePhase(left)}>{t('Show first phase','查看第一阶段')}</button><button onClick={()=>choosePhase(right)}>{t('Show second phase','查看第二阶段')}</button></div></> : <p>{t('Phase comparisons are unavailable for these actions.','这些事件暂无阶段比较。')}</p>}
             </>}
-            {view!=='compare' && (view==='build' || player) && <section className="explore-evidence"><h3>{t('Supporting plays','相关回放')}</h3><ol>{records.map(event=><li key={event.event_id}><button aria-current={events.indexOf(event)===head.index?'step':undefined} onClick={()=>seekEvent(events.indexOf(event))}><time>{clock(event.occurred_at.elapsed_ms,event.occurred_at.period)}</time><span>{actionText(event,zh)}</span><span aria-hidden="true">↗</span></button></li>)}</ol></section>}
+            {view!=='compare' && (view==='build' || player) && <section className="explore-evidence"><h3>{t('Supporting plays','相关回放')}</h3><ol>{records.map(event=><li key={event.event_id}><button aria-current={events.indexOf(event)===head.index?'step':undefined} onClick={()=>seekEvent(events.indexOf(event))}><time>{replayClock(event)}</time><span>{actionText(event,zh)}</span><span aria-hidden="true">↗</span></button></li>)}</ol></section>}
           </aside>
         </div>
       </>}
       <footer className="fan-footer"><a href="#analysis">{t('Advanced analysis & presenter tools','高级分析与演示工具')} ↗</a><a href="#studio">{t('Producer Studio','制作人工作室')} ↗</a>
-        {story && <><a href={story.source} target="_blank" rel="noreferrer">{t('Original clip','原始片段')} · {story.sourceLabel} ↗</a><small className="fan-data-note">{t(...story.note)} {t('Fictional identities and hand-authored event positions. Off-ball movement is illustrative. Explanations reference the listed actions; comparisons count actions in each selected phase, not whole-match performance. Each highlight is a separate reconstruction.','虚构身份与手工编写的事件位置，无球移动为示意。解读参考列出的事件，比较仅统计所选阶段的事件数量，并非全场表现。每段集锦为独立重建。')}</small></>}
+        {story && <>{story.source&&<a href={story.source} target="_blank" rel="noreferrer">{t('Original clip','原始片段')} · {story.sourceLabel} ↗</a>}<small className="fan-data-note">{highlightTag(story)} · {t(...story.note)} {!story.matchId&&t('Fictional identities and hand-authored event positions. Off-ball movement is illustrative. Explanations reference the listed actions; comparisons count actions in each selected phase, not whole-match performance. Each highlight is a separate reconstruction.','虚构身份与手工编写的事件位置，无球移动为示意。解读参考列出的事件，比较仅统计所选阶段的事件数量，并非全场表现。每段集锦为独立重建。')}</small></>}
       </footer>
     </main>
   </div>

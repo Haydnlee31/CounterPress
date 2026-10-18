@@ -1,0 +1,168 @@
+{
+  "parent_match_id": "synthetic-32fe41c5d304ce68d7d9",
+  "display_date": "2026-10-18",
+  "highlights": [
+    {
+      "scenario_id": "level-first",
+      "match_id": "showcase-level-first-v1",
+      "events": [
+        {
+          "event_id": "a00495",
+          "parent_time": {
+            "period": 1,
+            "elapsed_ms": 2074402
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a00496",
+          "parent_time": {
+            "period": 1,
+            "elapsed_ms": 2078909
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a00497",
+          "parent_time": {
+            "period": 1,
+            "elapsed_ms": 2081147
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a00498",
+          "parent_time": {
+            "period": 1,
+            "elapsed_ms": 2085600
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a00499",
+          "parent_time": {
+            "period": 1,
+            "elapsed_ms": 2086811
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a00500",
+          "parent_time": {
+            "period": 1,
+            "elapsed_ms": 2094786
+          },
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "scenario_id": "take-lead",
+      "match_id": "showcase-take-lead-v1",
+      "events": [
+        {
+          "event_id": "a00999",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1546500
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01000",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1548970
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01001",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1552268
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01002",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1559793
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01003",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1567424
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01004",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1572973
+          },
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "scenario_id": "level-late",
+      "match_id": "showcase-level-late-v1",
+      "events": [
+        {
+          "event_id": "a01042",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1772766
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01043",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1776569
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01044",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1780941
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01045",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1787315
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01046",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1789903
+          },
+          "revision": 1
+        },
+        {
+          "event_id": "a01047",
+          "parent_time": {
+            "period": 2,
+            "elapsed_ms": 1800261
+          },
+          "revision": 1
+        }
+      ]
+    }
+  ]
+}
