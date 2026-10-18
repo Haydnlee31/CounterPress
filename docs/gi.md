@@ -47,3 +47,19 @@ The match room now leads with existing club crests, a dark pitch canvas and a co
 A six-goal ribbon shows the running score and is horizontally scrollable on small screens. Scope metrics live below the canvas as interactive rows instead of KPI cards. Context, raw event reference and attribution remain available. No source events, API contracts or outcome calculations changed.
 
 Design reference: [ArtCraft's creative workspace](https://github.com/storytold/artcraft), specifically its emphasis on canvas interaction. This is an original football layout; no ArtCraft assets or source were copied. The precise dashboard reference from the user was not supplied.
+
+## Match Centre overview and play diagrams
+
+The public navigation now says **Match Centre**; `#gi` remains compatible with existing links. Overview is the default, with club comparisons for shots, completed/unsuccessful passes and off-target shots. Goals open Moments. Club/player/half controls are collapsed under Filters, and “How to explore” offers optional navigation help.
+
+Moments autoplays a complete local sequence with pause, resume, replay and scrubbing. Context follows the surrounding possession to a shot outcome, foul, interruption, restart, or controlled opponent response; blocked shots continue through the rebound. Gaps over eight seconds separate disconnected actions. Duration follows event timestamps plus a finish hold, rather than a fixed five seconds. Opposing actions rotate both coordinates into the selected team's attacking frame. Paired duel actions can show both participants. All 22 display players remain visible; involved players have rings and the ball has a spotlight. Supporting formation positions move with the play.
+
+These are **schematic event diagrams, not video clips or continuous tracking**. Shot endpoints and goalkeeper coordinates cannot safely be treated as trajectories. Goal finishes use an illustrative goal-centre target; keeper actions and sentinel coordinates are excluded. Off-ball defensive reactions remain unavailable without verified footage/tracking. Reconstruction details live in the footer source information, outside the playback controls. No new cloud services or model calls are required.
+
+Design reference: FotMob's official product overview combines statistics, commentary and post-match reporting: https://www.fotmob.com/vi/topnews/28453-how-follow-world-cup-fotmob . CounterPress adopts an overview-first hierarchy without copying assets or adding unsupported metrics.
+
+## Match library
+
+The library contains two separately identified full matches. `?match=wyscout-2058017#gi` opens the original 4–2 match; `?match=wyscout-2058007#gi` opens **Back from two down**, a 3–2 comeback adapted from Belgium–Japan (2018). Unknown URL values fall back to the original match. Session selections are stored per match, and workspace navigation retains the selected archive match. The 3–2 fixture provenance and independent counts are documented in `fixtures/gi/comeback/README.md`.
+
+Both use original Eastbridge/Northport branding and match-scoped fictional player aliases. Source chronology and outcomes remain intact; remapping is a presentation adaptation, not anonymization or a replacement for attribution. No additional Azure services, AI calls, or video ingestion are needed.
