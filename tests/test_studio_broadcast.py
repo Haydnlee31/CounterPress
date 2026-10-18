@@ -43,12 +43,13 @@ def test_corrections_and_withdrawals_block_both_formats(services):
     service.decide('increase', decision(view), ACTOR, 'approve')
     for event in updates():
         service.snapshots.ingest('increase', (event,))
-        for format in ('presenter-cue', 'lower-third'):
+        for format in ('presenter-cue', 'lower-third', 'presenter-text'):
             with pytest.raises(ReviewConflict): service.broadcast('increase', selection(view, format))
 
 
 @pytest.mark.parametrize('race', ['correction', 'revoke', 'expiry'])
-def test_change_during_render_fails_closed(services, monkeypatch, race):
+@pytest.mark.parametrize('format', ['presenter-cue', 'presenter-text'])
+def test_change_during_render_fails_closed(services, monkeypatch, race, format):
     service = services()
     attempt = draft(service) if race == 'expiry' else None
     view = service.review('increase', ReviewRequest(attempt_id=attempt.attempt_id if attempt else None))
@@ -60,7 +61,7 @@ def test_change_during_render_fails_closed(services, monkeypatch, race):
         else: service.now = lambda: attempt.expires_at_unix_ms
         return body
     monkeypatch.setattr('counterpress.studio.service.render_broadcast', render)
-    with pytest.raises(ReviewConflict): service.broadcast('increase', selection(view))
+    with pytest.raises(ReviewConflict): service.broadcast('increase', selection(view, format))
 
 
 def test_broadcast_escapes_copy_and_keeps_unicode(services):
@@ -75,3 +76,20 @@ def test_broadcast_escapes_copy_and_keeps_unicode(services):
         body = render_broadcast(view, hostile, format, 1000)
         assert '<script>' not in body and '<img' not in body
         assert '&lt;script&gt;' in body and '限制' in body and 'lang="zh-Hans"' in body
+
+
+def test_plain_text_copy_preserves_wording_and_rechecks_approval(services):
+    service = services()
+    view = service.review('increase', ReviewRequest())
+    req = selection(view, 'presenter-text')
+    with pytest.raises(ReviewConflict):
+        service.broadcast('increase', req)
+    service.decide('increase', decision(view), ACTOR, 'approve')
+    body = service.broadcast('increase', req)
+    statement = view.recap.statements[0]
+    assert body.startswith('\n\n'.join((statement.narrative.title, statement.narrative.explanation, statement.narrative.qualification)))
+    assert statement.citation.evidence_id in body and view.fingerprint in body
+    assert '<html' not in body
+    service.snapshots.ingest('increase', (updates()[0],))
+    with pytest.raises(ReviewConflict):
+        service.broadcast('increase', req)

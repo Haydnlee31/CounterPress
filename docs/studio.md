@@ -14,17 +14,17 @@ records real sign-in, one successful AI request, approval, preview, download and
 
 1. Open **Producer Studio** from Matchday and select **Sign in with Microsoft**.
    Use the account assigned the API's `CounterPress.Editor` role.
-2. Choose a story, story language (English or Simplified Chinese), and detail level.
+2. Search **Story sources** and choose an angle, story language (English or Simplified Chinese), and detail level.
    The workspace labels remain English. Studio always reviews the latest available
    source history, not a historical replay selection.
-3. Read every story and its qualification. Expand **Evidence reference** to inspect
+3. Read every story and its qualification. Expand **Check supporting evidence** to inspect
    exact evidence/revision IDs, metric disclosure and supporting recorded events.
 4. Select **I reviewed this version · Approve**. This authorizes that precise
    presentation, including all displayed statements and the selected perspective.
 5. Open the clean preview or download the approved, script-free HTML snapshot.
    Neither operation publishes to a broadcaster. The downloaded file includes
    synthetic-data disclosure, citations, cutoff, comparison windows and approval ID.
-6. In **One story. Two ways to tell it.**, choose a **Broadcast story** and either
+6. In **Prepare your coverage**, choose a **Broadcast story** and either
    **Presenter cue** or **Lower-third preview**. Preview it, then select
    **Download broadcast format** for a self-contained HTML file.
 7. **Revoke this approval** disables preview/export. **End Studio session** clears
@@ -33,7 +33,7 @@ records real sign-in, one successful AI request, approval, preview, download and
 
 A new delivery, correction, withdrawal, changed wording or perspective changes the
 fingerprint. Old approval cannot authorize the new artifact. The page polls every
-five seconds, hides preview during rechecks, and locks actions on failed checks.
+five seconds, preserves presenter view during unchanged background checks, and locks actions on failed checks. An independent validity timer closes expired AI previews even if a background request is still pending.
 Background browser throttling can delay polling. Approval and export always check
 current server state; an already downloaded snapshot cannot be recalled. Exports
 are valid at their canonical read, not a promise that facts never change afterwards.
@@ -49,13 +49,13 @@ English and Simplified Chinese story wording are supported; desk labels remain E
 
 The protected `POST /api/studio/{scenario}/broadcast` accepts only preferences,
 fingerprint, optional selected AI attempt, approved `insight_id`, and a format of
-`presenter-cue` or `lower-third`. It selects canonical server wording; client prose,
+`presenter-cue`, `lower-third` or `presenter-text`. It selects canonical server wording; client prose,
 unknown stories and arbitrary formats are rejected. The server checks current
 approval before rendering and again afterwards, including the approval ID, source
 fingerprint and AI expiry. Every response is `no-store`; downloaded HTML is escaped,
 script-free and carries a restrictive content security policy.
 
-Each file includes the evidence ID/revision, match and source version, comparison
+Each HTML file includes the evidence ID/revision, match and source version, comparison
 windows, approval ID/time, preparation time, fingerprint, and AI attempt/expiry when
 applicable. Synthetic/fictional-data labels and the full qualification stay visible.
 Downloads cannot be recalled after revocation or a correction: return to Studio
@@ -208,3 +208,22 @@ history/API source changed. The original paid pilot lock and report are preserve
 no new model benchmark or human usability score is claimed. Vitest was updated to
 the patched 5.x line after npm audit identified vulnerabilities in its older
 transitive test dependencies; the complete existing frontend suite still passes.
+
+
+## Research-led workflow migration (18 October 2026)
+
+Primary users are small sports producers/editors selecting and approving talking points. Commentators/presenters are the secondary users reading those cues. Club social editors are adjacent users; platform-specific authoring is not yet supported.
+
+The design uses qualitative practitioner feedback, not a representative sentiment survey. [ABC commentator Ned Hall](https://www.abc.net.au/careers/upstart-entry-level-programs/behind-the-scenes-football-commentary-ned-hall/105772340) describes preparation and fitting contributions to match pace. Anonymous [rundown users](https://www.reddit.com/r/VIDEOENGINEERING/comments/1adcxed/run_of_show_rundown_software_tools_checkin_whats/) describe friction in reordering and reaching presenter controls. [Feature-request replies](https://www.reddit.com/r/VIDEOENGINEERING/comments/1nw6jsc/ideas_for_new_rundown_software/) ask to reduce retyping and support prompters. A [vendor-hosted PSV interview](https://www.contentstadium.com/blog/interview-social-media-psv-eindhoven/) supports channel-specific editorial needs as a future direction. These are hypotheses for usability testing, not proof of demand.
+
+Implemented workflow:
+
+- Searchable story sources and a focused review area; evidence and optional AI editing expand on demand.
+- A current-review cue list with accessible earlier/later controls. Order is local to the view and resets with a changed fingerprint or navigation; it is not a saved or shared rundown. It changes presenter sequence only, not the full-snapshot export order.
+- Layout checks before approval clearly marked **Not yet approved**. Copy, approved previews and presenter mode remain locked until approval.
+- Large-text presenter dialog, previous/next cue controls, Escape to close and native dialog focus containment. Unchanged background polls do not close it; corrections, failed checks and expiry do.
+- Approximate read time includes title, explanation and qualification. English assumes 140 whitespace-delimited words/minute; Simplified Chinese assumes 240 non-whitespace characters/minute. These are adjustable-product-design assumptions for planning, not measured presenter pace or guaranteed broadcast timing.
+- **Copy approved cue** asks the authenticated server for `presenter-text`. The server revalidates the exact fingerprint/approval before and after rendering and returns `text/plain` with no-store/nosniff headers. No client-supplied prose is accepted. Copy includes source/approval references and cannot recall text already placed on the clipboard.
+- A correction summary identifies added, changed or removed stories after a changed review fingerprint. It does not invent explanations of why source events changed.
+
+This is an application migration using the existing Entra ID, Cosmos-backed review history and Azure Container Apps deployment. No database migration, new resource, permission grant or automatic model request is required. Existing approvals retain their fingerprint schema. Direct match-moment intake, free-text authoring, shared rundowns and actual video/overlay playout remain future work.

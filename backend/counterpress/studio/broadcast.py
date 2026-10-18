@@ -11,6 +11,15 @@ def utc_label(unix_ms):
 
 def render_broadcast(view, statement, format, generated_at):
     n, c = statement.narrative, statement.citation
+    if format == 'presenter-text':
+        return ('\n\n'.join((n.title, n.explanation, n.qualification))
+                + f'\n\n—\n{n.subject_name} · Facts through {display_time(view.recap.cutoff)}'
+                + f'\nEvidence {c.evidence_id} · Revision {c.revision}'
+                + f'\nMatch {view.recap.match_id} · Fingerprint {view.fingerprint}'
+                + f'\nApproval {view.approval_id} · Prepared {utc_label(generated_at)}'
+                + (f'\nAI wording approval expires {utc_label(view.workflow.expires_at_unix_ms)}.' if view.workflow and view.workflow.applied else '')
+                + '\nSynthetic football · Fictional teams and players.'
+                + '\nStatic approved copy. Recheck Studio before use; later changes cannot recall copied text.')
     label = 'Presenter cue' if format == 'presenter-cue' else 'Lower-third preview'
     windows = ' → '.join(f'({display_time(w.start)}, {display_time(w.end)}]' for w in view.recap.windows)
     expiry = (f'AI-assisted selection · Attempt {escape(view.attempt_id)} · '

@@ -29,7 +29,7 @@ class DecisionRequest(ReviewRequest):
 
 class BroadcastRequest(DecisionRequest):
     insight_id: Identifier
-    format: Literal['presenter-cue', 'lower-third']
+    format: Literal['presenter-cue', 'lower-third', 'presenter-text']
 
 
 class SupportingEvidence(Contract):
