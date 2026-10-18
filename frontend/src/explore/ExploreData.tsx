@@ -1,3 +1,4 @@
+import { AppHeader } from '../shell/AppHeader'
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { clock } from '../types'
@@ -68,11 +69,8 @@ export default function ExploreData() {
   const title=story ? t(...story.title) : t('Match analysis','比赛分析')
   return <div className="matchday explore" lang={p.language} style={{'--fan-accent':theme.accent,'--fan-ink':theme.ink,'--fan-background':theme.background,'--fan-soft':theme.soft} as CSSProperties}>
     <a className="fan-skip" href="#explore-content" onClick={e=>{e.preventDefault();focusRegion('explore-content')}}>{t('Skip to analysis','跳至分析')}</a>
-    <header className="fan-header">
-      <a className="fan-brand" href={`?story=${storyId}#matchday`}>CounterPress<span aria-hidden="true">↗</span></a>
-      <nav aria-label={t('Workspace','工作区')}><a href={`?story=${storyId}#matchday`}>{t('Matchday','比赛故事')}</a><span aria-current="page">{t('Explore data','探索数据')}</span></nav>
-      <label className="fan-language"><span className="sr-only">Language</span><select aria-label="Language" value={p.language} onChange={e=>m.preferences({...p,language:e.target.value as typeof p.language})}><option value="en">English</option><option value="zh-Hans">简体中文</option></select></label>
-    </header>
+    <AppHeader active="explore" story={storyId} language={p.language} controls={<>      <label className="fan-language"><span className="sr-only">Language</span><select aria-label="Language" value={p.language} onChange={e=>m.preferences({...p,language:e.target.value as typeof p.language})}><option value="en">English</option><option value="zh-Hans">简体中文</option></select></label>
+</>}/>
     <main id="explore-content" tabIndex={-1}>
       <div className="explore-intro"><div><p className="fan-kicker">{t('EASTBRIDGE × NORTHPORT · MATCH ANALYSIS','EASTBRIDGE × NORTHPORT · 比赛分析')}</p><h1>{title}</h1><p>{story && t(...story.context)}</p></div>
         <a className="fan-secondary" href={`?story=${storyId}#matchday`}>{t('Back to highlight','返回集锦')} ↗</a></div>

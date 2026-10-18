@@ -1,5 +1,5 @@
 {
-  "version": "replay-gallery-regression-v1",
+  "version": "gi-reader-regression-v1",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -8,7 +8,7 @@
     "backend/counterpress/adaptation/contracts.py": "9f023a23292524f4bead40259988842f4d78abc2ca429842bd9b70f746616aa3",
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
-    "backend/counterpress/api/main.py": "68b77767ba68e1cb05adafaa4b3e89abb792970fec52398c2e1fd521294a9b5e",
+    "backend/counterpress/api/main.py": "ac5ef078e636cdc1eafd3807752d59acdd8f308dafe12c31249951b38c4694c8",
     "backend/counterpress/api/snapshots.py": "723a5cca09a22629d8137a6265ace0510d6809bf9d0d8339570d765fcc50fbad",
     "backend/counterpress/audience.py": "08e8d5d0977040fc47e0b701cbb0d5b0014565ae19c601ab5d7600f9bb387d79",
     "backend/counterpress/clock.py": "dc56c2b6f04ef1ec2eeb8998b96150f7dbb938b95a7b59c5e54869c9620ba8b1",
@@ -38,6 +38,9 @@
     "backend/counterpress/generator/engine.py": "c441ba2d1bbd26773d68cbe684848ddedf0e9dff73c098f5e5d9d84b9dca803d",
     "backend/counterpress/generator/models.py": "eeabe601d165726e6ee9a91c0a7295a22f6a4c1935c6d279778ef53c091229c1",
     "backend/counterpress/generator/suite.py": "ae798f9d253f29e35112988b49303eb74854c59173f6549aa681e486a9560546",
+    "backend/counterpress/gi/__init__.py": "2fb085b545a0bb17649902592a63e8afb6aa73b6d7fb87e09436b0783fa1fc7a",
+    "backend/counterpress/gi/api.py": "a4e8224be5e36128ac474dfe76ebc3ada7f8692b48a5bb8ff6f589877aba2a5b",
+    "backend/counterpress/gi/service.py": "b12d0101bf1e5783f153776cba7dd7e66bece1437d3c30495b551a129648233f",
     "backend/counterpress/history.py": "0afd8f2793bad51837e59745d9d936a2fe17be22b919b580384e6bfe0174c3a6",
     "backend/counterpress/ingest.py": "3f2ebd623f82456ecb41762cf4447dc30c2b0e94cf3a2bcc7d6237f74d482c0c",
     "backend/counterpress/pressure.py": "a4ea92179feded985965eec11a9f80d3e05d177cd69386a1a548ddaf5ea8759e",

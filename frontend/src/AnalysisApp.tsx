@@ -17,7 +17,7 @@ import type { RevisionStatus } from './revisions'
 
 const START = 180000, END = 780000
 
-export default function App() {
+export default function App({embedded=false}:{embedded?:boolean}={}) {
   const [viewer, setViewer] = useState('one')
   const [profiles, setProfiles] = useState<Record<string, Preferences>>({ one: { ...defaultPreferences }, two: { ...defaultPreferences, depth: 'casual' } })
   const preferences = profiles[viewer]
@@ -113,7 +113,7 @@ export default function App() {
   function changeScenario(value: string) { setScenario(value); reset() }
 
   return <div className="app-shell" lang={preferences.language}>
-    <header className="topbar"><a className="brand" href="/" aria-label="CounterPress home"><span className="brand-mark" aria-hidden="true">↗</span>Counter<span>Press</span><span className="brand-period">.</span></a><div className="header-right"><span className="synthetic-label"><span/>{t('SYNTHETIC REPLAY', '模拟比赛回放')}</span><span className="local-label">{t('MATCH INTELLIGENCE', '比赛洞察')}</span></div></header>
+    {!embedded && <header className="topbar"><a className="brand" href="/" aria-label="CounterPress home"><span className="brand-mark" aria-hidden="true">↗</span>Counter<span>Press</span><span className="brand-period">.</span></a><div className="header-right"><span className="synthetic-label"><span/>{t('SYNTHETIC REPLAY', '模拟比赛回放')}</span><span className="local-label">{t('MATCH INTELLIGENCE', '比赛洞察')}</span></div></header>}
     <main>
       <div className="page-heading"><div><p className="eyebrow">{t('BEYOND THE SCORELINE', '比分之外')}</p><h1>{t('Every phase tells a story.', '每个比赛阶段，都有迹可循。')}</h1><p className="page-description">{t('Follow the shift in play. See the events behind the insight.', '关注比赛变化，查看洞察背后的事件。')}</p></div><label className="scenario-label">{t('Replay scenario', '回放场景')}<select aria-label="Replay scenario" value={scenario} onChange={e => changeScenario(e.target.value)}>{scenarios.length ? scenarios.map(option => <option key={option.scenario_id} value={option.scenario_id}>{t(option.label, ({ increase: '夺回球权增加', 'stream-recovery': '实时夺回球权修订', control: '无增长对照', 'pressure-increase': '压迫与摆脱变化', 'pressure-control': '压迫与摆脱对照', 'progression-increase': '控球未推进', 'progression-control': '推进对照', 'contribution-increase': '球员夺回球权占比增加', 'contribution-control': '球员夺回球权占比对照' } as Record<string, string>)[option.scenario_id] ?? option.label)}</option>) : <><option key="increase" value="increase">Recovery increase</option><option key="control" value="control">No-increase control</option></>}</select></label></div>
       <AudienceControls preferences={preferences} teams={teams} viewer={viewer} onViewer={changeViewer} onChange={changePreferences}/>

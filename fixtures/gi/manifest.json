@@ -1,0 +1,11 @@
+{
+  "provider": "Wyscout / Pappalardo and Massucco",
+  "source": "https://doi.org/10.6084/m9.figshare.7770599",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "match_source": "https://doi.org/10.6084/m9.figshare.7770422",
+  "source_archive_sha256": "877e015b716ffdeea18f04418e3f24fed307ed03c37ff305cabe1f47c4822a45",
+  "fixture_sha256": "762574e95d56c84b87f315338693b346a46435dce08f6b7dc761e568ed109a0b",
+  "revision": 1,
+  "changes": "Selected match 2058017. Fictional display aliases. Coordinates scaled from percentage to 105 \u00d7 68 metres; event outcomes derived from provider tags."
+}

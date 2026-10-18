@@ -1,7 +1,9 @@
+import { AppHeader } from './shell/AppHeader'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import AnalysisApp from './AnalysisApp'
 import { Matchday } from './matchday/Matchday'
 
+const GI = lazy(() => import('./gi/GI'))
 const ExploreData = lazy(() => import('./explore/ExploreData'))
 const Studio = lazy(() => import('./studio/Studio'))
 
@@ -11,19 +13,17 @@ export default function App() {
     () => window.location.hash,
   )
   useEffect(() => {
-    const update = () => setRoute(window.location.hash)
+    const update = () => { setRoute(window.location.hash); if (['#matchday','#explore','#gi','#studio','#analysis'].includes(window.location.hash)) document.querySelector('.cp-shell')?.scrollIntoView?.({block:'start',behavior:'instant'}) }
     window.addEventListener('hashchange', update)
     return () => window.removeEventListener('hashchange', update)
   }, [])
+  if (route === '#gi') return <Suspense fallback={<p>Opening GI…</p>}><GI /></Suspense>
   if (route === '#explore') return <Suspense fallback={<p>Opening match analysis…</p>}><ExploreData /></Suspense>
   if (route === '#studio') return <Suspense fallback={<p>Opening Studio…</p>}><Studio /></Suspense>
   return route === '#analysis' ? (
     <>
-      <nav className="workspace-return" aria-label="Workspace">
-        <a href="#matchday">← Matchday / 比赛故事</a>
-        <a href="#studio">Producer Studio ↗</a>
-      </nav>
-      <AnalysisApp />
+      <AppHeader active="analysis"/>
+      <AnalysisApp embedded />
     </>
   ) : (
     <Matchday />

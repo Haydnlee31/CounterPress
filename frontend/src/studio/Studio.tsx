@@ -1,3 +1,4 @@
+import { AppHeader } from '../shell/AppHeader'
 import { useEffect, useRef, useState } from 'react'
 import { clock, defaultPreferences, windowLabel, type Preferences } from '../types'
 import { createSession, type BroadcastSelection, type Review, type Session } from './session'
@@ -116,7 +117,8 @@ export default function Studio({ sessionFactory = createSession }: { sessionFact
   const ready = checked && !busy && review?.recap.state === 'ready' && review?.status !== 'unavailable'
   const approved = ready && review?.status === 'approved'
   return <div className="studio">
-    <header className="studio-top"><a href="#matchday">← Matchday</a><strong>COUNTERPRESS <span>/ STUDIO</span></strong>
+    <AppHeader active="studio"/>
+    <header className="studio-top"><strong>Producer Studio</strong>
       {signedIn ? <button onClick={signOut}>End Studio session</button> : <span>Producer workspace</span>}</header>
     <main className="studio-main">
       <div className="studio-intro"><p className="studio-eyebrow">THE PRODUCER’S DESK</p><h1>A story you can stand behind.</h1>

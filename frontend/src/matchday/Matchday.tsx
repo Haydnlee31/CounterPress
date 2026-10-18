@@ -1,3 +1,4 @@
+import { AppHeader } from '../shell/AppHeader'
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { clock, windowLabel } from '../types'
@@ -87,15 +88,7 @@ export function Matchday() {
       <a className="fan-skip" href="#matchday-content">
         {t('Skip to match story', '跳至比赛故事')}
       </a>
-      <header className="fan-header">
-        <a className="fan-brand" href="#matchday">
-          CounterPress<span aria-hidden="true">↗</span>
-        </a>
-        <nav aria-label={t('Workspace', '工作区')}>
-          <span aria-current="page">{t('Matchday', '比赛故事')}</span>
-          <a href={`?story=${isReplayStory ? m.request.scenario : 'last-gasp'}#explore`}>{t('Explore data', '探索数据')}</a>
-        </nav>
-        <label className="fan-language">
+      <AppHeader active="matchday" story={isReplayStory?m.request.scenario:'last-gasp'} language={p.language} controls={<>        <label className="fan-language">
           <span className="sr-only">{t('Language', '语言')}</span>
           <select
             aria-label="Language"
@@ -111,7 +104,7 @@ export function Matchday() {
             <option value="zh-Hans">简体中文</option>
           </select>
         </label>
-      </header>
+</>}/>
       <main id="matchday-content">
         <div className="fan-intro">
           <div>

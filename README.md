@@ -3,6 +3,8 @@
 [![CI](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml/badge.svg)](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml)
 
 **Using or judging the demo? Start with the [demo user guide](docs/demo-guide.md)**
+
+The new [GI full-match reader](docs/gi.md) is available at `/#gi`: Eastbridge/Northport club aliases, a pitch canvas and shot map, outcome filters and action context backed by licensed full-match events. Synchronized video seeking is pending. The [unified app navigation](docs/unified-experience.md) now links all workspaces and preserves your browsing context.
 for the live link, a five-minute walkthrough, scenario results and evidence explanations.
 
 The default **Matchday** experience opens with club colours, original crests, an

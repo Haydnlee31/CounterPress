@@ -453,7 +453,7 @@ test('analysis deep link keeps the existing presenter tools accessible', async (
   render(<App />)
   expect(screen.getByLabelText('Local viewer')).toBeTruthy()
   expect(
-    screen.getByRole('link', { name: /Matchday \/ 比赛故事/ }),
+    screen.getByRole('link', { name: 'Matchday' }),
   ).toBeTruthy()
   window.location.hash = '#matchday'
   fireEvent(window, new HashChangeEvent('hashchange'))
