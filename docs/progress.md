@@ -1,5 +1,18 @@
 # Progress
 
+## 18 October 2026 — highlight-linked Explore Data
+
+Added a dedicated fan analysis surface at `#explore`, reached from the current
+Matchday highlight. All three highlights support three explained phases,
+synchronized pitch/timeline selection, passing-route overlays, player involvement
+and phase action comparisons. Existing `#analysis` remains the advanced evidence
+workspace. The new UI preserves club theme, language and the return highlight.
+
+Analysis references current source events; editorial phase text is suppressed
+when its revision-one records are incomplete or changed. No AI calls or new Azure
+resources. Verification commands, results and desktop/mobile captures are in
+`docs/verification/explore-data-local.json`. Human usability testing remains pending.
+
 ## 18 October 2026 — featured Matchday highlight
 
 Home now leads with “Last-second turnaround” as Highlight of the day. Removed the

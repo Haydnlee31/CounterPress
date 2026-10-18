@@ -2,16 +2,23 @@ import { useEffect, useId, useState } from 'react'
 import type { Event } from '../types'
 import { clock } from '../types'
 import { clubName, initials, playerName } from './identity'
-import { actionLabel, actionText, sequenceScene, pitchZone, recipient } from './pitchScene'
+import { actionLabel, actionText, sequenceScene, pitchZone, recipient, fieldPoint } from './pitchScene'
 import { ClubCrest } from './ClubCrest'
 
-export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void}) {
+export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[]}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[]}) {
   const zh=language==='zh-Hans', t=(en:string,cn:string)=>zh?cn:en
   const [index,setIndex]=useState(fromStart?0:Math.max(0,events.length-1)), [progress,setProgress]=useState(0), [playing,setPlaying]=useState(false)
-  const [selected,setSelected]=useState<string|null>(null), [reduced,setReduced]=useState(false)
+  const [localSelected,setSelected]=useState<string|null>(null), [reduced,setReduced]=useState(false)
+  const selected=selectedPlayer===undefined?localSelected:selectedPlayer
   const id=useId().replaceAll(':','')
   const [portrait,setPortrait]=useState(false)
   const [speed,setSpeed]=useState(1)
+  useEffect(()=>{
+    if (!seekTo || !events.length) return
+    setIndex(Math.max(0,Math.min(events.length-1,seekTo.index)))
+    setProgress(0);setPlaying(false);setSelected(null)
+  },[seekTo])
+  const selectPlayer=(player:string)=>{setSelected(player);if(onPlayerSelect){setPlaying(false);onPlayerSelect(player)}}
   useEffect(()=>{
     const query=window.matchMedia?.('(max-width: 640px)')
     if(!query)return
@@ -91,13 +98,19 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
         </g>
         <text x="3" y="-2.5" fill="#cce3d2" fontSize="1.8" letterSpacing=".5">EASTBRIDGE →</text>
         <text x="102" y="-2.5" textAnchor="end" fill="#cce3d2" fontSize="1.8" letterSpacing=".5">← NORTHPORT</text>
+        <g className="explore-routes" pointerEvents="none" aria-hidden="true">{routes.filter(e=>e.action.kind==='pass').map(e=>{
+          const end=e.action.end_position as {x:number;y:number}|undefined
+          if(!end || !Number.isFinite(end.x) || !Number.isFinite(end.y)) return null
+          const a=fieldPoint(e.position,e.actor.team_id), b=fieldPoint(end,e.actor.team_id)
+          return <g key={e.event_id}><path d={`M${a.x} ${a.y}L${b.x} ${b.y}`} stroke="#f5dc90" strokeWidth=".65" opacity=".65"/><circle cx={b.x} cy={b.y} r="1" fill="#f5dc90" opacity=".8"/></g>
+        })}</g>
         {event && <path d={`M${scene.start.x} ${scene.start.y} L${scene.end.x} ${scene.end.y}`} stroke="#f5dc90" strokeWidth=".5" strokeDasharray="1.3 1.3" opacity=".7"/>}
         {[...scene.players].sort((a,b)=>Number(a.involved||a.player_id===selected)-Number(b.involved||b.player_id===selected)).map(p=>{
           return <g key={p.player_id} className={`fan-pitch-player ${p.involved?'involved':''} ${p.player_id===selected?'selected':''}`}
           data-player-id={p.player_id}
           role="button" tabIndex={0} aria-label={`${playerName(p.player_id)}, ${clubName(p.team_id)}`} aria-pressed={selected===p.player_id}
-          transform={`translate(${p.x} ${p.y})`} onClick={()=>setSelected(p.player_id)}
-          onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelected(p.player_id)}}}>
+          transform={`translate(${p.x} ${p.y})`} onClick={()=>selectPlayer(p.player_id)}
+          onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPlayer(p.player_id)}}}>
           <g transform={portrait?"rotate(-90)":undefined}>
           <title>{playerName(p.player_id)} · {clubName(p.team_id)}</title>
           <circle className="player-hit" r={portrait?5.2:4} fill="transparent"/>
@@ -128,7 +141,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
     </div>
     <div className="fan-pitch-caption" aria-live={playing?'off':'polite'}><span className="fan-play-dot"/>
       <p>{selected ? `${playerName(selected)} · ${clubName(selected.startsWith('eb')?'eastbridge':'northport')}` : event ? (event.action.kind==='shot'&&!resolved ? t(`${playerName(event.actor.player_id)} lines up the shot…`,`${playerName(event.actor.player_id)}准备射门…`) : actionText(event,zh)) : t('Waiting for the next play','等待下一次进攻')}</p>
-      {selected && <button onClick={()=>setSelected(null)}>{t('Back to play','返回回放')}</button>}</div>
+      {selected && <button onClick={()=>{setSelected(null);onPlayerSelect?.(null)}}>{t('Back to play','返回回放')}</button>}</div>
 
   </section>
 }

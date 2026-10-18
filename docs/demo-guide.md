@@ -95,6 +95,34 @@ withdrawal at 58:10. Other supported stories can remain when one is withdrawn.
 controls and detailed presenter settings. **Matchday / 比赛故事** returns home.
 The detailed walkthrough below applies to that analysis workspace.
 
+## Explore the football behind a highlight
+
+From any of the three Matchday highlights, select **Explore data**. The same
+highlight opens in the same club colours and language. **Back to highlight**
+returns to it; the three named highlight tabs let you analyse another play.
+
+- **Build-up** divides the move into three readable phases. Select a phase or a
+  supporting play to move the pitch to that action. Passing routes can be toggled.
+- **Players** shows involvement as actor, pass recipient or named goalkeeper.
+  Select a player on the pitch or in the panel. Players with no recorded action
+  get an explicit empty state, rather than an invented contribution.
+- **Compare** counts passes, carries, shots and saves in two selected phases.
+  These are action counts for the highlight, not ratings or full-match statistics.
+- The timeline lets you inspect every action. Playback updates the selected phase
+  and keeps the current timeline entry visible. Mobile selections move between
+  the pitch and the insight panel, with a **Back to pitch** control.
+
+The turnaround covers the two saves, the run down the wing and the final cross,
+header and finish. Pass, move, finish covers Ellis’s control, the passing exchange
+and his finish. From halfway to goal covers the release, Mercer’s carry and pass,
+and Hart’s finish. Explanations are authored against the referenced fixture
+revision and are hidden if supporting records are missing or revised. Counts and
+player involvement are derived from the fetched events. No model call is needed.
+
+[Open highlight analysis](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/?story=last-gasp#explore).
+Source references and reconstruction notes remain in the footer. **Advanced
+analysis & presenter tools** retains the existing five-minute evidence workspace.
+
 ## Five-minute analysis walkthrough
 
 Start by selecting **Analysis & presenter tools**.

@@ -1,0 +1,40 @@
+{
+  "checked_at_utc": "2026-10-18T04:45:27.068437+00:00",
+  "checks": [
+    {
+      "command": ".venv/bin/python -m pytest -q",
+      "output": "592 passed, 1 warning in 30.13s"
+    },
+    {
+      "command": "npm --prefix frontend test -- --reporter=dot",
+      "output": "Test Files 14 passed (14); Tests 87 passed (87)"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "output": "TypeScript and Vite production build passed; 217 modules transformed"
+    },
+    {
+      "command": ".venv/bin/python scripts/container_smoke.py http://127.0.0.1:8010",
+      "output": "PASS: health, readiness, frontend/assets, Studio callback/access boundary, 1-to-4 evidence, control, bilingual recap, three replay goals/rewind, private-path 404s"
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_explore_data.cjs http://127.0.0.1:8010",
+      "output": "PASS: all three Matchday-to-analysis journeys, 22-player pitch, phase/evidence seeking, route toggle, factual counts, keyboard player selection, honest empty involvement, phase comparisons, return links, refresh, mobile focus, bilingual and advanced tools; no browser errors."
+    },
+    {
+      "command": "NODE_PATH=/Users/haydn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node scripts/test_matchday.cjs http://127.0.0.1:8010",
+      "output": "PASS: HTTP Matchday, 22-player moving pitch, persistent full-team view, synchronised commentary, keyboard names, club colours, footer-only disclosure, no JSON, bilingual stories, mobile portrait/200% text, rewind and analyst navigation"
+    }
+  ],
+  "screenshots": [
+    "docs/screenshots/explore-last-gasp.png",
+    "docs/screenshots/explore-one-touch.png",
+    "docs/screenshots/explore-breakaway.png",
+    "docs/screenshots/explore-mobile.png"
+  ],
+  "live_ai_calls": 0,
+  "new_billable_resources": 0,
+  "additional_checks": [
+    "Player selection synchronizes from panel to pitch; Back to play restores the build-up view."
+  ]
+}
