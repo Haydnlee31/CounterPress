@@ -1,0 +1,138 @@
+{
+  "version": "career-world-v1",
+  "training_matches": 304,
+  "held_out_matches": 76,
+  "historical_matches": 840,
+  "featured_matches": 4,
+  "featured_clubs": 4,
+  "featured_players": 44,
+  "clubs": 12,
+  "players": 180,
+  "total_events": 1050765,
+  "simulator_tuning": [
+    {
+      "tempo_scale": 0.9,
+      "shot_hazard_scale": 0.4,
+      "training_moment_loss": 0.006918347829953759,
+      "means": {
+        "passes": 892.5,
+        "shots": 20.875,
+        "goals": 2.25
+      }
+    },
+    {
+      "tempo_scale": 0.9,
+      "shot_hazard_scale": 0.5,
+      "training_moment_loss": 0.12603038272383166,
+      "means": {
+        "passes": 887.875,
+        "shots": 25.333333333333332,
+        "goals": 3.125
+      }
+    },
+    {
+      "tempo_scale": 0.9,
+      "shot_hazard_scale": 0.6,
+      "training_moment_loss": 0.13494318076960005,
+      "means": {
+        "passes": 882.1666666666666,
+        "shots": 26.666666666666668,
+        "goals": 3.0833333333333335
+      }
+    },
+    {
+      "tempo_scale": 1.0,
+      "shot_hazard_scale": 0.4,
+      "training_moment_loss": 0.015233680205599655,
+      "means": {
+        "passes": 811.0416666666666,
+        "shots": 19.916666666666668,
+        "goals": 2.2916666666666665
+      }
+    },
+    {
+      "tempo_scale": 1.0,
+      "shot_hazard_scale": 0.5,
+      "training_moment_loss": 0.005527723305268166,
+      "means": {
+        "passes": 802.9166666666666,
+        "shots": 22.75,
+        "goals": 2.375
+      }
+    },
+    {
+      "tempo_scale": 1.0,
+      "shot_hazard_scale": 0.6,
+      "training_moment_loss": 0.07065765354187284,
+      "means": {
+        "passes": 801.5833333333334,
+        "shots": 25.166666666666668,
+        "goals": 2.875
+      }
+    }
+  ],
+  "validation_100": {
+    "passes": {
+      "n": 100,
+      "mean": 801.3,
+      "sd": 71.495384,
+      "p10": 714,
+      "p50": 802,
+      "p90": 880
+    },
+    "passes_completed": {
+      "n": 100,
+      "mean": 676.3,
+      "sd": 60.430208,
+      "p10": 603,
+      "p50": 678,
+      "p90": 748
+    },
+    "shots": {
+      "n": 100,
+      "mean": 22.98,
+      "sd": 4.833177,
+      "p10": 17,
+      "p50": 23,
+      "p90": 30
+    },
+    "goals": {
+      "n": 100,
+      "mean": 2.6,
+      "sd": 1.549193,
+      "p10": 1,
+      "p50": 2,
+      "p90": 5
+    }
+  },
+  "selected_seed": 20022,
+  "selected_score": {
+    "southbank": 3,
+    "redhaven": 2
+  },
+  "career_goal_range": {
+    "min": 0,
+    "max": 86
+  },
+  "model_sha256": "f3f537497db61be61559e4f8f71ca87d44b4bd2ecd35cfb1b377b6bca619cd7a",
+  "files": {
+    "registry.json": "c8886315acf6e96386271f8948ea54c585d40d615e8a2e94d23025743ba6c192",
+    "model.json": "fa5e0841aaa3fb513e30c6465a0de17d3ed97b42864df645cc760cc852e7318e",
+    "ledger.json.gz": "2c652193e8f4cdd8e2256822d7292cb8aa9f224b7f4d2f63ee9e3f4c7d95268e",
+    "highlights.json": "51bf7362df600ffb34002856cf888672ede6bd4bee3eb8ed6bf2cfdfda0c173f",
+    "calibration.json": "4bc99cb55d4077de145d43408d4630014f12235fbeee0cda179d0042d441b211",
+    "calibration-report.json": "166643cb5cdae4a45011b6c355520276890c7cf491c4b1dbe89fd2e790f3b3e9",
+    "metric-definitions.json": "ca6a227762c67ad6ddbbe8aab286768cb69098375a4cf964341db3cf9270fd7d",
+    "wyscout-2058017.json.gz": "4a32b74e5e2b9c026b61cbb278bb6a2cb28eff15b8be1331269e68df3715c57a",
+    "wyscout-2058007.json.gz": "f04b152e02965a3c9dcb5e413cf980966016c7dca2bf88c49e842fdddeda6e59",
+    "synthetic-32fe41c5d304ce68d7d9.json.gz": "8b060c5abd8eeb7ae276e3004915ddec7c04c5c892d38e03d056fc91dc7b9c87",
+    "career-showcase-southbank-redhaven.json.gz": "fc2038d7764f9e1963d850a7e6e541a9fc035eb3735ba7eef13f526d7af152ed"
+  },
+  "limitations": [
+    "One league season calibrates event patterns; multi-year persistence, form and lineup rotation are authored.",
+    "Ball flight speeds are authored physics, not measured tracking. Full player occupancy and running distance are unavailable.",
+    "Historical fixtures are reproducible from seeds and event digests. Four featured fixtures are materialized.",
+    "Source archive passes lack recipients; archive assists are not inferred. Coverage flags distinguish this from zero.",
+    "The showcase is selected for narrative value from 100 untouched candidates; it is not the population benchmark."
+  ]
+}

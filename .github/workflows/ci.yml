@@ -36,6 +36,8 @@ jobs:
         run: uv sync --locked
       - name: Run backend tests
         run: uv run --frozen pytest -q
+      - name: Audit reproducible career ledger
+        run: uv run --frozen python scripts/verify_personalization.py
 
   frontend:
     name: Frontend tests and build

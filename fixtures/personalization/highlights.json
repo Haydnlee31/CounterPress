@@ -1,0 +1,99 @@
+[
+  {
+    "highlight_id": "career-showcase-southbank-redhaven-e00615",
+    "match_id": "career-showcase-southbank-redhaven",
+    "date": "2026-10-19",
+    "title": "Enzo Clarke reaches 20 career goals",
+    "scorer_id": "rh08",
+    "score_after": {
+      "southbank": 1,
+      "redhaven": 2
+    },
+    "career_goal_milestone": 20,
+    "event_ids": [
+      "e00609",
+      "e00610",
+      "e00611",
+      "e00612",
+      "e00613",
+      "e00614",
+      "e00615"
+    ],
+    "start": {
+      "period": 2,
+      "elapsed_ms": 409474
+    },
+    "end": {
+      "period": 2,
+      "elapsed_ms": 447225
+    },
+    "goal_event_id": "e00615"
+  },
+  {
+    "highlight_id": "career-showcase-southbank-redhaven-e00738",
+    "match_id": "career-showcase-southbank-redhaven",
+    "date": "2026-10-19",
+    "title": "Dario Voss brings Southbank level",
+    "scorer_id": "sb09",
+    "score_after": {
+      "southbank": 2,
+      "redhaven": 2
+    },
+    "career_goal_milestone": null,
+    "event_ids": [
+      "e00729",
+      "e00730",
+      "e00731",
+      "e00732",
+      "e00733",
+      "e00734",
+      "e00735",
+      "e00736",
+      "e00737",
+      "e00738"
+    ],
+    "start": {
+      "period": 2,
+      "elapsed_ms": 1042980
+    },
+    "end": {
+      "period": 2,
+      "elapsed_ms": 1081158
+    },
+    "goal_event_id": "e00738"
+  },
+  {
+    "highlight_id": "career-showcase-southbank-redhaven-e00799",
+    "match_id": "career-showcase-southbank-redhaven",
+    "date": "2026-10-19",
+    "title": "Orson Corbin puts Southbank ahead",
+    "scorer_id": "sb14",
+    "score_after": {
+      "southbank": 3,
+      "redhaven": 2
+    },
+    "career_goal_milestone": null,
+    "event_ids": [
+      "e00789",
+      "e00790",
+      "e00791",
+      "e00792",
+      "e00793",
+      "e00794",
+      "e00795",
+      "e00796",
+      "e00797",
+      "e00798",
+      "e00799"
+    ],
+    "start": {
+      "period": 2,
+      "elapsed_ms": 1366584
+    },
+    "end": {
+      "period": 2,
+      "elapsed_ms": 1432080
+    },
+    "goal_event_id": "e00799"
+  }
+]

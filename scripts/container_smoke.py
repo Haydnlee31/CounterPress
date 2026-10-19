@@ -78,10 +78,23 @@ assert len(comeback['events']) == 1682 and len(comeback['players']) == 26
 assert [team['score'] for team in comeback['teams']] == [3, 2]
 assert [e['goal_for'] for e in comeback['events'] if e['goal_for']] == [9598, 9598, 4418, 4418, 4418]
 assert comeback['source']['license'] == 'CC BY 4.0'
+catalog = json.loads(get('/api/data/catalog')[0])
+assert catalog['counts']['featured_players'] == 44 and catalog['counts']['historical_matches'] == 840
+assert json.loads(get('/api/data/matches')[0])['total'] == 4
+assert json.loads(get('/api/data/players')[0])['total'] == 44
+career = json.loads(get('/api/data/players/sb09')[0])
+assert career['totals']['goals'] > 0 and career['coverage']['tracking_distance_m'] is None
+new_match = 'career-showcase-southbank-redhaven'
+milestone = data(f'/api/data/matches/{new_match}/live?period=2&elapsed_ms=2700000')['milestones'][0]
+at = milestone['available_at']['elapsed_ms']
+assert not data(f'/api/data/matches/{new_match}/live?period=2&elapsed_ms={at-1}')['milestones']
+assert data(f'/api/data/matches/{new_match}/live?period=2&elapsed_ms={at}')['milestones'][0]['career_goals'] == 20
+assert len(json.loads(get('/api/data/highlights')[0])) == 3
+assert {t['team_id'] for t in json.loads(get(f'/api/data/matches/{new_match}/replay')[0])['teams']} == {'southbank','redhaven'}
 for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/missing", "/assets/missing.js"):
     try:
         get(path)
         raise AssertionError(f"Unexpected public file: {path}")
     except HTTPError as error:
         assert error.code == 404
-print("PASS: health, readiness, frontend/assets, Studio callback/access boundary, 1-to-4 evidence, control, bilingual recap, three replay goals/rewind, full-match GI events/attribution, private-path 404s")
+print("PASS: health, readiness, frontend/assets, Studio callback/access boundary, evidence/recaps, replay goals, GI attribution, 44 career profiles, four featured matches, causal milestone, private-path 404s")

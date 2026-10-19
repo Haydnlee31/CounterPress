@@ -4,6 +4,11 @@
 
 **Using or judging the demo? Start with the [demo user guide](docs/demo-guide.md)**
 
+**Building player and club profiles?** The [personalization data foundation](docs/personalization-data.md)
+provides 44 featured players, four clubs, 840 historical fixtures and four featured
+matches through read-only `/api/data/` endpoints. The guide includes local startup,
+metric definitions, coverage, evidence and frontend integration boundaries.
+
 The new [GI full-match reader](docs/gi.md) is available at `/#gi`: Eastbridge/Northport club aliases, a pitch canvas and shot map, outcome filters and action context backed by licensed full-match events. Synchronized video seeking is pending. The [unified app navigation](docs/unified-experience.md) now links all workspaces and preserves your browsing context.
 for the live link, a five-minute walkthrough, scenario results and evidence explanations.
 

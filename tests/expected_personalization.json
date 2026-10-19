@@ -1,0 +1,7 @@
+{
+  "score": {"eastbridge": 3, "northport": 0},
+  "scorer": {"goals": 2, "assists": 0, "shots": 3, "shots_on_target": 2, "shots_blocked": 1, "duels": 1, "duels_won": 1},
+  "creator": {"goals": 0, "assists": 1, "key_passes": 2, "passes": 2, "passes_completed": 2, "pass_distance_m": 40, "xpass_passes": 2, "xpass_completed": 2, "expected_completions": 1.4},
+  "opponent": {"own_goals": 1, "goals": 0, "passes": 1, "passes_completed": 0, "duels": 1, "duels_won": 0},
+  "notes": "Written independently: one assisted goal, one rebound goal with no second assist, one opponent own goal. The pass before the blocked shot is a key pass, not an assist. A won duel is also a lost duel for the explicit opponent."
+}
