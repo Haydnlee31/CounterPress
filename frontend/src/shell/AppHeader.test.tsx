@@ -23,3 +23,9 @@ it('rejects an unknown highlight when composing navigation links',()=>{
  render(<AppHeader active="matchday" story="not-a-story"/>)
  expect(screen.getByRole('link',{name:'Explore data'}).getAttribute('href')).toBe('?story=last-gasp#explore')
 })
+it('keeps the Matchday library highlight-only',()=>{
+ render(<AppHeader active="matchday"/>)
+ expect(screen.queryByText('Full-match archive')).toBeNull()
+ expect(screen.queryByText('Watch the full match')).toBeNull()
+ expect(screen.getByText('Highlights')).toBeTruthy()
+})

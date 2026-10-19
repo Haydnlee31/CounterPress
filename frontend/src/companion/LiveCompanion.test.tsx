@@ -181,3 +181,12 @@ test('Azure transport keeps sentence boundaries and falls back once on failure',
   calls[1].done()
   expect(synth.speak).toHaveBeenCalledTimes(1)
 })
+
+test('full matches provide text and questions without voice controls or synthesis',()=>{
+ const synth=mockSpeech()
+ render(<LiveCompanion events={[pass]} index={0} resolved playing finished={false} language="en" fullMatch/>)
+ expect(screen.queryByRole('button',{name:/Listen/})).toBeNull()
+ expect(synth.speak).not.toHaveBeenCalled()
+ fireEvent.click(screen.getByRole('button',{name:/Follow the play/}))
+ expect(screen.getByRole('button',{name:'What just happened?'})).toBeTruthy()
+})

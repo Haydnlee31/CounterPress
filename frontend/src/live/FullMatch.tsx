@@ -45,7 +45,7 @@ export default function FullMatch(){
     return {team,shots:own.filter(e=>e.action.kind==='shot').length,passes:own.filter(e=>e.action.kind==='pass'&&e.action.outcome==='completed').length}
   })
   return <div className="matchday" lang={language} style={{'--fan-accent':theme.accent,'--fan-ink':theme.ink,'--fan-background':theme.background,'--fan-soft':theme.soft} as CSSProperties}>
-    <AppHeader active="matchday" language={language} fullMatch/>
+    <AppHeader active="gi" language={language} fullMatch/>
     <main className="live-match">
       <div className="live-intro"><div><p className="fan-kicker">18 OCT 2026 · {t('FULL MATCH REPLAY','全场回放')}</p><h1>Eastbridge × Northport</h1></div><label>{t('Language','语言')} <select aria-label="Commentary language" value={language} onChange={e=>setLanguage(e.target.value as typeof language)}><option value="en">English</option><option value="zh-Hans">中文</option></select></label></div>
       {error?<p role="alert">{t('The match could not load. Refresh to try again.','比赛加载失败，请刷新重试。')}</p>:!events.length?<p role="status">{t('Opening the match…','加载比赛…')}</p>:<>

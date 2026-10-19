@@ -33,9 +33,10 @@ class SpeechRequest(Contract):
     cutoff: MatchTime
     language: Literal['en', 'zh-Hans'] = 'en'
     detailed: bool = False
+    delivery: Literal['summary', 'highlight-action', 'highlight-result'] = 'summary'
 
 
-def phrase(events, zh=False, detailed=False):
+def phrase(events, zh=False, detailed=False, delivery='summary'):
     shot = next((e for e in reversed(events) if e.action.kind == 'shot'), None)
     e = shot or events[-1]
     a = e.action
@@ -60,6 +61,12 @@ def phrase(events, zh=False, detailed=False):
     if detailed:
         zone = ('前场' if e.position.x>=70 else '中场' if e.position.x>=35 else '后场') if zh else ('near the opposition goal' if e.position.x>=70 else 'in midfield' if e.position.x>=35 else 'deep in their own half')
         text += f' {club}，{zone}。' if zh else f' {club}, {zone}.'
+    if delivery == 'highlight-action':
+        # A short actor call follows the ball, without announcing an unseen outcome.
+        text = name.split()[-1] + ('！' if a.kind == 'shot' else '。') if zh else name.split()[-1] + ('!' if a.kind == 'shot' else '.')
+    elif delivery == 'highlight-result':
+        text = {'goal': ('Goal!', '进球了！'), 'saved': ('Saved!', '扑出！'),
+                'blocked': ('Blocked!', '挡出！'), 'off_target': ('Wide!', '偏了！')}.get(a.outcome, ('Wide!', '偏了！'))[int(zh)]
     exciting = bool(shot)
     voice = 'zh-CN-YunjianNeural' if zh else 'en-US-GuyNeural'
     style = ('sports-commentary-excited' if exciting else 'sports-commentary') if zh else ('excited' if exciting else 'newscast')
@@ -108,6 +115,7 @@ class AzureSpeech:
             except (ResourceExistsError, ResourceModifiedError): continue
         raise SpeechLimit()
 
+    @lru_cache(maxsize=128)
     def audio(self, text, ssml):
         import httpx
         from azure.core.exceptions import ResourceNotFoundError
@@ -169,7 +177,12 @@ def install_speech(app, root:Path, adapter=None):
         events=[source[i] for i in positions]
         if any(e.revision!=revision or e.available_at.key()>request.cutoff.key() or e.occurred_at.key()>request.cutoff.key() for e,revision in zip(events,request.revisions)):
             raise HTTPException(409,'Actions are not available at this playback position')
-        text,ssml=phrase(events,request.language=='zh-Hans',request.detailed)
+        if request.delivery != 'summary':
+            if len(events) != 1 or not request.match_id.startswith('showcase-') or request.detailed:
+                raise HTTPException(422,'Choose one highlight action')
+            if request.delivery == 'highlight-result' and events[0].action.kind != 'shot':
+                raise HTTPException(422,'Choose a shot result')
+        text,ssml=phrase(events,request.language=='zh-Hans',request.detailed,request.delivery)
         try: audio=service().audio(text,ssml)
         except SpeechLimit: raise HTTPException(429,'Broadcast voice is resting; device voice is available',headers={'Retry-After':'60'}) from None
         except Exception: raise HTTPException(503,'Broadcast voice is temporarily unavailable') from None

@@ -283,7 +283,6 @@ export function Matchday() {
             </button>}
           </div>
         </section>
-        <a className="fan-secondary" href="?match=synthetic-32fe41c5d304ce68d7d9#live">{t('Watch the full match with commentary','收听全场比赛解说')} ↗</a>
         {snapshot && <MatchPitch companion key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} fromStart={isReplayStory} onPlayhead={isReplayStory?setPitchHead:undefined} />}
         {replayOpen && !isReplayStory && (
           <section

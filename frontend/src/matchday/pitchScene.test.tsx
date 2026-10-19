@@ -140,7 +140,7 @@ test('goal reveal and playhead score wait for the ball, undo on rewind and respe
 })
 
 
-test('reduced-motion viewers can listen to a manually completed play',()=>{
+test('reduced-motion viewers retain manual text commentary when Azure audio is unavailable',()=>{
   vi.stubGlobal('matchMedia',vi.fn((q:string)=>({matches:q.includes('reduced-motion'),addEventListener:vi.fn(),removeEventListener:vi.fn()})))
   const synth={speak:vi.fn(),cancel:vi.fn(),getVoices:()=>[]}
   vi.stubGlobal('speechSynthesis',synth)
@@ -149,7 +149,8 @@ test('reduced-motion viewers can listen to a manually completed play',()=>{
   fireEvent.click(screen.getByRole('button',{name:/Listen/}))
   expect(synth.speak).not.toHaveBeenCalled()
   fireEvent.click(screen.getByRole('button',{name:'Show ball movement'}))
-  expect(synth.speak.mock.calls.at(-1)![0].text).toContain('passes to Leo Marlow')
+  expect(screen.getByRole('region',{name:'Live Companion'}).textContent).toContain('passes to Leo Marlow')
+  expect(synth.speak).not.toHaveBeenCalled()
   fireEvent.click(screen.getByRole('button',{name:'Show ball movement'}))
-  expect(synth.cancel).toHaveBeenCalled()
+  expect(synth.speak).not.toHaveBeenCalled()
 })

@@ -114,3 +114,24 @@ def test_cache_hit_never_calls_synthesis_or_reserves_quota():
     voice.cache=SimpleNamespace(get_blob_client=lambda name:blob)
     voice.reserve=lambda n:(_ for _ in ()).throw(AssertionError('cache billed'))
     assert voice.audio('text','ssml')==b'mp3'
+    voice.cache=SimpleNamespace(get_blob_client=lambda name:(_ for _ in ()).throw(AssertionError('memory cache missed')))
+    assert voice.audio('text','ssml')==b'mp3'
+
+
+def test_short_highlight_calls_are_grounded_and_results_are_shot_only():
+    app=FastAPI();voice=FakeVoice();install_speech(app,ROOT,voice)
+    from counterpress.api.snapshots import SCENARIOS
+    feed=load_fixture(ROOT/SCENARIOS['last-gasp'][0])
+    shot=next(e for e in feed.events if e.action.kind=='shot')
+    routine=next(e for e in feed.events if e.action.kind=='pass')
+    with TestClient(app) as client:
+        assert client.post('/api/voice/commentary',json={**request(shot),'delivery':'highlight-action'}).status_code==200
+        assert voice.calls[-1][0].split()==['Marlow!']
+        assert client.post('/api/voice/commentary',json={**request(shot),'delivery':'highlight-result'}).status_code==200
+        assert voice.calls[-1][0]=='Saved!'
+        assert client.post('/api/voice/commentary',json={**request(shot),'delivery':'highlight-result','language':'zh-Hans'}).status_code==200
+        assert voice.calls[-1][0]=='扑出！'
+        assert client.post('/api/voice/commentary',json={**request(routine),'delivery':'highlight-result'}).status_code==422
+        assert client.post('/api/voice/commentary',json={**request(shot),'delivery':'highlight-action','detailed':True}).status_code==422
+        full=load_fixture(ROOT/'gi/synthetic/events.json').events[0]
+        assert client.post('/api/voice/commentary',json={**request(full),'delivery':'highlight-action'}).status_code==422
