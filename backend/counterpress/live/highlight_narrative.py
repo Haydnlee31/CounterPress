@@ -21,7 +21,7 @@ SCRIPTS = {
   (7, 'and sends the cross over.', '起脚传中！'),
   (8, 'Vale heads it back for Ellis—', 'Vale头球回做，交给Ellis——'),
   (9, 'Ellis hits it!', 'Ellis起脚！'),
-  (9.6, 'Goal! A stunning counterattack!', '球进了！精彩的反击！'),
+  (9.6, "Oh, he's scored! What a counterattack!", '球进了！精彩的反击！'),
  ],
  'one-touch': [
   (0, 'Ellis brings the ball forward, looking for a way through.', 'Ellis带球向前，寻找突破口。'),
