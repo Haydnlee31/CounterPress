@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, expect, test, vi } from 'vitest'
 import type { Event } from '../types'
 import { answer, completedEvents, cue } from './evidence'
+import { CommentarySpeech } from './speech'
 import { LiveCompanion } from './LiveCompanion'
 
 const pass:Event={schema_version:'1.0',match_id:'test',event_id:'pass',revision:1,source_delivery_sequence:1,occurrence_order:1,
@@ -155,4 +156,28 @@ test('language changes discard old queued speech and stale callbacks',()=>{
   expect(synth.speak.mock.calls[1][0].lang).toBe('zh-CN')
   act(()=>old.onend())
   expect(synth.speak).toHaveBeenCalledTimes(2)
+})
+
+test('full-match viewer clock releases a delayed delivery only once available',()=>{
+  const delayed={...pass,available_at:{period:2 as const,elapsed_ms:1500}}
+  expect(completedEvents([delayed],0,true,{period:2,elapsed_ms:1200})).toEqual([])
+  expect(completedEvents([delayed],0,true,{period:2,elapsed_ms:1800})).toEqual([delayed])
+})
+
+test('Azure transport keeps sentence boundaries and falls back once on failure',()=>{
+  const synth=mockSpeech()
+  const calls:{done:()=>void;failed:()=>void}[]=[]
+  const cancel=vi.fn(),fallback=vi.fn()
+  const queue=new CommentarySpeech(synth as unknown as SpeechSynthesis,false,false,vi.fn(),(_events,_zh,_detail,done,failed)=>{calls.push({done,failed});return cancel},fallback)
+  queue.offer(pass);queue.offer(goal)
+  expect(calls).toHaveLength(1)
+  expect(cancel).not.toHaveBeenCalled()
+  calls[0].done()
+  expect(calls).toHaveLength(2)
+  calls[1].failed()
+  expect(fallback).toHaveBeenCalledTimes(1)
+  expect(synth.speak.mock.calls[0][0].text).toContain('fires it home')
+  queue.stop()
+  calls[1].done()
+  expect(synth.speak).toHaveBeenCalledTimes(1)
 })

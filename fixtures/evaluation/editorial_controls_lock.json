@@ -1,5 +1,5 @@
 {
-  "version": "studio-cue-workflow-v1",
+  "version": "full-match-broadcast-voice-v1",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -8,7 +8,7 @@
     "backend/counterpress/adaptation/contracts.py": "9f023a23292524f4bead40259988842f4d78abc2ca429842bd9b70f746616aa3",
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
-    "backend/counterpress/api/main.py": "ac5ef078e636cdc1eafd3807752d59acdd8f308dafe12c31249951b38c4694c8",
+    "backend/counterpress/api/main.py": "85985418a6f81e76a125fecd34acfbd7f17d53e0819362f12f7b92ed50663059",
     "backend/counterpress/api/snapshots.py": "7660f6430475f783e9faeb37983f5ccde28368e30135a3952f94f2bfa40eed6e",
     "backend/counterpress/audience.py": "08e8d5d0977040fc47e0b701cbb0d5b0014565ae19c601ab5d7600f9bb387d79",
     "backend/counterpress/clock.py": "dc56c2b6f04ef1ec2eeb8998b96150f7dbb938b95a7b59c5e54869c9620ba8b1",
@@ -45,6 +45,9 @@
     "backend/counterpress/gi/synthetic.py": "d3853c471f1956a5d0532c0b2f74849e967bb57a4d77e03a85965121ed5351c7",
     "backend/counterpress/history.py": "0afd8f2793bad51837e59745d9d936a2fe17be22b919b580384e6bfe0174c3a6",
     "backend/counterpress/ingest.py": "3f2ebd623f82456ecb41762cf4447dc30c2b0e94cf3a2bcc7d6237f74d482c0c",
+    "backend/counterpress/live/__init__.py": "ee3ac3731064333ba41ecb2e9257f939c2225cf9104add274b4a2f51c1fb2133",
+    "backend/counterpress/live/api.py": "714f855faf4646ad2c10015f4158ac724bea0b9dde9d72e028531de9d918c3e6",
+    "backend/counterpress/live/speech.py": "3792207b34d72a4c52059dfa6a8ab96af8520d7cc2df0bdb28261ce67329d388",
     "backend/counterpress/pressure.py": "a4ea92179feded985965eec11a9f80d3e05d177cd69386a1a548ddaf5ea8759e",
     "backend/counterpress/pressure_publications.py": "dcd97a6eaf0d9244698ed4b8217a7ea8c2325cc4858d229921b7e9afe398cbd8",
     "backend/counterpress/pressure_views.py": "fb790aee51bbf9ede9a127b17169d846c35246c2d5824b9d84c0eab15d46e61f",

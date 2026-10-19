@@ -48,6 +48,10 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
     application = FastAPI(title="CounterPress", version="0.1.0", lifespan=lifespan)
     from counterpress.gi.api import install_gi
     install_gi(application, root)
+    from counterpress.live.api import install_live
+    install_live(application, root)
+    from counterpress.live.speech import install_speech
+    install_speech(application, root)
     application.state.snapshots = service
     application.state.revision_publisher = revision_publisher
     from counterpress.editorial.api import configure_editorial, install_editorial

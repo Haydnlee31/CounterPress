@@ -1,4 +1,4 @@
-import type { Event } from '../types'
+import type { Event, MatchTime } from '../types'
 import { clubName, playerName } from '../matchday/identity'
 import { actionText } from '../matchday/pitchScene'
 
@@ -9,13 +9,14 @@ const time = (e: Event, available = false) => {
 }
 
 /** Presentation order and source availability are separate gates. Never consult later plays. */
-export function completedEvents(events: Event[], index: number, resolved: boolean): Event[] {
+export function completedEvents(events: Event[], index: number, resolved: boolean, asOf?:MatchTime): Event[] {
   const prefix = events.slice(0, Math.max(0, index + (resolved ? 1 : 0)))
   const cutoff = prefix.at(-1)
   if (!cutoff) return []
+  const limit=asOf?asOf.period*10_000_000+asOf.elapsed_ms:time(cutoff)
   const latest = new Map<string, Event>()
   for (const e of prefix) {
-    if (e.match_id !== cutoff.match_id || time(e) > time(cutoff) || time(e, true) > time(cutoff)) continue
+    if (e.match_id !== cutoff.match_id || time(e) > limit || time(e, true) > limit) continue
     const previous = latest.get(e.event_id)
     if (!previous || e.revision > previous.revision) latest.set(e.event_id, e)
   }
