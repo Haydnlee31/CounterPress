@@ -20,7 +20,10 @@ const assert=require('node:assert/strict')
   const base=process.argv[2]||'http://127.0.0.1:8010'
   for(const story of ['last-gasp','level-first','level-late']){
    await page.goto(`${base}/?story=${story}#matchday`)
-   await page.getByRole('region',{name:'Live Companion',exact:true}).waitFor()
+   const panel=page.getByRole('region',{name:'Live Companion',exact:true})
+   await panel.waitFor()
+   const config=await (await page.request.get(`${base}/api/voice/config`)).json()
+   if(config.azure){await panel.getByRole('button',{name:/Follow the play/}).click();await page.getByRole('combobox',{name:'Commentary voice'}).selectOption('device')}
    await page.getByRole('combobox',{name:'Pitch replay speed'}).selectOption('1.5')
    await page.getByRole('button',{name:/Listen/}).click()
    await page.getByRole('button',{name:/Play highlight/}).click()

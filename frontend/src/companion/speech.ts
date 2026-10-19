@@ -1,6 +1,7 @@
 import type { Event } from '../types'
 import { clubName, playerName } from '../matchday/identity'
 import { recipient } from '../matchday/pitchScene'
+import type { BroadcastPlayer } from './broadcast'
 import { cue } from './evidence'
 
 export function speechSummary(events:Event[],zh:boolean,detailed:boolean) {
@@ -20,9 +21,11 @@ export class CommentarySpeech {
   private active=false
   private generation=0
   private seen=new Set<string>()
-  constructor(private synth:SpeechSynthesis,private zh:boolean,private detailed:boolean,private fail:()=>void){}
+  private cancelAudio:(()=>void)|undefined
+  private useDevice=false
+  constructor(private synth:SpeechSynthesis,private zh:boolean,private detailed:boolean,private fail:()=>void,private broadcast?:BroadcastPlayer,private fallback?:()=>void){}
   stop(){
-    this.generation++;this.pending=[];this.active=false;this.seen.clear();this.synth.cancel()
+    this.generation++;this.cancelAudio?.();this.cancelAudio=undefined;this.pending=[];this.active=false;this.seen.clear();this.synth.cancel()
   }
   offer(event:Event){
     const key=`${event.match_id}:${event.event_id}:${event.revision}`
@@ -40,6 +43,21 @@ export class CommentarySpeech {
     if(this.active || !this.pending.length)return
     const batch=this.pending;this.pending=[];this.active=true
     const generation=this.generation
+    if(this.broadcast && !this.useDevice){
+      this.cancelAudio=this.broadcast(batch,this.zh,this.detailed,()=>{
+        if(generation!==this.generation)return
+        this.cancelAudio=undefined;this.active=false;this.drain()
+      },()=>{
+        if(generation!==this.generation)return
+        this.cancelAudio?.();this.cancelAudio=undefined;this.useDevice=true;this.fallback?.()
+        this.speakDevice(batch,generation)
+      })
+      return
+    }
+    this.speakDevice(batch,generation)
+  }
+  private speakDevice(batch:Event[],generation:number){
+    if(typeof SpeechSynthesisUtterance==='undefined'){this.stop();this.fail();return}
     const utterance=new SpeechSynthesisUtterance(speechSummary(batch,this.zh,this.detailed))
     utterance.lang=this.zh?'zh-CN':'en-GB'
     const voice=this.synth.getVoices().find(v=>v.lang.toLowerCase().startsWith(this.zh?'zh':'en'))

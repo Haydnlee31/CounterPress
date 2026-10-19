@@ -7,9 +7,10 @@ import { LiveCompanion } from '../companion/LiveCompanion'
 import { cue } from '../companion/evidence'
 import { ClubCrest } from './ClubCrest'
 
-export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[],companion=false}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[];companion?:boolean}) {
+export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[],companion=false,playback}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[];companion?:boolean;playback?:{index:number;progress:number;playing:boolean}}) {
   const zh=language==='zh-Hans', t=(en:string,cn:string)=>zh?cn:en
-  const [index,setIndex]=useState(fromStart?0:Math.max(0,events.length-1)), [progress,setProgress]=useState(0), [playing,setPlaying]=useState(false)
+  const [localIndex,setIndex]=useState(fromStart?0:Math.max(0,events.length-1)), [localProgress,setProgress]=useState(0), [localPlaying,setPlaying]=useState(false)
+  const index=playback?.index??localIndex, progress=playback?.progress??localProgress, playing=playback?.playing??localPlaying
   const [localSelected,setSelected]=useState<string|null>(null), [reduced,setReduced]=useState(false)
   const selected=selectedPlayer===undefined?localSelected:selectedPlayer
   const id=useId().replaceAll(':','')
@@ -38,7 +39,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
     update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update)
   },[])
   useEffect(()=>{
-    if(!playing || reduced || !events.length) return
+    if(playback || !playing || reduced || !events.length) return
     let frame:number,previous=performance.now(),value=progress,current=index
     const step=(now:number)=>{
       const duration=fromStart ? playDuration(events[current],events[current+1]) : 3200
@@ -54,7 +55,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   const event=events[Math.min(index,Math.max(0,events.length-1))]
   const resolved=progress >= (event?.action.kind === 'shot' ? .6 : .8)
   useEffect(()=>{onPlayhead?.({index,resolved})},[index,resolved,onPlayhead,signature])
-  const scene=sequenceScene(events,index,progress,fromStart)
+  const scene=sequenceScene(events,index,reduced && playback?(progress>=.8?1:0):progress,fromStart)
   const goal=event?.action.kind==='shot'&&event.action.outcome==='goal'&&resolved
   const history=events.slice(Math.max(0,index-4),index+1).map((record,i)=>({record,index:Math.max(0,index-4)+i})).reverse()
   const target=recipient(event)
@@ -66,9 +67,9 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   }
   const select=(next:number)=>{setSpeechEpoch(v=>v+1);setPlaying(false);setIndex(next);setProgress(0);setSelected(null)}
   return <section className={`fan-pitch ${compact?'is-compact':''}`} aria-label={t('Match pitch','比赛球场')}>
-    <div className="fan-pitch-heading"><div><p className="fan-kicker">{t('ON THE PITCH','球场上')}</p><h2>{t('Watch the play','观看回放')}</h2></div>
+    <div className="fan-pitch-heading"><div><p className="fan-kicker">{t('ON THE PITCH','球场上')}</p><h2>{playback?t('On the pitch','球场上'):t('Watch the play','观看回放')}</h2></div>
       <div className="fan-tracker-clock"><span>{t(playing?'Playing':'Replay',playing?'播放中':'回放')}</span><span className="fan-pitch-time">{event ? replayClock(event) : '—'}</span></div></div>
-    <div className="fan-pitch-controls">
+    {!playback && <div className="fan-pitch-controls">
       <button className="fan-primary" disabled={!events.length} onClick={startPlayback}>{reduced?t('Show ball movement','查看传球落点'):playing?t('Pause play','暂停'):fromStart?t('Play highlight','播放集锦'):t('Play sequence','播放片段')} <span aria-hidden="true">{playing?'Ⅱ':'▶'}</span></button>
       <button className="fan-secondary" disabled={!events.length || index===0} onClick={()=>select(index-1)} aria-label={t('Previous play','上一次进攻')}>←</button>
       <button className="fan-secondary" disabled={!events.length || index===events.length-1} onClick={()=>select(index+1)} aria-label={t('Next play','下一次进攻')}>→</button>
@@ -76,7 +77,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       <button className="fan-secondary" onClick={()=>select(0)} disabled={!events.length}>{t('Restart','重新开始')} ↺</button>
       <label className="fan-speed">{t('Speed','速度')} <select aria-label={t('Pitch replay speed','球场回放速度')} value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option></select></label>
       <label className="fan-pitch-scrubber"><span className="sr-only">{t('Replay position','回放位置')}</span><input type="range" aria-label={t('Replay position','回放位置')} min="0" max={Math.max(1,events.length*100)} step="1" value={index*100+progress*100} disabled={!events.length} aria-valuetext={t(`Play ${index+1} of ${events.length}`,`第${index+1}次，共${events.length}次`)} onChange={e=>{const value=Number(e.target.value)/100;setSpeechEpoch(v=>v+1);setPlaying(false);setIndex(Math.min(events.length-1,Math.floor(value)));setProgress(value>=events.length?1:value%1);setSelected(null)}}/></label>
-    </div>
+    </div>}
     <div className="fan-tracker-grid">
       {!compact && <aside className="fan-play-board" aria-label={t('Current play','当前进攻')}>
         <p className="fan-kicker">{t('IN THE ACTION','焦点球员')}</p>
@@ -135,7 +136,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       {!compact && <aside className="fan-commentary" aria-label={t('Match commentary','比赛解说')}>
         <div className="fan-commentary-heading"><h3>{t('Match commentary','比赛解说')}</h3><span>{t('Play by play','逐次回放')}</span></div>
         <ol>{history.map(({record,index:at})=><li key={`${record.event_id}:${record.revision}`}>
-          <button aria-current={at===index?'step':undefined} onClick={()=>select(at)} aria-label={`${t('Replay','回放')} ${replayClock(record)}: ${narration(record,at)}`}>
+          <button aria-current={at===index?'step':undefined} disabled={!!playback} onClick={()=>select(at)} aria-label={`${t('Replay','回放')} ${replayClock(record)}: ${narration(record,at)}`}>
             <span className="fan-feed-meta"><time>{replayClock(record)}</time><span>{at===index?t('On the pitch','球场上'):clubName(record.actor.team_id)}</span></span>
             <strong>{narration(record,at)}</strong>
           </button>

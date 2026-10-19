@@ -1,5 +1,13 @@
 # Progress
 
+## 19 October 2026 — full-match companion and Azure broadcast speech
+
+Added full-match replay at `#live`, with 22-player pitch, halftime pause, seeking,
+running scores/statistics and playback-grounded questions. Azure F0 expressive
+voices now support English and Mandarin, with private Blob caching, a durable
+200,000-character monthly allowance and device fallback. Managed identity keeps
+credentials server-side. See [architecture and verification](live-companion.md#19-october-2026--full-match-and-azure-broadcast-voices).
+
 ## 19 October 2026 — uninterrupted companion commentary
 
 Replaced per-play speech cancellation with sentence-completion scheduling. Rapid
