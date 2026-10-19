@@ -15,8 +15,10 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   const id=useId().replaceAll(':','')
   const [portrait,setPortrait]=useState(false)
   const [speed,setSpeed]=useState(1)
+  const [speechEpoch,setSpeechEpoch]=useState(0)
   useEffect(()=>{
     if (!seekTo || !events.length) return
+    setSpeechEpoch(v=>v+1)
     setIndex(Math.max(0,Math.min(events.length-1,seekTo.index)))
     setProgress(0);setPlaying(false);setSelected(null)
   },[seekTo])
@@ -59,10 +61,10 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   const narration=(record:Event,at:number)=>cue(record,at!==index || resolved,zh)
   const startPlayback=()=>{
     if(reduced){setProgress(p=>p===0?1:0);return}
-    if(!playing && (index===events.length-1 && (progress>=1 || (!fromStart && progress===0)))){setIndex(0);setProgress(0);setSelected(null)}
+    if(!playing && (index===events.length-1 && (progress>=1 || (!fromStart && progress===0)))){setSpeechEpoch(v=>v+1);setIndex(0);setProgress(0);setSelected(null)}
     setPlaying(v=>!v)
   }
-  const select=(next:number)=>{setPlaying(false);setIndex(next);setProgress(0);setSelected(null)}
+  const select=(next:number)=>{setSpeechEpoch(v=>v+1);setPlaying(false);setIndex(next);setProgress(0);setSelected(null)}
   return <section className={`fan-pitch ${compact?'is-compact':''}`} aria-label={t('Match pitch','比赛球场')}>
     <div className="fan-pitch-heading"><div><p className="fan-kicker">{t('ON THE PITCH','球场上')}</p><h2>{t('Watch the play','观看回放')}</h2></div>
       <div className="fan-tracker-clock"><span>{t(playing?'Playing':'Replay',playing?'播放中':'回放')}</span><span className="fan-pitch-time">{event ? replayClock(event) : '—'}</span></div></div>
@@ -73,7 +75,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       <span>{events.length ? `${index+1} / ${events.length}` : '—'}</span>
       <button className="fan-secondary" onClick={()=>select(0)} disabled={!events.length}>{t('Restart','重新开始')} ↺</button>
       <label className="fan-speed">{t('Speed','速度')} <select aria-label={t('Pitch replay speed','球场回放速度')} value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option></select></label>
-      <label className="fan-pitch-scrubber"><span className="sr-only">{t('Replay position','回放位置')}</span><input type="range" aria-label={t('Replay position','回放位置')} min="0" max={Math.max(1,events.length*100)} step="1" value={index*100+progress*100} disabled={!events.length} aria-valuetext={t(`Play ${index+1} of ${events.length}`,`第${index+1}次，共${events.length}次`)} onChange={e=>{const value=Number(e.target.value)/100;setPlaying(false);setIndex(Math.min(events.length-1,Math.floor(value)));setProgress(value>=events.length?1:value%1);setSelected(null)}}/></label>
+      <label className="fan-pitch-scrubber"><span className="sr-only">{t('Replay position','回放位置')}</span><input type="range" aria-label={t('Replay position','回放位置')} min="0" max={Math.max(1,events.length*100)} step="1" value={index*100+progress*100} disabled={!events.length} aria-valuetext={t(`Play ${index+1} of ${events.length}`,`第${index+1}次，共${events.length}次`)} onChange={e=>{const value=Number(e.target.value)/100;setSpeechEpoch(v=>v+1);setPlaying(false);setIndex(Math.min(events.length-1,Math.floor(value)));setProgress(value>=events.length?1:value%1);setSelected(null)}}/></label>
     </div>
     <div className="fan-tracker-grid">
       {!compact && <aside className="fan-play-board" aria-label={t('Current play','当前进攻')}>
@@ -145,6 +147,6 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       <p>{selected ? `${playerName(selected)} · ${clubName(selected.startsWith('eb')?'eastbridge':'northport')}` : event ? cue(event,resolved,zh) : t('Waiting for the next play','等待下一次进攻')}</p>
       {selected && <button onClick={()=>{setSelected(null);onPlayerSelect?.(null)}}>{t('Back to play','返回回放')}</button>}</div>
 
-    {companion && <LiveCompanion events={events} index={index} resolved={resolved} playing={playing || (reduced && resolved)} finished={progress>=1 && index===events.length-1} language={language}/>}
+    {companion && <LiveCompanion speechEpoch={speechEpoch} events={events} index={index} resolved={resolved} playing={playing || (reduced && resolved)} finished={progress>=1 && index===events.length-1} language={language}/>}
   </section>
 }

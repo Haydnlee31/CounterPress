@@ -51,7 +51,7 @@ function mockSpeech(){
   vi.stubGlobal('SpeechSynthesisUtterance',class {text:string;constructor(text:string){this.text=text}})
   return synth
 }
-test('speech is opt-in, replaces queued action, cancels on pause and unmount',()=>{
+test('speech finishes its sentence before a queued goal, cancels on pause and unmount',()=>{
   const synth=mockSpeech()
   const props={events:[pass,goal],index:0,resolved:true,playing:true,finished:false,language:'en'}
   const ui=render(<LiveCompanion {...props}/>)
@@ -60,7 +60,11 @@ test('speech is opt-in, replaces queued action, cancels on pause and unmount',()
   expect(synth.speak).toHaveBeenCalledTimes(1)
   ui.rerender(<LiveCompanion {...props} index={1} resolved={false}/>)
   expect(synth.speak).toHaveBeenCalledTimes(1)
+  const cancelsBefore=synth.cancel.mock.calls.length
   ui.rerender(<LiveCompanion {...props} index={1}/>)
+  expect(synth.cancel).toHaveBeenCalledTimes(cancelsBefore)
+  expect(synth.speak).toHaveBeenCalledTimes(1)
+  act(()=>synth.speak.mock.calls[0][0].onend())
   expect(synth.speak.mock.calls.at(-1)![0].text).toContain('fires it home')
   const cancels=synth.cancel.mock.calls.length
   ui.rerender(<LiveCompanion {...props} index={1} playing={false}/>)
@@ -90,4 +94,65 @@ test('speech failure leaves text and questions usable',()=>{
   expect(screen.getByText(/Voice is unavailable/)).toBeTruthy()
   expect(screen.getByText(/1 of 1 passes completed/)).toBeTruthy()
   expect(screen.getByRole('button',{name:/Listen/}).getAttribute('aria-pressed')).toBe('false')
+})
+
+
+test('rapid completed passes become one summary and natural finish drains it',()=>{
+  const synth=mockSpeech()
+  const events=Array.from({length:5},(_,i)=>({...pass,event_id:`pass-${i}`,occurrence_order:i,occurred_at:{period:2 as const,elapsed_ms:1000+i*1000},available_at:{period:2 as const,elapsed_ms:1000+i*1000}}))
+  const props={events,index:0,resolved:true,playing:true,finished:false,language:'en'}
+  const ui=render(<LiveCompanion {...props}/>)
+  fireEvent.click(screen.getByRole('button',{name:/Listen/}))
+  const before=synth.cancel.mock.calls.length
+  for(let index=1;index<5;index++){
+    ui.rerender(<LiveCompanion {...props} index={index} resolved={false}/>)
+    ui.rerender(<LiveCompanion {...props} index={index}/>)
+  }
+  ui.rerender(<LiveCompanion {...props} index={4} playing={false} finished/>)
+  expect(synth.cancel).toHaveBeenCalledTimes(before)
+  expect(synth.speak).toHaveBeenCalledTimes(1)
+  act(()=>synth.speak.mock.calls[0][0].onend())
+  expect(synth.speak).toHaveBeenCalledTimes(2)
+  expect(synth.speak.mock.calls[1][0].text).toContain('complete 4 passes')
+  act(()=>synth.speak.mock.calls[1][0].onend())
+  expect(synth.speak).toHaveBeenCalledTimes(2)
+})
+test('seek invalidates queued speech and late callbacks, including a seek to the end',()=>{
+  const synth=mockSpeech()
+  const props={events:[pass,goal],index:0,resolved:true,playing:true,finished:false,language:'en'}
+  const ui=render(<LiveCompanion {...props}/>)
+  fireEvent.click(screen.getByRole('button',{name:/Listen/}))
+  ui.rerender(<LiveCompanion {...props} index={1}/>)
+  const old=synth.speak.mock.calls[0][0]
+  ui.rerender(<LiveCompanion {...props} index={1} playing={false} finished speechEpoch={1}/>)
+  act(()=>{old.onend();old.onerror({error:'canceled'})})
+  expect(synth.speak).toHaveBeenCalledTimes(1)
+  expect(screen.queryByText(/Voice is unavailable/)).toBeNull()
+})
+
+test('a slow voice has a bounded summary and retains a shot amid routine arrivals',()=>{
+  const synth=mockSpeech()
+  const events=[pass,goal,...Array.from({length:20},(_,i)=>({...pass,event_id:`tail-${i}`,occurrence_order:i+3,occurred_at:{period:2 as const,elapsed_ms:5000+i*1000},available_at:{period:2 as const,elapsed_ms:5000+i*1000}}))]
+  const props={events,index:0,resolved:true,playing:true,finished:false,language:'en'}
+  const ui=render(<LiveCompanion {...props}/>)
+  fireEvent.click(screen.getByRole('button',{name:/Listen/}))
+  const cancels=synth.cancel.mock.calls.length
+  for(let index=1;index<events.length;index++)ui.rerender(<LiveCompanion {...props} index={index}/>)
+  expect(synth.cancel).toHaveBeenCalledTimes(cancels)
+  act(()=>synth.speak.mock.calls[0][0].onend())
+  expect(synth.speak.mock.calls[1][0].text).toContain('fires it home')
+  act(()=>synth.speak.mock.calls[1][0].onend())
+  expect(synth.speak).toHaveBeenCalledTimes(2)
+})
+test('language changes discard old queued speech and stale callbacks',()=>{
+  const synth=mockSpeech()
+  const props={events:[pass,goal],index:0,resolved:true,playing:true,finished:false,language:'en'}
+  const ui=render(<LiveCompanion {...props}/>)
+  fireEvent.click(screen.getByRole('button',{name:/Listen/}))
+  ui.rerender(<LiveCompanion {...props} index={1}/>)
+  const old=synth.speak.mock.calls[0][0]
+  ui.rerender(<LiveCompanion {...props} index={1} language="zh-Hans"/>)
+  expect(synth.speak.mock.calls[1][0].lang).toBe('zh-CN')
+  act(()=>old.onend())
+  expect(synth.speak).toHaveBeenCalledTimes(2)
 })

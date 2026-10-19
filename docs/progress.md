@@ -1,5 +1,15 @@
 # Progress
 
+## 19 October 2026 — uninterrupted companion commentary
+
+Replaced per-play speech cancellation with sentence-completion scheduling. Rapid
+completed actions become a bounded summary; shots take precedence at the next
+sentence boundary. Pending animation frames no longer cancel speech. Explicit
+seeks, pause, source or language changes still invalidate audio and queued work.
+
+Validation: 133 frontend tests, production build, and real highlight playback
+with an instrumented slow voice. See [speech pacing](live-companion.md#19-october-2026--speech-pacing-correction).
+
 ## 18 October 2026 — Live Companion, first integration
 
 Matchday now offers optional device speech, location descriptions and three

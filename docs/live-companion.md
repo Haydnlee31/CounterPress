@@ -12,10 +12,10 @@ does not alter its saved work or approval controls.
 ## Delivered
 
 - Optional device speech, off by default, synchronized to the pitch playhead.
-- Brief completed-action commentary or descriptions of action setup and location.
+- Completed-action commentary with optional location descriptions.
 - Questions about the latest completed action, recent build-up and sequence totals.
 - Expandable source actions behind each answer, without JSON in the viewer UI.
-- Pause, seek, revision and language invalidation; no accumulating speech queue.
+- Pause, seek, revision and language invalidation; a bounded speech summary buffer.
 - Text remains usable if speech is unsupported or fails. Backgrounding the page
   stops speech. A natural finish can complete its final spoken cue.
 
@@ -64,3 +64,28 @@ Regression tests cover future-outcome exclusion, source availability, revisions,
 match isolation, build-up boundaries, answer invalidation, opt-in speech,
 cancellation, natural endings and speech failure. Browser verification:
 `node scripts/test_live_companion.cjs http://127.0.0.1:8010` (Playwright required).
+
+
+## 19 October 2026 — speech pacing correction
+
+The original implementation cancelled speech on every pending/resolved playhead
+transition. Fast highlights therefore repeatedly interrupted sentences. Commentary
+now waits for the browser utterance's `end` event before starting the next update.
+Pending setups update text only. While a sentence plays, up to four completed
+actions are retained: consecutive completed passes by the same side become a
+short passing summary; otherwise the latest action is used. A pending shot takes
+priority over routine actions at the next sentence boundary. This deliberately
+omits routine actions when playback outpaces speech instead of building a backlog.
+
+Pause, explicit seeking (including seeking to the end), mute, source corrections,
+language/detail changes and leaving the page invalidate both current and queued
+speech. Natural playback completion drains the bounded summary. Generation checks
+ignore callbacks from cancelled utterances. No fixed speech-duration estimate or
+forced increase in voice speed is used by the scheduler.
+
+Reference: [browser speech completion event](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/end_event).
+
+`node scripts/test_companion_speech.cjs http://127.0.0.1:8010` runs three real
+highlight animations at 1.5× with an instrumented four-second voice. It checks
+sentence completion, zero routine interruptions, a completed goal announcement
+and a drained queue. This tests scheduling, not audible device voice quality.

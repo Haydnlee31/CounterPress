@@ -3,8 +3,9 @@ import type { Event } from '../types'
 import { replayClock } from '../matchday/replayGallery'
 import { answer, completedEvents, cue, type Question } from './evidence'
 import './companion.css'
+import { CommentarySpeech } from './speech'
 
-export function LiveCompanion({events,index,resolved,playing,finished,language}:{events:Event[];index:number;resolved:boolean;playing:boolean;finished:boolean;language:string}) {
+export function LiveCompanion({events,index,resolved,playing,finished,language,speechEpoch=0}:{events:Event[];index:number;resolved:boolean;playing:boolean;finished:boolean;language:string;speechEpoch?:number}) {
   const zh=language==='zh-Hans', t=(en:string,cn:string)=>zh?cn:en
   const [open,setOpen]=useState(false), [listen,setListen]=useState(false), [detailed,setDetailed]=useState(false)
   const [speechError,setSpeechError]=useState(false)
@@ -16,34 +17,27 @@ export function LiveCompanion({events,index,resolved,playing,finished,language}:
   const scope=JSON.stringify([events.map(e=>[e.match_id,e.event_id,e.revision]),index,resolved,language])
   const response=question?.scope===scope ? answer(question.kind,records,zh) : null
   const supported=typeof window!=='undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
-  const spoken=useRef('')
-  const speechKey=`${scope}:${detailed}`
+  const speech=useRef<CommentarySpeech|null>(null)
+  const previous=useRef({index,resolved})
+  const signature=events.map(e=>`${e.match_id}:${e.event_id}:${e.revision}`).join('|')
+  useEffect(()=>{
+    if(!supported)return
+    const queue=new CommentarySpeech(window.speechSynthesis,zh,detailed,()=>{setSpeechError(true);setListen(false)})
+    speech.current=queue
+    return()=>{queue.stop();speech.current=null}
+  },[supported,zh,detailed,signature,speechEpoch])
+  useEffect(()=>{
+    const backwards=index<previous.current.index || (index===previous.current.index && previous.current.resolved && !resolved)
+    previous.current={index,resolved}
+    if(!listen || (!playing && !finished) || backwards)speech.current?.stop()
+    if(listen && playing && currentKnown && event)speech.current?.offer(event)
+    // Natural completion lets the current sentence and bounded summary finish.
+    // Pending animation transitions never cancel a spoken sentence.
+  },[listen,playing,finished,index,resolved,currentKnown,signature,zh,detailed,speechEpoch])
+  useEffect(()=>()=>speech.current?.stop(),[])
 
-  // One current cue, never a backlog. Seeking, language changes and corrections invalidate it.
   useEffect(()=>{
-    if (!supported) return
-    const synth=window.speechSynthesis
-    if (!listen) {synth.cancel();spoken.current='';return}
-    if (!playing) {
-      if(!finished || spoken.current!==speechKey){synth.cancel();spoken.current=''}
-      return
-    }
-    if(spoken.current===speechKey) return
-    spoken.current=speechKey
-    synth.cancel()
-    // Short mode speaks completed actions; descriptive mode also describes the setup.
-    if(!currentKnown && !detailed) return
-    const utterance=new SpeechSynthesisUtterance(text)
-    utterance.lang=zh?'zh-CN':'en-GB'
-    const voices=synth.getVoices()
-    const voice=voices.find(v=>v.lang.toLowerCase().startsWith(zh?'zh':'en'))
-    if(voice)utterance.voice=voice
-    utterance.onerror=e=>{if(e.error!=='interrupted' && e.error!=='canceled'){setSpeechError(true);setListen(false)}}
-    synth.speak(utterance)
-  },[listen,playing,finished,speechKey,currentKnown,detailed,text,zh,supported])
-  useEffect(()=>()=>{if(supported)window.speechSynthesis.cancel()},[supported])
-  useEffect(()=>{
-    const stop=()=>{if(document.hidden){window.speechSynthesis?.cancel();setListen(false)}}
+    const stop=()=>{if(document.hidden){speech.current?.stop();setListen(false)}}
     document.addEventListener('visibilitychange',stop)
     return()=>document.removeEventListener('visibilitychange',stop)
   },[])
