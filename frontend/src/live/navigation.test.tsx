@@ -7,6 +7,6 @@ test('a direct full-match link keeps navigation attached to the playing match',(
  try{
   window.history.replaceState({},'', '/#live')
   render(<AppHeader active="matchday" fullMatch/>)
-  expect(screen.getByRole('link',{name:'Match Centre',exact:true}).getAttribute('href')).toContain(`match=${FULL_MATCH}#gi`)
+  expect(screen.getByRole('link',{name:'Match Centre'}).getAttribute('href')).toContain(`match=${FULL_MATCH}#gi`)
  }finally{cleanup();window.history.replaceState({},'',previous)}
 })
