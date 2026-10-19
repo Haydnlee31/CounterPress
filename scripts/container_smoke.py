@@ -91,10 +91,31 @@ assert not data(f'/api/data/matches/{new_match}/live?period=2&elapsed_ms={at-1}'
 assert data(f'/api/data/matches/{new_match}/live?period=2&elapsed_ms={at}')['milestones'][0]['career_goals'] == 20
 assert len(json.loads(get('/api/data/highlights')[0])) == 3
 assert {t['team_id'] for t in json.loads(get(f'/api/data/matches/{new_match}/replay')[0])['teams']} == {'southbank','redhaven'}
+
+def personalized(path, payload):
+    request = Request(base + '/api/fan/' + path, data=json.dumps(payload).encode(),
+                      headers={'Content-Type': 'application/json'})
+    with urlopen(request, timeout=20) as response:
+        assert response.headers.get('Cache-Control') == 'private, no-store'
+        assert response.headers.get('Set-Cookie') is None
+        return json.load(response)
+
+preferences = {'favorite_club_ids': ['redhaven'], 'favorite_player_ids': ['rh08'], 'primary_club_id': 'redhaven'}
+home = personalized('home', {'preferences': preferences, 'as_of': '2026-10-20T00:00:00Z'})
+assert len(home['highlights']) == 9 and len(home['matches']) == 4
+assert home['matches'][0]['match_id'] == new_match
+assert home['following']['players'][0]['player']['name'] == 'Enzo Clarke'
+before = personalized('matches/' + new_match, {'preferences': preferences, 'cutoff': {'period': 2, 'elapsed_ms': at-1}})
+after = personalized('matches/' + new_match, {'preferences': preferences, 'cutoff': {'period': 2, 'elapsed_ms': at}})
+assert not any(c['kind'] == 'career_goal_milestone' for c in before['cards'])
+assert after['cards'][0]['facts'][0]['value'] == 20 and len(after['focus']['active_player_ids']) == 22
+analyst = personalized('matches/' + new_match, {'preferences': {**preferences, 'depth': 'analyst'}, 'cutoff': {'period': 2, 'elapsed_ms': at}})
+assert after['facts'] == analyst['facts'] and after['cards'][0]['text'] != analyst['cards'][0]['text']
+assert personalized('home', {'as_of': '2026-10-20T00:00:00Z'})['following'] == {'players': [], 'clubs': []}
 for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/missing", "/assets/missing.js"):
     try:
         get(path)
         raise AssertionError(f"Unexpected public file: {path}")
     except HTTPError as error:
         assert error.code == 404
-print("PASS: health, readiness, frontend/assets, Studio callback/access boundary, evidence/recaps, replay goals, GI attribution, 44 career profiles, four featured matches, causal milestone, private-path 404s")
+print("PASS: health, readiness, frontend/assets, Studio access, evidence/recaps, replay goals, GI attribution, 44 career profiles, four featured matches, nine personalized highlights, causal milestone, 22-player focus, audience fact parity, preference isolation, private-path 404s")

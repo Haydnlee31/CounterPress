@@ -61,6 +61,10 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Run frontend tests
         run: npm test
+      - name: Verify independent personalization adapter
+        run: |
+          node --test ../integrations/personalization/client.test.mjs
+          ./node_modules/.bin/tsc --noEmit --strict --target ES2022 --module ESNext --moduleResolution Bundler --lib ES2022,DOM --skipLibCheck ../integrations/personalization/client.ts
       - name: Build production frontend
         run: npm run build
 

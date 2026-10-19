@@ -1,5 +1,19 @@
 # Progress
 
+## 19 October 2026 — fan personalization backend and UI handoff
+
+Saved the [Reactor review and product decisions](reactor-review-context.md) as
+important project context. Added device-owned favorite clubs/players, a ranked
+nine-highlight feed, four featured matches, player/club profile presentations,
+common-scope comparisons, bilingual casual/analyst match cards and player focus.
+The independent browser adapter migrates existing preferences and rejects stale
+playback responses. The colleague's frontend source is unchanged; UI integration
+is pending. No new Azure service, deployment or paid model call.
+
+Validation: 671 backend tests, 143 existing UI tests, 14 adapter tests, TypeScript,
+production frontend build and real HTTP smoke checks passed. See the [integration
+guide](fan-personalization.md) and [exact verification](verification/fan-personalization-checks.md).
+
 ## 19 October 2026 — continuous highlight narration
 
 Replaced isolated surname calls with reviewed whole-highlight English/Mandarin

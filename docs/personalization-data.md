@@ -2,6 +2,11 @@
 
 This backend branch supplies the data for profiles, favorites, club views and a future grounded assistant. It does not change the frontend or remove Studio. It adds read-only APIs under `/api/data/`; the existing match and voice routes keep their contracts.
 
+The next [fan personalization layer](fan-personalization.md) now projects this data
+for device-owned favorites, ranked feeds, bilingual audience views and player
+focus. See the saved [Reactor review context](reactor-review-context.md) for product
+decisions; the general Footie assistant and Azure ingestion bridge remain later work.
+
 ## What is available
 
 - Four featured clubs: **Eastbridge**, **Northport**, **Southbank**, **Redhaven**.

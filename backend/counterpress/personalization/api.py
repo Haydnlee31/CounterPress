@@ -142,3 +142,5 @@ def install_personalization(app,root:Path):
             if s.store.evidence_digest(mid)!=s.store.row(mid)['digest']:raise HTTPException(409,'Highlight source has revisions; read current events before rendering')
             return highlight_feed(native_feed(s.store.original(mid),s.store.clubs),clip)
         return call(read)
+
+    return service

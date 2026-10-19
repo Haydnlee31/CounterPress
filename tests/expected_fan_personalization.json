@@ -1,0 +1,14 @@
+{
+  "match_id": "career-showcase-southbank-redhaven",
+  "player_id": "rh08",
+  "player_name": "Enzo Clarke",
+  "before_goal": {"period": 2, "elapsed_ms": 447224},
+  "after_goal": {"period": 2, "elapsed_ms": 447225},
+  "career_goals_before": 19,
+  "career_goals_after": 20,
+  "score_after": {"southbank": 1, "redhaven": 2},
+  "goal_event_id": "e00615",
+  "home_highlights": 9,
+  "preloaded_highlights": 3,
+  "featured_matches": 4
+}

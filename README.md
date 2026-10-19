@@ -9,6 +9,12 @@ provides 44 featured players, four clubs, 840 historical fixtures and four featu
 matches through read-only `/api/data/` endpoints. The guide includes local startup,
 metric definitions, coverage, evidence and frontend integration boundaries.
 
+**Connecting the redesigned UI?** The [fan personalization layer](docs/fan-personalization.md)
+adds device-owned favorites, ranked highlights, player/club views, comparisons and
+playback-scoped player focus under `/api/fan/`. Its independent client adapter does
+not change existing screens. Keep the [Reactor review and product decisions](docs/reactor-review-context.md)
+as important context for this phase and the later Footie assistant.
+
 The new [GI full-match reader](docs/gi.md) is available at `/#gi`: Eastbridge/Northport club aliases, a pitch canvas and shot map, outcome filters and action context backed by licensed full-match events. Synchronized video seeking is pending. The [unified app navigation](docs/unified-experience.md) now links all workspaces and preserves your browsing context.
 for the live link, a five-minute walkthrough, scenario results and evidence explanations.
 
