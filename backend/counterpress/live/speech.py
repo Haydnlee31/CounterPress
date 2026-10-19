@@ -26,6 +26,13 @@ NAMES = dict(zip(
 MONTHLY_CHARACTERS = 200_000
 
 
+class HighlightRequest(Contract):
+    match_id: str = Field(min_length=1, max_length=100)
+    events: list[str] = Field(min_length=1, max_length=20)
+    revisions: list[int] = Field(min_length=1, max_length=20)
+    language: Literal['en', 'zh-Hans'] = 'en'
+
+
 class SpeechRequest(Contract):
     match_id: str = Field(min_length=1, max_length=100)
     events: list[str] = Field(min_length=1, max_length=4)
@@ -187,3 +194,30 @@ def install_speech(app, root:Path, adapter=None):
         except SpeechLimit: raise HTTPException(429,'Broadcast voice is resting; device voice is available',headers={'Retry-After':'60'}) from None
         except Exception: raise HTTPException(503,'Broadcast voice is temporarily unavailable') from None
         return Response(audio,media_type='audio/mpeg',headers={'Cache-Control':'private, max-age=86400','X-Content-Type-Options':'nosniff'})
+
+    @lru_cache(maxsize=24)
+    def recorded_track(key):
+        # Optional local preview directory; production reads only the private Blob cache.
+        local=os.environ.get('COUNTERPRESS_COMMENTARY_DIR')
+        if local: raw=(Path(local)/(key+'.json')).read_bytes()
+        else:
+            download=service().cache.get_blob_client('narration/v2/'+key+'.json').download_blob()
+            if download.size>1_500_000: raise ValueError('Invalid commentary asset')
+            raw=download.readall()
+        if len(raw)>1_500_000: raise ValueError('Invalid commentary asset')
+        return json.loads(raw)
+
+    @app.post('/api/voice/highlight')
+    def highlight_commentary(request:HighlightRequest):
+        from counterpress.live.highlight_narrative import narrative, validate_asset
+        if not enabled(): raise HTTPException(503,'Broadcast voice is unavailable')
+        try: events=corpus().get(request.match_id)
+        except (ValueError,OSError,KeyError): raise HTTPException(503,'Voice sources are unavailable') from None
+        if not events: raise HTTPException(404,'Unknown highlight')
+        if request.events!=[e.event_id for e in events] or request.revisions!=[e.revision for e in events]:
+            raise HTTPException(409,'Choose the complete current highlight')
+        try: script=narrative(events,request.language)
+        except ValueError: raise HTTPException(404,'Highlight commentary is unavailable') from None
+        try: asset=validate_asset(recorded_track(script['key']),script)
+        except Exception: raise HTTPException(503,'Highlight commentary is being prepared') from None
+        return {**asset,'event_count':len(events)}

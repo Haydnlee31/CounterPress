@@ -1,5 +1,14 @@
 # Progress
 
+## 19 October 2026 — continuous highlight narration
+
+Replaced isolated surname calls with reviewed whole-highlight English/Mandarin
+commentary. Each highlight is one Azure recording with actual SSML bookmark
+timestamps. Replay and phrase captions follow that recording; complete sentences
+finish naturally and speed changes preserve pitch. Audio is prepared/reviewed
+before publishing, then served from the existing private cache without synthesis
+during viewing. See [current architecture](live-companion.md).
+
 ## 19 October 2026 — highlight audio synchronization
 
 Replaced delayed highlight narration with prepared short Azure calls scheduled

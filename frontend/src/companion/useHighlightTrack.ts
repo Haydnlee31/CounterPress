@@ -27,6 +27,7 @@ export function useHighlightTrack(events:Event[],language:string,timed:boolean,e
     return()=>abort.abort()
   },[listen,key,enabled])
   useEffect(()=>()=>{void context.current?.close()},[])
+  useEffect(()=>()=>{if(loaded){loaded.track.audio.pause();URL.revokeObjectURL(loaded.track.url)}},[loaded])
   const resume=()=>context.current?.resume()
   const toggle=()=>{
     reset.current()

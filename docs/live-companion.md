@@ -1,89 +1,78 @@
-# Live Companion
+# Highlight commentary
 
-## Current experience — 19 October 2026
+## Current approach: one complete recording per highlight
 
-**Matchday contains highlights only.** Open a highlight, choose **Listen**, wait
-for **Commentary ready**, then **Play highlight**. The first play prepares the
-selected language's Azure audio; subsequent replays reuse decoded audio. There
-are no speech requests during playback. Full matches remain in **Match Centre →
-Match library**, with text, statistics and guided questions, but no narration.
+The previous event queue lagged behind the pitch. Replacing it with individual
+surname calls solved timestamp drift but damaged the commentary. Neither a
+sentence queue nor isolated name announcements is used by the current Matchday
+voice path.
 
-English uses `en-US-GuyNeural` (`newscast` / `excited`); Mandarin uses
-`zh-CN-YunjianNeural` (`sports-commentary` / `sports-commentary-excited`). These
-are short football calls: player surnames during the build-up and a reaction at
-the visible shot result. Location detail remains available in text. Silence is
-preferable to a late description of an earlier action.
+Each of the six recorded highlights now has a reviewed, coherent English and
+Mandarin script. Azure synthesizes the whole script in one request. Bookmarks
+inside the SSML return the actual time of each phrase. The browser plays one
+uncut MP3 and maps its `currentTime` to the illustrated pitch's playhead. Goal and
+save reactions use bookmarks at the shot's visible resolution point.
 
-## Why the queue was replaced
+Example: “Mercer drives forward, then releases Hart into space. Hart carries it
+towards the box and sends the cross over. Vale heads it back for Ellis—Ellis hits
+it! Goal! A stunning counterattack!”
 
-The original sentence-completion queue prevented interruptions but fetched audio
-only after an action completed. Network/synthesis latency delayed the opening
-call, and long sentences fell behind the pitch. A bounded queue still cannot
-synchronize two independent clocks. It is no longer used for highlight playback.
+This is a narrated replay, so its duration can differ from silent playback.
+Sentences finish naturally; no phrase is dropped to meet a fixed event slot.
+HTML media playback preserves pitch when the user changes speed. Pause/seek/replay
+use the same recording and timestamp map. Natural completion waits for the actual
+media `ended` event, including the last words and breath. Matching phrase captions
+appear in Live Companion. Reduced motion uses discrete pitch states.
 
-The replacement prepares/decode-checks the whole highlight before enabling voiced
-playback, trims provider padding, and schedules short clips on Web Audio's clock.
-The animation reads that same clock. Routine calls that cannot fit are omitted;
-shot reactions take priority. Reactions start at the shot's 60% resolution point,
-when the ball arrives and the result becomes visible. Shot segments can grow just
-enough to fit the short reaction without cutting it off. Opening and shot actor
-calls have reserved space. Source event timestamps are unchanged.
+**Matchday remains highlights-only.** Full-match replay is in Match Centre and has
+text/statistics/questions, without narration. Guided answers remain based on the
+completed, available event prefix. Narration is prepared for recorded highlights;
+this is not a new live match ingestion or free-form commentary agent.
 
-Pause, seek, speed changes, highlight/language/revision changes, backgrounding and
-unmount stop scheduled audio. Resuming schedules the remaining audio at the
-current offset. Speed changes apply to both audio and animation; Web Audio rate
-changes also alter pitch, so 1× is recommended for the natural broadcast voice.
-Reduced-motion viewers can hear commentary while the pitch changes between
-static action states. If preparation fails, playback remains available silently
-with text and a retry action. There is no delayed device-voice fallback.
+## Authoring and serving
 
 ```mermaid
 flowchart LR
-  Events[Selected highlight events] --> Prepare[Prepare short event-only calls]
-  Prepare --> API[FastAPI validation]
-  API --> Cache[Private Azure Blob audio cache]
-  API --> Budget[Durable character limit]
-  Budget --> Speech[Azure Speech F0 / managed identity]
-  Speech --> Cache
-  Cache --> Decode[Decode and trim silence]
-  Decode --> Plan[Timed highlight soundtrack]
-  Plan --> Clock[Shared Web Audio clock]
-  Clock --> Audio[Scheduled commentary]
-  Clock --> Pitch[Pitch animation]
-  Pitch --> Evidence[Completed-event text and questions]
+  Events[Reviewed highlight events] --> Script[Whole-highlight English / Mandarin script]
+  Script --> Azure[Azure Speech F0 + SSML bookmarks]
+  Azure --> Bundle[One MP3 + actual phrase timestamps]
+  Bundle --> Review[Local preview and validation]
+  Review --> Blob[Private speech-cache container]
+  Blob --> API[Read-only highlight audio API]
+  API --> Player[Single browser audio player]
+  Player --> Pitch[Pitch follows audio timestamps]
+  Player --> Captions[Current spoken phrase]
 ```
 
-## Evidence and API boundaries
+`backend/counterpress/live/highlight_narrative.py` holds the reviewed scripts and
+source fingerprints. Changed events fail closed until their script is reviewed.
+Asset keys hash both the source and complete SSML. Each atomic JSON bundle
+contains audio and its exact matching bookmarks, avoiding stale timing files.
 
-The speech endpoint accepts only known match/event IDs and revisions, language,
-a cutoff and a fixed delivery mode. `highlight-action` and `highlight-result`
-require a single showcase event; results require a shot. It accepts no caller
-text, SSML, voice name or endpoint. Preparation can access the selected recorded
-highlight, but outcome audio is not played until its visual resolution point.
-Text answers continue to use only the available completed event prefix.
+Authoring uses `scripts/prepare_highlight_commentary.py`. Install the local-only
+Speech SDK with `uv pip install --python .venv/bin/python
+azure-cognitiveservices-speech==1.52.0`. Configure the existing private Speech/Blob
+settings, then run `.venv/bin/python scripts/prepare_highlight_commentary.py`.
+Outputs and listenable MP3s go to ignored `var/commentary/`. Review them, then use
+`--publish` to upload validated bundles to `narration/v2/` in the existing private
+cache. `--story` and `--language` support targeted regeneration.
 
-The full-match API and playback remain available for the native generated match.
-This is historical replay, not new live Event Hubs ingestion. Questions are guided
-and event-grounded, not free-form model conversation. Illustrative player movement
-is not used as tracking evidence or a claim of complete audio description.
+The SDK is authoring-only; it adds no native Speech dependency to the app image.
+Production `/api/voice/highlight` only serves prepared bundles. It validates the
+complete highlight IDs/revisions and language, rejects caller text/SSML and full
+matches, and never triggers synthesis. Missing assets leave silent playback and
+text available. `COUNTERPRESS_COMMENTARY_DIR` is an optional local preview path;
+production reads the private cache using its existing managed identity.
 
-## Cost and configuration
+## Cost and privacy
 
-- Existing Azure Speech **F0**; no automatic paid-tier upgrade.
-- At most 15 new syntheses/minute per app replica. Cached clips do not synthesize.
-- Private Blob counter reserves at most 200,000 conservatively weighted characters
-  per UTC month, using ETags. Failed provider attempts are not refunded.
-- Cache keys hash the complete SSML. Audio is not committed to Git. Blob storage
-  and transactions retain their normal small charges under the project budget.
-- Managed identity keeps credentials and provider endpoints server-side.
-
-Server settings: `COUNTERPRESS_SPEECH=azure`, `COUNTERPRESS_SPEECH_TIER=F0`, and
-private `COUNTERPRESS_SPEECH_ENDPOINT`. Reuses `COUNTERPRESS_STREAM_CLIENT_ID` and
-`COUNTERPRESS_CHECKPOINT_ENDPOINT`. Identity needs **Cognitive Services Speech
-User** on the Speech resource and **Storage Blob Data Contributor** on the private
-`speech-cache` container. Local verification may use
-`COUNTERPRESS_SPEECH_AUTH=azure-cli`. Disabling Speech leaves text and silent
-playback available. Existing Azure deployment preserves configuration/secrets.
+Existing Speech **F0**, private Blob storage and managed identity are reused.
+Authoring reserves characters through the existing durable **200,000 weighted
+characters/month** quota, and serial syntheses are spaced by at least five
+seconds. Failed provider attempts remain reserved. There is no paid-tier upgrade.
+Repeated viewing/replay does not synthesize or consume speech characters. Blob
+storage/transaction charges still apply. Provider endpoints and credentials never
+reach the browser or repository. Generated audio remains outside Git.
 
 ## Verification
 
@@ -91,17 +80,21 @@ playback available. Existing Azure deployment preserves configuration/secrets.
 .venv/bin/pytest -q
 npm --prefix frontend test -- --run
 npm --prefix frontend run build
-node scripts/test_highlight_sync.cjs http://127.0.0.1:8012
-node scripts/test_live_companion.cjs http://127.0.0.1:8012
-node scripts/test_full_match.cjs http://127.0.0.1:8012
+node scripts/test_highlight_sync.cjs http://127.0.0.1:8014
+node scripts/test_highlight_controls.cjs http://127.0.0.1:8014
 ```
 
-Browser scripts require Playwright/Chrome. The sync script uses **actual Azure
-MP3s and actual Web Audio**, all six highlights and both languages. It checks
-first voice onset, reaction timing against the pitch, speed variants and zero
-speech fetches during playback. It consumes the configured, budgeted Speech
-service on cache misses. Unit tests cover the shared clock, offsets, scheduled
-node cancellation, silence trimming, timeline gaps and no overlapping calls.
+Run audio browser checks sequentially: competing players can take operating-system
+audio focus. The app reflects an external audio pause in its replay controls.
 
-Next: football-fan listening feedback at 1×, particularly Mandarin pronunciation,
-and accessibility usability testing before claiming accessibility outcomes.
+The real-audio browser check covers all six highlights and both languages, complete
+phrase coverage, exactly one audio start, natural completion without cuts,
+bookmark-to-pitch alignment, first-voice latency and preserved pitch at speed
+variants. Controls cover pause/resume, seek, restart, mobile layouts, reduced
+motion, preparation failure and no full-match narration. Unit/API checks cover
+inverse seek mapping, whole scripts, source changes, asset validation and
+cache-only serving. These checks establish behavior; they do not replace human
+judgment of whether the voice sounds engaging.
+
+References: [Azure SSML bookmarks](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-structure),
+[Microsoft Entra authentication](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-configure-azure-ad-auth).
