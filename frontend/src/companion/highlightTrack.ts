@@ -1,89 +1,66 @@
 import type {Event} from '../types'
-import {playDuration} from '../matchday/pitchScene'
 
-export type Clip = {event:number; result:boolean; buffer:AudioBuffer}
-export type Cue = Clip & {at:number}
-export type Track = {durations:number[]; starts:number[]; cues:Cue[]; duration:number}
+export type Marker={at:number;position:number;text:string}
+export type Track={markers:Marker[];duration:number;eventCount:number;audio:HTMLAudioElement;url:string}
 
-/** Leave the football pace intact. Reserve only the short shot reaction tail.
- * Routine names yield to shots; there is never a queue of stale commentary. */
-export function planTrack(events:Event[],clips:Clip[],timed=true):Track {
-  const durations=events.map((e,i)=>(timed?playDuration(e,events[i+1]):3200)/1000)
-  for(const clip of clips.filter(c=>c.result))
-    durations[clip.event]=Math.max(durations[clip.event],(clip.buffer.duration+.08)/.4)
-  // Always hear the opening call immediately; protect the build-up to each shot too.
-  for(const clip of clips.filter(c=>!c.result&&(c.event===0||events[c.event].action.kind==='shot')))
-    durations[clip.event]=Math.max(durations[clip.event],(clip.buffer.duration+.08)/(events[clip.event].action.kind==='shot'?.6:1))
-  const starts=[0];durations.forEach(d=>starts.push(starts.at(-1)!+d))
-  const results=clips.filter(c=>c.result).map(c=>({...c,at:starts[c.event]+.6*durations[c.event]}))
-  const cues=[...results]
-  for(const clip of clips.filter(c=>!c.result)) {
-    const at=starts[clip.event],end=at+clip.buffer.duration+.06
-    // Keep a clear breath between calls, including the next shot's result.
-    if(end>starts[clip.event+1] || cues.some(c=>at<c.at+c.buffer.duration+.06 && end>c.at))continue
-    cues.push({...clip,at})
+/** Interpolate the replay between Azure's actual spoken-phrase bookmarks. */
+export function trackPosition(track:Pick<Track,'markers'|'duration'|'eventCount'>,at:number){
+  if(at>=track.duration)return {index:track.eventCount-1,progress:1}
+  const markers=[{at:0,position:0},...track.markers,{at:track.duration,position:track.eventCount}]
+  const right=markers.findIndex(m=>m.at>at),b=markers[right<0?markers.length-1:right],a=markers[Math.max(0,right-1)]
+  const position=a.position+(b.position-a.position)*Math.max(0,(at-a.at)/Math.max(.001,b.at-a.at))
+  const index=Math.min(track.eventCount-1,Math.floor(position))
+  return {index,progress:position-index}
+}
+
+/** Seeking is the inverse of the same map, not an independent animation clock. */
+export function trackTime(track:Track,index:number,progress:number){
+  const position=index+progress
+  if(position<=0)return 0
+  if(position>=track.eventCount)return track.duration
+  const markers=[{at:0,position:0},...track.markers,{at:track.duration,position:track.eventCount}]
+  const right=markers.findIndex(m=>m.position>position),b=markers[right],a=markers[right-1]
+  return a.at+(b.at-a.at)*(position-a.position)/(b.position-a.position)
+}
+
+const cache=new Map<string,{audio:string;markers:Marker[];duration:number;event_count:number}>()
+export async function prepareTrack(context:AudioContext,events:Event[],zh:boolean,_timed:boolean,signal:AbortSignal,onProgress:(done:number,total:number)=>void):Promise<Track>{
+  const body=JSON.stringify({match_id:events[0].match_id,events:events.map(e=>e.event_id),revisions:events.map(e=>e.revision),language:zh?'zh-Hans':'en'})
+  let asset=cache.get(body)
+  if(!asset){
+    const response=await fetch('/api/voice/highlight',{method:'POST',headers:{'Content-Type':'application/json'},body,signal:AbortSignal.any([signal,AbortSignal.timeout(20000)])})
+    if(!response.ok)throw Error('Narration unavailable')
+    asset=await response.json()
   }
-  return {durations,starts,cues:cues.sort((a,b)=>a.at-b.at),duration:starts.at(-1)!}
-}
-
-export function trackPosition(track:Track,at:number) {
-  const index=Math.min(track.durations.length-1,Math.max(0,track.starts.findIndex((s,i)=>i>0&&s>at)-1))
-  if(at>=track.duration)return {index:track.durations.length-1,progress:1}
-  return {index,progress:Math.max(0,(at-track.starts[index])/track.durations[index])}
-}
-
-/** Strip synthesis padding, retaining 20ms around speech to avoid clipped consonants. */
-export function trimSilence(context:AudioContext,buffer:AudioBuffer) {
-  const data=buffer.getChannelData(0),padding=Math.ceil(buffer.sampleRate*.02)
-  let first=0,last=data.length-1
-  while(first<last&&Math.abs(data[first])<.003)first++
-  while(last>first&&Math.abs(data[last])<.003)last--
-  first=Math.max(0,first-padding);last=Math.min(data.length-1,last+padding)
-  const result=context.createBuffer(buffer.numberOfChannels,last-first+1,buffer.sampleRate)
-  for(let ch=0;ch<buffer.numberOfChannels;ch++)result.copyToChannel(buffer.getChannelData(ch).slice(first,last+1),ch)
-  return result
-}
-
-const cache=new Map<string,ArrayBuffer>()
-export async function prepareTrack(context:AudioContext,events:Event[],zh:boolean,timed:boolean,signal:AbortSignal,onProgress:(done:number,total:number)=>void) {
-  const clips:Clip[]=[]
-  const work=events.flatMap((event,i)=>[{event,i,result:false},...(event.action.kind==='shot'?[{event,i,result:true}]:[])])
-  // Serial preparation respects the provider's free-tier throughput. No network in playback.
-  for(const [index,{event,i,result}] of work.entries()) {
-    signal.throwIfAborted()
-    const body=JSON.stringify({match_id:event.match_id,events:[event.event_id],revisions:[event.revision],cutoff:event.available_at,language:zh?'zh-Hans':'en',delivery:result?'highlight-result':'highlight-action'})
-    let bytes=cache.get(body)
-    if(!bytes){
-      const response=await fetch('/api/voice/commentary',{method:'POST',headers:{'Content-Type':'application/json'},body,signal:AbortSignal.any([signal,AbortSignal.timeout(20000)])})
-      if(!response.ok||!response.headers.get('content-type')?.startsWith('audio/mpeg'))throw Error('Voice unavailable')
-      bytes=await response.arrayBuffer()
-      if(bytes.byteLength>1_000_000)throw Error('Invalid audio')
-      if(cache.size>=120)cache.delete(cache.keys().next().value!)
-      cache.set(body,bytes)
-    }
-    const buffer=trimSilence(context,await context.decodeAudioData(bytes.slice(0)))
-    signal.throwIfAborted()
-    clips.push({event:i,result,buffer});onProgress(index+1,work.length)
+  if(!asset||asset.event_count!==events.length||!Number.isFinite(asset.duration)||asset.duration<=0||asset.duration>120||!Array.isArray(asset.markers)||asset.markers.length<2||typeof asset.audio!=='string'||asset.audio.length>1_500_000)throw Error('Invalid narration')
+  let lastAt=-1,lastPosition=-1
+  for(const marker of asset.markers){
+    if(!Number.isFinite(marker.at)||!Number.isFinite(marker.position)||marker.at<=lastAt||marker.at>=asset.duration||marker.position<=lastPosition||marker.position>=events.length||typeof marker.text!=='string')throw Error('Invalid timing')
+    lastAt=marker.at;lastPosition=marker.position
   }
-  return planTrack(events,clips,timed)
+  const bytes=Uint8Array.from(atob(asset.audio),c=>c.charCodeAt(0))
+  const decoded=await context.decodeAudioData(bytes.buffer.slice(0))
+  signal.throwIfAborted()
+  if(Math.abs(decoded.duration-asset.duration)>.3)throw Error('Audio timing mismatch')
+  // Keep the complete synthesized recording, including breaths and sentence cadence.
+  const url=URL.createObjectURL(new Blob([bytes],{type:'audio/mpeg'})),audio=new Audio(url)
+  audio.preload='auto';audio.preservesPitch=true
+  if(cache.size>=16)cache.delete(cache.keys().next().value!)
+  cache.set(body,asset);onProgress(1,1)
+  return {markers:asset.markers,duration:decoded.duration,eventCount:events.length,audio,url}
 }
 
-/** Audio and pitch use this exact clock. Scheduling is independent of React renders. */
+/** One uncut recording. The browser time-stretches at other speeds without pitch shift. */
 export class TrackPlayer {
-  private nodes:AudioBufferSourceNode[]=[]
-  private anchor=0
-  constructor(private context:AudioContext,private track:Track,private offset:number,private speed:number){}
-  start(){
-    this.anchor=this.context.currentTime+.03
-    for(const cue of this.track.cues){
-      const end=cue.at+cue.buffer.duration
-      if(end<=this.offset)continue
-      const node=this.context.createBufferSource();node.buffer=cue.buffer;node.playbackRate.value=this.speed
-      node.connect(this.context.destination)
-      node.start(this.anchor+Math.max(0,cue.at-this.offset)/this.speed,Math.max(0,this.offset-cue.at))
-      this.nodes.push(node)
-    }
+  private static owners=new WeakMap<HTMLAudioElement,TrackPlayer>()
+  constructor(private track:Track,private offset:number,private speed:number){}
+  async start(){
+    const audio=this.track.audio
+    TrackPlayer.owners.set(audio,this)
+    audio.currentTime=this.offset;audio.playbackRate=this.speed;audio.preservesPitch=true
+    await audio.play()
   }
-  position(){return Math.min(this.track.duration,this.offset+Math.max(0,this.context.currentTime-this.anchor)*this.speed)}
-  stop(){for(const node of this.nodes){node.stop();node.disconnect()}this.nodes=[]}
+  position(){return Math.min(this.track.duration,this.track.audio.currentTime)}
+  ended(){return this.track.audio.ended}
+  stop(){if(TrackPlayer.owners.get(this.track.audio)===this){TrackPlayer.owners.delete(this.track.audio);this.track.audio.pause()}}
 }

@@ -6,7 +6,7 @@ import './companion.css'
 import { playBroadcast } from './broadcast'
 import { CommentarySpeech } from './speech'
 
-export function LiveCompanion({events,index,resolved,playing,finished,language,speechEpoch=0,sourceEvents,fullMatch=false,cutoff,narration}:{events:Event[];index:number;resolved:boolean;playing:boolean;finished:boolean;language:string;speechEpoch?:number;sourceEvents?:Event[];fullMatch?:boolean;cutoff?:MatchTime;narration?:{available:boolean;listen:boolean;status:string;progress:string;toggle:()=>void}}) {
+export function LiveCompanion({events,index,resolved,playing,finished,language,speechEpoch=0,sourceEvents,fullMatch=false,cutoff,narration}:{events:Event[];index:number;resolved:boolean;playing:boolean;finished:boolean;language:string;speechEpoch?:number;sourceEvents?:Event[];fullMatch?:boolean;cutoff?:MatchTime;narration?:{available:boolean;listen:boolean;status:string;progress:string;toggle:()=>void;text?:string}}) {
   const zh=language==='zh-Hans', t=(en:string,cn:string)=>zh?cn:en
   const [open,setOpen]=useState(false), [listen,setListen]=useState(false), [detailed,setDetailed]=useState(false)
   const [azure,setAzure]=useState(false),[voice,setVoice]=useState<'broadcast'|'device'>('broadcast'),[fallback,setFallback]=useState(false)
@@ -56,7 +56,7 @@ export function LiveCompanion({events,index,resolved,playing,finished,language,s
         <button type="button" aria-expanded={open} aria-controls={id} onClick={()=>setOpen(v=>!v)}>{open?t('Close','收起'):t('Follow the play','了解比赛')} <span aria-hidden="true">{open?'−':'+'}</span></button>
       </div>
     </div>
-    <p className="companion-current" role="status" aria-live={listen||narration?.listen?'off':'polite'} aria-atomic="true">{text}</p>
+    <p className="companion-current" role="status" aria-live={listen||narration?.listen?'off':'polite'} aria-atomic="true">{narration?.listen&&narration.text?narration.text:text}</p>
     {narration && <p className="companion-status" role="status">{narration.status==='error'?t('Commentary could not load. Try Listen again; the highlight is still available.','解说未能加载，请再次点击收听。集锦仍可播放。'):narration.listen?(narration.status==='loading'?t(`Preparing commentary ${narration.progress}…`,`准备解说 ${narration.progress}…`):t('Commentary ready · follows playback','解说已准备 · 跟随回放')):!narration.available?t('Audio is unavailable. Follow the play in text.','语音暂不可用，可查看文字解说。'):''}</p>}
     {listen && <p className="companion-status">{playing?(broadcast&&!fallback?t('Broadcast voice · Azure','广播解说 · Azure'):t(fallback?'Using device voice for now':'Following your playback · device voice',fallback?'暂时使用设备语音':'跟随回放 · 设备语音')):t('Sound is on. Press play to listen.','声音已开启，播放后即可收听。')}</p>}
     {!narration && !fullMatch && (!supported || speechError) && <p role="status">{t('Voice is unavailable on this device. You can follow every action here in text.','此设备暂时无法播放语音，可通过文字了解每次进攻。')}</p>}

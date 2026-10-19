@@ -6,7 +6,7 @@ import { playDuration, actionLabel, sequenceScene, pitchZone, recipient, fieldPo
 import { LiveCompanion } from '../companion/LiveCompanion'
 import { cue } from '../companion/evidence'
 import {useHighlightTrack} from '../companion/useHighlightTrack'
-import {TrackPlayer,trackPosition} from '../companion/highlightTrack'
+import {TrackPlayer,trackPosition,trackTime} from '../companion/highlightTrack'
 import { ClubCrest } from './ClubCrest'
 
 export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[],companion=false,playback}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[];companion?:boolean;playback?:{index:number;progress:number;playing:boolean}}) {
@@ -52,18 +52,20 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
     if(playback || !playing || (reduced&&!voice.track) || !events.length) return
     if(voice.preparing)return
     if(voice.track && voice.context.current){
-      const track=voice.track,context=voice.context.current
-      const offset=track.starts[index]+progress*track.durations[index]
-      const player=new TrackPlayer(context,track,offset,speed)
+      const track=voice.track
+      const offset=trackTime(track,index,progress)
+      const player=new TrackPlayer(track,offset,speed)
       let frame:number,stopped=false
+      const externalPause=()=>{if(!stopped&&!track.audio.ended)setPlaying(false)}
+      track.audio.addEventListener('pause',externalPause)
       const step=()=>{
         const at=player.position(),position=trackPosition(track,at)
         setIndex(position.index);setProgress(position.progress)
-        if(at>=track.duration){setPlaying(false);return}
+        if(player.ended()){setIndex(events.length-1);setProgress(1);setPlaying(false);return}
         frame=requestAnimationFrame(step)
       }
-      void context.resume().then(()=>{if(!stopped){player.start();frame=requestAnimationFrame(step)}}).catch(()=>setPlaying(false))
-      return()=>{stopped=true;cancelAnimationFrame(frame);player.stop()}
+      void player.start().then(()=>{if(!stopped)frame=requestAnimationFrame(step);else player.stop()}).catch(()=>setPlaying(false))
+      return()=>{stopped=true;track.audio.removeEventListener('pause',externalPause);cancelAnimationFrame(frame);player.stop()}
     }
     let frame:number,previous=performance.now(),value=progress,current=index
     const step=(now:number)=>{
@@ -174,6 +176,6 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       <p>{selected ? `${playerName(selected)} · ${clubName(selected.startsWith('eb')?'eastbridge':'northport')}` : event ? cue(event,resolved,zh) : t('Waiting for the next play','等待下一次进攻')}</p>
       {selected && <button onClick={()=>{setSelected(null);onPlayerSelect?.(null)}}>{t('Back to play','返回回放')}</button>}</div>
 
-    {companion && <LiveCompanion narration={{available:voice.available,listen:voice.listen,status:voice.preparing?'loading':voice.status,progress:voice.progress,toggle:voice.toggle}} speechEpoch={speechEpoch} events={events} index={index} resolved={resolved} playing={playing || (reduced && resolved)} finished={progress>=1 && index===events.length-1} language={language}/>}
+    {companion && <LiveCompanion narration={{available:voice.available,listen:voice.listen,status:voice.preparing?'loading':voice.status,progress:voice.progress,toggle:voice.toggle,text:voice.track?.markers.slice().reverse().find(m=>m.position<=index+progress)?.text}} speechEpoch={speechEpoch} events={events} index={index} resolved={resolved} playing={playing || (reduced && resolved)} finished={progress>=1 && index===events.length-1} language={language}/>}
   </section>
 }
