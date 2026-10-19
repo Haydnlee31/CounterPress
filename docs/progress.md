@@ -1,5 +1,13 @@
 # Progress
 
+## 19 October 2026 — highlight audio synchronization
+
+Replaced delayed highlight narration with prepared short Azure calls scheduled
+on the same Web Audio clock as the pitch. Shot reactions align with the visible
+result; pause, seek and speed control both together. Matchday now lists highlights
+only; full-match replay and text questions stay in Match Centre without voice.
+See [current architecture and verification](live-companion.md).
+
 ## 19 October 2026 — full-match companion and Azure broadcast speech
 
 Added full-match replay at `#live`, with 22-player pitch, halftime pause, seeking,
