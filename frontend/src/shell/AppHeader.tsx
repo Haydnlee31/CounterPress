@@ -12,7 +12,7 @@ export function AppHeader({active,story,language='en',controls,fullMatch=false}:
   const candidate=story??new URLSearchParams(window.location.search).get('story')??'last-gasp'
   const id=Object.hasOwn(replayGallery,candidate)?candidate:'last-gasp'
   const selected=replayGallery[id]
-  const matchId=active==='matchday'||active==='explore'?selected.matchId??currentMatchId():currentMatchId()
+  const matchId=fullMatch?'synthetic-32fe41c5d304ce68d7d9':active==='matchday'||active==='explore'?selected.matchId??currentMatchId():currentMatchId()
   const href=(route:string)=>`?story=${encodeURIComponent(id)}${matchId!==matchLibrary[0].id?`&match=${matchId}`:''}#${route}`
   const close=()=>{if(library.current)library.current.open=false;if(tools.current)tools.current.open=false}
   return <div className="cp-shell" onKeyDown={e=>{if(e.key==='Escape'){const open=library.current?.open?library.current:tools.current?.open?tools.current:null;close();open?.querySelector('summary')?.focus()}}}>

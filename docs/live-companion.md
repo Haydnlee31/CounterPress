@@ -151,7 +151,7 @@ only on that container. Local verification can explicitly set
 `COUNTERPRESS_SPEECH=off`; device speech continues to work. The deployment workflow
 preserves these settings, existing secrets, scaling and other services.
 
-Verification: 619 backend tests; 137 frontend tests; production build; full-match
+Verification: 619 backend tests; 138 frontend tests; production build; full-match
 browser checks for scores/rewind/halftime/restart, English/Mandarin and 360/390/760px;
 actual Azure-generated MP3s decoded and played to completion in Chrome (English
 4.68s, Mandarin 3.53s). `scripts/test_broadcast_voice.cjs` intentionally requests
