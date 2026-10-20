@@ -1,5 +1,5 @@
 {
-  "version": "career-world-v1",
+  "version": "career-world-v3",
   "training_matches": 304,
   "held_out_matches": 76,
   "historical_matches": 840,
@@ -8,131 +8,3005 @@
   "featured_players": 44,
   "clubs": 12,
   "players": 180,
-  "total_events": 1050765,
+  "total_events": 1176374,
   "simulator_tuning": [
     {
-      "tempo_scale": 0.9,
-      "shot_hazard_scale": 0.4,
-      "training_moment_loss": 0.006918347829953759,
-      "means": {
-        "passes": 892.5,
-        "shots": 20.875,
-        "goals": 2.25
-      }
-    },
-    {
-      "tempo_scale": 0.9,
-      "shot_hazard_scale": 0.5,
-      "training_moment_loss": 0.12603038272383166,
-      "means": {
-        "passes": 887.875,
-        "shots": 25.333333333333332,
-        "goals": 3.125
-      }
-    },
-    {
-      "tempo_scale": 0.9,
-      "shot_hazard_scale": 0.6,
-      "training_moment_loss": 0.13494318076960005,
-      "means": {
-        "passes": 882.1666666666666,
-        "shots": 26.666666666666668,
-        "goals": 3.0833333333333335
-      }
-    },
-    {
-      "tempo_scale": 1.0,
-      "shot_hazard_scale": 0.4,
-      "training_moment_loss": 0.015233680205599655,
-      "means": {
-        "passes": 811.0416666666666,
-        "shots": 19.916666666666668,
-        "goals": 2.2916666666666665
-      }
-    },
-    {
-      "tempo_scale": 1.0,
-      "shot_hazard_scale": 0.5,
-      "training_moment_loss": 0.005527723305268166,
-      "means": {
-        "passes": 802.9166666666666,
-        "shots": 22.75,
-        "goals": 2.375
-      }
-    },
-    {
-      "tempo_scale": 1.0,
-      "shot_hazard_scale": 0.6,
-      "training_moment_loss": 0.07065765354187284,
-      "means": {
-        "passes": 801.5833333333334,
-        "shots": 25.166666666666668,
-        "goals": 2.875
-      }
+      "iteration": 0,
+      "creation_factor": 1.0,
+      "creation_role": null,
+      "training_moment_loss": 1.4919883451086822,
+      "parameters": {
+        "tempo_scale": 0.8760602041534145,
+        "shot_hazard_scale": 0.20928664569645067,
+        "finishing_scale": 0.6851470207245891,
+        "shot_role_scale": {
+          "GK": 1,
+          "DF": 3.654873559077454,
+          "MF": 2.4113371351862734,
+          "FW": 8
+        },
+        "creator_role_scale": {
+          "GK": 0.7,
+          "DF": 0.9,
+          "MF": 1.3,
+          "FW": 0.85
+        },
+        "involvement_role_scale": {
+          "GK": 6.4241248999631475,
+          "DF": 0.2276995603323914,
+          "MF": 0.20849568631528975,
+          "FW": 0.17030033247590265
+        },
+        "duel_role_scale": {
+          "GK": 0.0022008557626313303,
+          "DF": 0.4465892568867164,
+          "MF": 0.8683154514719948,
+          "FW": 2.033474376196966
+        },
+        "pass_length_role_scale": {
+          "GK": 2.081711372522263,
+          "DF": 1.0882143046006092,
+          "MF": 1.0526674328250505,
+          "FW": 0.9308587753573881
+        },
+        "pass_role_offset": {
+          "GK": 0.15885212762758197,
+          "DF": -0.028892652018376153,
+          "MF": -0.029386698762037946,
+          "FW": -0.09993600451325735
+        },
+        "finishing_role_scale": {
+          "GK": 1,
+          "DF": 1.1527632153496696,
+          "MF": 1.3629027258104385,
+          "FW": 1.719946916242586
+        },
+        "form_scale": 1.5097915319920427,
+        "setup_role_scale": {
+          "GK": 1.1203861035338423,
+          "DF": 0.2500723796523289,
+          "MF": 0.27013520342343256,
+          "FW": 2.968026829636628
+        },
+        "spatial": {
+          "version": "spatial-moments-v1",
+          "training_seed_range": [
+            110000,
+            110767
+          ],
+          "pass_tilts": {
+            "GK": {},
+            "DF": {
+              "progression": -0.8314912738587391,
+              "third_entry": -0.45738485479441787,
+              "box_entry": -0.4135798972526839,
+              "backward": -0.9590908311739743,
+              "lateral": -0.37210771215654265,
+              "long": 0.30178246044601253,
+              "cross": 2.0507970972960887
+            },
+            "MF": {
+              "progression": -1.0038502609531974,
+              "third_entry": -0.36511036095377075,
+              "box_entry": 0.3212093983254829,
+              "backward": -0.6824892098908488,
+              "lateral": -0.21182044862118712,
+              "long": 0.11818382294396305,
+              "cross": 1.4564670879659263
+            },
+            "FW": {
+              "progression": -0.9190224047173609,
+              "third_entry": -0.8784922699850013,
+              "box_entry": 0.749376224920621,
+              "backward": -0.268419687848175,
+              "lateral": 0.04049342438446129,
+              "long": 0.2598499988825323,
+              "cross": 1.026237387556213
+            }
+          },
+          "wide_involvement": {
+            "GK": 1.0,
+            "DF": 4.655725828072601,
+            "MF": 2.981272777790806,
+            "FW": 2.1590710088090663
+          },
+          "shot_inside_scale": {
+            "GK": 1.0,
+            "DF": 0.7023411743593467,
+            "MF": 0.5048068718936869,
+            "FW": 1.6126098060021148
+          },
+          "shot_outside_scale": {
+            "GK": 1.0,
+            "DF": 1.9973636184510455,
+            "MF": 1.8128901226709888,
+            "FW": 0.36845059605327135
+          },
+          "long_completion_offset": {
+            "GK": 0.0,
+            "DF": 0.11198244495870896,
+            "MF": 0.14615494562321238,
+            "FW": 0.12881348416080254
+          },
+          "creator_trait_power": 0.6,
+          "center_role_traits": true,
+          "role_centering_basis": "appearance_minutes"
+        }
+      },
+      "report": {
+        "core": {
+          "GK.passes_per90": {
+            "actual": 31.31640625,
+            "target": 29.59703947368421,
+            "absolute_tolerance": 5.9194078947368425,
+            "passed": true
+          },
+          "GK.shots_per90": {
+            "actual": 0.0,
+            "target": 0.0,
+            "absolute_tolerance": 0.15,
+            "passed": true
+          },
+          "GK.goals_per90": {
+            "actual": 0.0,
+            "target": 0.0,
+            "absolute_tolerance": 0.04,
+            "passed": true
+          },
+          "GK.assists_per90": {
+            "actual": 0.008463541666666666,
+            "target": 0.003289473684210526,
+            "absolute_tolerance": 0.015,
+            "passed": true
+          },
+          "GK.duels_per90": {
+            "actual": 0.181640625,
+            "target": 0.20888157894736842,
+            "absolute_tolerance": 0.2,
+            "passed": true
+          },
+          "GK.pass_completion": {
+            "actual": 0.8081784541183319,
+            "target": 0.8090929653924451,
+            "absolute_tolerance": 0.06,
+            "passed": true
+          },
+          "GK.completed_long_share": {
+            "actual": 0.5539549839228296,
+            "target": 0.5507408442829187,
+            "absolute_tolerance": 0.08,
+            "passed": true
+          },
+          "GK.saves_per90": {
+            "actual": 3.17578125,
+            "target": 3.0822368421052633,
+            "absolute_tolerance": 0.6164473684210527,
+            "passed": true
+          },
+          "GK.goals_conceded_per90": {
+            "actual": 1.46875,
+            "target": 1.324013157894737,
+            "absolute_tolerance": 0.2648026315789474,
+            "passed": true
+          },
+          "GK.save_rate": {
+            "actual": 0.6837678721614803,
+            "target": 0.6992537313432836,
+            "absolute_tolerance": 0.08,
+            "passed": true
+          },
+          "GK.clean_sheet_rate": {
+            "actual": 0.2727864583333333,
+            "target": 0.28548123980424145,
+            "absolute_tolerance": 0.09,
+            "passed": true
+          },
+          "GK.passes_per90.p10": {
+            "actual": 30.75,
+            "target": 26.268364,
+            "absolute_tolerance": 10.5073456,
+            "reference": "comparison",
+            "passed": true
+          },
+          "GK.passes_per90.p90": {
+            "actual": 31.664062,
+            "target": 32.193959,
+            "absolute_tolerance": 12.877583600000001,
+            "reference": "comparison",
+            "passed": true
+          },
+          "GK.shots_per90.p10": {
+            "actual": 0.0,
+            "target": 0.0,
+            "absolute_tolerance": 0.4,
+            "reference": "comparison",
+            "passed": true
+          },
+          "GK.shots_per90.p90": {
+            "actual": 0.0,
+            "target": 0.0,
+            "absolute_tolerance": 0.4,
+            "reference": "comparison",
+            "passed": true
+          },
+          "DF.passes_per90": {
+            "actual": 47.591959635416664,
+            "target": 44.757606171472865,
+            "absolute_tolerance": 8.951521234294573,
+            "passed": true
+          },
+          "DF.shots_per90": {
+            "actual": 0.482421875,
+            "target": 0.47344278486431457,
+            "absolute_tolerance": 0.15,
+            "passed": true
+          },
+          "DF.goals_per90": {
+            "actual": 0.03515625,
+            "target": 0.03452600359027273,
+            "absolute_tolerance": 0.04,
+            "passed": true
+          },
+          "DF.assists_per90": {
+            "actual": 0.040690104166666664,
+            "target": 0.042463015909875654,
+            "absolute_tolerance": 0.04,
+            "passed": true
+          },
+          "DF.duels_per90": {
+            "actual": 9.459309895833334,
+            "target": 9.46687144420639,
+            "absolute_tolerance": 2.3667178610515975,
+            "passed": true
+          },
+          "DF.pass_completion": {
+            "actual": 0.8261418238402216,
+            "target": 0.8279451666105091,
+            "absolute_tolerance": 0.06,
+            "passed": true
+          },
+          "DF.completed_long_share": {
+            "actual": 0.12031394886739966,
+            "target": 0.12039754107139032,
+            "absolute_tolerance": 0.08,
+            "passed": true
+          },
+          "DF.shot_accuracy": {
+            "actual": 0.29048582995951416,
+            "target": 0.2808046940486169,
+            "absolute_tolerance": 0.08,
+            "passed": true
+          },
+          "DF.conversion": {
+            "actual": 0.0728744939271255,
+            "target": 0.07292539815590947,
+            "absolute_tolerance": 0.05,
+            "passed": true
+          },
+          "DF.duel_win": {
+            "actual": 0.31038576688805536,
+            "target": 0.32861035422343327,
+            "absolute_tolerance": 0.09,
+            "passed": true
+          },
+          "DF.passes_per90.p10": {
+            "actual": 35.898828,
+            "target": 32.314774,
+            "absolute_tolerance": 12.9259096,
+            "reference": "comparison",
+            "passed": true
+          },
+          "DF.passes_per90.p90": {
+            "actual": 60.909339,
+            "target": 68.409326,
+            "absolute_tolerance": 27.363730399999998,
+            "reference": "comparison",
+            "passed": true
+          },
+          "DF.shots_per90.p10": {
+            "actual": 0.216126,
+            "target": 0.135952,
+            "absolute_tolerance": 0.4,
+            "reference": "comparison",
+            "passed": true
+          },
+          "DF.shots_per90.p90": {
+            "actual": 0.779983,
+            "target": 0.805169,
+            "absolute_tolerance": 0.4,
+            "reference": "comparison",
+            "passed": true
+          },
+          "MF.passes_per90": {
+            "actual": 50.013671875,
+            "target": 48.40920216144029,
+            "absolute_tolerance": 9.681840432288059,
+            "passed": true
+          },
+          "MF.shots_per90": {
+            "actual": 1.2669270833333333,
+            "target": 1.310292953625494,
+            "absolute_tolerance": 0.3275732384063735,
+            "passed": true
+          },
+          "MF.goals_per90": {
+            "actual": 0.1037326388888889,
+            "target": 0.11078764324996229,
+            "absolute_tolerance": 0.04,
+            "passed": true
+          },
+          "MF.assists_per90": {
+            "actual": 0.1091579861111111,
+            "target": 0.09829279626688384,
+            "absolute_tolerance": 0.04,
+            "passed": true
+          },
+          "MF.duels_per90": {
+            "actual": 14.24587673611111,
+            "target": 14.520261679035471,
+            "absolute_tolerance": 3.6300654197588678,
+            "passed": true
+          },
+          "MF.pass_completion": {
+            "actual": 0.8300811843983633,
+            "target": 0.8304812052069621,
+            "absolute_tolerance": 0.06,
+            "passed": true
+          },
+          "MF.completed_long_share": {
+            "actual": 0.09589499380563818,
+            "target": 0.09552866585168762,
+            "absolute_tolerance": 0.08,
+            "passed": true
+          },
+          "MF.shot_accuracy": {
+            "actual": 0.3208290510448784,
+            "target": 0.32453909726637,
+            "absolute_tolerance": 0.08,
+            "passed": true
+          },
+          "MF.conversion": {
+            "actual": 0.08187735525865023,
+            "target": 0.0845518118245391,
+            "absolute_tolerance": 0.05,
+            "passed": true
+          },
+          "MF.duel_win": {
+            "actual": 0.36174880036560286,
+            "target": 0.37363393855950433,
+            "absolute_tolerance": 0.09,
+            "passed": true
+          },
+          "MF.passes_per90.p10": {
+            "actual": 34.626576,
+            "target": 30.922064,
+            "absolute_tolerance": 12.368825600000001,
+            "reference": "comparison",
+            "passed": true
+          },
+          "MF.passes_per90.p90": {
+            "actual": 64.182146,
+            "target": 70.897059,
+            "absolute_tolerance": 28.3588236,
+            "reference": "comparison",
+            "passed": true
+          },
+          "MF.shots_per90.p10": {
+            "actual": 0.806125,
+            "target": 0.628571,
+            "absolute_tolerance": 0.4,
+            "reference": "comparison",
+            "passed": true
+          },
+          "MF.shots_per90.p90": {
+            "actual": 1.751313,
+            "target": 2.177419,
+            "absolute_tolerance": 0.8709676000000001,
+            "reference": "comparison",
+            "passed": true
+          },
+          "FW.passes_per90": {
+            "actual": 26.652994791666668,
+            "target": 25.414938110766816,
+            "absolute_tolerance": 5.082987622153364,
+            "passed": true
+          },
+          "FW.shots_per90": {
+            "actual": 2.2018229166666665,
+            "target": 2.4035859955303067,
+            "absolute_tolerance": 0.6008964988825767,
+            "passed": true
+          },
+          "FW.goals_per90": {
+            "actual": 0.3389756944444444,
+            "target": 0.373736278391628,
+            "absolute_tolerance": 0.11212088351748839,
+            "passed": true
+          },
+          "FW.assists_per90": {
+            "actual": 0.1111111111111111,
+            "target": 0.11848049851109885,
+            "absolute_tolerance": 0.041468174478884595,
+            "passed": true
+          },
+          "FW.duels_per90": {
+            "actual": 15.852430555555555,
+            "target": 16.05933462907056,
+            "absolute_tolerance": 4.01483365726764,
+            "passed": true
+          },
+          "FW.pass_completion": {
+            "actual": 0.7627038602147911,
+            "target": 0.7620745209611627,
+            "absolute_tolerance": 0.06,
+            "passed": true
+          },
+          "FW.completed_long_share": {
+            "actual": 0.06103146050622912,
+            "target": 0.060498380712486505,
+            "absolute_tolerance": 0.08,
+            "passed": true
+          },
+          "FW.shot_accuracy": {
+            "actual": 0.4336684407648334,
+            "target": 0.4305907937658572,
+            "absolute_tolerance": 0.08,
+            "passed": true
+          },
+          "FW.conversion": {
+            "actual": 0.15395229647151587,
+            "target": 0.15549111997100398,
+            "absolute_tolerance": 0.05,
+            "passed": true
+          },
+          "FW.duel_win": {
+            "actual": 0.3903734530719527,
+            "target": 0.36530324400564174,
+            "absolute_tolerance": 0.09,
+            "passed": true
+          },
+          "FW.passes_per90.p10": {
+            "actual": 19.389756,
+            "target": 16.442748,
+            "absolute_tolerance": 6.577099200000001,
+            "reference": "comparison",
+            "passed": true
+          },
+          "FW.passes_per90.p90": {
+            "actual": 36.144234,
+            "target": 40.375587,
+            "absolute_tolerance": 16.150234800000003,
+            "reference": "comparison",
+            "passed": true
+          },
+          "FW.shots_per90.p10": {
+            "actual": 1.576909,
+            "target": 1.345515,
+            "absolute_tolerance": 0.5382060000000001,
+            "reference": "comparison",
+            "passed": true
+          },
+          "FW.shots_per90.p90": {
+            "actual": 2.917959,
+            "target": 3.248408,
+            "absolute_tolerance": 1.2993632000000002,
+            "reference": "comparison",
+            "passed": true
+          }
+        },
+        "extended": {
+          "GK.goals": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.goals": {
+            "actual": 0.03515625,
+            "target": 0.03452600359027273,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.goals": {
+            "actual": 0.1037326388888889,
+            "target": 0.11078764324996229,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.goals": {
+            "actual": 0.3389756944444444,
+            "target": 0.373736278391628,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "GK.non_penalty_goals": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.non_penalty_goals": {
+            "actual": 0.034505208333333336,
+            "target": 0.03373230235831244,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.non_penalty_goals": {
+            "actual": 0.09852430555555555,
+            "target": 0.10454021975842306,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.non_penalty_goals": {
+            "actual": 0.3185763888888889,
+            "target": 0.34672969417218635,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "GK.shots": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.shots": {
+            "actual": 0.482421875,
+            "target": 0.47344278486431457,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.shots": {
+            "actual": 1.2669270833333333,
+            "target": 1.310292953625494,
+            "tolerance": 0.45860253376892285,
+            "passed": true
+          },
+          "FW.shots": {
+            "actual": 2.2018229166666665,
+            "target": 2.4035859955303067,
+            "tolerance": 0.8412550984356073,
+            "passed": true
+          },
+          "GK.shots_on_target": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.shots_on_target": {
+            "actual": 0.14013671875,
+            "target": 0.13294495635334902,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.shots_on_target": {
+            "actual": 0.4064670138888889,
+            "target": 0.4252412923241034,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.shots_on_target": {
+            "actual": 0.9548611111111112,
+            "target": 1.0349620016998928,
+            "tolerance": 0.3622367005949625,
+            "passed": true
+          },
+          "GK.shots_off_target": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.shots_off_target": {
+            "actual": 0.2177734375,
+            "target": 0.21429933262927903,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.shots_off_target": {
+            "actual": 0.4524739583333333,
+            "target": 0.4598103689772871,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.shots_off_target": {
+            "actual": 0.7439236111111112,
+            "target": 0.8276211293054699,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "GK.shots_blocked": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.shots_blocked": {
+            "actual": 0.12451171875,
+            "target": 0.12619849588168652,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.shots_blocked": {
+            "actual": 0.4079861111111111,
+            "target": 0.4252412923241034,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.shots_blocked": {
+            "actual": 0.5030381944444444,
+            "target": 0.5410028645249441,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.shot_accuracy": {
+            "actual": 29.048582995951417,
+            "target": 28.08046940486169,
+            "tolerance": 10,
+            "passed": true
+          },
+          "MF.shot_accuracy": {
+            "actual": 32.08290510448784,
+            "target": 32.453909726637,
+            "tolerance": 10,
+            "passed": true
+          },
+          "FW.shot_accuracy": {
+            "actual": 43.36684407648334,
+            "target": 43.05907937658572,
+            "tolerance": 10,
+            "passed": true
+          },
+          "DF.conversion": {
+            "actual": 7.28744939271255,
+            "target": 7.292539815590946,
+            "tolerance": 10,
+            "passed": true
+          },
+          "MF.conversion": {
+            "actual": 8.187735525865023,
+            "target": 8.45518118245391,
+            "tolerance": 10,
+            "passed": true
+          },
+          "FW.conversion": {
+            "actual": 15.395229647151588,
+            "target": 15.549111997100399,
+            "tolerance": 10,
+            "passed": true
+          },
+          "GK.shots_inside_box": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.shots_inside_box": {
+            "actual": 0.2864583333333333,
+            "target": 0.29287575459334797,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.shots_inside_box": {
+            "actual": 0.5486111111111112,
+            "target": 0.5601856397413507,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.shots_inside_box": {
+            "actual": 1.5857204861111112,
+            "target": 1.7275502099081546,
+            "tolerance": 0.6046425734678541,
+            "passed": true
+          },
+          "GK.shots_outside_box": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.shots_outside_box": {
+            "actual": 0.19596354166666666,
+            "target": 0.18056703027096657,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.shots_outside_box": {
+            "actual": 0.7183159722222222,
+            "target": 0.7501073138841432,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.shots_outside_box": {
+            "actual": 0.6161024305555556,
+            "target": 0.6760357856221523,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.shot_distance": {
+            "actual": 17.046415569869637,
+            "target": 18.25059029120488,
+            "tolerance": 4.56264757280122,
+            "passed": true
+          },
+          "MF.shot_distance": {
+            "actual": 19.68286811322823,
+            "target": 20.915212574627187,
+            "tolerance": 5.228803143656797,
+            "passed": true
+          },
+          "FW.shot_distance": {
+            "actual": 15.848443548024994,
+            "target": 16.02541246922633,
+            "tolerance": 4.006353117306582,
+            "passed": true
+          },
+          "GK.penalty_shots": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.penalty_shots": {
+            "actual": 0.0008138020833333334,
+            "target": 0.0007937012319602926,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.penalty_shots": {
+            "actual": 0.009114583333333334,
+            "target": 0.007913403089283021,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.penalty_shots": {
+            "actual": 0.02734375,
+            "target": 0.039203106124995946,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "GK.penalty_goals": {
+            "actual": 0.0,
+            "target": 0.0,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.penalty_goals": {
+            "actual": 0.0006510416666666666,
+            "target": 0.0007937012319602926,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.penalty_goals": {
+            "actual": 0.005208333333333333,
+            "target": 0.006247423491539227,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.penalty_goals": {
+            "actual": 0.020399305555555556,
+            "target": 0.02700658421944165,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.penalty_conversion": {
+            "actual": 74.60317460317461,
+            "target": 68.88888888888889,
+            "tolerance": 10,
+            "passed": true
+          },
+          "GK.goal_involvements": {
+            "actual": 0.008463541666666666,
+            "target": 0.003289473684210526,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.goal_involvements": {
+            "actual": 0.07584635416666667,
+            "target": 0.07698901950014839,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.goal_involvements": {
+            "actual": 0.212890625,
+            "target": 0.20908043951684613,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.goal_involvements": {
+            "actual": 0.4500868055555556,
+            "target": 0.49221677690272686,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "GK.assists": {
+            "actual": 0.008463541666666666,
+            "target": 0.003289473684210526,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.assists": {
+            "actual": 0.040690104166666664,
+            "target": 0.042463015909875654,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.assists": {
+            "actual": 0.1091579861111111,
+            "target": 0.09829279626688384,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "FW.assists": {
+            "actual": 0.1111111111111111,
+            "target": 0.11848049851109885,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "GK.passes": {
+            "actual": 31.31640625,
+            "target": 29.59703947368421,
+            "tolerance": 10.358963815789473,
+            "passed": true
+          },
+          "DF.passes": {
+            "actual": 47.591959635416664,
+            "target": 44.757606171472865,
+            "tolerance": 15.665162160015502,
+            "passed": true
+          },
+          "MF.passes": {
+            "actual": 50.013671875,
+            "target": 48.40920216144029,
+            "tolerance": 16.9432207565041,
+            "passed": true
+          },
+          "FW.passes": {
+            "actual": 26.652994791666668,
+            "target": 25.414938110766816,
+            "tolerance": 8.895228338768385,
+            "passed": true
+          },
+          "DF.passes_completed": {
+            "actual": 39.317708333333336,
+            "target": 37.055529416530185,
+            "tolerance": 12.969435295785564,
+            "passed": true
+          },
+          "MF.passes_completed": {
+            "actual": 41.515407986111114,
+            "target": 40.20258666295436,
+            "tolerance": 14.070905332034025,
+            "passed": true
+          },
+          "FW.passes_completed": {
+            "actual": 20.32834201388889,
+            "target": 19.368076786020218,
+            "tolerance": 6.778826875107076,
+            "passed": true
+          },
+          "DF.passes_incomplete": {
+            "actual": 8.274251302083334,
+            "target": 7.700489352478759,
+            "tolerance": 2.6951712733675657,
+            "passed": true
+          },
+          "MF.passes_incomplete": {
+            "actual": 8.49826388888889,
+            "target": 8.206199003586493,
+            "tolerance": 2.8721696512552723,
+            "passed": true
+          },
+          "FW.passes_incomplete": {
+            "actual": 6.324652777777778,
+            "target": 6.0468613247465965,
+            "tolerance": 2.1164014636613087,
+            "passed": true
+          },
+          "GK.pass_accuracy": {
+            "actual": 80.81784541183319,
+            "target": 80.90929653924451,
+            "tolerance": 10,
+            "passed": true
+          },
+          "DF.pass_accuracy": {
+            "actual": 82.61418238402216,
+            "target": 82.7945166610509,
+            "tolerance": 10,
+            "passed": true
+          },
+          "MF.pass_accuracy": {
+            "actual": 83.00811843983634,
+            "target": 83.04812052069622,
+            "tolerance": 10,
+            "passed": true
+          },
+          "FW.pass_accuracy": {
+            "actual": 76.27038602147911,
+            "target": 76.20745209611627,
+            "tolerance": 10,
+            "passed": true
+          },
+          "DF.progressive_passes_completed": {
+            "actual": 7.466634114583333,
+            "target": 7.049257491655339,
+            "tolerance": 2.4672401220793687,
+            "passed": true
+          },
+          "MF.progressive_passes_completed": {
+            "actual": 7.015190972222222,
+            "target": 6.765959641336983,
+            "tolerance": 2.368085874467944,
+            "passed": true
+          },
+          "FW.progressive_passes_completed": {
+            "actual": 2.6265190972222223,
+            "target": 2.44888736260808,
+            "tolerance": 0.857110576912828,
+            "passed": true
+          },
+          "DF.final_third_entries": {
+            "actual": 4.51611328125,
+            "target": 4.20264802322975,
+            "tolerance": 1.4709268081304123,
+            "passed": true
+          },
+          "MF.final_third_entries": {
+            "actual": 5.584852430555555,
+            "target": 5.330301722981268,
+            "tolerance": 1.8656056030434438,
+            "passed": true
+          },
+          "FW.final_third_entries": {
+            "actual": 1.8090277777777777,
+            "target": 1.6726658613331602,
+            "tolerance": 0.5854330514666061,
+            "passed": true
+          },
+          "DF.box_entries": {
+            "actual": 0.8942057291666666,
+            "target": 0.835370546638208,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.box_entries": {
+            "actual": 2.1920572916666665,
+            "target": 2.1457817218940067,
+            "tolerance": 0.7510236026629024,
+            "passed": true
+          },
+          "FW.box_entries": {
+            "actual": 1.2784288194444444,
+            "target": 1.237946973413761,
+            "tolerance": 0.4332814406948163,
+            "passed": true
+          },
+          "DF.long_passes": {
+            "actual": 7.816569010416667,
+            "target": 7.347689154872409,
+            "tolerance": 2.571691204205343,
+            "passed": true
+          },
+          "MF.long_passes": {
+            "actual": 6.296223958333333,
+            "target": 6.082908006262027,
+            "tolerance": 2.129017802191709,
+            "passed": true
+          },
+          "FW.long_passes": {
+            "actual": 2.26171875,
+            "target": 2.161397917691443,
+            "tolerance": 0.7564892711920049,
+            "passed": true
+          },
+          "DF.long_passes_completed": {
+            "actual": 4.73046875,
+            "target": 4.461394624848805,
+            "tolerance": 1.5614881186970817,
+            "passed": true
+          },
+          "MF.long_passes_completed": {
+            "actual": 3.9811197916666665,
+            "target": 3.840499467698881,
+            "tolerance": 1.3441748136946081,
+            "passed": true
+          },
+          "FW.long_passes_completed": {
+            "actual": 1.2406684027777777,
+            "target": 1.1717372830693231,
+            "tolerance": 0.41010804907426307,
+            "passed": true
+          },
+          "DF.long_accuracy": {
+            "actual": 60.51847995835502,
+            "target": 60.71833648393194,
+            "tolerance": 10,
+            "passed": true
+          },
+          "MF.long_accuracy": {
+            "actual": 63.23027608313515,
+            "target": 63.13591235878124,
+            "tolerance": 10,
+            "passed": true
+          },
+          "FW.long_accuracy": {
+            "actual": 54.85511418153906,
+            "target": 54.212011285771865,
+            "tolerance": 10,
+            "passed": true
+          },
+          "DF.forward_passes": {
+            "actual": 26.191731770833332,
+            "target": 24.821815477710214,
+            "tolerance": 8.687635417198575,
+            "passed": true
+          },
+          "MF.forward_passes": {
+            "actual": 22.114366319444443,
+            "target": 21.557359499905257,
+            "tolerance": 7.5450758249668395,
+            "passed": true
+          },
+          "FW.forward_passes": {
+            "actual": 9.113932291666666,
+            "target": 8.708316640565766,
+            "tolerance": 3.0479108241980177,
+            "passed": true
+          },
+          "DF.backward_passes": {
+            "actual": 9.614095052083334,
+            "target": 8.915645938609968,
+            "tolerance": 3.1204760785134886,
+            "passed": true
+          },
+          "MF.backward_passes": {
+            "actual": 13.469835069444445,
+            "target": 13.012966637976774,
+            "tolerance": 4.554538323291871,
+            "passed": true
+          },
+          "FW.backward_passes": {
+            "actual": 8.457682291666666,
+            "target": 8.053189178210278,
+            "tolerance": 2.8186162123735974,
+            "passed": true
+          },
+          "DF.lateral_passes": {
+            "actual": 11.7861328125,
+            "target": 11.018557352688763,
+            "tolerance": 3.856495073441067,
+            "passed": true
+          },
+          "MF.lateral_passes": {
+            "actual": 14.42947048611111,
+            "target": 13.838459528658824,
+            "tolerance": 4.843460835030588,
+            "passed": true
+          },
+          "FW.lateral_passes": {
+            "actual": 9.081380208333334,
+            "target": 8.653432291990772,
+            "tolerance": 3.0287013021967697,
+            "passed": true
+          },
+          "DF.pass_distance": {
+            "actual": 20.256618538780067,
+            "target": 21.42873277633031,
+            "tolerance": 5.357183194082578,
+            "passed": true
+          },
+          "MF.pass_distance": {
+            "actual": 18.795632969851958,
+            "target": 19.220029600548756,
+            "tolerance": 4.805007400137189,
+            "passed": true
+          },
+          "FW.pass_distance": {
+            "actual": 16.770881817834688,
+            "target": 16.57646513348682,
+            "tolerance": 4.144116283371705,
+            "passed": true
+          },
+          "GK.crosses": {
+            "actual": 0.022135416666666668,
+            "target": 0.027960526315789474,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.crosses": {
+            "actual": 1.8684895833333333,
+            "target": 1.7691600460394923,
+            "tolerance": 0.6192060161138223,
+            "passed": true
+          },
+          "MF.crosses": {
+            "actual": 2.9874131944444446,
+            "target": 2.9442024441127197,
+            "tolerance": 1.030470855439452,
+            "passed": true
+          },
+          "FW.crosses": {
+            "actual": 1.6818576388888888,
+            "target": 1.6230085935748322,
+            "tolerance": 0.5680530077511913,
+            "passed": true
+          },
+          "GK.crosses_completed": {
+            "actual": 0.013020833333333334,
+            "target": 0.014802631578947368,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.crosses_completed": {
+            "actual": 0.6595052083333334,
+            "target": 0.5881326128825769,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "MF.crosses_completed": {
+            "actual": 1.2204861111111112,
+            "target": 1.2728084126762584,
+            "tolerance": 0.4454829444366904,
+            "passed": true
+          },
+          "FW.crosses_completed": {
+            "actual": 0.572265625,
+            "target": 0.5331622432999449,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.cross_accuracy": {
+            "actual": 35.29616724738676,
+            "target": 33.24360699865411,
+            "tolerance": 10,
+            "passed": true
+          },
+          "MF.cross_accuracy": {
+            "actual": 40.85427865756211,
+            "target": 43.231008629226196,
+            "tolerance": 10,
+            "passed": true
+          },
+          "FW.cross_accuracy": {
+            "actual": 34.02580645161291,
+            "target": 32.850241545893724,
+            "tolerance": 10,
+            "passed": true
+          },
+          "GK.duels": {
+            "actual": 0.181640625,
+            "target": 0.20888157894736842,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.duels": {
+            "actual": 9.459309895833334,
+            "target": 9.46687144420639,
+            "tolerance": 3.3134050054722364,
+            "passed": true
+          },
+          "MF.duels": {
+            "actual": 14.24587673611111,
+            "target": 14.520261679035471,
+            "tolerance": 5.082091587662415,
+            "passed": true
+          },
+          "FW.duels": {
+            "actual": 15.852430555555555,
+            "target": 16.05933462907056,
+            "tolerance": 5.620767120174695,
+            "passed": true
+          },
+          "GK.duels_won": {
+            "actual": 0.036458333333333336,
+            "target": 0.07730263157894737,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.duels_won": {
+            "actual": 2.93603515625,
+            "target": 3.110911978668367,
+            "tolerance": 1.0888191925339283,
+            "passed": true
+          },
+          "MF.duels_won": {
+            "actual": 5.153428819444445,
+            "target": 5.425262560052665,
+            "tolerance": 1.8988418960184326,
+            "passed": true
+          },
+          "FW.duels_won": {
+            "actual": 6.188368055555555,
+            "target": 5.866527036571616,
+            "tolerance": 2.0532844628000655,
+            "passed": true
+          },
+          "GK.duels_lost": {
+            "actual": 0.09244791666666667,
+            "target": 0.09539473684210527,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.duels_lost": {
+            "actual": 3.8307291666666665,
+            "target": 3.5026035366407715,
+            "tolerance": 1.22591123782427,
+            "passed": true
+          },
+          "MF.duels_lost": {
+            "actual": 5.026041666666667,
+            "target": 5.222429544027358,
+            "tolerance": 1.8278503404095752,
+            "passed": true
+          },
+          "FW.duels_lost": {
+            "actual": 5.104166666666667,
+            "target": 5.281093985105009,
+            "tolerance": 1.848382894786753,
+            "passed": true
+          },
+          "GK.duels_drawn": {
+            "actual": 0.052734375,
+            "target": 0.03618421052631579,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "DF.duels_drawn": {
+            "actual": 2.6925455729166665,
+            "target": 2.853355928897252,
+            "tolerance": 0.9986745751140381,
+            "passed": true
+          },
+          "MF.duels_drawn": {
+            "actual": 4.06640625,
+            "target": 3.872569574955449,
+            "tolerance": 1.3553993512344071,
+            "passed": true
+          },
+          "FW.duels_drawn": {
+            "actual": 4.559895833333333,
+            "target": 4.911713607393937,
+            "tolerance": 1.7190997625878777,
+            "passed": true
+          },
+          "GK.duel_win_pct": {
+            "actual": 20.07168458781362,
+            "target": 37.00787401574803,
+            "tolerance": 10,
+            "passed": false
+          },
+          "DF.duel_win_pct": {
+            "actual": 31.038576688805534,
+            "target": 32.86103542234333,
+            "tolerance": 10,
+            "passed": true
+          },
+          "MF.duel_win_pct": {
+            "actual": 36.17488003656029,
+            "target": 37.363393855950434,
+            "tolerance": 10,
+            "passed": true
+          },
+          "FW.duel_win_pct": {
+            "actual": 39.03734530719527,
+            "target": 36.530324400564176,
+            "tolerance": 10,
+            "passed": true
+          },
+          "GK.saves": {
+            "actual": 3.17578125,
+            "target": 3.0822368421052633,
+            "tolerance": 1.078782894736842,
+            "passed": true
+          },
+          "GK.save_pct": {
+            "actual": 68.37678721614803,
+            "target": 70.55722891566265,
+            "tolerance": 10,
+            "passed": true
+          },
+          "GK.goals_conceded": {
+            "actual": 1.46875,
+            "target": 1.324013157894737,
+            "tolerance": 0.4634046052631579,
+            "passed": true
+          },
+          "GK.clean_sheets": {
+            "actual": 0.2727864583333333,
+            "target": 0.2878289473684211,
+            "tolerance": 0.3,
+            "passed": true
+          },
+          "GK.clean_sheet_pct": {
+            "actual": 27.278645833333332,
+            "target": 28.548123980424144,
+            "tolerance": 10,
+            "passed": true
+          }
+        },
+        "population": {
+          "goals_per_match": {
+            "actual": 2.9375,
+            "target": 2.651316,
+            "relative_tolerance": 0.15,
+            "passed": true
+          },
+          "shots_per_match": {
+            "actual": 24.671875,
+            "target": 23.365132,
+            "relative_tolerance": 0.2,
+            "passed": true
+          },
+          "goal_role_share_DF": {
+            "actual": 0.09574468085106383,
+            "target": 0.08676642326181162,
+            "absolute_tolerance": 0.085,
+            "passed": true
+          },
+          "goal_role_share_MF": {
+            "actual": 0.21187943262411346,
+            "target": 0.20881321062698358,
+            "absolute_tolerance": 0.085,
+            "passed": true
+          },
+          "goal_role_share_FW": {
+            "actual": 0.6923758865248227,
+            "target": 0.7044203661112048,
+            "absolute_tolerance": 0.085,
+            "passed": true
+          },
+          "assist_role_share_DF": {
+            "actual": 0.19561815336463223,
+            "target": 0.20626596361683044,
+            "absolute_tolerance": 0.1,
+            "passed": true
+          },
+          "assist_role_share_MF": {
+            "actual": 0.3935837245696401,
+            "target": 0.3580961791835365,
+            "absolute_tolerance": 0.1,
+            "passed": true
+          },
+          "assist_role_share_FW": {
+            "actual": 0.40062597809076683,
+            "target": 0.43164316649804724,
+            "absolute_tolerance": 0.1,
+            "passed": true
+          },
+          "assisted_goal_share": {
+            "actual": 0.5664893617021277,
+            "target": 0.5019497656281052,
+            "absolute_tolerance": 0.09,
+            "passed": true
+          },
+          "top_scorer_team_share": {
+            "actual": 0.2958242210238043,
+            "target": 0.2618667569601006,
+            "absolute_tolerance": 0.12,
+            "passed": true
+          }
+        },
+        "loss": 1.4919883451086822,
+        "positions": {
+          "matches": 768,
+          "minimum_distribution_minutes": 900,
+          "roles": {
+            "GK": {
+              "counts": {
+                "appearances": 1536,
+                "starts": 1536,
+                "minutes": 138240.0,
+                "goals": 0,
+                "own_goals": 0,
+                "assists": 13,
+                "shots": 0,
+                "shots_on_target": 0,
+                "shots_off_target": 0,
+                "shots_blocked": 0,
+                "passes": 48102,
+                "passes_completed": 38875,
+                "passes_unknown": 0,
+                "duels": 279,
+                "duels_won": 56,
+                "duels_unknown": 0,
+                "recoveries": 21131,
+                "saves": 4878,
+                "goals_conceded": 2256,
+                "clean_sheets": 419,
+                "key_passes": 261,
+                "xg_shots": 0,
+                "xpass_passes": 48102,
+                "xpass_completed": 38875,
+                "located_passes": 48102,
+                "flight_passes": 48102,
+                "flight_shots": 0,
+                "xg": 0,
+                "expected_completions": 38785.02439900001,
+                "pass_distance_m": 1905183.6118420018,
+                "pass_speed_kmh_sum": 3135981.7325580004,
+                "shot_speed_kmh_sum": 0,
+                "passes_known": 48102,
+                "shots_faced": 7134,
+                "completed_located": 38875,
+                "completed_long": 21535,
+                "actions": 89265,
+                "box_actions": 0,
+                "own_third_actions": 89170,
+                "high_recoveries": 0,
+                "carries": 7051,
+                "carry_distance_m": 38268.21744064374,
+                "carry_box_entries": 0,
+                "passes_incomplete": 9227,
+                "long_passes": 30423,
+                "long_passes_completed": 21535,
+                "long_passes_known": 30423,
+                "progressive_passes": 25716,
+                "progressive_passes_completed": 18294,
+                "progressive_passes_known": 25716,
+                "final_third_entries": 7624,
+                "box_entries": 20,
+                "backward_passes": 2471,
+                "crosses": 34,
+                "crosses_completed": 20,
+                "crosses_known": 34,
+                "passes_received": 16112,
+                "forward_passes": 40976,
+                "lateral_passes": 4655,
+                "own_goals_conceded": 0,
+                "duels_lost": 142,
+                "duels_drawn": 81,
+                "xa": 9.24728999999997,
+                "xa_shots": 261,
+                "final_third_actions": 68,
+                "middle_third_actions": 27
+              },
+              "rates": {
+                "passes_per90": 31.31640625,
+                "shots_per90": 0.0,
+                "goals_per90": 0.0,
+                "assists_per90": 0.008463541666666666,
+                "duels_per90": 0.181640625,
+                "saves_per90": 3.17578125,
+                "goals_conceded_per90": 1.46875,
+                "pass_completion": 0.8081784541183319,
+                "shot_accuracy": null,
+                "conversion": null,
+                "duel_win": 0.2007168458781362,
+                "save_rate": 0.6837678721614803,
+                "clean_sheet_rate": 0.2727864583333333,
+                "completed_long_share": 0.5539549839228296
+              },
+              "players_900_minutes": 12,
+              "distributions": {
+                "passes_per90": {
+                  "n": 12,
+                  "mean": 31.316406,
+                  "sd": 0.726531,
+                  "p10": 30.75,
+                  "p50": 31.4375,
+                  "p90": 31.664062
+                },
+                "shots_per90": {
+                  "n": 12,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "goals_per90": {
+                  "n": 12,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "assists_per90": {
+                  "n": 12,
+                  "mean": 0.008464,
+                  "sd": 0.005931,
+                  "p10": 0.0,
+                  "p50": 0.007812,
+                  "p90": 0.015625
+                },
+                "duels_per90": {
+                  "n": 12,
+                  "mean": 0.181641,
+                  "sd": 0.045568,
+                  "p10": 0.125,
+                  "p50": 0.1875,
+                  "p90": 0.234375
+                },
+                "saves_per90": {
+                  "n": 12,
+                  "mean": 3.175781,
+                  "sd": 0.245162,
+                  "p10": 2.851562,
+                  "p50": 3.242188,
+                  "p90": 3.453125
+                },
+                "goals_conceded_per90": {
+                  "n": 12,
+                  "mean": 1.46875,
+                  "sd": 0.164928,
+                  "p10": 1.289062,
+                  "p50": 1.523438,
+                  "p90": 1.65625
+                },
+                "pass_completion": {
+                  "n": 12,
+                  "mean": 0.80793,
+                  "sd": 0.029135,
+                  "p10": 0.773034,
+                  "p50": 0.817492,
+                  "p90": 0.850657
+                },
+                "shot_accuracy": {
+                  "n": 0,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "conversion": {
+                  "n": 0,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "duel_win": {
+                  "n": 12,
+                  "mean": 0.199494,
+                  "sd": 0.044672,
+                  "p10": 0.157895,
+                  "p50": 0.2,
+                  "p90": 0.266667
+                },
+                "save_rate": {
+                  "n": 12,
+                  "mean": 0.683797,
+                  "sd": 0.029447,
+                  "p10": 0.648241,
+                  "p50": 0.6875,
+                  "p90": 0.720339
+                },
+                "clean_sheet_rate": {
+                  "n": 12,
+                  "mean": 0.272786,
+                  "sd": 0.052452,
+                  "p10": 0.203125,
+                  "p50": 0.273438,
+                  "p90": 0.328125
+                },
+                "completed_long_share": {
+                  "n": 12,
+                  "mean": 0.553191,
+                  "sd": 0.017284,
+                  "p10": 0.532227,
+                  "p50": 0.558442,
+                  "p90": 0.575386
+                }
+              }
+            },
+            "DF": {
+              "counts": {
+                "appearances": 7439,
+                "starts": 6144,
+                "minutes": 552960.0,
+                "goals": 216,
+                "own_goals": 0,
+                "assists": 250,
+                "shots": 2964,
+                "shots_on_target": 861,
+                "shots_off_target": 1338,
+                "shots_blocked": 765,
+                "passes": 292405,
+                "passes_completed": 241568,
+                "passes_unknown": 0,
+                "duels": 58118,
+                "duels_won": 18039,
+                "duels_unknown": 0,
+                "recoveries": 65456,
+                "saves": 0,
+                "goals_conceded": 9024,
+                "clean_sheets": 1653,
+                "key_passes": 2169,
+                "xg_shots": 2964,
+                "xpass_passes": 292405,
+                "xpass_completed": 241568,
+                "located_passes": 292405,
+                "flight_passes": 292405,
+                "flight_shots": 2964,
+                "xg": 274.69047300000466,
+                "expected_completions": 241995.30870600027,
+                "pass_distance_m": 5923136.543831985,
+                "pass_speed_kmh_sum": 16727930.095868042,
+                "shot_speed_kmh_sum": 254257.25756999984,
+                "passes_known": 292405,
+                "shots_faced": 9024,
+                "completed_located": 241568,
+                "completed_long": 29064,
+                "passes_received": 234179,
+                "actions": 417115,
+                "box_actions": 9864,
+                "middle_third_actions": 251869,
+                "passes_incomplete": 50837,
+                "long_passes": 48025,
+                "long_passes_completed": 29064,
+                "long_passes_known": 48025,
+                "progressive_passes": 61586,
+                "progressive_passes_completed": 45875,
+                "progressive_passes_known": 61586,
+                "final_third_entries": 27747,
+                "box_entries": 5494,
+                "forward_passes": 160922,
+                "crosses": 11480,
+                "crosses_completed": 4052,
+                "crosses_known": 11480,
+                "duels_lost": 23536,
+                "duels_drawn": 16543,
+                "backward_passes": 59069,
+                "final_third_actions": 59681,
+                "lateral_passes": 72414,
+                "high_recoveries": 3611,
+                "carries": 30669,
+                "carry_distance_m": 155640.20300841233,
+                "carry_box_entries": 313,
+                "own_third_actions": 105565,
+                "own_goals_conceded": 0,
+                "penalty_shots": 5,
+                "penalty_goals": 4,
+                "non_penalty_goals": 212,
+                "headed_shots": 0,
+                "headed_goals": 0,
+                "woodwork": 0,
+                "shots_inside_box": 1760,
+                "shot_distance_m": 50525.57574909361,
+                "located_shots": 2964,
+                "xg_goals": 216,
+                "non_penalty_xg": 271.0541080000052,
+                "progressive_carries": 139,
+                "xa": 233.30120000000554,
+                "xa_shots": 2169,
+                "shots_outside_box": 1204
+              },
+              "rates": {
+                "passes_per90": 47.591959635416664,
+                "shots_per90": 0.482421875,
+                "goals_per90": 0.03515625,
+                "assists_per90": 0.040690104166666664,
+                "duels_per90": 9.459309895833334,
+                "saves_per90": 0.0,
+                "goals_conceded_per90": 1.46875,
+                "pass_completion": 0.8261418238402216,
+                "shot_accuracy": 0.29048582995951416,
+                "conversion": 0.0728744939271255,
+                "duel_win": 0.31038576688805536,
+                "save_rate": 0.0,
+                "clean_sheet_rate": 0.22220728592552763,
+                "completed_long_share": 0.12031394886739966
+              },
+              "players_900_minutes": 60,
+              "distributions": {
+                "passes_per90": {
+                  "n": 60,
+                  "mean": 48.271567,
+                  "sd": 10.650324,
+                  "p10": 35.898828,
+                  "p50": 49.555215,
+                  "p90": 60.909339
+                },
+                "shots_per90": {
+                  "n": 60,
+                  "mean": 0.490759,
+                  "sd": 0.24871,
+                  "p10": 0.216126,
+                  "p50": 0.441509,
+                  "p90": 0.779983
+                },
+                "goals_per90": {
+                  "n": 60,
+                  "mean": 0.039202,
+                  "sd": 0.038301,
+                  "p10": 0.008507,
+                  "p50": 0.032874,
+                  "p90": 0.0726
+                },
+                "assists_per90": {
+                  "n": 60,
+                  "mean": 0.0395,
+                  "sd": 0.023263,
+                  "p10": 0.017037,
+                  "p50": 0.0338,
+                  "p90": 0.0726
+                },
+                "duels_per90": {
+                  "n": 60,
+                  "mean": 9.628513,
+                  "sd": 2.383652,
+                  "p10": 6.785511,
+                  "p50": 9.586551,
+                  "p90": 12.686192
+                },
+                "saves_per90": {
+                  "n": 60,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "goals_conceded_per90": {
+                  "n": 60,
+                  "mean": 1.471935,
+                  "sd": 0.18202,
+                  "p10": 1.289573,
+                  "p50": 1.491951,
+                  "p90": 1.70474
+                },
+                "pass_completion": {
+                  "n": 60,
+                  "mean": 0.821575,
+                  "sd": 0.045245,
+                  "p10": 0.767788,
+                  "p50": 0.822797,
+                  "p90": 0.883539
+                },
+                "shot_accuracy": {
+                  "n": 60,
+                  "mean": 0.30349,
+                  "sd": 0.092359,
+                  "p10": 0.211538,
+                  "p50": 0.296296,
+                  "p90": 0.387097
+                },
+                "conversion": {
+                  "n": 60,
+                  "mean": 0.076588,
+                  "sd": 0.055348,
+                  "p10": 0.025641,
+                  "p50": 0.071429,
+                  "p90": 0.115385
+                },
+                "duel_win": {
+                  "n": 60,
+                  "mean": 0.310015,
+                  "sd": 0.018055,
+                  "p10": 0.288762,
+                  "p50": 0.310526,
+                  "p90": 0.331652
+                },
+                "save_rate": {
+                  "n": 60,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "clean_sheet_rate": {
+                  "n": 60,
+                  "mean": 0.217555,
+                  "sd": 0.095915,
+                  "p10": 0.037037,
+                  "p50": 0.244094,
+                  "p90": 0.309524
+                },
+                "completed_long_share": {
+                  "n": 60,
+                  "mean": 0.119792,
+                  "sd": 0.006954,
+                  "p10": 0.111332,
+                  "p50": 0.120032,
+                  "p90": 0.126176
+                }
+              }
+            },
+            "MF": {
+              "counts": {
+                "appearances": 5914,
+                "starts": 4608,
+                "minutes": 414720.0,
+                "goals": 478,
+                "own_goals": 0,
+                "assists": 503,
+                "shots": 5838,
+                "shots_on_target": 1873,
+                "shots_off_target": 2085,
+                "shots_blocked": 1880,
+                "passes": 230463,
+                "passes_completed": 191303,
+                "passes_unknown": 0,
+                "duels": 65645,
+                "duels_won": 23747,
+                "duels_unknown": 0,
+                "recoveries": 43154,
+                "saves": 0,
+                "goals_conceded": 6768,
+                "clean_sheets": 1245,
+                "key_passes": 3866,
+                "xg_shots": 5838,
+                "xpass_passes": 230463,
+                "xpass_completed": 191303,
+                "located_passes": 230463,
+                "flight_passes": 230463,
+                "flight_shots": 5838,
+                "xg": 531.5405879999977,
+                "expected_completions": 191512.0729690006,
+                "pass_distance_m": 4331697.961130992,
+                "pass_speed_kmh_sum": 13057077.997162981,
+                "shot_speed_kmh_sum": 500109.0333440006,
+                "passes_known": 230463,
+                "shots_faced": 6768,
+                "completed_located": 191303,
+                "completed_long": 18345,
+                "passes_received": 197652,
+                "actions": 344672,
+                "box_actions": 18631,
+                "middle_third_actions": 213605,
+                "passes_incomplete": 39160,
+                "long_passes": 29013,
+                "long_passes_completed": 18345,
+                "long_passes_known": 29013,
+                "progressive_passes": 42488,
+                "progressive_passes_completed": 32326,
+                "progressive_passes_known": 42488,
+                "final_third_entries": 25735,
+                "box_entries": 10101,
+                "lateral_passes": 66491,
+                "crosses": 13766,
+                "crosses_completed": 5624,
+                "crosses_known": 13766,
+                "backward_passes": 62069,
+                "duels_lost": 23160,
+                "duels_drawn": 18738,
+                "final_third_actions": 95207,
+                "high_recoveries": 5800,
+                "own_third_actions": 35860,
+                "forward_passes": 101903,
+                "carries": 22697,
+                "carry_distance_m": 113871.85256229933,
+                "carry_box_entries": 507,
+                "xa": 444.67140300000017,
+                "xa_shots": 3866,
+                "own_goals_conceded": 0,
+                "progressive_carries": 156,
+                "penalty_shots": 42,
+                "penalty_goals": 24,
+                "non_penalty_goals": 454,
+                "headed_shots": 0,
+                "headed_goals": 0,
+                "woodwork": 0,
+                "shots_inside_box": 2528,
+                "shot_distance_m": 114908.58404502642,
+                "located_shots": 5838,
+                "xg_goals": 478,
+                "non_penalty_xg": 500.995121999997,
+                "shots_outside_box": 3310
+              },
+              "rates": {
+                "passes_per90": 50.013671875,
+                "shots_per90": 1.2669270833333333,
+                "goals_per90": 0.1037326388888889,
+                "assists_per90": 0.1091579861111111,
+                "duels_per90": 14.24587673611111,
+                "saves_per90": 0.0,
+                "goals_conceded_per90": 1.46875,
+                "pass_completion": 0.8300811843983633,
+                "shot_accuracy": 0.3208290510448784,
+                "conversion": 0.08187735525865023,
+                "duel_win": 0.36174880036560286,
+                "save_rate": 0.0,
+                "clean_sheet_rate": 0.21051741630030435,
+                "completed_long_share": 0.09589499380563818
+              },
+              "players_900_minutes": 48,
+              "distributions": {
+                "passes_per90": {
+                  "n": 48,
+                  "mean": 49.330272,
+                  "sd": 11.845888,
+                  "p10": 34.626576,
+                  "p50": 48.641618,
+                  "p90": 64.182146
+                },
+                "shots_per90": {
+                  "n": 48,
+                  "mean": 1.237944,
+                  "sd": 0.37215,
+                  "p10": 0.806125,
+                  "p50": 1.170508,
+                  "p90": 1.751313
+                },
+                "goals_per90": {
+                  "n": 48,
+                  "mean": 0.105385,
+                  "sd": 0.048355,
+                  "p10": 0.05337,
+                  "p50": 0.111887,
+                  "p90": 0.150181
+                },
+                "assists_per90": {
+                  "n": 48,
+                  "mean": 0.108003,
+                  "sd": 0.053837,
+                  "p10": 0.042585,
+                  "p50": 0.10929,
+                  "p90": 0.179402
+                },
+                "duels_per90": {
+                  "n": 48,
+                  "mean": 14.005405,
+                  "sd": 3.479004,
+                  "p10": 10.453626,
+                  "p50": 14.029126,
+                  "p90": 19.020091
+                },
+                "saves_per90": {
+                  "n": 48,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "goals_conceded_per90": {
+                  "n": 48,
+                  "mean": 1.47063,
+                  "sd": 0.176868,
+                  "p10": 1.273462,
+                  "p50": 1.478102,
+                  "p90": 1.685196
+                },
+                "pass_completion": {
+                  "n": 48,
+                  "mean": 0.830148,
+                  "sd": 0.039476,
+                  "p10": 0.779345,
+                  "p50": 0.838772,
+                  "p90": 0.881177
+                },
+                "shot_accuracy": {
+                  "n": 48,
+                  "mean": 0.323438,
+                  "sd": 0.057113,
+                  "p10": 0.270833,
+                  "p50": 0.323308,
+                  "p90": 0.378378
+                },
+                "conversion": {
+                  "n": 48,
+                  "mean": 0.084389,
+                  "sd": 0.033335,
+                  "p10": 0.053191,
+                  "p50": 0.08,
+                  "p90": 0.119658
+                },
+                "duel_win": {
+                  "n": 48,
+                  "mean": 0.360752,
+                  "sd": 0.018757,
+                  "p10": 0.34186,
+                  "p50": 0.360573,
+                  "p90": 0.383442
+                },
+                "save_rate": {
+                  "n": 48,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "clean_sheet_rate": {
+                  "n": 48,
+                  "mean": 0.205235,
+                  "sd": 0.105354,
+                  "p10": 0.034188,
+                  "p50": 0.244094,
+                  "p90": 0.3125
+                },
+                "completed_long_share": {
+                  "n": 48,
+                  "mean": 0.09603,
+                  "sd": 0.006372,
+                  "p10": 0.088235,
+                  "p50": 0.09666,
+                  "p90": 0.102345
+                }
+              }
+            },
+            "FW": {
+              "counts": {
+                "appearances": 5918,
+                "starts": 4608,
+                "minutes": 414720.0,
+                "goals": 1562,
+                "own_goals": 0,
+                "assists": 512,
+                "shots": 10146,
+                "shots_on_target": 4400,
+                "shots_off_target": 3428,
+                "shots_blocked": 2318,
+                "passes": 122817,
+                "passes_completed": 93673,
+                "passes_unknown": 0,
+                "duels": 73048,
+                "duels_won": 28516,
+                "duels_unknown": 0,
+                "recoveries": 23464,
+                "saves": 0,
+                "goals_conceded": 6768,
+                "clean_sheets": 1243,
+                "key_passes": 5167,
+                "xg_shots": 10146,
+                "xpass_passes": 122817,
+                "xpass_completed": 93673,
+                "located_passes": 122817,
+                "flight_passes": 122817,
+                "flight_shots": 10146,
+                "xg": 1325.3777289999855,
+                "expected_completions": 93839.87366799981,
+                "pass_distance_m": 2059749.3922210028,
+                "pass_speed_kmh_sum": 6869066.196058003,
+                "shot_speed_kmh_sum": 865852.3556790038,
+                "passes_known": 122817,
+                "shots_faced": 6768,
+                "completed_located": 93673,
+                "completed_long": 5717,
+                "passes_received": 117476,
+                "actions": 217507,
+                "box_actions": 18355,
+                "final_third_actions": 81521,
+                "duels_lost": 23520,
+                "duels_drawn": 21012,
+                "penalty_shots": 126,
+                "penalty_goals": 94,
+                "non_penalty_goals": 1468,
+                "headed_shots": 0,
+                "headed_goals": 0,
+                "woodwork": 0,
+                "shots_outside_box": 2839,
+                "shot_distance_m": 160798.30823826158,
+                "located_shots": 10146,
+                "xg_goals": 1562,
+                "non_penalty_xg": 1233.7413309999852,
+                "passes_incomplete": 29144,
+                "long_passes": 10422,
+                "long_passes_completed": 5717,
+                "long_passes_known": 10422,
+                "progressive_passes": 17849,
+                "progressive_passes_completed": 12103,
+                "progressive_passes_known": 17849,
+                "final_third_entries": 8336,
+                "box_entries": 5891,
+                "backward_passes": 38973,
+                "crosses": 7750,
+                "crosses_completed": 2637,
+                "crosses_known": 7750,
+                "xa": 516.7882369999982,
+                "xa_shots": 5167,
+                "middle_third_actions": 124061,
+                "high_recoveries": 4549,
+                "lateral_passes": 41847,
+                "carries": 11880,
+                "carry_distance_m": 58415.11755065337,
+                "carry_box_entries": 380,
+                "forward_passes": 41997,
+                "own_goals_conceded": 0,
+                "shots_inside_box": 7307,
+                "own_third_actions": 11925,
+                "progressive_carries": 54
+              },
+              "rates": {
+                "passes_per90": 26.652994791666668,
+                "shots_per90": 2.2018229166666665,
+                "goals_per90": 0.3389756944444444,
+                "assists_per90": 0.1111111111111111,
+                "duels_per90": 15.852430555555555,
+                "saves_per90": 0.0,
+                "goals_conceded_per90": 1.46875,
+                "pass_completion": 0.7627038602147911,
+                "shot_accuracy": 0.4336684407648334,
+                "conversion": 0.15395229647151587,
+                "duel_win": 0.3903734530719527,
+                "save_rate": 0.0,
+                "clean_sheet_rate": 0.2100371747211896,
+                "completed_long_share": 0.06103146050622912
+              },
+              "players_900_minutes": 48,
+              "distributions": {
+                "passes_per90": {
+                  "n": 48,
+                  "mean": 26.62001,
+                  "sd": 6.908776,
+                  "p10": 19.389756,
+                  "p50": 25.010195,
+                  "p90": 36.144234
+                },
+                "shots_per90": {
+                  "n": 48,
+                  "mean": 2.203042,
+                  "sd": 0.608412,
+                  "p10": 1.576909,
+                  "p50": 2.162753,
+                  "p90": 2.917959
+                },
+                "goals_per90": {
+                  "n": 48,
+                  "mean": 0.339691,
+                  "sd": 0.132058,
+                  "p10": 0.218616,
+                  "p50": 0.302382,
+                  "p90": 0.512232
+                },
+                "assists_per90": {
+                  "n": 48,
+                  "mean": 0.108688,
+                  "sd": 0.035728,
+                  "p10": 0.069351,
+                  "p50": 0.104722,
+                  "p90": 0.163121
+                },
+                "duels_per90": {
+                  "n": 48,
+                  "mean": 15.882349,
+                  "sd": 4.152446,
+                  "p10": 11.405992,
+                  "p50": 14.969415,
+                  "p90": 21.849661
+                },
+                "saves_per90": {
+                  "n": 48,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "goals_conceded_per90": {
+                  "n": 48,
+                  "mean": 1.475245,
+                  "sd": 0.17343,
+                  "p10": 1.244046,
+                  "p50": 1.522022,
+                  "p90": 1.699095
+                },
+                "pass_completion": {
+                  "n": 48,
+                  "mean": 0.760226,
+                  "sd": 0.044873,
+                  "p10": 0.701545,
+                  "p50": 0.771582,
+                  "p90": 0.817716
+                },
+                "shot_accuracy": {
+                  "n": 48,
+                  "mean": 0.435386,
+                  "sd": 0.040832,
+                  "p10": 0.389189,
+                  "p50": 0.439655,
+                  "p90": 0.472
+                },
+                "conversion": {
+                  "n": 48,
+                  "mean": 0.153275,
+                  "sd": 0.037127,
+                  "p10": 0.111111,
+                  "p50": 0.151111,
+                  "p90": 0.184397
+                },
+                "duel_win": {
+                  "n": 48,
+                  "mean": 0.390264,
+                  "sd": 0.014433,
+                  "p10": 0.375576,
+                  "p50": 0.393373,
+                  "p90": 0.406534
+                },
+                "save_rate": {
+                  "n": 48,
+                  "mean": 0.0,
+                  "sd": 0.0,
+                  "p10": 0.0,
+                  "p50": 0.0,
+                  "p90": 0.0
+                },
+                "clean_sheet_rate": {
+                  "n": 48,
+                  "mean": 0.204924,
+                  "sd": 0.10923,
+                  "p10": 0.026786,
+                  "p50": 0.244094,
+                  "p90": 0.320312
+                },
+                "completed_long_share": {
+                  "n": 48,
+                  "mean": 0.061247,
+                  "sd": 0.006446,
+                  "p10": 0.052632,
+                  "p50": 0.061533,
+                  "p90": 0.068452
+                }
+              }
+            }
+          }
+        },
+        "role_counts": {
+          "GK": {
+            "appearances": 1536,
+            "starts": 1536,
+            "minutes": 138240.0,
+            "goals": 0,
+            "own_goals": 0,
+            "assists": 13,
+            "shots": 0,
+            "shots_on_target": 0,
+            "shots_off_target": 0,
+            "shots_blocked": 0,
+            "passes": 48102,
+            "passes_completed": 38875,
+            "passes_unknown": 0,
+            "duels": 279,
+            "duels_won": 56,
+            "duels_unknown": 0,
+            "recoveries": 21131,
+            "saves": 4878,
+            "goals_conceded": 2256,
+            "clean_sheets": 419,
+            "key_passes": 261,
+            "xg_shots": 0,
+            "xpass_passes": 48102,
+            "xpass_completed": 38875,
+            "located_passes": 48102,
+            "flight_passes": 48102,
+            "flight_shots": 0,
+            "xg": 0,
+            "expected_completions": 38785.02439900001,
+            "pass_distance_m": 1905183.6118420018,
+            "pass_speed_kmh_sum": 3135981.7325580004,
+            "shot_speed_kmh_sum": 0,
+            "passes_known": 48102,
+            "shots_faced": 7134,
+            "completed_located": 38875,
+            "completed_long": 21535,
+            "actions": 89265,
+            "box_actions": 0,
+            "own_third_actions": 89170,
+            "high_recoveries": 0,
+            "carries": 7051,
+            "carry_distance_m": 38268.21744064374,
+            "carry_box_entries": 0,
+            "passes_incomplete": 9227,
+            "long_passes": 30423,
+            "long_passes_completed": 21535,
+            "long_passes_known": 30423,
+            "progressive_passes": 25716,
+            "progressive_passes_completed": 18294,
+            "progressive_passes_known": 25716,
+            "final_third_entries": 7624,
+            "box_entries": 20,
+            "backward_passes": 2471,
+            "crosses": 34,
+            "crosses_completed": 20,
+            "crosses_known": 34,
+            "passes_received": 16112,
+            "forward_passes": 40976,
+            "lateral_passes": 4655,
+            "own_goals_conceded": 0,
+            "duels_lost": 142,
+            "duels_drawn": 81,
+            "xa": 9.24728999999997,
+            "xa_shots": 261,
+            "final_third_actions": 68,
+            "middle_third_actions": 27
+          },
+          "DF": {
+            "appearances": 7439,
+            "starts": 6144,
+            "minutes": 552960.0,
+            "goals": 216,
+            "own_goals": 0,
+            "assists": 250,
+            "shots": 2964,
+            "shots_on_target": 861,
+            "shots_off_target": 1338,
+            "shots_blocked": 765,
+            "passes": 292405,
+            "passes_completed": 241568,
+            "passes_unknown": 0,
+            "duels": 58118,
+            "duels_won": 18039,
+            "duels_unknown": 0,
+            "recoveries": 65456,
+            "saves": 0,
+            "goals_conceded": 9024,
+            "clean_sheets": 1653,
+            "key_passes": 2169,
+            "xg_shots": 2964,
+            "xpass_passes": 292405,
+            "xpass_completed": 241568,
+            "located_passes": 292405,
+            "flight_passes": 292405,
+            "flight_shots": 2964,
+            "xg": 274.69047300000466,
+            "expected_completions": 241995.30870600027,
+            "pass_distance_m": 5923136.543831985,
+            "pass_speed_kmh_sum": 16727930.095868042,
+            "shot_speed_kmh_sum": 254257.25756999984,
+            "passes_known": 292405,
+            "shots_faced": 9024,
+            "completed_located": 241568,
+            "completed_long": 29064,
+            "passes_received": 234179,
+            "actions": 417115,
+            "box_actions": 9864,
+            "middle_third_actions": 251869,
+            "passes_incomplete": 50837,
+            "long_passes": 48025,
+            "long_passes_completed": 29064,
+            "long_passes_known": 48025,
+            "progressive_passes": 61586,
+            "progressive_passes_completed": 45875,
+            "progressive_passes_known": 61586,
+            "final_third_entries": 27747,
+            "box_entries": 5494,
+            "forward_passes": 160922,
+            "crosses": 11480,
+            "crosses_completed": 4052,
+            "crosses_known": 11480,
+            "duels_lost": 23536,
+            "duels_drawn": 16543,
+            "backward_passes": 59069,
+            "final_third_actions": 59681,
+            "lateral_passes": 72414,
+            "high_recoveries": 3611,
+            "carries": 30669,
+            "carry_distance_m": 155640.20300841233,
+            "carry_box_entries": 313,
+            "own_third_actions": 105565,
+            "own_goals_conceded": 0,
+            "penalty_shots": 5,
+            "penalty_goals": 4,
+            "non_penalty_goals": 212,
+            "headed_shots": 0,
+            "headed_goals": 0,
+            "woodwork": 0,
+            "shots_inside_box": 1760,
+            "shot_distance_m": 50525.57574909361,
+            "located_shots": 2964,
+            "xg_goals": 216,
+            "non_penalty_xg": 271.0541080000052,
+            "progressive_carries": 139,
+            "xa": 233.30120000000554,
+            "xa_shots": 2169,
+            "shots_outside_box": 1204
+          },
+          "MF": {
+            "appearances": 5914,
+            "starts": 4608,
+            "minutes": 414720.0,
+            "goals": 478,
+            "own_goals": 0,
+            "assists": 503,
+            "shots": 5838,
+            "shots_on_target": 1873,
+            "shots_off_target": 2085,
+            "shots_blocked": 1880,
+            "passes": 230463,
+            "passes_completed": 191303,
+            "passes_unknown": 0,
+            "duels": 65645,
+            "duels_won": 23747,
+            "duels_unknown": 0,
+            "recoveries": 43154,
+            "saves": 0,
+            "goals_conceded": 6768,
+            "clean_sheets": 1245,
+            "key_passes": 3866,
+            "xg_shots": 5838,
+            "xpass_passes": 230463,
+            "xpass_completed": 191303,
+            "located_passes": 230463,
+            "flight_passes": 230463,
+            "flight_shots": 5838,
+            "xg": 531.5405879999977,
+            "expected_completions": 191512.0729690006,
+            "pass_distance_m": 4331697.961130992,
+            "pass_speed_kmh_sum": 13057077.997162981,
+            "shot_speed_kmh_sum": 500109.0333440006,
+            "passes_known": 230463,
+            "shots_faced": 6768,
+            "completed_located": 191303,
+            "completed_long": 18345,
+            "passes_received": 197652,
+            "actions": 344672,
+            "box_actions": 18631,
+            "middle_third_actions": 213605,
+            "passes_incomplete": 39160,
+            "long_passes": 29013,
+            "long_passes_completed": 18345,
+            "long_passes_known": 29013,
+            "progressive_passes": 42488,
+            "progressive_passes_completed": 32326,
+            "progressive_passes_known": 42488,
+            "final_third_entries": 25735,
+            "box_entries": 10101,
+            "lateral_passes": 66491,
+            "crosses": 13766,
+            "crosses_completed": 5624,
+            "crosses_known": 13766,
+            "backward_passes": 62069,
+            "duels_lost": 23160,
+            "duels_drawn": 18738,
+            "final_third_actions": 95207,
+            "high_recoveries": 5800,
+            "own_third_actions": 35860,
+            "forward_passes": 101903,
+            "carries": 22697,
+            "carry_distance_m": 113871.85256229933,
+            "carry_box_entries": 507,
+            "xa": 444.67140300000017,
+            "xa_shots": 3866,
+            "own_goals_conceded": 0,
+            "progressive_carries": 156,
+            "penalty_shots": 42,
+            "penalty_goals": 24,
+            "non_penalty_goals": 454,
+            "headed_shots": 0,
+            "headed_goals": 0,
+            "woodwork": 0,
+            "shots_inside_box": 2528,
+            "shot_distance_m": 114908.58404502642,
+            "located_shots": 5838,
+            "xg_goals": 478,
+            "non_penalty_xg": 500.995121999997,
+            "shots_outside_box": 3310
+          },
+          "FW": {
+            "appearances": 5918,
+            "starts": 4608,
+            "minutes": 414720.0,
+            "goals": 1562,
+            "own_goals": 0,
+            "assists": 512,
+            "shots": 10146,
+            "shots_on_target": 4400,
+            "shots_off_target": 3428,
+            "shots_blocked": 2318,
+            "passes": 122817,
+            "passes_completed": 93673,
+            "passes_unknown": 0,
+            "duels": 73048,
+            "duels_won": 28516,
+            "duels_unknown": 0,
+            "recoveries": 23464,
+            "saves": 0,
+            "goals_conceded": 6768,
+            "clean_sheets": 1243,
+            "key_passes": 5167,
+            "xg_shots": 10146,
+            "xpass_passes": 122817,
+            "xpass_completed": 93673,
+            "located_passes": 122817,
+            "flight_passes": 122817,
+            "flight_shots": 10146,
+            "xg": 1325.3777289999855,
+            "expected_completions": 93839.87366799981,
+            "pass_distance_m": 2059749.3922210028,
+            "pass_speed_kmh_sum": 6869066.196058003,
+            "shot_speed_kmh_sum": 865852.3556790038,
+            "passes_known": 122817,
+            "shots_faced": 6768,
+            "completed_located": 93673,
+            "completed_long": 5717,
+            "passes_received": 117476,
+            "actions": 217507,
+            "box_actions": 18355,
+            "final_third_actions": 81521,
+            "duels_lost": 23520,
+            "duels_drawn": 21012,
+            "penalty_shots": 126,
+            "penalty_goals": 94,
+            "non_penalty_goals": 1468,
+            "headed_shots": 0,
+            "headed_goals": 0,
+            "woodwork": 0,
+            "shots_outside_box": 2839,
+            "shot_distance_m": 160798.30823826158,
+            "located_shots": 10146,
+            "xg_goals": 1562,
+            "non_penalty_xg": 1233.7413309999852,
+            "passes_incomplete": 29144,
+            "long_passes": 10422,
+            "long_passes_completed": 5717,
+            "long_passes_known": 10422,
+            "progressive_passes": 17849,
+            "progressive_passes_completed": 12103,
+            "progressive_passes_known": 17849,
+            "final_third_entries": 8336,
+            "box_entries": 5891,
+            "backward_passes": 38973,
+            "crosses": 7750,
+            "crosses_completed": 2637,
+            "crosses_known": 7750,
+            "xa": 516.7882369999982,
+            "xa_shots": 5167,
+            "middle_third_actions": 124061,
+            "high_recoveries": 4549,
+            "lateral_passes": 41847,
+            "carries": 11880,
+            "carry_distance_m": 58415.11755065337,
+            "carry_box_entries": 380,
+            "forward_passes": 41997,
+            "own_goals_conceded": 0,
+            "shots_inside_box": 7307,
+            "own_third_actions": 11925,
+            "progressive_carries": 54
+          }
+        },
+        "population_observed": {
+          "matches": 768,
+          "per_match": {
+            "goals": 2.9375,
+            "shots": 24.671875,
+            "passes": 903.36849
+          },
+          "assisted_goal_share": 0.5664893617021277,
+          "goal_role_share": {
+            "GK": 0.0,
+            "DF": 0.09574468085106383,
+            "MF": 0.21187943262411346,
+            "FW": 0.6923758865248227
+          },
+          "assist_role_share": {
+            "GK": 0.010172143974960876,
+            "DF": 0.19561815336463223,
+            "MF": 0.3935837245696401,
+            "FW": 0.40062597809076683
+          },
+          "average_top_scorer_team_share": 0.2958242210238043,
+          "maximum_player_goals_per90_900_minutes": 0.6718989280245024
+        }
+      },
+      "failures": []
     }
   ],
-  "validation_100": {
-    "passes": {
-      "n": 100,
-      "mean": 801.3,
-      "sd": 71.495384,
-      "p10": 714,
-      "p50": 802,
-      "p90": 880
+  "population_validation": {
+    "historical": {
+      "matches": 840,
+      "per_match": {
+        "goals": 2.889286,
+        "shots": 24.783333,
+        "passes": 905.255952
+      },
+      "assisted_goal_share": 0.5661310259579728,
+      "goal_role_share": {
+        "GK": 0.0,
+        "DF": 0.09353110836423568,
+        "MF": 0.22249690976514216,
+        "FW": 0.6839719818706221
+      },
+      "assist_role_share": {
+        "GK": 0.00727802037845706,
+        "DF": 0.20014556040756915,
+        "MF": 0.35953420669577874,
+        "FW": 0.433042212518195
+      },
+      "average_top_scorer_team_share": 0.31239725193206075,
+      "maximum_player_goals_per90_900_minutes": 0.6239578762615182
     },
-    "passes_completed": {
-      "n": 100,
-      "mean": 676.3,
-      "sd": 60.430208,
-      "p10": 603,
-      "p50": 678,
-      "p90": 748
+    "unselected_3000": {
+      "matches": 3000,
+      "per_match": {
+        "goals": 3.009,
+        "shots": 24.785333,
+        "passes": 900.692667
+      },
+      "assisted_goal_share": 0.5608729367453196,
+      "goal_role_share": {
+        "GK": 0.0,
+        "DF": 0.09582364019053949,
+        "MF": 0.21834496510468593,
+        "FW": 0.6858313947047746
+      },
+      "assist_role_share": {
+        "GK": 0.005332806636381592,
+        "DF": 0.19612877740470078,
+        "MF": 0.3800118506814142,
+        "FW": 0.4185265652775035
+      },
+      "average_top_scorer_team_share": 0.2891168588832615,
+      "maximum_player_goals_per90_900_minutes": 0.7477425934678242
     },
-    "shots": {
-      "n": 100,
-      "mean": 22.98,
-      "sd": 4.833177,
-      "p10": 17,
-      "p50": 23,
-      "p90": 30
+    "source_training": {
+      "matches": 304,
+      "per_match": {
+        "assists": 1.582237,
+        "shots": 23.365132,
+        "player_goals": 2.572368,
+        "corners": 10.180921,
+        "goals": 2.651316
+      },
+      "average_top_scorer_team_share": 0.2618667569601006,
+      "assisted_goal_share": 0.5967741935483871,
+      "goal_role_share": {
+        "GK": 0.0,
+        "DF": 0.11125319693094629,
+        "MF": 0.340153452685422,
+        "FW": 0.5485933503836317
+      },
+      "assist_role_share": {
+        "GK": 0.004158004158004158,
+        "DF": 0.22245322245322247,
+        "MF": 0.49064449064449067,
+        "FW": 0.28274428274428276
+      },
+      "situations": {
+        "open_play": {
+          "shots_per_match": 19.125,
+          "conversion": 0.10939112487100103,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.12573099415204678,
+            "MF": 0.45476436188510494,
+            "FW": 0.4195046439628483
+          }
+        },
+        "corner": {
+          "shots_per_match": 3.0953947368421053,
+          "conversion": 0.08607863974495218,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.4410201912858661,
+            "MF": 0.32518597236981933,
+            "FW": 0.23379383634431455
+          }
+        },
+        "free_kick": {
+          "shots_per_match": 0.9276315789473685,
+          "conversion": 0.06028368794326241,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.16312056737588654,
+            "MF": 0.6382978723404256,
+            "FW": 0.19858156028368795
+          }
+        },
+        "penalty": {
+          "shots_per_match": 0.21710526315789475,
+          "conversion": 0.7272727272727273,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.030303030303030304,
+            "MF": 0.2878787878787879,
+            "FW": 0.6818181818181818
+          }
+        }
+      }
     },
-    "goals": {
-      "n": 100,
-      "mean": 2.6,
-      "sd": 1.549193,
-      "p10": 1,
-      "p50": 2,
-      "p90": 5
+    "source_holdout": {
+      "matches": 76,
+      "per_match": {
+        "shots": 23.394737,
+        "corners": 10.723684,
+        "assists": 1.789474,
+        "player_goals": 2.710526,
+        "goals": 2.789474
+      },
+      "average_top_scorer_team_share": 0.3686324786324786,
+      "assisted_goal_share": 0.6415094339622641,
+      "goal_role_share": {
+        "GK": 0.0,
+        "DF": 0.1262135922330097,
+        "MF": 0.33980582524271846,
+        "FW": 0.5339805825242718
+      },
+      "assist_role_share": {
+        "GK": 0.0,
+        "DF": 0.1323529411764706,
+        "MF": 0.5955882352941176,
+        "FW": 0.27205882352941174
+      },
+      "situations": {
+        "open_play": {
+          "shots_per_match": 19.18421052631579,
+          "conversion": 0.11728395061728394,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.12551440329218108,
+            "MF": 0.4430727023319616,
+            "FW": 0.43141289437585734
+          }
+        },
+        "corner": {
+          "shots_per_match": 3.1315789473684212,
+          "conversion": 0.1092436974789916,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.4957983193277311,
+            "MF": 0.31932773109243695,
+            "FW": 0.18487394957983194
+          }
+        },
+        "free_kick": {
+          "shots_per_match": 0.8947368421052632,
+          "conversion": 0.014705882352941176,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.10294117647058823,
+            "MF": 0.6764705882352942,
+            "FW": 0.22058823529411764
+          }
+        },
+        "penalty": {
+          "shots_per_match": 0.18421052631578946,
+          "conversion": 0.5714285714285714,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.0,
+            "MF": 0.14285714285714285,
+            "FW": 0.8571428571428571
+          }
+        }
+      }
+    },
+    "historical_reference": {
+      "matches": 76,
+      "per_match": {
+        "shots": 23.394737,
+        "corners": 10.723684,
+        "assists": 1.789474,
+        "player_goals": 2.710526,
+        "goals": 2.789474
+      },
+      "average_top_scorer_team_share": 0.2618667569601006,
+      "assisted_goal_share": 0.5282864714001364,
+      "goal_role_share": {
+        "GK": 0.0,
+        "DF": 0.10049078780371477,
+        "MF": 0.2089975496336448,
+        "FW": 0.6905116625626404
+      },
+      "assist_role_share": {
+        "GK": 0.0,
+        "DF": 0.12796381477347982,
+        "MF": 0.44482577454268074,
+        "FW": 0.42721041068383947
+      },
+      "situations": {
+        "open_play": {
+          "shots_per_match": 19.18421052631579,
+          "conversion": 0.11728395061728394,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.12551440329218108,
+            "MF": 0.4430727023319616,
+            "FW": 0.43141289437585734
+          }
+        },
+        "corner": {
+          "shots_per_match": 3.1315789473684212,
+          "conversion": 0.1092436974789916,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.4957983193277311,
+            "MF": 0.31932773109243695,
+            "FW": 0.18487394957983194
+          }
+        },
+        "free_kick": {
+          "shots_per_match": 0.8947368421052632,
+          "conversion": 0.014705882352941176,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.10294117647058823,
+            "MF": 0.6764705882352942,
+            "FW": 0.22058823529411764
+          }
+        },
+        "penalty": {
+          "shots_per_match": 0.18421052631578946,
+          "conversion": 0.5714285714285714,
+          "shot_roles": {
+            "GK": 0.0,
+            "DF": 0.0,
+            "MF": 0.14285714285714285,
+            "FW": 0.8571428571428571
+          }
+        }
+      }
+    },
+    "historical_checks": {
+      "goals_per_match": {
+        "actual": 2.889286,
+        "target": 2.789474,
+        "relative_tolerance": 0.15,
+        "passed": true
+      },
+      "shots_per_match": {
+        "actual": 24.783333,
+        "target": 23.394737,
+        "relative_tolerance": 0.2,
+        "passed": true
+      },
+      "goal_role_share_DF": {
+        "actual": 0.09353110836423568,
+        "target": 0.10049078780371477,
+        "absolute_tolerance": 0.085,
+        "passed": true
+      },
+      "goal_role_share_MF": {
+        "actual": 0.22249690976514216,
+        "target": 0.2089975496336448,
+        "absolute_tolerance": 0.085,
+        "passed": true
+      },
+      "goal_role_share_FW": {
+        "actual": 0.6839719818706221,
+        "target": 0.6905116625626404,
+        "absolute_tolerance": 0.085,
+        "passed": true
+      },
+      "assist_role_share_DF": {
+        "actual": 0.20014556040756915,
+        "target": 0.12796381477347982,
+        "absolute_tolerance": 0.1,
+        "passed": true
+      },
+      "assist_role_share_MF": {
+        "actual": 0.35953420669577874,
+        "target": 0.44482577454268074,
+        "absolute_tolerance": 0.1,
+        "passed": true
+      },
+      "assist_role_share_FW": {
+        "actual": 0.433042212518195,
+        "target": 0.42721041068383947,
+        "absolute_tolerance": 0.1,
+        "passed": true
+      },
+      "assisted_goal_share": {
+        "actual": 0.5661310259579728,
+        "target": 0.5282864714001364,
+        "absolute_tolerance": 0.09,
+        "passed": true
+      },
+      "top_scorer_team_share": {
+        "actual": 0.31239725193206075,
+        "target": 0.2618667569601006,
+        "absolute_tolerance": 0.12,
+        "passed": true
+      }
+    },
+    "validation_checks": {
+      "goals_per_match": {
+        "actual": 3.009,
+        "target": 2.789474,
+        "relative_tolerance": 0.15,
+        "passed": true
+      },
+      "shots_per_match": {
+        "actual": 24.785333,
+        "target": 23.394737,
+        "relative_tolerance": 0.2,
+        "passed": true
+      },
+      "goal_role_share_DF": {
+        "actual": 0.09582364019053949,
+        "target": 0.10049078780371479,
+        "absolute_tolerance": 0.085,
+        "passed": true
+      },
+      "goal_role_share_MF": {
+        "actual": 0.21834496510468593,
+        "target": 0.2089975496336448,
+        "absolute_tolerance": 0.085,
+        "passed": true
+      },
+      "goal_role_share_FW": {
+        "actual": 0.6858313947047746,
+        "target": 0.6905116625626404,
+        "absolute_tolerance": 0.085,
+        "passed": true
+      },
+      "assist_role_share_DF": {
+        "actual": 0.19612877740470078,
+        "target": 0.12796381477347982,
+        "absolute_tolerance": 0.1,
+        "passed": true
+      },
+      "assist_role_share_MF": {
+        "actual": 0.3800118506814142,
+        "target": 0.44482577454268074,
+        "absolute_tolerance": 0.1,
+        "passed": true
+      },
+      "assist_role_share_FW": {
+        "actual": 0.4185265652775035,
+        "target": 0.4272104106838394,
+        "absolute_tolerance": 0.1,
+        "passed": true
+      },
+      "assisted_goal_share": {
+        "actual": 0.5608729367453196,
+        "target": 0.5282864714001364,
+        "absolute_tolerance": 0.09,
+        "passed": true
+      },
+      "top_scorer_team_share": {
+        "actual": 0.2891168588832615,
+        "target": 0.2618667569601006,
+        "absolute_tolerance": 0.12,
+        "passed": true
+      }
+    },
+    "seed_ranges": {
+      "fitting": [
+        110000,
+        110767
+      ],
+      "validation": [
+        160000,
+        162999
+      ],
+      "showcase_selection": [
+        20000,
+        20099
+      ]
     }
   },
-  "selected_seed": 20022,
+  "selected_seed": 20055,
   "selected_score": {
-    "southbank": 3,
-    "redhaven": 2
+    "southbank": 2,
+    "redhaven": 3
   },
   "career_goal_range": {
     "min": 0,
-    "max": 86
+    "max": 79
   },
-  "model_sha256": "f3f537497db61be61559e4f8f71ca87d44b4bd2ecd35cfb1b377b6bca619cd7a",
+  "model_sha256": "c83e402fc28ddd5ddb41b244e0a18442777861740a906f3478b99e0f780596f6",
+  "simulation_sources": {
+    "simulation.py": "9a2f4eb5a99a88047e3a0f00519ab67f1eda28f86796ff3eabf01e9c5efb2fbc",
+    "spatial.py": "3a6e773d7e4c50ceaee1cd69c44f6535fd3e9b6bf7e817a1dfcc5f316bd36c64",
+    "registry.py": "66429f3ae4010f01453864caccff35b0a1c79b1e13fbffeaa0a9faac5ca43a95",
+    "metrics.py": "964f575d2ed49f382c5bb6b8c9f99954ad0dbcee920fc024595320725397c241",
+    "contracts.py": "74ae8f74f0995294ae7c44a3d5c4e4a32aeed45ca2039f2b6c4e04f08b4b85d8",
+    "positions.py": "5274a76015e8ea905d288ae029acaa9c97d1abc6857574bca5992e26341dc549",
+    "calibration.py": "7a54dc767320d639d496bd9b5b1ae70bd5d13da939d13b2e5e1cab9125503f61",
+    "build.py": "8230d8c4929542699fbc11c1aa9d2151c1caea1f6496198a42a41526a516f7c2",
+    "imports.py": "a0f6a5473d5580145d1dec8bb5e94540798050326f590f5e8bccb6017c18d7bd"
+  },
   "files": {
-    "registry.json": "c8886315acf6e96386271f8948ea54c585d40d615e8a2e94d23025743ba6c192",
-    "model.json": "fa5e0841aaa3fb513e30c6465a0de17d3ed97b42864df645cc760cc852e7318e",
-    "ledger.json.gz": "2c652193e8f4cdd8e2256822d7292cb8aa9f224b7f4d2f63ee9e3f4c7d95268e",
-    "highlights.json": "51bf7362df600ffb34002856cf888672ede6bd4bee3eb8ed6bf2cfdfda0c173f",
-    "calibration.json": "4bc99cb55d4077de145d43408d4630014f12235fbeee0cda179d0042d441b211",
-    "calibration-report.json": "166643cb5cdae4a45011b6c355520276890c7cf491c4b1dbe89fd2e790f3b3e9",
-    "metric-definitions.json": "ca6a227762c67ad6ddbbe8aab286768cb69098375a4cf964341db3cf9270fd7d",
-    "wyscout-2058017.json.gz": "4a32b74e5e2b9c026b61cbb278bb6a2cb28eff15b8be1331269e68df3715c57a",
-    "wyscout-2058007.json.gz": "f04b152e02965a3c9dcb5e413cf980966016c7dca2bf88c49e842fdddeda6e59",
-    "synthetic-32fe41c5d304ce68d7d9.json.gz": "8b060c5abd8eeb7ae276e3004915ddec7c04c5c892d38e03d056fc91dc7b9c87",
-    "career-showcase-southbank-redhaven.json.gz": "fc2038d7764f9e1963d850a7e6e541a9fc035eb3735ba7eef13f526d7af152ed"
+    "registry.json": "62be7b92d4f4bce7cac60dd80550b4419dce2e527206a97f6d9ed0ddaa5b657d",
+    "model.json": "882f90bf9feedfb02c78adff9ecc717c309412dff951c1bfe97c7577ad1f334b",
+    "ledger.json.gz": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef",
+    "highlights.json": "ac000e725198ae29dd7c42330dc34b42a16775b7dc398c84a0fb71fe78093cc0",
+    "calibration.json": "2c0f4419066009019a3a7f17868c88cb2964aa927575aa2fd918d8ea41318e50",
+    "calibration-report.json": "c3b4864c35ec13255ed846e0ec25d61a146bef10e7545fd385b4145c43b31646",
+    "metric-definitions.json": "2289879a326ff30d1f4130b1c2c1efdc3346f97dad1900a6d18cb07ba75005c2",
+    "position-validation.json": "67470fb80e7f9e65bb891366180df4dc9d270652c5bf6a2c24f3b67c020ad089",
+    "wyscout-2058017.json.gz": "c77d04fe3dfdc976c67e993a9af321c8c6c8dc6d93f669db5eec292a5d0c2b5a",
+    "wyscout-2058007.json.gz": "8973c3019c69076d9bff304c4c7de09fa3d5310a30324617a133e90d4e88fa2d",
+    "synthetic-32fe41c5d304ce68d7d9.json.gz": "68ad526ba1adcf8e3505b3541ae5958d61d49cdf5850e92376436386d490da69",
+    "career-showcase-southbank-redhaven.json.gz": "d924211597ef1f054862b0c87ba125e02d6ad12d10d761e0c14dfb4b162f7fd6",
+    "spatial-validation.json": "17677dcb461b60db2d3a104fe2b8db41d2e275bac64379ba99aeca178f488512"
   },
   "limitations": [
     "One league season calibrates event patterns; multi-year persistence, form and lineup rotation are authored.",
     "Ball flight speeds are authored physics, not measured tracking. Full player occupancy and running distance are unavailable.",
     "Historical fixtures are reproducible from seeds and event digests. Four featured fixtures are materialized.",
-    "Source archive passes lack recipients; archive assists are not inferred. Coverage flags distinguish this from zero.",
-    "The showcase is selected for narrative value from 100 untouched candidates; it is not the population benchmark."
-  ]
+    "Source archive assists use explicit provider tags linked to goals. Shot-assist, save and recovery gaps retain coverage.",
+    "The showcase is selected from 100 candidates; 3000 fresh independent matches validate the population.",
+    "Own-goal frequency and long-term aging, transfers and injuries are not calibrated; source role labels are broad.",
+    "Source and generated assist definitions are related but not identical; benchmark tolerances reflect this."
+  ],
+  "validation_warnings": [],
+  "validation_status": "passed",
+  "validation_failures": [],
+  "spatial_validation_status": "passed_with_coverage_limits"
 }

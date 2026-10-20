@@ -5,7 +5,7 @@ import json
 import math
 from .contracts import Action, Fixture, MatchRecord
 
-RULE_VERSION='career-metrics-v1'
+RULE_VERSION='career-metrics-v2'
 
 
 def goal_milestone(count):
@@ -68,7 +68,8 @@ def rates(stats):
 def reduce_record(record: MatchRecord,cutoff=None,window_start=None):
     fixture=record.fixture;events=select_events(record.events,cutoff);players={a.player_id:empty() for a in fixture.appearances}
     maps={pid:Counter() for pid in players};clubs={c:empty() for c in (fixture.home_id,fixture.away_id)}
-    score={c:0 for c in clubs};evidence=[];pass_chain=None
+    score={c:0 for c in clubs};evidence=[];pass_chain=None;carry_distance=0.
+    by_id={e.event_id:e for e in events}
     # Unknown future events never enter either the metrics or evidence list.
     elapsed=sum(fixture.period_lengths_ms) if cutoff is None else min(sum(fixture.period_lengths_ms),cutoff[1]+(fixture.period_lengths_ms[0] if cutoff[0]==2 else 0))
     start_clock=0 if window_start is None else window_start[1]+(fixture.period_lengths_ms[0] if window_start[0]==2 else 0)
@@ -81,8 +82,12 @@ def reduce_record(record: MatchRecord,cutoff=None,window_start=None):
         if window_start is not None and (e.period,e.elapsed_ms)<=window_start:
             # Retain lead-in pass context for a shot just inside the window.
             if pass_chain and (e.period!=pass_chain.period or e.club_id!=pass_chain.club_id or e.restart):pass_chain=None
-            if e.kind=='pass':pass_chain=e if e.outcome in ('completed','complete') and e.recipient_id else None
-            elif e.kind in ('shot','recovery') or e.kind=='duel' and e.outcome=='lost':pass_chain=None
+            if e.kind=='pass':
+                pass_chain=e if e.outcome in ('completed','complete') and e.recipient_id else None;carry_distance=0.
+            elif e.kind=='carry' and pass_chain and e.start and e.end:
+                carry_distance+=math.dist((e.start.x,e.start.y),(e.end.x,e.end.y))
+                if carry_distance>10:pass_chain=None
+            elif e.kind in ('shot','recovery','duel'):pass_chain=None
             continue
         if e.start and e.kind in ('pass','shot','carry','duel','recovery'):
             maps[e.player_id][f'{min(11,int(e.start.x/8.75))}:{min(7,int(e.start.y/8.5))}']+=1
@@ -98,6 +103,10 @@ def reduce_record(record: MatchRecord,cutoff=None,window_start=None):
                 inc('expected_completions',e.completion_probability);inc('xpass_passes')
                 inc('xpass_completed',int(e.outcome in ('completed','complete')))
             pass_chain=e if e.outcome in ('completed','complete') and e.recipient_id else None
+            carry_distance=0.
+        elif e.kind=='carry' and pass_chain and e.start and e.end:
+            carry_distance+=math.dist((e.start.x,e.start.y),(e.end.x,e.end.y))
+            if carry_distance>10:pass_chain=None
         elif e.kind=='shot' and e.outcome!='own_goal':
             inc('shots')
             if e.outcome in ('goal','saved','on_target'):inc('shots_on_target')
@@ -107,6 +116,11 @@ def reduce_record(record: MatchRecord,cutoff=None,window_start=None):
             provider=None
             if pass_chain and pass_chain.recipient_id==e.player_id and e.elapsed_ms-pass_chain.elapsed_ms<=15000 and not e.penalty:
                 provider=pass_chain
+            if fixture.assist_basis=='provider_tags':
+                provider=by_id.get(e.credited_assist_event_id)
+                if provider and (provider.club_id!=e.club_id or provider.player_id==e.player_id or provider.period!=e.period or provider.elapsed_ms>=e.elapsed_ms):
+                    raise ValueError('Invalid source assist link')
+            if provider:
                 players[provider.player_id]['key_passes']+=1;clubs[e.club_id]['key_passes']+=1
             if e.outcome=='saved' and e.goalkeeper_id:
                 players[e.goalkeeper_id]['saves']+=1
@@ -120,7 +134,9 @@ def reduce_record(record: MatchRecord,cutoff=None,window_start=None):
                 players[e.opponent_id]['duels']+=1;clubs[other]['duels']+=1
                 players[e.opponent_id]['duels_won']+=int(e.outcome=='lost');clubs[other]['duels_won']+=int(e.outcome=='lost')
                 players[e.opponent_id]['duels_unknown']+=int(e.outcome not in ('won','lost','draw'));clubs[other]['duels_unknown']+=int(e.outcome not in ('won','lost','draw'))
-            if e.outcome=='lost':pass_chain=None
+            # Beating an opponent creates a new individual action; it is no
+            # longer a direct shot-assist chain, whether the duel is won or lost.
+            pass_chain=None
         elif e.kind=='recovery' and not e.restart:inc('recoveries')
         if e.goal_for:
             score[e.goal_for]+=1

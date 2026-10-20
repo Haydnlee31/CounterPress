@@ -8,6 +8,8 @@ const Tools = lazy(() => import('./tools/Tools'))
 const GI = lazy(() => import('./gi/GI'))
 const ExploreData = lazy(() => import('./explore/ExploreData'))
 const Studio = lazy(() => import('./studio/Studio'))
+const Footie = lazy(() => import('./assistant/Footie'))
+const FootballHub = lazy(() => import('./football/FootballHub'))
 
 /** Explicit deep link keeps the existing analysis workspace available. */
 export default function App() {
@@ -19,6 +21,8 @@ export default function App() {
     window.addEventListener('hashchange', update)
     return () => window.removeEventListener('hashchange', update)
   }, [])
+  if (route === '#assistant') return <Suspense fallback={<p className="cp-loading">Opening Footie…</p>}><Footie /></Suspense>
+  if (route.startsWith('#football')) return <Suspense fallback={<p className="cp-loading">Opening Clubhouse…</p>}><FootballHub /></Suspense>
   if (route === '#live') return <Suspense fallback={<p>Opening the match…</p>}><FullMatch /></Suspense>
   if (route === '#tools') return <Suspense fallback={<p>Opening Tools…</p>}><Tools /></Suspense>
   if (route === '#gi') return <Suspense fallback={<p>Opening Match Centre…</p>}><GI /></Suspense>

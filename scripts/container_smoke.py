@@ -87,8 +87,10 @@ assert career['totals']['goals'] > 0 and career['coverage']['tracking_distance_m
 new_match = 'career-showcase-southbank-redhaven'
 milestone = data(f'/api/data/matches/{new_match}/live?period=2&elapsed_ms=2700000')['milestones'][0]
 at = milestone['available_at']['elapsed_ms']
-assert not data(f'/api/data/matches/{new_match}/live?period=2&elapsed_ms={at-1}')['milestones']
-assert data(f'/api/data/matches/{new_match}/live?period=2&elapsed_ms={at}')['milestones'][0]['career_goals'] == 20
+period = milestone['available_at']['period']
+count = milestone['career_goals']
+assert not data(f'/api/data/matches/{new_match}/live?period={period}&elapsed_ms={at-1}')['milestones']
+assert data(f'/api/data/matches/{new_match}/live?period={period}&elapsed_ms={at}')['milestones'][0]['career_goals'] == count
 assert len(json.loads(get('/api/data/highlights')[0])) == 3
 assert {t['team_id'] for t in json.loads(get(f'/api/data/matches/{new_match}/replay')[0])['teams']} == {'southbank','redhaven'}
 
@@ -100,18 +102,31 @@ def personalized(path, payload):
         assert response.headers.get('Set-Cookie') is None
         return json.load(response)
 
-preferences = {'favorite_club_ids': ['redhaven'], 'favorite_player_ids': ['rh08'], 'primary_club_id': 'redhaven'}
+subject = json.loads(get('/api/data/players/' + milestone['player_id'])[0])['subject']
+preferences = {'favorite_club_ids': [subject['club_id']], 'favorite_player_ids': [subject['player_id']], 'primary_club_id': subject['club_id']}
 home = personalized('home', {'preferences': preferences, 'as_of': '2026-10-20T00:00:00Z'})
 assert len(home['highlights']) == 9 and len(home['matches']) == 4
 assert home['matches'][0]['match_id'] == new_match
-assert home['following']['players'][0]['player']['name'] == 'Enzo Clarke'
-before = personalized('matches/' + new_match, {'preferences': preferences, 'cutoff': {'period': 2, 'elapsed_ms': at-1}})
-after = personalized('matches/' + new_match, {'preferences': preferences, 'cutoff': {'period': 2, 'elapsed_ms': at}})
+assert home['following']['players'][0]['player']['name'] == subject['name']
+before = personalized('matches/' + new_match, {'preferences': preferences, 'cutoff': {'period': period, 'elapsed_ms': at-1}})
+after = personalized('matches/' + new_match, {'preferences': preferences, 'cutoff': {'period': period, 'elapsed_ms': at}})
 assert not any(c['kind'] == 'career_goal_milestone' for c in before['cards'])
-assert after['cards'][0]['facts'][0]['value'] == 20 and len(after['focus']['active_player_ids']) == 22
-analyst = personalized('matches/' + new_match, {'preferences': {**preferences, 'depth': 'analyst'}, 'cutoff': {'period': 2, 'elapsed_ms': at}})
+assert after['cards'][0]['facts'][0]['value'] == count and len(after['focus']['active_player_ids']) == 22
+analyst = personalized('matches/' + new_match, {'preferences': {**preferences, 'depth': 'analyst'}, 'cutoff': {'period': period, 'elapsed_ms': at}})
 assert after['facts'] == analyst['facts'] and after['cards'][0]['text'] != analyst['cards'][0]['text']
 assert personalized('home', {'as_of': '2026-10-20T00:00:00Z'})['following'] == {'players': [], 'clubs': []}
+analytics = data('/api/data/players/rh09/analytics')
+assert analytics
+assistant = json.loads(get('/api/fan/assistant/config')[0])
+assert assistant['available'] is True
+# Hosted smoke never spends model calls; the restricted image tests direct lookup.
+if not assistant['natural_language']:
+    request = Request(base+'/api/fan/assistant/ask',
+                      data=json.dumps({'question':'How many goals does Mateo Cross have?', 'player_id':'rh09'}).encode(),
+                      headers={'Content-Type':'application/json', 'Origin':base})
+    with urlopen(request, timeout=20) as response:
+        answer=json.load(response)
+    assert answer['status']=='answered' and answer['facts'] and answer['mode']=='lookup'
 for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/missing", "/assets/missing.js"):
     try:
         get(path)

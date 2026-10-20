@@ -48,7 +48,18 @@ def existing_records(root,metadata_path):
             start=min(starts[p.provider_player_id],min(at));end=max(ends[p.provider_player_id],max(at)+1)
             appearances.append(Appearance(player_id=p.alias_id,club_id=clubs[p.team_id],start_ms=start,end_ms=min(sum(lengths),end),starter=start==0))
         fixture=Fixture(match_id=match_id,season='2026-27',kickoff=f'{match.display_date}T15:00:00Z',home_id='eastbridge',away_id='northport',
-            competition='CounterPress Showcase Cup',featured=True,source_kind='adapted_archive',minutes_basis='source_lineup_minute_precision',appearances=tuple(appearances),period_lengths_ms=lengths)
+            competition='CounterPress Showcase Cup',featured=True,source_kind='adapted_archive',minutes_basis='source_lineup_minute_precision',appearances=tuple(appearances),period_lengths_ms=lengths,
+            assist_basis='provider_tags',shot_assists_complete=False)
+        credits={}
+        for index,action in enumerate(match.events):
+            if 301 not in action.tags:continue
+            # The provider explicitly awarded this assist. Link its next goal;
+            # intervening duel/deflection tags are not invented possession losses.
+            following=next((g for g in match.events[index+1:] if g.period==action.period and g.goal_for),None)
+            if not following or following.goal_for!=action.team_id or following.player_id==action.player_id or not 0<following.elapsed_ms-action.elapsed_ms<=15000:
+                raise ValueError('Unresolved source assist; review archive rather than guess')
+            if following.event_id in credits:raise ValueError('Multiple assists for one goal')
+            credits[following.event_id]=action.event_id
         events=[]
         for e in match.events:
             kind=e.kind.lower() if e.kind.lower() in ('pass','shot','duel','carry','recovery','pressure') else 'carry' if e.detail in ('Acceleration','Touch') else 'other'
@@ -60,6 +71,7 @@ def existing_records(root,metadata_path):
                 club_id=clubs[e.team_id],player_id=aliases[e.player_id],kind=kind,outcome=outcome,
                 start=e.start.model_dump() if e.start else None,end=e.end.model_dump() if e.end else None,
                 goal_for=clubs[e.goal_for] if e.goal_for else None,penalty=e.detail=='Penalty',
+                credited_assist_event_id=credits.get(e.event_id),
                 source_reference=f'wyscout:{e.provider_event_id}:cc-by-4.0'))
         records.append(MatchRecord(fixture=fixture,events=tuple(events)))
     feed=load_fixture(root/'gi/synthetic/events.json')

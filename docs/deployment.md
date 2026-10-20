@@ -326,3 +326,30 @@ One-call local integration probe (fresh ignored SQLite path, no public history):
 ```sh
 uv run --env-file .env --frozen python scripts/check_studio_editorial.py --live --database var/studio-ai-probe.sqlite3
 ```
+
+## Footie and Clubhouse release
+
+The container includes the calibrated compressed career ledger, checksum-bound
+player analytics, the 44 fictional player portraits and the shared personalization
+client. The Docker context still excludes local configuration, journals and logs.
+The container smoke checks the career and analytics routes and a direct Footie
+question without Azure credentials.
+
+`assistant_mode=enable` reuses the three existing model secret references; it
+refuses activation if these are absent or inline values. It changes only
+`COUNTERPRESS_ASSISTANT_MODEL`. The current deployment retains authenticated
+editorial configuration and its secret references. No new model or Azure resource
+is provisioned. Public Footie questions use the existing two-stage bounded
+planner/story selector, with a shared 20 model attempts per rolling hour per
+process, two concurrent requests, timeouts, no retries and calculated fallback.
+This in-memory limit resets on process restart; it is not a durable billing cap.
+
+```sh
+gh workflow run deploy.yml --repo Haydnlee31/CounterPress --ref main \
+  -f studio_mode=preserve -f editorial_mode=preserve -f assistant_mode=enable
+```
+
+`assistant_mode=disable` turns off paid Footie calls while leaving direct lookup
+available. `preserve` retains the deployed setting. Keep editorial/model secret
+references available while Footie is enabled; validation rejects an inconsistent
+configuration. Hosted smoke checks do not automatically send paid questions.

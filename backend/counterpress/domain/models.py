@@ -78,7 +78,7 @@ class CarryDetails(Contract):
 class DuelDetails(Contract):
     kind: Literal["duel"]
     opponent: Actor
-    outcome: Literal["won", "lost"]
+    outcome: Literal["won", "lost", "draw"]
 
 
 class RecoveryDetails(Contract):

@@ -1,8 +1,8 @@
 {
   "status": "passed",
   "matches": 844,
-  "events": 1050765,
-  "goals": 1975,
+  "events": 1176374,
+  "goals": 2447,
   "featured_profiles": 44,
   "featured_matches": 4,
   "highlights": 3,
@@ -15,5 +15,12 @@
     "All 44 featured careers reconcile with history",
     "Highlight parent links and native replay contracts"
   ],
-  "elapsed_seconds": 47.64
+  "population_checks": {
+    "historical_checks": 10,
+    "validation_checks": 10
+  },
+  "position_checks": 285,
+  "independent_simulation_matches": 3000,
+  "validation_warnings": [],
+  "elapsed_seconds": 76.71
 }

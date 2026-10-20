@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { outcomeText } from './data'
 import type { GIEvent,GIPlayer } from './data'
 import { playTimeline,replayFrame,replayActions,sceneRoster,sequenceEvents } from './replay'
-export function PlaySequence({events,event,names,players}:{events:GIEvent[];event:GIEvent;names:Map<string,string>;players:GIPlayer[]}) {
+import {AskFootie} from '../assistant/AskFootie'
+import {momentContext} from '../assistant/context'
+export function PlaySequence({events,event,names,players,matchId}:{events:GIEvent[];event:GIEvent;names:Map<string,string>;players:GIPlayer[];matchId?:string}) {
   const sequence=useMemo(()=>sequenceEvents(events,event),[events,event])
   const actions=useMemo(()=>replayActions(events,event),[events,event])
   const roster=useMemo(()=>sceneRoster(players,sequence),[players,sequence])
@@ -19,7 +21,7 @@ export function PlaySequence({events,event,names,players}:{events:GIEvent[];even
     frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame)
   },[playing,duration])
   useEffect(()=>{if(progress>=1)setPlaying(false)},[progress])
-  const {active,ball,players:scene}=replayFrame(timeline,progress*duration,roster,event.team_id)
+  const {active,ball,phase,players:scene}=replayFrame(timeline,progress*duration,roster,event.team_id)
   return <div className="gi-replay">
     <svg className="gi-pitch" viewBox="-5 -5 115 78" role="img" aria-label="Match replay, selected team attacking right">
       <defs><radialGradient id="gi-spotlight"><stop stopColor="#fff" stopOpacity=".2"/><stop offset="1" stopColor="#fff" stopOpacity="0"/></radialGradient></defs>
@@ -40,6 +42,7 @@ export function PlaySequence({events,event,names,players}:{events:GIEvent[];even
       <circle cx={ball.x} cy={ball.y} r="1.05" fill="white" stroke="#102d27" strokeWidth=".35"/>
     </svg>
     <div className="gi-playback"><button onClick={()=>{if(progress>=1){setProgress(0);setPlaying(true)}else setPlaying(!playing)}}>{progress>=1?'Replay sequence':playing?'Pause':'Resume'}</button><input type="range" aria-label="Play sequence progress" min="0" max="1" step=".001" value={progress} onChange={e=>{setPlaying(false);setProgress(Number(e.target.value))}}/><span>{Math.floor(progress*duration/1000)} / {Math.ceil(duration/1000)}s</span></div>
-    <p className="gi-replay-caption" aria-live="off">{active?`${names.get(active.event.player_id)} · ${outcomeText(active.event)}`:'Following the play'}{progress>=1?' · Full sequence':''}</p>
+    <div className="gi-replay-footer"><p className="gi-replay-caption" aria-live="off">{active?`${names.get(active.event.player_id)} · ${outcomeText(active.event)}`:'Following the play'}{progress>=1?' · Full sequence':''}</p>
+    {matchId&&active&&<AskFootie variant="pitch" context={momentContext(matchId,{event_id:active.event.event_id,revision:active.event.revision,occurred_at:{period:active.event.period,elapsed_ms:active.event.elapsed_ms},available_at:{period:active.event.available_period??active.event.period,elapsed_ms:active.event.available_ms??active.event.elapsed_ms}},phase>=.8,`${names.get(active.event.player_id)??'Player'} · ${outcomeText(active.event)}`)} onOpen={()=>setPlaying(false)}/>}</div>
   </div>
 }

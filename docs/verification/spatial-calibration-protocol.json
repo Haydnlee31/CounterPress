@@ -1,0 +1,33 @@
+{
+  "version": "spatial-recalibration-v4-final",
+  "training_seeds": [
+    110000,
+    110767
+  ],
+  "validation_seeds": [
+    160000,
+    162999
+  ],
+  "source_holdout_reused": true,
+  "frozen_model_sha256": "882f90bf9feedfb02c78adff9ecc717c309412dff951c1bfe97c7577ad1f334b",
+  "prior_rejected_validation": [
+    [
+      120000,
+      122999
+    ],
+    [
+      130000,
+      132999
+    ],
+    [
+      140000,
+      142999
+    ],
+    [
+      150000,
+      152999
+    ]
+  ],
+  "selection": "MF creation factor1.3 over global1.2; role traits centered by actual appearance minutes; historical preflight only one source-supported DF assist club share flag.",
+  "acceptance": "Original core and historical/pooled population gates; expanded numerical envelopes unchanged for historical and each independent cohort. v1.2 team style adjudication added after reviewing flags; retain all original flags, accept source-supported style only with >=10 training clubs, >=20 matches and >=20 metric events per club, within exposure-standardized p10-p90."
+}

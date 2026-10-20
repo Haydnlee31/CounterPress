@@ -4,6 +4,7 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/index.html frontend/auth.html frontend/tsconfig.json frontend/vite.config.ts ./
 COPY frontend/src ./src
+COPY integrations/personalization/client.ts /integrations/personalization/client.ts
 RUN npm run build
 
 FROM ghcr.io/astral-sh/uv:0.11.29@sha256:eb2843a1e56fd9e30c7276ce1a52cba86e64c7b385f5e3279a0e08e02dd058fc AS uv

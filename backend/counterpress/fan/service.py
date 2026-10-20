@@ -8,6 +8,7 @@ import json
 
 from counterpress.personalization.contracts import Fixture
 from counterpress.personalization.metrics import digest, rates, select_events
+from counterpress.personalization.coverage import metric_coverage,covered_rates
 from counterpress.personalization.service import match_card
 from .presentation import VERSION, action, card, fact, fingerprint, metric_tiles, words
 
@@ -71,7 +72,9 @@ class FanService:
                     action('history', subject, words(p, 'View that season', '查看该赛季'), subject_kind=kind, season=season)))
             elif insight['type'] == 'recent_scoring_rate':
                 goals, matches = insight['goals'], insight['matches']
-                text = words(p, f'{name} has scored {goals} goals in the last {matches} appearances.',
+                goal_word='goal' if goals==1 else 'goals'
+                appearance_word='appearance' if matches==1 else 'appearances'
+                text = words(p, f'{name} has scored {goals} {goal_word} in the last {matches} {appearance_word}.',
                              f'{name}最近{matches}次出场打进{goals}球。')
                 facts = [fact(kind, subject, 'goals', goals, {**scope, 'last_appearances': matches}, evidence_id),
                          fact(kind, subject, 'appearances', matches, {**scope, 'last_appearances': matches}, evidence_id)]
@@ -117,6 +120,9 @@ class FanService:
                 'assists_per90', 'pass_accuracy_pct', 'duel_win_pct', 'saves')
         analytical = request.preferences.model_copy(update={'depth': 'analyst'})
         rows = {p['subject']['player_id']: {r['metric']: r for r in metric_tiles(p['totals'], p['rates'], p['coverage'], analytical, p['subject']['role'])} for p in profiles}
+        for tiles in rows.values():
+            for tile in tiles.values():
+                if tile['unit']=='per90' and (tile['denominator'] or 0)<180:tile['value']=None
         return {**envelope, 'as_of': cutoff, 'season': request.season,
                 'players': [p['subject'] for p in profiles],
                 'metrics': [{'metric': key, 'label': rows[request.player_ids[0]][key]['label'],
@@ -216,10 +222,12 @@ class FanService:
                 action('moment', mid, words(p, 'Watch the goal', '观看进球'), event_id=m['event_id']), 200 + relevance['score']))
         if focus in roster:
             stats = live['players'][focus]['match']; player_name = self.store.players[focus].name
-            coverage = {'assists_unavailable_matches': int(fixture.source_kind == 'adapted_archive'),
+            coverage = {'assists_unavailable_matches': int(fixture.assist_basis == 'unavailable'),
+                        'key_passes_unavailable_matches': int(not fixture.shot_assists_complete),
                         'saves_unavailable_matches': int(fixture.source_kind == 'adapted_archive'),
                         'recoveries_unavailable_matches': int(fixture.source_kind == 'adapted_archive')}
-            lens['tiles'] = metric_tiles(stats, rates(stats), coverage, p, self.store.players[focus].role)
+            coverage['metrics']=metric_coverage([(fixture.model_dump(),stats)])
+            lens['tiles'] = metric_tiles(stats, covered_rates(stats,coverage['metrics']), coverage, p, self.store.players[focus].role)
             completed, attempted = stats['passes_completed'], stats['passes'] - stats['passes_unknown']
             text = words(p, f'{player_name} has completed {completed} of {attempted} passes with known outcomes.',
                          f'{player_name}在结果已记录的{attempted}次传球中成功{completed}次。')
@@ -260,7 +268,11 @@ class FanService:
                       f'{name}{stats["shots"]}次射门中有{stats["shots_on_target"]}次射正。'),
                 [fact('club', cid, metric, stats[metric], scope, source_id) for metric in ('shots', 'shots_on_target')], evidence,
                 action('match', mid, words(p, 'Explore the chances', '查看射门机会')), 60 + self.relevance([], [cid], p)['score'] + (30 if p.metric_focus == 'scoring' else 0)))
-        candidates.sort(key=lambda c: (-c['priority'], c['id']))
+        # Explicit viewing intent must survive a match with several milestones;
+        # otherwise they can consume the entire card budget and hide the lens.
+        focus_kinds={'passing':{'player_passing'},'creating':{'player_creating'},
+                     'defending':{'player_duels'},'scoring':{'career_goal_milestone','club_shots'}}.get(p.metric_focus,set())
+        candidates.sort(key=lambda c: (c['kind'] not in focus_kinds, -c['priority'], c['id']))
         chosen = candidates[:request.card_budget]
         questions = []
         for c in chosen:

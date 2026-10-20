@@ -11,6 +11,7 @@ from counterpress.personalization.store import DataStore
 
 ROOT=Path(__file__).resolve().parents[1]/'fixtures'
 MID='career-showcase-southbank-redhaven'
+EXPECTED=json.loads((ROOT.parent/'tests/expected_fan_personalization.json').read_text())
 
 
 @pytest.fixture(scope='module')
@@ -64,13 +65,13 @@ def test_seed_rehydration_and_four_full_match_ledgers_reconcile(store):
 def test_live_milestone_is_available_only_after_its_goal_and_excludes_future(store):
     service=CareerService(store);final=service.live(MID,2,2700000)
     assert final['milestones']
-    m=final['milestones'][0];at=m['available_at'];pid=m['player_id']
+    m=next(m for m in final['milestones'] if m['event_id']==EXPECTED['goal_event_id']);at=m['available_at'];pid=m['player_id']
     before=service.live(MID,at['period'],at['elapsed_ms']-1,pid)
     after=service.live(MID,at['period'],at['elapsed_ms'],pid)
     assert before['milestones']==[]
-    assert after['milestones'][0]['career_goals']==20
-    assert after['players'][pid]['career_at_cutoff']['goals']==20
-    assert before['players'][pid]['career_at_cutoff']['goals']==19
+    assert after['milestones'][0]['career_goals']==EXPECTED['career_goals_after']
+    assert after['players'][pid]['career_at_cutoff']['goals']==EXPECTED['career_goals_after']
+    assert before['players'][pid]['career_at_cutoff']['goals']==EXPECTED['career_goals_before']
     assert after['players'][pid]['career_before']==before['players'][pid]['career_before']
     # The current full-match total cannot leak into the kickoff baseline.
     assert service.live(MID,1,0)['score']=={'southbank':0,'redhaven':0}
@@ -82,12 +83,12 @@ def test_ingestion_idempotency_reordering_retraction_and_atomic_failure(tmp_path
         milestone=service.live(MID,2,2700000)['milestones'][0]
         old=next(e for e in store.original(MID).events if e.event_id==milestone['event_id'])
         end=max(e.delivery_sequence for e in store.original(MID).events)
-        v2=old.model_copy(update={'revision':2,'delivery_sequence':end+1,'available_ms':2700100,'retracted':True})
+        v2=old.model_copy(update={'revision':2,'delivery_sequence':end+1,'available_period':2,'available_ms':2700100,'retracted':True})
         v3=v2.model_copy(update={'revision':3,'delivery_sequence':end+2,'available_ms':2700200,'retracted':False})
         assert store.ingest(MID,[v3,v2])['accepted']==2
         assert store.ingest(MID,[v2])=={'accepted':0,'duplicates':1,'received_through_sequence':end+2}
         assert service.live(MID,2,2700099)['milestones']
-        assert service.live(MID,2,2700100)['milestones']==[]
+        assert old.event_id not in {m['event_id'] for m in service.live(MID,2,2700100)['milestones']}
         assert service.changes(MID,2,2700100,end)['changes'][0]['kind']=='withdrawn'
         assert service.live(MID,2,2700200)['milestones'][0]['event_revision']==3
         with pytest.raises(ValueError):store.ingest(MID,[v2.model_copy(update={'outcome':'blocked'})])
@@ -118,7 +119,7 @@ def test_readonly_api_contracts_and_bounds():
         assert client.get(f'/api/data/matches/{MID}/live?period=3').status_code==422
         assert client.get(f'/api/data/matches/{MID}/live?period=2&elapsed_ms=99999999').status_code==422
         assert client.post(f'/api/data/matches/{MID}/events',json={}).status_code==405
-        assert client.get('/api/data/metrics').json()['version']=='career-metrics-v1'
+        assert client.get('/api/data/metrics').json()['version']=='career-metrics-v2'
         assert client.get('/api/data/standings/no-season').status_code==404
         replay=client.get(f'/api/data/matches/{MID}/replay')
         assert replay.status_code==200
@@ -155,3 +156,51 @@ def test_historical_baseline_does_not_leak_later_corrections(tmp_path):
         assert store.summary(prior['id'])['players'][goal.player_id]['goals']==json.loads(prior['summary'])['players'][goal.player_id]['goals']-1
         assert previous['evidence']['baseline_id']!=later['evidence']['baseline_id']
     finally:store.close()
+
+
+def test_source_assist_credits_are_preserved_without_guessing_recipients(store):
+    expected={
+        'wyscout-2058017':{'wyscout-263884397':('np09','wyscout-263884396')},
+        'wyscout-2058007':{'wyscout-261446490':('np05','wyscout-261446487'),
+                          'wyscout-261447221':('eb07','wyscout-261447217'),
+                          'wyscout-261447496':('eb04','wyscout-261534737')},
+    }
+    for mid,credits in expected.items():
+        record=store.original(mid)
+        assert record.fixture.assist_basis=='provider_tags'
+        actual={g['event_id']:(g['assist_id'],g['assist_event_id']) for g in reduce_record(record)['goals'] if g['assist_id']}
+        assert actual==credits
+    for player in store.players.values():
+        if player.featured:
+            assert CareerService(store).profile(player.player_id)['coverage']['assists_unavailable_matches']==0
+
+
+def test_population_matches_benchmarks_beyond_showcase_selection(store):
+    from counterpress.personalization.realism import population,checks
+    report=store.manifest['population_validation']
+    rows=[{'fixture':json.loads(r['fixture']),'summary':json.loads(r['summary'])} for r in store.rows(featured=False)]
+    observed=population(rows,list(store.players.values()))
+    assert observed==report['historical']
+    assert all(v['passed'] for v in checks(observed,report['historical_reference']).values())
+    assert report['unselected_3000']['matches']==3000
+    assert all(v['passed'] for v in report['validation_checks'].values())
+    first,last=report['seed_ranges']['validation']
+    assert last-first+1==3000
+    assert first>report['seed_ranges']['fitting'][1]
+    assert first>report['seed_ranges']['showcase_selection'][1]
+    assert report['seed_ranges']['showcase_selection']==[20000,20099]
+
+
+def test_positional_validation_covers_all_roles_and_three_disjoint_batches(store):
+    from counterpress.personalization.positions import position_checks
+    report=json.loads((ROOT/'personalization/position-validation.json').read_text())
+    assert store.manifest['validation_status']=='passed'
+    first,last=store.manifest['population_validation']['seed_ranges']['validation']
+    assert report['seed_ranges']==[[first+i,first+i+999] for i in (0,1000,2000)]
+    assert report['seed_ranges'][-1][-1]==last
+    assert report['historical']['matches']==840
+    for sample in [report['historical'],report['pooled_validation'],*[b['observed'] for b in report['validation_batches']]]:
+        gates=position_checks(sample,report['source_holdout'],report['source_training'])
+        assert len(gates)==57 and all(g['passed'] for g in gates.values())
+        assert set(sample['roles'])=={'GK','DF','MF','FW'}
+    assert [b['observed']['matches'] for b in report['validation_batches']]==[1000,1000,1000]

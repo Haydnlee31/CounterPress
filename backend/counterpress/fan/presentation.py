@@ -63,19 +63,30 @@ def metric_tiles(stats, rate_values, coverage, preferences, role='FW'):
         en, zh, unit = LABELS[key]
         value = rate_values.get(key) if key in rate_values else stats.get(key)
         missing = 0
-        if key in ('assists', 'assists_per90', 'key_passes'):
+        if key in ('assists', 'assists_per90'):
             missing = coverage.get('assists_unavailable_matches', 0)
+        elif key == 'key_passes':
+            missing = coverage.get('key_passes_unavailable_matches', coverage.get('assists_unavailable_matches', 0))
         elif key in ('saves', 'recoveries'):
             missing = coverage.get(key + '_unavailable_matches', 0)
         status = 'partial' if missing else 'available' if value is not None else 'unavailable'
+        detail=coverage.get('metrics',{}).get('assists' if key=='assists_per90' else key)
+        coverage_label=None
+        if detail and detail['recorded_matches']<detail['total_matches']:
+            covered,total=detail['recorded_matches'],detail['total_matches']
+            coverage_label=words(preferences,f'{covered} of {total} matches',f'已记录 {covered}/{total} 场')
+            # Explicit provider awards may supply a lower bound even where full
+            # shot-assist coverage is absent. A missing zero is never observed zero.
+            if not covered and (not value or unit=='per90'):status='unavailable'
         if key == 'xg' and stats['xg_shots'] != stats['shots']:
             status = 'partial' if stats['xg_shots'] else 'unavailable'
         if key == 'passing_above_expected_per100' and stats['xpass_passes'] != stats['passes']:
             status = 'partial' if stats['xpass_passes'] else 'unavailable'
         output.append({'metric': key, 'label': words(preferences, en, zh),
-                       'value': None if missing or status == 'unavailable' else value,
+                       'value': None if status == 'unavailable' else value,
                        'unit': unit, 'coverage': status,
-                       'denominator': stats['minutes'] if unit == 'per90' else
+                       'coverage_label':coverage_label,
+                       'denominator': detail['covered_minutes'] if unit=='per90' and detail else stats['minutes'] if unit == 'per90' else
                            stats['passes'] - stats['passes_unknown'] if key == 'pass_accuracy_pct' else
                            stats['shots'] if key == 'shot_accuracy_pct' else
                            stats['duels'] - stats['duels_unknown'] if key == 'duel_win_pct' else None})

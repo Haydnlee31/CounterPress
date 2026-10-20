@@ -1,7 +1,9 @@
 # Fan personalization — UI handoff
 
-The personalization backend and independent browser adapter are ready to integrate.
-The colleague's existing screens are unchanged. The product direction is preserved
+The personalization backend and browser adapter now have a local **My Football**
+interface at `#football`. Follow the [local user test](my-football-local.md) to try
+profiles, favorites, comparisons and highlight insights without API calls.
+The colleague's wider redesign remains separate. The product direction is preserved
 in [important Reactor review context](reactor-review-context.md).
 
 ## What this adds
@@ -27,7 +29,7 @@ in [important Reactor review context](reactor-review-context.md).
 No model calls, new Azure resources or preference database are involved. The
 career data still comes from the [data foundation](personalization-data.md).
 
-## Start and explore
+## Start and explore the API
 
 ```sh
 uv sync --locked
@@ -103,13 +105,12 @@ Highlights have `tag: "match"` plus their parent match/date, or
 provide a `scenario_id`; new career excerpts provide a replay URL. If a reviewed
 clip's source changes, the authored card is withheld until its replay can be
 revalidated. A correction to a historical career baseline recomputes milestone
-titles; it must not leave a false "20 goals" headline behind.
+titles; it must not leave a false "30 goals" headline behind.
 
 Player and club requests accept `season` and `as_of`. Responses contain a complete
 canonical `profile` and a `presentation` with tiles, natural-language cards, activity
 map labels, follow state and questions. Analyst mode exposes more metrics and
-denominators. Missing assist/save/recovery coverage yields `null` in the relevant
-tiles; never render it as zero. Partial estimated metrics retain coverage flags.
+denominators. Known partial counts remain visible with `coverage_label` describing complete-match coverage. Fully unavailable statistics remain `null`, never observed zero. Assist rates use counts and minutes from the same covered matches; comparisons suppress rates below 180 covered minutes. All 44 featured players now have full assist coverage after explicit archive credits were recovered. Shot-assist/save/recovery gaps remain visible. Partial estimates retain coverage flags.
 
 Comparison requests add `player_ids`, for example `["rh08", "sb09"]`. Every player
 uses the same season and UTC cutoff. There is no overall winner or ungrounded
@@ -121,7 +122,7 @@ player; `same_role` tells the UI whether the compared positions differ.
 ```sh
 curl -sS http://127.0.0.1:8000/api/fan/matches/career-showcase-southbank-redhaven \
   -H 'Content-Type: application/json' \
-  -d '{"request_id":"watch-clarke","preferences":{"favorite_player_ids":["rh08"],"focus_player_id":"rh08"},"cutoff":{"period":2,"elapsed_ms":447225},"card_budget":3}'
+  -d '{"request_id":"watch-cross","preferences":{"favorite_player_ids":["rh09"],"focus_player_id":"rh09"},"cutoff":{"period":1,"elapsed_ms":592006},"card_budget":3}'
 ```
 
 The response includes:
@@ -140,8 +141,8 @@ The response includes:
 - `questions`: supported next steps. The goal action carries the exact event ID;
   find the replay position from that event, rather than assuming a fixed duration.
 
-At second-half **447224 ms**, Clarke remains on 19 career goals. At **447225 ms**,
-the goal result is available and the card reports 20. This cutoff is a **source
+In the v3 dataset, at first-half **592005 ms**, Mateo Cross remains on 79 career goals. At **592006 ms**,
+the goal result is available and the card reports 80. This cutoff is a **source
 football clock**, not a narration/audio timestamp. The frontend must map its
 animation or speech clock back to the source event clock before requesting a view.
 Always clear old cards when seeking, changing preferences/matches, or applying a
@@ -204,8 +205,16 @@ CI runs adapter checks alongside the unchanged UI tests/build and checks the new
 APIs through a restricted container. Exact local evidence is recorded in
 [personalization verification](verification/fan-personalization-checks.md).
 
-The next UI integration is **follow Clarke → open his profile → see the milestone
+The local UI supports **follow Clarke → open his profile → see the milestone
 at its source time → watch the goal**. Keep wider history in profiles, Matchday
 highlights-only and Match Centre limited to four featured matches. The general
 Footie assistant, cloud preference accounts and the ingestion bridge are not
 implemented by this layer.
+
+## Grounded assistant follow-up
+
+The previously deferred fan-facing assistant is now implemented locally as
+[Footie](grounded-assistant.md), in a separate dashboard workspace. Preferences
+remain device-scoped; cloud preference accounts and the career ingestion bridge
+remain deferred. Existing personalization contracts are preserved; capabilities
+now advertise assistant availability.

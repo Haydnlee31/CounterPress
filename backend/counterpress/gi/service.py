@@ -39,6 +39,8 @@ class Action(Contract):
     occurrence_order: int
     period: Literal[1, 2]
     elapsed_ms: int = Field(ge=0)
+    available_period: Literal[1,2] | None = None
+    available_ms: int | None = Field(default=None,ge=0)
     team_id: int
     player_id: str
     kind: str
@@ -72,6 +74,7 @@ class Source(Contract):
     match_source: str
     source_archive_sha256: str
     fixture_sha256: str
+    alias_sha256: str | None = None
     revision: int
     changes: str
 
@@ -106,7 +109,10 @@ def read_match(root: Path, match_id: str = MATCH_ID) -> Match:
     if hashlib.sha256(raw).hexdigest() != source.fixture_sha256:
         raise ValueError('GI source checksum mismatch')
     records = json.loads(raw)
-    aliases = json.loads((root / 'aliases.json').read_text())
+    alias_bytes=(root / 'aliases.json').read_bytes()
+    if source.alias_sha256 and hashlib.sha256(alias_bytes).hexdigest()!=source.alias_sha256:
+        raise ValueError('GI alias checksum mismatch')
+    aliases = json.loads(alias_bytes)
     if len({e['id'] for e in records}) != len(records):
         raise ValueError('Duplicate provider event ID')
     players = tuple(Player(player_id=f'wyscout-player-{pid}', provider_player_id=int(pid), **alias)

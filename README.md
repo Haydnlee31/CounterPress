@@ -9,10 +9,14 @@ provides 44 featured players, four clubs, 840 historical fixtures and four featu
 matches through read-only `/api/data/` endpoints. The guide includes local startup,
 metric definitions, coverage, evidence and frontend integration boundaries.
 
+**Try player personalization locally:** Open [Clubhouse](http://127.0.0.1:8017/#football)
+and follow the [user test walkthrough](docs/my-football-local.md) for profiles,
+favorites, comparisons and highlight insights. This interface is not deployed yet.
+
 **Connecting the redesigned UI?** The [fan personalization layer](docs/fan-personalization.md)
 adds device-owned favorites, ranked highlights, player/club views, comparisons and
-playback-scoped player focus under `/api/fan/`. Its independent client adapter does
-not change existing screens. Keep the [Reactor review and product decisions](docs/reactor-review-context.md)
+playback-scoped player focus under `/api/fan/`. The local hub uses its independent
+client adapter. Keep the [Reactor review and product decisions](docs/reactor-review-context.md)
 as important context for this phase and the later Footie assistant.
 
 The new [GI full-match reader](docs/gi.md) is available at `/#gi`: Eastbridge/Northport club aliases, a pitch canvas and shot map, outcome filters and action context backed by licensed full-match events. Synchronized video seeking is pending. The [unified app navigation](docs/unified-experience.md) now links all workspaces and preserves your browsing context.
@@ -385,3 +389,16 @@ To explicitly adapt a recap using the configured Azure deployment, see the
 facts/citations, expire automatically, and fall back to the complete factual recap.
 
 The [aggregate-calibrated full-match generator](docs/calibrated-generator.md) learns from 15 licensed matches, checks five held-out matches, and generates new native Event feeds. Its selected 2–2 match is also available in the Match Centre library.
+
+### Local grounded football assistant
+
+[Footie](docs/grounded-assistant.md) answers bounded player, club and match
+questions with calculated visuals, evidence and concise contextual stories.
+Azure selects the query and story emphasis; Python owns every factual sentence.
+**Ask Footie** on profiles and linked replays carries the season or frozen
+source-event time into a dialog without leaving the page.
+Start the local preview with
+`.venv/bin/python scripts/run_footie_local.py --azure`, then open
+`http://127.0.0.1:8017/#assistant`. Omit `--azure` for direct statistics lookups.
+Existing model settings remain in the ignored local `.env`; no new Azure service
+is required. [Verification](docs/verification/grounded-assistant.md).

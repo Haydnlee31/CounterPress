@@ -6,7 +6,7 @@ import math
 from random import Random
 from statistics import mean, pstdev
 
-VERSION='career-role-calibration-v1'
+VERSION='career-role-calibration-v3'
 ROLES={'Goalkeeper':'GK','Defender':'DF','Midfielder':'MF','Forward':'FW'}
 
 
@@ -96,7 +96,32 @@ def fit(events,matches,players,seed=20261020):
            'substitution_minutes':describe(sub_minutes),'substitutions_per_team':describe(sub_counts),
            'source_match_distributions':{k:describe([v[k] for v in match_counts.values()]) for k in ('pass','shot','goal','complete')},
            'shot_hazard_scale':.7}
-    return model,evaluate(model,events,roles)
+    from .realism import source_population
+    from .positions import source_rows, summarize
+    model['population_target']=source_population(events,matches,players,train)
+    model['position_target']=summarize(source_rows(events,matches,players,train),bootstrap=400)
+    team_goals=[t['score'] for m in matches if m['wyId'] in train_set for t in m['teamsData'].values()]
+    mu=mean(team_goals);variance=pstdev(team_goals)**2
+    model['team_goal_distribution']=describe(team_goals)
+    model['form_sigma']=math.sqrt(math.log(1+max(0,(variance-mu)/(mu*mu))))
+    role_outcomes=defaultdict(Counter)
+    for e in events:
+        if e['matchId'] not in train_set or e['matchPeriod'] not in ('1H','2H'):continue
+        if e['eventName']!='Shot' and e['subEventName'] not in ('Penalty','Free kick shot'):continue
+        tags={t['id'] for t in e['tags']}
+        if 101 in tags:continue
+        outcome='blocked' if 2101 in tags else 'saved' if tags & set(range(1201,1210)) else 'off_target'
+        role_outcomes[roles.get(e['playerId'],'MF')][outcome]+=1
+    model['shot_non_goal_outcomes_by_role']={r:dict(v) for r,v in role_outcomes.items()}
+    counts=[r['counts'] for r in model['position_target']['roles'].values()]
+    attacking=sum(c.get('attacking_duels',0) for c in counts)
+    model['duel_outcomes']={'won':sum(c.get('attacking_duels_won',0) for c in counts)/attacking,
+                           'draw':sum(c.get('attacking_duels_drawn',0) for c in counts)/attacking}
+    model['duel_outcomes']['lost']=1-sum(model['duel_outcomes'].values())
+    report=evaluate(model,events,roles)
+    report['population_holdout']=source_population(events,matches,players,held)
+    report['position_holdout']=summarize(source_rows(events,matches,players,held),bootstrap=400)
+    return model,report
 
 
 def evaluate(model,events,roles=None):

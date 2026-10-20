@@ -5,6 +5,7 @@ from hashlib import sha256
 import json
 from .contracts import Fixture,MatchRecord
 from .metrics import RULE_VERSION,add_stats,rates,select_events,goal_milestone,reduce_record
+from .coverage import metric_coverage,covered_rates
 
 
 def match_card(row,summary):
@@ -43,9 +44,13 @@ class CareerService:
                     if self.store.players[pid].club_id==club:heat.update(h)
             goals.extend({'match_id':row['id'],**g} for g in summary['goals'] if (g['player_id']==subject and g['goal_for']==club if kind=='player' else g['goal_for']==club))
         total=add_stats(s for _,_,s in entries);recent=add_stats(s for _,_,s in entries[:5])
+        coverage=metric_coverage([(json.loads(r['fixture']),s) for r,_,s in entries])
         refs=[{'match_id':r['id'],'event_digest':self.store.evidence_digest(r['id'],self.historical_cutoff(r,before))} for r,_,_ in entries]
         baseline=sha256(json.dumps({'stats':total,'matches':refs},sort_keys=True).encode()).hexdigest()
-        by_season=[{'season':s,'totals':add_stats(stats),'rates':rates(add_stats(stats))} for s,stats in sorted(seasons.items(),reverse=True)]
+        by_season=[]
+        for season_name,stats in sorted(seasons.items(),reverse=True):
+            sc=metric_coverage([(json.loads(r['fixture']),v) for r,_,v in entries if r['season']==season_name])
+            by_season.append({'season':season_name,'totals':add_stats(stats),'rates':covered_rates(add_stats(stats),sc),'metric_coverage':sc})
         insights=[]
         if total['goals']:
             best=max(by_season,key=lambda s:s['totals']['goals'])
@@ -60,12 +65,15 @@ class CareerService:
             results=Counter('draw' if s['score'][club]==s['score'][r['away'] if r['home']==club else r['home']] else 'win' if s['score'][club]>s['score'][r['away'] if r['home']==club else r['home']] else 'loss' for r,s,_ in entries)
             record={'wins':results['win'],'draws':results['draw'],'losses':results['loss']}
         return {'subject':entity.model_dump(mode='json',exclude={'involvement','passing','finishing'}),'scope':{'season':season,'before':before,'match_count':len(entries),'historical_and_featured':True},
-            'totals':total,'rates':rates(total),'seasons':by_season,'recent_form':{'matches':min(5,len(entries)),'totals':recent,'rates':rates(recent)},
+            'totals':total,'rates':covered_rates(total,coverage),'seasons':by_season,'recent_form':{'matches':min(5,len(entries)),'totals':recent,
+                'rates':covered_rates(recent,metric_coverage([(json.loads(r['fixture']),s) for r,_,s in entries[:5]]))},
             'record':record,'insights':insights,'heatmap':{'kind':'event_locations','columns':12,'rows':8,'pitch_m':[105,68],
                 'coordinates':'subject_club_attacks_positive_x','cells':[{'column':int(k.split(':')[0]),'row':int(k.split(':')[1]),'actions':v} for k,v in sorted(heat.items())],
                 'total_actions':sum(heat.values())},
             'coverage':{'xg_shots':total['xg_shots'],'all_shots':total['shots'],'xpass_passes':total['xpass_passes'],'all_passes':total['passes'],
-                'assists_unavailable_matches':sum(json.loads(r['fixture'])['source_kind']=='adapted_archive' for r,_,_ in entries),
+                'metrics':coverage,
+                'assists_unavailable_matches':coverage['assists']['total_matches']-coverage['assists']['recorded_matches'],
+                'key_passes_unavailable_matches':coverage['key_passes']['total_matches']-coverage['key_passes']['recorded_matches'],
                 'saves_unavailable_matches':sum(json.loads(r['fixture'])['source_kind']=='adapted_archive' for r,_,_ in entries),
                 'recoveries_unavailable_matches':sum(json.loads(r['fixture'])['source_kind']=='adapted_archive' for r,_,_ in entries),
                 'minutes_at_source_minute_precision_matches':sum(json.loads(r['fixture'])['minutes_basis']=='source_lineup_minute_precision' for r,_,_ in entries),
@@ -80,7 +88,9 @@ class CareerService:
             at=self.historical_cutoff(row,before)
             if at is False:continue
             summary=self.store.summary(row['id'],at,completed=at is not None);stats=summary[key].get(subject)
-            if stats and stats['appearances']:items.append({**match_card(row,summary),'stats':stats,'rates':rates(stats)})
+            if stats and stats['appearances']:
+                coverage=metric_coverage([(json.loads(row['fixture']),stats)])
+                items.append({**match_card(row,summary),'stats':stats,'rates':covered_rates(stats,coverage),'metric_coverage':coverage})
         return {'total':len(items),'offset':offset,'limit':limit,'items':items[offset:offset+limit]}
 
     def live(self,mid,period,elapsed_ms,player_id=None,sequence=None):

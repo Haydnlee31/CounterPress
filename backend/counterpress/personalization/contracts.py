@@ -30,6 +30,8 @@ class Player(Contract):
     involvement: float = Field(gt=0, le=4)
     passing: float = Field(ge=-.2, le=.2)
     finishing: float = Field(gt=0, le=3)
+    shooting: float = Field(default=1.,gt=0,le=4)
+    creating: float = Field(default=1.,gt=0,le=4)
 
 
 class Appearance(Contract):
@@ -59,6 +61,8 @@ class Fixture(Contract):
     period_lengths_ms: tuple[int, int] = (2700000, 2700000)
     calibration_version: str | None = None
     seed: int | None = None
+    assist_basis: Literal['direct_pass', 'provider_tags', 'unavailable'] = 'direct_pass'
+    shot_assists_complete: bool = True
 
     @model_validator(mode='after')
     def lineup(self) -> Self:
@@ -102,6 +106,10 @@ class Action(Contract):
     telemetry_basis: Literal['authored_physics', 'unavailable'] = 'unavailable'
     source_reference: str
     retracted: bool = False
+    # Source-awarded assists are linked to the goal, so they become visible only
+    # when the goal does. They are not guessed from adjacent archive events.
+    credited_assist_event_id: Identifier | None = None
+    situation: Literal['open_play', 'corner', 'free_kick', 'penalty', 'rebound'] = 'open_play'
 
     @model_validator(mode='after')
     def coherence(self) -> Self:
@@ -111,6 +119,8 @@ class Action(Contract):
             # Legacy archive passes can lack recipients: they have a distinct outcome.
             raise ValueError('Generated completed pass needs a recipient')
         if self.recipient_id==self.player_id: raise ValueError('Self pass')
+        if self.credited_assist_event_id and (self.outcome != 'goal' or self.goal_for != self.club_id):
+            raise ValueError('Assist credit requires a teammate goal')
         if self.goal_for and (self.outcome not in ('goal','own_goal') or (self.goal_for==self.club_id)!=(self.outcome=='goal')):
             raise ValueError('Scoring outcome and beneficiary disagree')
         if self.outcome in ('goal','own_goal') and self.goal_for is None:raise ValueError('Goal needs a beneficiary')

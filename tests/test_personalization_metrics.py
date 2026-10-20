@@ -76,3 +76,26 @@ def test_invalid_goal_and_fake_speed_fail_schema():
     with pytest.raises(ValueError):event(1,1,'eb09','shot','goal',goal_for='northport')
     valid=event(1,1000,'eb09','shot','goal',goal_for='eastbridge',start=PitchPosition(x=90.,y=34.),end=PitchPosition(x=105.,y=34.),flight_ms=500,telemetry_basis='authored_physics')
     with pytest.raises(ValueError):Action.model_validate_json(valid.model_copy(update={'available_ms':1499}).model_dump_json())
+
+
+def test_long_run_and_beaten_opponent_end_direct_assist_chain(manual):
+    first,carry,goal=manual.events[:3]
+    long_run=carry.model_copy(update={'end':PitchPosition(x=92.,y=34.)})
+    for middle in (long_run,event(2,4000,'eb09','duel','won',opponent_id='np08')):
+        record=MatchRecord(fixture=manual.fixture,events=(first,middle,goal))
+        assert reduce_record(record)['players']['eb08']['assists']==0
+        # Lead-in context obeys exactly the same rule when the run precedes a window.
+        assert reduce_record(record,(1,5000),(1,4000))['players']['eb08']['assists']==0
+
+
+def test_source_assist_is_causal_and_retracted_pass_withdraws_credit(manual):
+    first,_,goal=manual.events[:3]
+    first=first.model_copy(update={'recipient_id':None,'outcome':'complete'})
+    goal=goal.model_copy(update={'credited_assist_event_id':first.event_id,'available_ms':5100})
+    fixture=manual.fixture.model_copy(update={'assist_basis':'provider_tags','shot_assists_complete':False})
+    record=MatchRecord(fixture=fixture,events=(first,goal))
+    assert reduce_record(record,(1,5099))['players']['eb08']['assists']==0
+    summary=reduce_record(record,(1,5100))
+    assert summary['players']['eb08']['assists']==1
+    assert summary['goals'][0]['assist_event_id']==first.event_id
+    assert reduce_record(MatchRecord(fixture=fixture,events=(first.model_copy(update={'retracted':True}),goal)))['players']['eb08']['assists']==0

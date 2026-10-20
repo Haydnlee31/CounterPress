@@ -58,6 +58,17 @@ def install_personalization(app,root:Path):
     def player_profile(player_id:str,season:str|None=None,before:str|None=None):
         cutoff=date(before);return call(lambda s:s.profile(player_id,season=season,before=cutoff))
 
+    @lru_cache(maxsize=1)
+    def analytics_service():
+        from .analytics import PlayerAnalytics
+        return PlayerAnalytics(service())
+
+    @app.get('/api/data/players/{player_id}/analytics',tags=['Career data'])
+    def player_analytics(player_id:str,response:Response,season:str|None=Query(None,max_length=20),before:str|None=None):
+        response.headers['Cache-Control']='no-store'
+        cutoff=date(before)
+        return call(lambda s:analytics_service().profile(player_id,season,before=cutoff))
+
     @app.get('/api/data/players/{player_id}/matches',tags=['Career data'])
     def player_history(player_id:str,season:str|None=None,before:str|None=None,offset:int=Query(0,ge=0),limit:int=Query(20,ge=1,le=100)):
         cutoff=date(before);return call(lambda s:s.history(player_id,season=season,before=cutoff,offset=offset,limit=limit))

@@ -13,9 +13,9 @@ decisions; the general Footie assistant and Azure ingestion bridge remain later 
 - **44 featured players**, including the existing 22 display identities. Each club has two designated stars, a goalkeeper and ten outfield players with persistent broad roles and traits.
 - Eight supporting clubs and four reserves per club: **12 clubs, 180 registered players** overall. `featured=true` returns the 44 profile leads; reserves and opponents remain discoverable.
 - **840 historical fixtures**, spanning six completed seasons beginning in 2020 and eight rounds of 2026–27. These are the fictional players' careers in this universe; debuts are in 2020, at ages 18–21. Multi-year persistence is an authored assumption, not learned career development.
-- **Four featured matches**: the three existing archive/synthetic fixtures plus Southbank **3–2** Redhaven on **19 October 2026**. Only these four belong in the full replay library.
-- Three excerpts from the new fixture: Enzo Clarke's **20th career goal**, Dario Voss bringing Southbank level, and the winning goal. Read exact titles and scorers from the API rather than hard-coding this description.
-- **1,050,765 canonical events**. Historical actions regenerate from stable seeds and must match committed event digests. Four featured feeds are materialized. The complete packaged foundation is approximately 3 MB, rather than a million duplicated JSON event objects.
+- **Four featured matches**: the three existing archive/synthetic fixtures plus Southbank **2–2** Redhaven on **19 October 2026**. Only these four belong in the full replay library.
+- Three excerpts from the new fixture: Mateo Cross's **80th career goal**, Enzo Clarke putting Redhaven ahead, and Dario Voss equalizing. Read exact titles and scorers from the API rather than hard-coding this description.
+- **1,179,903 canonical events**. Historical actions regenerate from stable seeds and must match committed event digests. Four featured feeds are materialized. The compact ledger stores reduced summaries and seeds rather than a million duplicated JSON event objects.
 
 Player and club totals are reductions of those events and appearance intervals. Highlights are references into parent matches, never additional career fixtures. A fixture can be hidden from the replay library while still appearing in a player's history; that does not require inconsistent totals.
 
@@ -38,20 +38,24 @@ Held-out Brier scores, where lower is better:
 
 `calibration-report.json` includes reliability bins and holdout distributions. These results validate these particular estimates, not all aspects of football realism.
 
-The simulator samples role-dependent involvement, passing and shooting from those distributions. Traits persist across matches; form, lineup rotation, substitutions, star selection, finishing multipliers and physical speeds are explicitly authored priors. A small tempo/shot-frequency search matches training-set moments using separate seeds. A fresh **100-match unselected population** evaluates the resulting simulator. It averages **801.3 passes, 22.98 shots and 2.60 goals** per match. Pass volume and its variability remain below the source distribution; this limitation is recorded rather than hidden by showcase selection.
+The v3 simulator retains separate involvement, shooting, creation and finishing traits. It additionally calibrates pass volume/completion/length and ground duels by position, represents drawn duels, and uses position-specific shot outcomes. A completed pass can create a subsequent shot opportunity; training assist rates fit this causal creation effect. All totals still come from generated events.
 
-The new showcase is selected from those untouched candidates for lead changes, equalizers and milestone opportunities. No events were rewritten to reach a target result or milestone. Selection seed **20022** produces the featured 3–2 match. Its events retain their original identifiers in each highlight.
+The final calibration evaluates 18 candidates on 192 fixed training seeds. A fresh **3,000-match population**, seeds 70000–72999, provides pooled validation and three 1,000-match stability batches. The 840 historical matches are checked separately. There are 57 position gates covering GK/DF/MF/FW rates and individual passing/shooting distributions, plus ten population gates. Rare aggregate role-share checks use the pooled validation population; every batch's result is retained as a stability diagnostic. Earlier unsuccessful candidates and the protocol revision are documented in [the positional audit methodology](position-calibration.md).
+
+The source has broad role labels and a different allocation of positional minutes. Goal and assist shares, including their ratio, are therefore standardized to the simulated formation. Aggregate rates use the source holdout; individual tails use the training players with at least 900 minutes because no holdout player meets that threshold. Match-cluster bootstrap intervals and all thresholds are published in `position-validation.json`. This is calibrated event-statistic plausibility for one reference season, not measured tracking or validation of every possible football statistic.
+
+The selected showcase uses seed **20097** and finishes **2–2**. Mateo Cross had 79 prior goals (season totals 16, 16, 7, 15, 11, 10, 4); his equalizer makes 80. No career totals or events are manually overwritten. The four-match library and nine total fan highlights are preserved. Source archive goalkeepers now map to the goalkeeper identities, with alias checksums protecting that mapping.
 
 ## Metric and coverage contracts
 
 The versioned [metric dictionary](../fixtures/personalization/metric-definitions.json), also served at `/api/data/metrics`, defines denominators and coverage. In particular:
 
-- Goals and assists per 90 use appearance minutes; there is no ambiguous “assist percentage.” Direct assists require a completed pass to the scorer within 15 seconds, with no intervening shot or possession change. Rebound goals do not get a second assist.
+- Goals and assists per 90 use appearance minutes; there is no ambiguous “assist percentage.” Generated direct assists require a completed pass to the scorer within 15 seconds, with no intervening shot, possession change, duel or more than 10 metres of carrying. Source archives use provider-awarded assists linked to their goal event. Rebound goals do not get a second assist.
 - Pass accuracy excludes unknown outcomes. Passing above expected uses only passes for which the model returned a probability. Own goals contribute to the beneficiary club, not the player's scoring tally.
 - Activity maps count actions on a **12 × 8 grid**, with a **105 × 68 metre pitch** and the subject club attacking positive x. These are event-location heatmaps, not dwell-time or tracking heatmaps.
 - Ball and shot speeds come from **explicit synthetic flight durations**, not the interval until the next event. They are mean pitch-plane travel speeds, not measured launch speeds. The authoring priors are published in the metric dictionary.
 - Player running distance, sprint speed, full tracking heatmaps and measured proximity pressure are **unavailable**. The data layer does not turn sparse event hops into fabricated tracking measurements. Existing duel-based pressure analysis remains separate.
-- The two adapted archive matches lack direct pass-recipient and explicit save/recovery coverage. Assist, save and recovery coverage flags prevent those gaps from being interpreted as observed zeros. Source substitution timing has minute precision. Existing source results and own goals are preserved.
+- The two adapted archives retain four explicit provider assist tags. These are linked to goals and credited only when each goal is available; missing recipients are never guessed. All 44 featured profiles now have assist coverage. Complete shot-assist, save and recovery coverage remains absent in the archives. Known partial counts stay visible with covered-match counts; rates use matching covered counts and minutes. A wholly unknown zero remains unavailable. Source substitution timing has minute precision. Existing source results and own goals are preserved.
 - Comparison windows **exclude the start and include the end**. Window evidence includes separate lead-in references needed for an assist whose pass preceded the window.
 
 Full video ingestion/auto-eventing and continuous tracking are separate capabilities. The hackathon calls them features to consider; this data foundation does not claim to implement them. The licensed [DFL integrated dataset](https://github.com/spoho-datascience/idsse-data) is a researched future option for movement calibration.
@@ -84,15 +88,15 @@ The default index is in-memory SQLite. To persist local revision overlays, set `
 | Generated fixture in existing `Event` v1 pitch format | `GET /api/data/matches/{match_id}/replay` |
 | New highlight cards with parent links | `GET /api/data/highlights` |
 | Highlight in existing pitch format | `GET /api/data/highlights/{highlight_id}/replay` |
-| Causal state, career baseline and live milestones | `GET /api/data/matches/{match_id}/live?period=2&elapsed_ms=447225` |
+| Causal state, career baseline and live milestones | `GET /api/data/matches/{match_id}/live?period=1&elapsed_ms=592006` |
 | Revision-aware insight changes | `GET /api/data/matches/{match_id}/insight-changes?period=2&elapsed_ms=2700000&since_sequence=600` |
 | Window metrics and evidence | `GET /api/data/matches/{match_id}/window?start_period=2&start_ms=0&end_period=2&end_ms=600000` |
 
-The new match ID is `career-showcase-southbank-redhaven`. Enzo Clarke is `rh08`, Dario Voss is `sb09`. The live milestone becomes available at second-half **447225 ms**, and is absent one millisecond before that cutoff. Generated pass and shot outcomes become available only after their explicit ball flight plus 100 ms processing time.
+The new match ID is `career-showcase-southbank-redhaven`. Mateo Cross is `rh09`, Enzo Clarke is `rh08`, and Dario Voss is `sb09`. Mateo’s live milestone becomes available at first-half **592006 ms**, and is absent one millisecond before that cutoff. Generated pass and shot outcomes become available only after their explicit ball flight plus 100 ms processing time.
 
 Player and club profiles accept a `before=YYYY-MM-DDTHH:MM:SSZ` filter for historical comparisons. Only completed fixtures before that time contribute; later corrections to an older match are excluded as well. Mapping period clocks to UTC uses an explicit 15-minute halftime convention. Empty denominators produce `null`. Profiles include match/evidence references, coverage and a baseline digest. A future assistant should use these numbers and references rather than calculate from an unbounded prompt containing the whole dataset.
 
-**Integration boundaries:** Keep Matchday limited to highlights. Use `featured`/`replay_available` for the four-match library; the full history remains accessible from profiles. Use fixture appearances to identify the 11 players active at a particular time, rather than rendering every reserve simultaneously. Source archive replays retain `/api/gi/matches/{id}`. The new replay route returns HTTP 409 if its source has corrections; use current events before rendering rather than replaying stale actions. No frontend components, club colors, routing or favorites UI were edited on this branch.
+**Integration boundaries:** Keep Matchday limited to highlights. Use `featured`/`replay_available` for the four-match library; the full history remains accessible from profiles. Use fixture appearances to identify the 11 players active at a particular time, rather than rendering every reserve simultaneously. Source archive replays retain `/api/gi/matches/{id}`. The new replay route returns HTTP 409 if its source has corrections; use current events before rendering rather than replaying stale actions. The local Clubhouse interface consumes these APIs; all 44 portraits are keyed to stable player IDs. See [local user testing](my-football-local.md).
 
 ## Revisions and local ingestion
 

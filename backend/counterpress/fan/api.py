@@ -73,7 +73,7 @@ def install_fan(app, career_service, snapshots=None):
                 'languages': ['en', 'zh-Hans'], 'depths': ['casual', 'analyst'],
                 'metric_focus': ['balanced', 'scoring', 'creating', 'passing', 'defending'],
                 'limits': {'favorite_clubs': 4, 'favorite_players': 12, 'comparison_players': 4, 'body_bytes': 16384},
-                'assistant_available': False, 'cross_device_sync': False,
+                'assistant_available': True, 'cross_device_sync': False,
                 'catalog_url': '/api/data/catalog', 'players_url': '/api/data/players?featured=false'}
 
     @router.post('/preferences/validate')

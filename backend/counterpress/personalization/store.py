@@ -16,13 +16,23 @@ from .simulation import simulate
 
 
 class DataStore:
-    def __init__(self,root:Path,path=':memory:'):
+    def __init__(self,root:Path,path=':memory:',*,allow_unreviewed_spatial=False):
         self.root=root;self.lock=RLock()
         self.manifest=json.loads((root/'manifest.json').read_text())
+        if self.manifest.get('validation_status','passed')!='passed':
+            raise ValueError('Career dataset did not pass validation; keep the previous dataset active')
         for file,expected in self.manifest['files'].items():
             if Path(file).name!=file or sha256((root/file).read_bytes()).hexdigest()!=expected:
                 raise ValueError('Career artifact checksum mismatch')
         self.model=json.loads((root/'model.json').read_text())
+        if self.model.get('spatial') and not allow_unreviewed_spatial:
+            if 'spatial-validation.json' not in self.manifest['files']:
+                raise ValueError('Spatial dataset needs the expanded position audit before use')
+            review=json.loads((root/'spatial-validation.json').read_text())
+            if (not isinstance(review,dict) or review.get('status')!='passed_with_coverage_limits' or
+                any(review.get('input_sha256',{}).get(name)!=self.manifest['files'].get(name) for name in ('model.json','ledger.json.gz','registry.json')) or
+                review.get('prior_position_report_sha256')!=self.manifest['files'].get('position-validation.json')):
+                raise ValueError('Spatial position audit failed or does not match this dataset')
         registry=json.loads((root/'registry.json').read_text())
         self.clubs={c.club_id:c for c in (Club.model_validate(x) for x in registry['clubs'])}
         self.players={p.player_id:p for p in (Player.model_validate(x) for x in registry['players'])}

@@ -15,6 +15,12 @@ on:
         default: preserve
         type: choice
         options: [preserve, enable, disable]
+      assistant_mode:
+        description: 'Footie: enable bounded model calls using existing server-side model secrets'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, enable, disable]
 
 permissions:
   contents: read
@@ -61,5 +67,6 @@ jobs:
           CP_STUDIO_IDENTITY: ${{ secrets.CP_STUDIO_IDENTITY }}
           CP_EDITORIAL_MODE: ${{ inputs.editorial_mode }}
           CP_EDITORIAL_MODEL: ${{ secrets.CP_EDITORIAL_MODEL }}
+          CP_ASSISTANT_MODE: ${{ inputs.assistant_mode }}
           CP_AZURE_TARGET: ${{ secrets.CP_AZURE_TARGET }}
         run: python3 scripts/deploy_azure.py deploy

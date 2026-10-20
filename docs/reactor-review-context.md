@@ -90,3 +90,21 @@ preference synchronization require a deliberate identity/storage design later.
 Matchday stays highlights-only; Match Centre has four featured matches; wider
 career history remains in player and club profiles. Never count highlights as
 additional matches. No new general model agent is implied by a suggested question.
+
+## Implementation follow-up — 20 October 2026
+
+The personalization workspace and calibrated analytics are now implemented
+locally. The first [grounded Footie assistant](grounded-assistant.md) follows the
+answer → visual → action direction above. Azure selects a bounded query plan;
+Python owns all statistics and explanations. A separate `#assistant` workspace
+supports profiles, comparison, form, club contributors and goal milestones, with
+a handoff to the existing replay. The career-index ingestion bridge and embedding
+the assistant into live viewing remain later work. This note updates implementation
+status without changing the saved review or its historical findings.
+
+The subsequent narrative layer now offers calculated rates, comparison gaps,
+score impact and milestones as evidence-bound sentences. A second bounded Azure
+request chooses emphasis and order; Python still owns the facts and wording.
+This adopts the reference application's story-first presentation without
+introducing unrestricted generated factual prose. Both calls share the original
+20-attempt hourly allowance. See [narrative verification](verification/footie-narration.md).

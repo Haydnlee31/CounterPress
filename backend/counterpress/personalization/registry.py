@@ -33,7 +33,15 @@ def build_registry(model,seed=20261020):
             accuracy=model['role_rates'][role]['pass_accuracy']
             passing=max(-.08,min(.06,rng.gauss(0,accuracy['sd'])))
             if star:passing=max(passing,.025)
+            # Independent streams preserve existing names, birth years and traits.
+            trait_rng=Random(f'{seed}:{pid}:attacking-traits-v2')
+            shot=model['role_rates'][role]['shot']
+            scatter=min(.65,shot['sd']/max(.1,shot['mean']))
+            shooting=max(.3,min(2.5,trait_rng.lognormvariate(-scatter**2/2,scatter)))
+            creating=max(.45,min(1.8,trait_rng.lognormvariate(-.3**2/2,.3)))
+            if star and role=='FW':shooting=max(1.5,shooting)
+            if star and role=='MF':creating=max(1.55,creating)
             players.append(Player(player_id=pid,club_id=cid,name=name,role=role,number=i,featured=c<4 and i<=11,
                 star=star,birth_year=1999+rng.randrange(4),involvement=round(involvement,5),passing=round(passing,5),
-                finishing=round(1.3 if star and role=='FW' else rng.uniform(.85,1.15),5)))
+                finishing=round(1.3 if star and role=='FW' else rng.uniform(.85,1.15),5),shooting=round(shooting,5),creating=round(creating,5)))
     return clubs,players

@@ -98,7 +98,9 @@
       "debut_year": 2020,
       "involvement": 1.37743,
       "passing": 0.01536,
-      "finishing": 1.04523
+      "finishing": 1.04523,
+      "shooting": 1.0,
+      "creating": 1.14064
     },
     {
       "player_id": "eb02",
@@ -112,7 +114,9 @@
       "debut_year": 2020,
       "involvement": 1.13221,
       "passing": -0.03848,
-      "finishing": 0.94676
+      "finishing": 0.94676,
+      "shooting": 0.4814,
+      "creating": 0.50342
     },
     {
       "player_id": "eb03",
@@ -126,7 +130,9 @@
       "debut_year": 2020,
       "involvement": 0.77042,
       "passing": 0.03658,
-      "finishing": 0.89612
+      "finishing": 0.89612,
+      "shooting": 0.97255,
+      "creating": 0.59177
     },
     {
       "player_id": "eb04",
@@ -140,7 +146,9 @@
       "debut_year": 2020,
       "involvement": 0.92069,
       "passing": 0.02095,
-      "finishing": 1.08385
+      "finishing": 1.08385,
+      "shooting": 0.68124,
+      "creating": 0.75927
     },
     {
       "player_id": "eb05",
@@ -154,7 +162,9 @@
       "debut_year": 2020,
       "involvement": 0.85785,
       "passing": 0.04516,
-      "finishing": 0.87793
+      "finishing": 0.87793,
+      "shooting": 0.67696,
+      "creating": 0.81743
     },
     {
       "player_id": "eb06",
@@ -168,7 +178,9 @@
       "debut_year": 2020,
       "involvement": 0.993,
       "passing": 0.02598,
-      "finishing": 1.14871
+      "finishing": 1.14871,
+      "shooting": 1.50169,
+      "creating": 0.7229
     },
     {
       "player_id": "eb07",
@@ -182,7 +194,9 @@
       "debut_year": 2020,
       "involvement": 0.594,
       "passing": 0.02069,
-      "finishing": 0.96005
+      "finishing": 0.96005,
+      "shooting": 0.71902,
+      "creating": 0.88261
     },
     {
       "player_id": "eb08",
@@ -196,7 +210,9 @@
       "debut_year": 2020,
       "involvement": 1.51724,
       "passing": 0.025,
-      "finishing": 1.01546
+      "finishing": 1.01546,
+      "shooting": 0.85066,
+      "creating": 1.55
     },
     {
       "player_id": "eb09",
@@ -210,7 +226,9 @@
       "debut_year": 2020,
       "involvement": 1.57719,
       "passing": 0.025,
-      "finishing": 1.3
+      "finishing": 1.3,
+      "shooting": 1.5,
+      "creating": 0.85229
     },
     {
       "player_id": "eb10",
@@ -224,7 +242,9 @@
       "debut_year": 2020,
       "involvement": 0.88923,
       "passing": -0.00225,
-      "finishing": 0.93445
+      "finishing": 0.93445,
+      "shooting": 1.37338,
+      "creating": 0.88344
     },
     {
       "player_id": "eb11",
@@ -238,7 +258,9 @@
       "debut_year": 2020,
       "involvement": 0.9196,
       "passing": -0.05202,
-      "finishing": 0.85475
+      "finishing": 0.85475,
+      "shooting": 0.78006,
+      "creating": 0.97785
     },
     {
       "player_id": "eb12",
@@ -252,7 +274,9 @@
       "debut_year": 2020,
       "involvement": 1.32802,
       "passing": 0.01661,
-      "finishing": 1.10998
+      "finishing": 1.10998,
+      "shooting": 1.62822,
+      "creating": 0.77811
     },
     {
       "player_id": "eb13",
@@ -266,7 +290,9 @@
       "debut_year": 2020,
       "involvement": 0.76564,
       "passing": 0.06,
-      "finishing": 0.98917
+      "finishing": 0.98917,
+      "shooting": 0.85499,
+      "creating": 0.9159
     },
     {
       "player_id": "eb14",
@@ -280,7 +306,9 @@
       "debut_year": 2020,
       "involvement": 1.3066,
       "passing": -0.04674,
-      "finishing": 0.93636
+      "finishing": 0.93636,
+      "shooting": 0.87732,
+      "creating": 1.4347
     },
     {
       "player_id": "eb15",
@@ -294,7 +322,9 @@
       "debut_year": 2020,
       "involvement": 0.92944,
       "passing": -0.05505,
-      "finishing": 0.96371
+      "finishing": 0.96371,
+      "shooting": 1.0,
+      "creating": 1.68087
     },
     {
       "player_id": "np01",
@@ -308,7 +338,9 @@
       "debut_year": 2020,
       "involvement": 0.89557,
       "passing": 0.02026,
-      "finishing": 0.93003
+      "finishing": 0.93003,
+      "shooting": 1.0,
+      "creating": 0.88318
     },
     {
       "player_id": "np02",
@@ -322,7 +354,9 @@
       "debut_year": 2020,
       "involvement": 1.23693,
       "passing": 0.01971,
-      "finishing": 1.14035
+      "finishing": 1.14035,
+      "shooting": 0.37669,
+      "creating": 1.39137
     },
     {
       "player_id": "np03",
@@ -336,7 +370,9 @@
       "debut_year": 2020,
       "involvement": 0.88109,
       "passing": 0.01637,
-      "finishing": 1.12073
+      "finishing": 1.12073,
+      "shooting": 2.15918,
+      "creating": 0.86084
     },
     {
       "player_id": "np04",
@@ -350,7 +386,9 @@
       "debut_year": 2020,
       "involvement": 1.06502,
       "passing": -0.07978,
-      "finishing": 1.11184
+      "finishing": 1.11184,
+      "shooting": 1.93806,
+      "creating": 0.99723
     },
     {
       "player_id": "np05",
@@ -364,7 +402,9 @@
       "debut_year": 2020,
       "involvement": 0.65948,
       "passing": 0.00119,
-      "finishing": 0.97541
+      "finishing": 0.97541,
+      "shooting": 0.33343,
+      "creating": 1.26385
     },
     {
       "player_id": "np06",
@@ -378,7 +418,9 @@
       "debut_year": 2020,
       "involvement": 1.0441,
       "passing": 0.02007,
-      "finishing": 1.03975
+      "finishing": 1.03975,
+      "shooting": 0.72169,
+      "creating": 1.53084
     },
     {
       "player_id": "np07",
@@ -392,7 +434,9 @@
       "debut_year": 2020,
       "involvement": 0.67037,
       "passing": -0.01903,
-      "finishing": 0.9572
+      "finishing": 0.9572,
+      "shooting": 1.8389,
+      "creating": 0.98698
     },
     {
       "player_id": "np08",
@@ -406,7 +450,9 @@
       "debut_year": 2020,
       "involvement": 1.51724,
       "passing": 0.025,
-      "finishing": 0.88109
+      "finishing": 0.88109,
+      "shooting": 0.6331,
+      "creating": 1.55
     },
     {
       "player_id": "np09",
@@ -420,7 +466,9 @@
       "debut_year": 2020,
       "involvement": 1.57719,
       "passing": 0.025,
-      "finishing": 1.3
+      "finishing": 1.3,
+      "shooting": 1.5,
+      "creating": 0.75715
     },
     {
       "player_id": "np10",
@@ -434,7 +482,9 @@
       "debut_year": 2020,
       "involvement": 0.69458,
       "passing": 0.06,
-      "finishing": 1.10442
+      "finishing": 1.10442,
+      "shooting": 0.91616,
+      "creating": 1.24926
     },
     {
       "player_id": "np11",
@@ -448,7 +498,9 @@
       "debut_year": 2020,
       "involvement": 0.56569,
       "passing": 0.06,
-      "finishing": 1.07021
+      "finishing": 1.07021,
+      "shooting": 0.71435,
+      "creating": 0.86616
     },
     {
       "player_id": "np12",
@@ -462,7 +514,9 @@
       "debut_year": 2020,
       "involvement": 0.70222,
       "passing": -0.07829,
-      "finishing": 0.97889
+      "finishing": 0.97889,
+      "shooting": 2.5,
+      "creating": 1.22597
     },
     {
       "player_id": "np13",
@@ -476,7 +530,9 @@
       "debut_year": 2020,
       "involvement": 0.89666,
       "passing": 0.05521,
-      "finishing": 0.86882
+      "finishing": 0.86882,
+      "shooting": 1.13591,
+      "creating": 1.12356
     },
     {
       "player_id": "np14",
@@ -490,7 +546,9 @@
       "debut_year": 2020,
       "involvement": 0.55,
       "passing": 0.04974,
-      "finishing": 1.04907
+      "finishing": 1.04907,
+      "shooting": 0.54551,
+      "creating": 0.98469
     },
     {
       "player_id": "np15",
@@ -504,7 +562,9 @@
       "debut_year": 2020,
       "involvement": 1.08723,
       "passing": -0.04688,
-      "finishing": 1.04969
+      "finishing": 1.04969,
+      "shooting": 1.0,
+      "creating": 1.20718
     },
     {
       "player_id": "sb01",
@@ -518,7 +578,9 @@
       "debut_year": 2020,
       "involvement": 1.16827,
       "passing": -0.06516,
-      "finishing": 0.90222
+      "finishing": 0.90222,
+      "shooting": 1.0,
+      "creating": 0.84529
     },
     {
       "player_id": "sb02",
@@ -532,7 +594,9 @@
       "debut_year": 2020,
       "involvement": 0.67707,
       "passing": 0.06,
-      "finishing": 1.04925
+      "finishing": 1.04925,
+      "shooting": 1.24643,
+      "creating": 1.02809
     },
     {
       "player_id": "sb03",
@@ -546,7 +610,9 @@
       "debut_year": 2020,
       "involvement": 1.22743,
       "passing": -0.0266,
-      "finishing": 1.08861
+      "finishing": 1.08861,
+      "shooting": 0.98962,
+      "creating": 0.61339
     },
     {
       "player_id": "sb04",
@@ -560,7 +626,9 @@
       "debut_year": 2020,
       "involvement": 0.80925,
       "passing": -0.08,
-      "finishing": 1.09207
+      "finishing": 1.09207,
+      "shooting": 0.80177,
+      "creating": 0.74333
     },
     {
       "player_id": "sb05",
@@ -574,7 +642,9 @@
       "debut_year": 2020,
       "involvement": 1.29865,
       "passing": 0.06,
-      "finishing": 0.8556
+      "finishing": 0.8556,
+      "shooting": 0.78763,
+      "creating": 0.77336
     },
     {
       "player_id": "sb06",
@@ -588,7 +658,9 @@
       "debut_year": 2020,
       "involvement": 0.85407,
       "passing": 0.0078,
-      "finishing": 0.96173
+      "finishing": 0.96173,
+      "shooting": 1.47148,
+      "creating": 1.8
     },
     {
       "player_id": "sb07",
@@ -602,7 +674,9 @@
       "debut_year": 2020,
       "involvement": 1.28061,
       "passing": -0.04178,
-      "finishing": 1.07643
+      "finishing": 1.07643,
+      "shooting": 0.96427,
+      "creating": 0.83535
     },
     {
       "player_id": "sb08",
@@ -616,7 +690,9 @@
       "debut_year": 2020,
       "involvement": 1.51724,
       "passing": 0.03524,
-      "finishing": 0.86884
+      "finishing": 0.86884,
+      "shooting": 0.54992,
+      "creating": 1.55
     },
     {
       "player_id": "sb09",
@@ -630,7 +706,9 @@
       "debut_year": 2020,
       "involvement": 1.57719,
       "passing": 0.03971,
-      "finishing": 1.3
+      "finishing": 1.3,
+      "shooting": 1.5,
+      "creating": 0.89074
     },
     {
       "player_id": "sb10",
@@ -644,7 +722,9 @@
       "debut_year": 2020,
       "involvement": 0.86449,
       "passing": 0.06,
-      "finishing": 0.94415
+      "finishing": 0.94415,
+      "shooting": 1.06973,
+      "creating": 0.95357
     },
     {
       "player_id": "sb11",
@@ -658,7 +738,9 @@
       "debut_year": 2020,
       "involvement": 0.76885,
       "passing": -0.0187,
-      "finishing": 0.90668
+      "finishing": 0.90668,
+      "shooting": 0.53348,
+      "creating": 0.78799
     },
     {
       "player_id": "sb12",
@@ -672,7 +754,9 @@
       "debut_year": 2020,
       "involvement": 1.7,
       "passing": -0.08,
-      "finishing": 0.96399
+      "finishing": 0.96399,
+      "shooting": 0.9318,
+      "creating": 0.97151
     },
     {
       "player_id": "sb13",
@@ -686,7 +770,9 @@
       "debut_year": 2020,
       "involvement": 1.66225,
       "passing": 0.00491,
-      "finishing": 0.90468
+      "finishing": 0.90468,
+      "shooting": 0.73017,
+      "creating": 0.95029
     },
     {
       "player_id": "sb14",
@@ -700,7 +786,9 @@
       "debut_year": 2020,
       "involvement": 1.00063,
       "passing": -0.08,
-      "finishing": 0.9047
+      "finishing": 0.9047,
+      "shooting": 1.06349,
+      "creating": 1.04392
     },
     {
       "player_id": "sb15",
@@ -714,7 +802,9 @@
       "debut_year": 2020,
       "involvement": 1.13169,
       "passing": 0.00375,
-      "finishing": 0.93725
+      "finishing": 0.93725,
+      "shooting": 1.0,
+      "creating": 0.70831
     },
     {
       "player_id": "rh01",
@@ -728,7 +818,9 @@
       "debut_year": 2020,
       "involvement": 0.79642,
       "passing": -0.06219,
-      "finishing": 1.0706
+      "finishing": 1.0706,
+      "shooting": 1.0,
+      "creating": 1.32171
     },
     {
       "player_id": "rh02",
@@ -742,7 +834,9 @@
       "debut_year": 2020,
       "involvement": 1.16811,
       "passing": -0.03911,
-      "finishing": 1.00827
+      "finishing": 1.00827,
+      "shooting": 1.86506,
+      "creating": 0.99361
     },
     {
       "player_id": "rh03",
@@ -756,7 +850,9 @@
       "debut_year": 2020,
       "involvement": 0.8234,
       "passing": 0.06,
-      "finishing": 1.00656
+      "finishing": 1.00656,
+      "shooting": 0.56586,
+      "creating": 0.8559
     },
     {
       "player_id": "rh04",
@@ -770,7 +866,9 @@
       "debut_year": 2020,
       "involvement": 0.73429,
       "passing": -0.08,
-      "finishing": 0.88473
+      "finishing": 0.88473,
+      "shooting": 0.62945,
+      "creating": 0.59843
     },
     {
       "player_id": "rh05",
@@ -784,7 +882,9 @@
       "debut_year": 2020,
       "involvement": 0.75952,
       "passing": -0.08,
-      "finishing": 1.09417
+      "finishing": 1.09417,
+      "shooting": 1.29837,
+      "creating": 0.62283
     },
     {
       "player_id": "rh06",
@@ -798,7 +898,9 @@
       "debut_year": 2020,
       "involvement": 0.6619,
       "passing": 0.00652,
-      "finishing": 0.87357
+      "finishing": 0.87357,
+      "shooting": 1.25992,
+      "creating": 1.23567
     },
     {
       "player_id": "rh07",
@@ -812,7 +914,9 @@
       "debut_year": 2020,
       "involvement": 0.93411,
       "passing": -0.08,
-      "finishing": 0.94073
+      "finishing": 0.94073,
+      "shooting": 1.7714,
+      "creating": 0.94753
     },
     {
       "player_id": "rh08",
@@ -826,7 +930,9 @@
       "debut_year": 2020,
       "involvement": 1.51724,
       "passing": 0.05783,
-      "finishing": 0.99124
+      "finishing": 0.99124,
+      "shooting": 1.2137,
+      "creating": 1.5828
     },
     {
       "player_id": "rh09",
@@ -840,7 +946,9 @@
       "debut_year": 2020,
       "involvement": 1.57719,
       "passing": 0.02839,
-      "finishing": 1.3
+      "finishing": 1.3,
+      "shooting": 1.5,
+      "creating": 0.91194
     },
     {
       "player_id": "rh10",
@@ -854,7 +962,9 @@
       "debut_year": 2020,
       "involvement": 1.18699,
       "passing": 0.04818,
-      "finishing": 1.04421
+      "finishing": 1.04421,
+      "shooting": 2.42961,
+      "creating": 0.73889
     },
     {
       "player_id": "rh11",
@@ -868,7 +978,9 @@
       "debut_year": 2020,
       "involvement": 0.86896,
       "passing": -0.00684,
-      "finishing": 0.8585
+      "finishing": 0.8585,
+      "shooting": 1.08858,
+      "creating": 0.98061
     },
     {
       "player_id": "rh12",
@@ -882,7 +994,9 @@
       "debut_year": 2020,
       "involvement": 1.30106,
       "passing": -0.02977,
-      "finishing": 1.07095
+      "finishing": 1.07095,
+      "shooting": 2.5,
+      "creating": 0.8499
     },
     {
       "player_id": "rh13",
@@ -896,7 +1010,9 @@
       "debut_year": 2020,
       "involvement": 0.95726,
       "passing": 0.01832,
-      "finishing": 0.93199
+      "finishing": 0.93199,
+      "shooting": 0.70506,
+      "creating": 1.8
     },
     {
       "player_id": "rh14",
@@ -910,7 +1026,9 @@
       "debut_year": 2020,
       "involvement": 0.96911,
       "passing": 0.06,
-      "finishing": 1.01577
+      "finishing": 1.01577,
+      "shooting": 1.28679,
+      "creating": 1.04556
     },
     {
       "player_id": "rh15",
@@ -924,7 +1042,9 @@
       "debut_year": 2020,
       "involvement": 0.82945,
       "passing": 0.01849,
-      "finishing": 1.05903
+      "finishing": 1.05903,
+      "shooting": 1.0,
+      "creating": 1.01158
     },
     {
       "player_id": "wm01",
@@ -938,7 +1058,9 @@
       "debut_year": 2020,
       "involvement": 0.76459,
       "passing": 0.02446,
-      "finishing": 0.85565
+      "finishing": 0.85565,
+      "shooting": 1.0,
+      "creating": 1.66073
     },
     {
       "player_id": "wm02",
@@ -952,7 +1074,9 @@
       "debut_year": 2020,
       "involvement": 1.01523,
       "passing": -0.01167,
-      "finishing": 1.02631
+      "finishing": 1.02631,
+      "shooting": 2.45962,
+      "creating": 0.85099
     },
     {
       "player_id": "wm03",
@@ -966,7 +1090,9 @@
       "debut_year": 2020,
       "involvement": 0.80065,
       "passing": 0.0233,
-      "finishing": 1.06462
+      "finishing": 1.06462,
+      "shooting": 0.73221,
+      "creating": 0.89619
     },
     {
       "player_id": "wm04",
@@ -980,7 +1106,9 @@
       "debut_year": 2020,
       "involvement": 0.83757,
       "passing": -0.04738,
-      "finishing": 0.98018
+      "finishing": 0.98018,
+      "shooting": 0.76006,
+      "creating": 1.15877
     },
     {
       "player_id": "wm05",
@@ -994,7 +1122,9 @@
       "debut_year": 2020,
       "involvement": 1.02388,
       "passing": 0.0,
-      "finishing": 0.92156
+      "finishing": 0.92156,
+      "shooting": 1.65335,
+      "creating": 1.40732
     },
     {
       "player_id": "wm06",
@@ -1008,7 +1138,9 @@
       "debut_year": 2020,
       "involvement": 0.86328,
       "passing": -0.01201,
-      "finishing": 1.06854
+      "finishing": 1.06854,
+      "shooting": 1.37483,
+      "creating": 0.89317
     },
     {
       "player_id": "wm07",
@@ -1022,7 +1154,9 @@
       "debut_year": 2020,
       "involvement": 1.12329,
       "passing": -0.08,
-      "finishing": 1.1381
+      "finishing": 1.1381,
+      "shooting": 0.99715,
+      "creating": 1.0443
     },
     {
       "player_id": "wm08",
@@ -1036,7 +1170,9 @@
       "debut_year": 2020,
       "involvement": 0.67531,
       "passing": 0.02677,
-      "finishing": 1.10593
+      "finishing": 1.10593,
+      "shooting": 0.83392,
+      "creating": 1.104
     },
     {
       "player_id": "wm09",
@@ -1050,7 +1186,9 @@
       "debut_year": 2020,
       "involvement": 1.25305,
       "passing": 0.05808,
-      "finishing": 0.99568
+      "finishing": 0.99568,
+      "shooting": 0.98083,
+      "creating": 0.65119
     },
     {
       "player_id": "wm10",
@@ -1064,7 +1202,9 @@
       "debut_year": 2020,
       "involvement": 0.83877,
       "passing": 0.06,
-      "finishing": 1.07739
+      "finishing": 1.07739,
+      "shooting": 1.47219,
+      "creating": 0.61775
     },
     {
       "player_id": "wm11",
@@ -1078,7 +1218,9 @@
       "debut_year": 2020,
       "involvement": 0.82691,
       "passing": 0.05168,
-      "finishing": 1.00217
+      "finishing": 1.00217,
+      "shooting": 1.08711,
+      "creating": 0.74227
     },
     {
       "player_id": "wm12",
@@ -1092,7 +1234,9 @@
       "debut_year": 2020,
       "involvement": 0.55,
       "passing": -0.00087,
-      "finishing": 1.07611
+      "finishing": 1.07611,
+      "shooting": 0.56696,
+      "creating": 0.98999
     },
     {
       "player_id": "wm13",
@@ -1106,7 +1250,9 @@
       "debut_year": 2020,
       "involvement": 0.55,
       "passing": 0.06,
-      "finishing": 1.01302
+      "finishing": 1.01302,
+      "shooting": 0.67206,
+      "creating": 1.0596
     },
     {
       "player_id": "wm14",
@@ -1120,7 +1266,9 @@
       "debut_year": 2020,
       "involvement": 1.15029,
       "passing": 0.0009,
-      "finishing": 0.921
+      "finishing": 0.921,
+      "shooting": 0.86362,
+      "creating": 1.03048
     },
     {
       "player_id": "wm15",
@@ -1134,7 +1282,9 @@
       "debut_year": 2020,
       "involvement": 1.06046,
       "passing": -0.07444,
-      "finishing": 1.09602
+      "finishing": 1.09602,
+      "shooting": 1.0,
+      "creating": 0.81432
     },
     {
       "player_id": "of01",
@@ -1148,7 +1298,9 @@
       "debut_year": 2020,
       "involvement": 1.1444,
       "passing": -0.07471,
-      "finishing": 0.92627
+      "finishing": 0.92627,
+      "shooting": 1.0,
+      "creating": 0.70319
     },
     {
       "player_id": "of02",
@@ -1162,7 +1314,9 @@
       "debut_year": 2020,
       "involvement": 0.81867,
       "passing": -0.00487,
-      "finishing": 1.08673
+      "finishing": 1.08673,
+      "shooting": 0.81298,
+      "creating": 1.03054
     },
     {
       "player_id": "of03",
@@ -1176,7 +1330,9 @@
       "debut_year": 2020,
       "involvement": 0.62952,
       "passing": -0.03048,
-      "finishing": 1.09458
+      "finishing": 1.09458,
+      "shooting": 1.02027,
+      "creating": 0.95497
     },
     {
       "player_id": "of04",
@@ -1190,7 +1346,9 @@
       "debut_year": 2020,
       "involvement": 1.04375,
       "passing": 0.01176,
-      "finishing": 0.85094
+      "finishing": 0.85094,
+      "shooting": 0.66086,
+      "creating": 1.8
     },
     {
       "player_id": "of05",
@@ -1204,7 +1362,9 @@
       "debut_year": 2020,
       "involvement": 1.26465,
       "passing": -0.04423,
-      "finishing": 1.10771
+      "finishing": 1.10771,
+      "shooting": 0.34595,
+      "creating": 0.71974
     },
     {
       "player_id": "of06",
@@ -1218,7 +1378,9 @@
       "debut_year": 2020,
       "involvement": 0.62695,
       "passing": 0.00982,
-      "finishing": 0.96439
+      "finishing": 0.96439,
+      "shooting": 1.12797,
+      "creating": 0.73672
     },
     {
       "player_id": "of07",
@@ -1232,7 +1394,9 @@
       "debut_year": 2020,
       "involvement": 0.88735,
       "passing": 0.06,
-      "finishing": 1.01779
+      "finishing": 1.01779,
+      "shooting": 1.0472,
+      "creating": 1.11863
     },
     {
       "player_id": "of08",
@@ -1246,7 +1410,9 @@
       "debut_year": 2020,
       "involvement": 1.09963,
       "passing": 0.05085,
-      "finishing": 1.12598
+      "finishing": 1.12598,
+      "shooting": 0.52132,
+      "creating": 0.89214
     },
     {
       "player_id": "of09",
@@ -1260,7 +1426,9 @@
       "debut_year": 2020,
       "involvement": 1.36167,
       "passing": -0.04765,
-      "finishing": 1.12896
+      "finishing": 1.12896,
+      "shooting": 1.60835,
+      "creating": 0.59224
     },
     {
       "player_id": "of10",
@@ -1274,7 +1442,9 @@
       "debut_year": 2020,
       "involvement": 0.97933,
       "passing": 0.03439,
-      "finishing": 0.8643
+      "finishing": 0.8643,
+      "shooting": 0.3,
+      "creating": 1.06509
     },
     {
       "player_id": "of11",
@@ -1288,7 +1458,9 @@
       "debut_year": 2020,
       "involvement": 0.87126,
       "passing": -0.08,
-      "finishing": 0.87981
+      "finishing": 0.87981,
+      "shooting": 0.70093,
+      "creating": 0.86752
     },
     {
       "player_id": "of12",
@@ -1302,7 +1474,9 @@
       "debut_year": 2020,
       "involvement": 1.13998,
       "passing": -0.01077,
-      "finishing": 1.05787
+      "finishing": 1.05787,
+      "shooting": 0.57623,
+      "creating": 0.86529
     },
     {
       "player_id": "of13",
@@ -1316,7 +1490,9 @@
       "debut_year": 2020,
       "involvement": 1.21177,
       "passing": -0.05143,
-      "finishing": 0.9743
+      "finishing": 0.9743,
+      "shooting": 1.01118,
+      "creating": 1.4473
     },
     {
       "player_id": "of14",
@@ -1330,7 +1506,9 @@
       "debut_year": 2020,
       "involvement": 0.77794,
       "passing": -0.04474,
-      "finishing": 1.13537
+      "finishing": 1.13537,
+      "shooting": 0.71225,
+      "creating": 0.79522
     },
     {
       "player_id": "of15",
@@ -1344,7 +1522,9 @@
       "debut_year": 2020,
       "involvement": 0.97943,
       "passing": -0.01368,
-      "finishing": 0.98742
+      "finishing": 0.98742,
+      "shooting": 1.0,
+      "creating": 1.16138
     },
     {
       "player_id": "kw01",
@@ -1358,7 +1538,9 @@
       "debut_year": 2020,
       "involvement": 0.74428,
       "passing": 0.05919,
-      "finishing": 0.86747
+      "finishing": 0.86747,
+      "shooting": 1.0,
+      "creating": 0.70819
     },
     {
       "player_id": "kw02",
@@ -1372,7 +1554,9 @@
       "debut_year": 2020,
       "involvement": 0.61075,
       "passing": 0.00998,
-      "finishing": 1.0202
+      "finishing": 1.0202,
+      "shooting": 1.29277,
+      "creating": 0.88702
     },
     {
       "player_id": "kw03",
@@ -1386,7 +1570,9 @@
       "debut_year": 2020,
       "involvement": 0.57422,
       "passing": -0.08,
-      "finishing": 1.14033
+      "finishing": 1.14033,
+      "shooting": 0.3,
+      "creating": 0.87124
     },
     {
       "player_id": "kw04",
@@ -1400,7 +1586,9 @@
       "debut_year": 2020,
       "involvement": 1.66419,
       "passing": 0.06,
-      "finishing": 1.09914
+      "finishing": 1.09914,
+      "shooting": 0.46722,
+      "creating": 1.70459
     },
     {
       "player_id": "kw05",
@@ -1414,7 +1602,9 @@
       "debut_year": 2020,
       "involvement": 0.90322,
       "passing": -0.02437,
-      "finishing": 0.96923
+      "finishing": 0.96923,
+      "shooting": 0.48538,
+      "creating": 0.95842
     },
     {
       "player_id": "kw06",
@@ -1428,7 +1618,9 @@
       "debut_year": 2020,
       "involvement": 1.17719,
       "passing": -0.08,
-      "finishing": 1.09089
+      "finishing": 1.09089,
+      "shooting": 0.76942,
+      "creating": 1.8
     },
     {
       "player_id": "kw07",
@@ -1442,7 +1634,9 @@
       "debut_year": 2020,
       "involvement": 1.05499,
       "passing": 0.02564,
-      "finishing": 0.89872
+      "finishing": 0.89872,
+      "shooting": 1.42173,
+      "creating": 0.86202
     },
     {
       "player_id": "kw08",
@@ -1456,7 +1650,9 @@
       "debut_year": 2020,
       "involvement": 0.73418,
       "passing": 0.01548,
-      "finishing": 1.04475
+      "finishing": 1.04475,
+      "shooting": 0.8354,
+      "creating": 0.95744
     },
     {
       "player_id": "kw09",
@@ -1470,7 +1666,9 @@
       "debut_year": 2020,
       "involvement": 1.19748,
       "passing": 0.01416,
-      "finishing": 0.96584
+      "finishing": 0.96584,
+      "shooting": 1.13865,
+      "creating": 0.72986
     },
     {
       "player_id": "kw10",
@@ -1484,7 +1682,9 @@
       "debut_year": 2020,
       "involvement": 0.73512,
       "passing": -0.03581,
-      "finishing": 1.12568
+      "finishing": 1.12568,
+      "shooting": 0.78289,
+      "creating": 0.79356
     },
     {
       "player_id": "kw11",
@@ -1498,7 +1698,9 @@
       "debut_year": 2020,
       "involvement": 0.97188,
       "passing": -0.01429,
-      "finishing": 1.04521
+      "finishing": 1.04521,
+      "shooting": 0.89046,
+      "creating": 0.58892
     },
     {
       "player_id": "kw12",
@@ -1512,7 +1714,9 @@
       "debut_year": 2020,
       "involvement": 1.35992,
       "passing": -0.01482,
-      "finishing": 1.07333
+      "finishing": 1.07333,
+      "shooting": 0.31545,
+      "creating": 1.07012
     },
     {
       "player_id": "kw13",
@@ -1526,7 +1730,9 @@
       "debut_year": 2020,
       "involvement": 1.20777,
       "passing": -0.01405,
-      "finishing": 0.85506
+      "finishing": 0.85506,
+      "shooting": 0.86474,
+      "creating": 0.9532
     },
     {
       "player_id": "kw14",
@@ -1540,7 +1746,9 @@
       "debut_year": 2020,
       "involvement": 0.57727,
       "passing": 0.01163,
-      "finishing": 1.00877
+      "finishing": 1.00877,
+      "shooting": 1.09764,
+      "creating": 1.07981
     },
     {
       "player_id": "kw15",
@@ -1554,7 +1762,9 @@
       "debut_year": 2020,
       "involvement": 1.15195,
       "passing": -0.04482,
-      "finishing": 1.12741
+      "finishing": 1.12741,
+      "shooting": 1.0,
+      "creating": 1.16995
     },
     {
       "player_id": "rs01",
@@ -1568,7 +1778,9 @@
       "debut_year": 2020,
       "involvement": 0.8816,
       "passing": 0.06,
-      "finishing": 1.12341
+      "finishing": 1.12341,
+      "shooting": 1.0,
+      "creating": 0.7178
     },
     {
       "player_id": "rs02",
@@ -1582,7 +1794,9 @@
       "debut_year": 2020,
       "involvement": 0.95836,
       "passing": -0.04821,
-      "finishing": 1.11761
+      "finishing": 1.11761,
+      "shooting": 1.54547,
+      "creating": 1.41963
     },
     {
       "player_id": "rs03",
@@ -1596,7 +1810,9 @@
       "debut_year": 2020,
       "involvement": 1.55102,
       "passing": -0.01381,
-      "finishing": 0.99382
+      "finishing": 0.99382,
+      "shooting": 0.55875,
+      "creating": 0.82478
     },
     {
       "player_id": "rs04",
@@ -1610,7 +1826,9 @@
       "debut_year": 2020,
       "involvement": 0.79503,
       "passing": -0.04722,
-      "finishing": 0.97915
+      "finishing": 0.97915,
+      "shooting": 1.05694,
+      "creating": 0.85819
     },
     {
       "player_id": "rs05",
@@ -1624,7 +1842,9 @@
       "debut_year": 2020,
       "involvement": 0.65193,
       "passing": 0.05682,
-      "finishing": 0.97526
+      "finishing": 0.97526,
+      "shooting": 0.32301,
+      "creating": 0.92818
     },
     {
       "player_id": "rs06",
@@ -1638,7 +1858,9 @@
       "debut_year": 2020,
       "involvement": 1.01181,
       "passing": -0.01218,
-      "finishing": 0.96692
+      "finishing": 0.96692,
+      "shooting": 2.09798,
+      "creating": 0.63191
     },
     {
       "player_id": "rs07",
@@ -1652,7 +1874,9 @@
       "debut_year": 2020,
       "involvement": 0.75165,
       "passing": -0.04814,
-      "finishing": 0.88074
+      "finishing": 0.88074,
+      "shooting": 0.84832,
+      "creating": 0.86436
     },
     {
       "player_id": "rs08",
@@ -1666,7 +1890,9 @@
       "debut_year": 2020,
       "involvement": 0.89637,
       "passing": 0.06,
-      "finishing": 0.95708
+      "finishing": 0.95708,
+      "shooting": 0.70878,
+      "creating": 1.25858
     },
     {
       "player_id": "rs09",
@@ -1680,7 +1906,9 @@
       "debut_year": 2020,
       "involvement": 0.82141,
       "passing": -0.05107,
-      "finishing": 1.08001
+      "finishing": 1.08001,
+      "shooting": 0.81259,
+      "creating": 0.77569
     },
     {
       "player_id": "rs10",
@@ -1694,7 +1922,9 @@
       "debut_year": 2020,
       "involvement": 1.17856,
       "passing": 0.06,
-      "finishing": 1.09642
+      "finishing": 1.09642,
+      "shooting": 0.72471,
+      "creating": 0.74139
     },
     {
       "player_id": "rs11",
@@ -1708,7 +1938,9 @@
       "debut_year": 2020,
       "involvement": 1.09435,
       "passing": -0.01128,
-      "finishing": 1.13044
+      "finishing": 1.13044,
+      "shooting": 0.93779,
+      "creating": 0.88598
     },
     {
       "player_id": "rs12",
@@ -1722,7 +1954,9 @@
       "debut_year": 2020,
       "involvement": 0.96201,
       "passing": 0.03637,
-      "finishing": 1.13316
+      "finishing": 1.13316,
+      "shooting": 1.67782,
+      "creating": 0.64932
     },
     {
       "player_id": "rs13",
@@ -1736,7 +1970,9 @@
       "debut_year": 2020,
       "involvement": 0.66607,
       "passing": -0.03081,
-      "finishing": 1.04334
+      "finishing": 1.04334,
+      "shooting": 1.36423,
+      "creating": 0.7987
     },
     {
       "player_id": "rs14",
@@ -1750,7 +1986,9 @@
       "debut_year": 2020,
       "involvement": 1.52584,
       "passing": -0.00555,
-      "finishing": 1.07447
+      "finishing": 1.07447,
+      "shooting": 0.89805,
+      "creating": 0.90634
     },
     {
       "player_id": "rs15",
@@ -1764,7 +2002,9 @@
       "debut_year": 2020,
       "involvement": 1.06101,
       "passing": -0.00583,
-      "finishing": 0.97954
+      "finishing": 0.97954,
+      "shooting": 1.0,
+      "creating": 0.8459
     },
     {
       "player_id": "hc01",
@@ -1778,7 +2018,9 @@
       "debut_year": 2020,
       "involvement": 0.87728,
       "passing": 0.05959,
-      "finishing": 0.92972
+      "finishing": 0.92972,
+      "shooting": 1.0,
+      "creating": 1.24817
     },
     {
       "player_id": "hc02",
@@ -1792,7 +2034,9 @@
       "debut_year": 2020,
       "involvement": 0.58857,
       "passing": 0.02401,
-      "finishing": 0.88628
+      "finishing": 0.88628,
+      "shooting": 1.48227,
+      "creating": 0.63817
     },
     {
       "player_id": "hc03",
@@ -1806,7 +2050,9 @@
       "debut_year": 2020,
       "involvement": 1.32147,
       "passing": -0.04736,
-      "finishing": 1.12565
+      "finishing": 1.12565,
+      "shooting": 0.63588,
+      "creating": 1.39932
     },
     {
       "player_id": "hc04",
@@ -1820,7 +2066,9 @@
       "debut_year": 2020,
       "involvement": 0.94632,
       "passing": -0.04097,
-      "finishing": 0.98155
+      "finishing": 0.98155,
+      "shooting": 1.72623,
+      "creating": 1.79834
     },
     {
       "player_id": "hc05",
@@ -1834,7 +2082,9 @@
       "debut_year": 2020,
       "involvement": 1.68804,
       "passing": 0.06,
-      "finishing": 0.98561
+      "finishing": 0.98561,
+      "shooting": 0.80097,
+      "creating": 0.85651
     },
     {
       "player_id": "hc06",
@@ -1848,7 +2098,9 @@
       "debut_year": 2020,
       "involvement": 0.93801,
       "passing": -0.00967,
-      "finishing": 0.90058
+      "finishing": 0.90058,
+      "shooting": 1.46564,
+      "creating": 1.1802
     },
     {
       "player_id": "hc07",
@@ -1862,7 +2114,9 @@
       "debut_year": 2020,
       "involvement": 0.98142,
       "passing": -0.02869,
-      "finishing": 0.98559
+      "finishing": 0.98559,
+      "shooting": 0.81705,
+      "creating": 1.29333
     },
     {
       "player_id": "hc08",
@@ -1876,7 +2130,9 @@
       "debut_year": 2020,
       "involvement": 1.2208,
       "passing": 0.0204,
-      "finishing": 1.01452
+      "finishing": 1.01452,
+      "shooting": 1.30976,
+      "creating": 0.62222
     },
     {
       "player_id": "hc09",
@@ -1890,7 +2146,9 @@
       "debut_year": 2020,
       "involvement": 0.60812,
       "passing": -0.0287,
-      "finishing": 0.94122
+      "finishing": 0.94122,
+      "shooting": 0.84025,
+      "creating": 1.07469
     },
     {
       "player_id": "hc10",
@@ -1904,7 +2162,9 @@
       "debut_year": 2020,
       "involvement": 1.18947,
       "passing": -0.08,
-      "finishing": 1.05507
+      "finishing": 1.05507,
+      "shooting": 0.82453,
+      "creating": 0.78539
     },
     {
       "player_id": "hc11",
@@ -1918,7 +2178,9 @@
       "debut_year": 2020,
       "involvement": 1.10154,
       "passing": 0.04255,
-      "finishing": 1.07931
+      "finishing": 1.07931,
+      "shooting": 0.85257,
+      "creating": 0.66873
     },
     {
       "player_id": "hc12",
@@ -1932,7 +2194,9 @@
       "debut_year": 2020,
       "involvement": 1.68876,
       "passing": -0.05609,
-      "finishing": 0.88536
+      "finishing": 0.88536,
+      "shooting": 0.55613,
+      "creating": 0.86305
     },
     {
       "player_id": "hc13",
@@ -1946,7 +2210,9 @@
       "debut_year": 2020,
       "involvement": 0.97871,
       "passing": -0.02662,
-      "finishing": 1.08027
+      "finishing": 1.08027,
+      "shooting": 0.57289,
+      "creating": 0.55008
     },
     {
       "player_id": "hc14",
@@ -1960,7 +2226,9 @@
       "debut_year": 2020,
       "involvement": 0.76923,
       "passing": -0.01371,
-      "finishing": 1.07134
+      "finishing": 1.07134,
+      "shooting": 0.75847,
+      "creating": 1.20129
     },
     {
       "player_id": "hc15",
@@ -1974,7 +2242,9 @@
       "debut_year": 2020,
       "involvement": 0.86902,
       "passing": -0.0005,
-      "finishing": 0.97463
+      "finishing": 0.97463,
+      "shooting": 1.0,
+      "creating": 1.15152
     },
     {
       "player_id": "sg01",
@@ -1988,7 +2258,9 @@
       "debut_year": 2020,
       "involvement": 1.0363,
       "passing": -0.03286,
-      "finishing": 1.1363
+      "finishing": 1.1363,
+      "shooting": 1.0,
+      "creating": 0.79347
     },
     {
       "player_id": "sg02",
@@ -2002,7 +2274,9 @@
       "debut_year": 2020,
       "involvement": 1.07448,
       "passing": 0.03947,
-      "finishing": 0.93689
+      "finishing": 0.93689,
+      "shooting": 0.73889,
+      "creating": 0.48034
     },
     {
       "player_id": "sg03",
@@ -2016,7 +2290,9 @@
       "debut_year": 2020,
       "involvement": 0.73411,
       "passing": -0.03108,
-      "finishing": 1.13768
+      "finishing": 1.13768,
+      "shooting": 2.5,
+      "creating": 0.82029
     },
     {
       "player_id": "sg04",
@@ -2030,7 +2306,9 @@
       "debut_year": 2020,
       "involvement": 1.23226,
       "passing": -0.01621,
-      "finishing": 1.03175
+      "finishing": 1.03175,
+      "shooting": 0.60734,
+      "creating": 0.83806
     },
     {
       "player_id": "sg05",
@@ -2044,7 +2322,9 @@
       "debut_year": 2020,
       "involvement": 0.80161,
       "passing": 0.01512,
-      "finishing": 1.02281
+      "finishing": 1.02281,
+      "shooting": 0.61691,
+      "creating": 0.83436
     },
     {
       "player_id": "sg06",
@@ -2058,7 +2338,9 @@
       "debut_year": 2020,
       "involvement": 0.99995,
       "passing": 0.05878,
-      "finishing": 0.97659
+      "finishing": 0.97659,
+      "shooting": 1.73342,
+      "creating": 1.04496
     },
     {
       "player_id": "sg07",
@@ -2072,7 +2354,9 @@
       "debut_year": 2020,
       "involvement": 0.68127,
       "passing": -0.06113,
-      "finishing": 0.91792
+      "finishing": 0.91792,
+      "shooting": 0.9874,
+      "creating": 0.88514
     },
     {
       "player_id": "sg08",
@@ -2086,7 +2370,9 @@
       "debut_year": 2020,
       "involvement": 1.16194,
       "passing": -0.04571,
-      "finishing": 1.09835
+      "finishing": 1.09835,
+      "shooting": 2.25226,
+      "creating": 0.89279
     },
     {
       "player_id": "sg09",
@@ -2100,7 +2386,9 @@
       "debut_year": 2020,
       "involvement": 0.76149,
       "passing": 0.02615,
-      "finishing": 1.1347
+      "finishing": 1.1347,
+      "shooting": 0.92499,
+      "creating": 0.73344
     },
     {
       "player_id": "sg10",
@@ -2114,7 +2402,9 @@
       "debut_year": 2020,
       "involvement": 0.88399,
       "passing": 0.05658,
-      "finishing": 0.85482
+      "finishing": 0.85482,
+      "shooting": 1.71255,
+      "creating": 0.86943
     },
     {
       "player_id": "sg11",
@@ -2128,7 +2418,9 @@
       "debut_year": 2020,
       "involvement": 1.42493,
       "passing": 0.03121,
-      "finishing": 0.87231
+      "finishing": 0.87231,
+      "shooting": 1.09285,
+      "creating": 0.72655
     },
     {
       "player_id": "sg12",
@@ -2142,7 +2434,9 @@
       "debut_year": 2020,
       "involvement": 1.00199,
       "passing": -0.05367,
-      "finishing": 0.97836
+      "finishing": 0.97836,
+      "shooting": 0.3,
+      "creating": 0.63946
     },
     {
       "player_id": "sg13",
@@ -2156,7 +2450,9 @@
       "debut_year": 2020,
       "involvement": 1.16477,
       "passing": 0.06,
-      "finishing": 1.01489
+      "finishing": 1.01489,
+      "shooting": 0.62066,
+      "creating": 0.73195
     },
     {
       "player_id": "sg14",
@@ -2170,7 +2466,9 @@
       "debut_year": 2020,
       "involvement": 1.18465,
       "passing": 0.04565,
-      "finishing": 1.1253
+      "finishing": 1.1253,
+      "shooting": 1.00393,
+      "creating": 0.82183
     },
     {
       "player_id": "sg15",
@@ -2184,7 +2482,9 @@
       "debut_year": 2020,
       "involvement": 1.03777,
       "passing": -0.07042,
-      "finishing": 1.01376
+      "finishing": 1.01376,
+      "shooting": 1.0,
+      "creating": 1.8
     },
     {
       "player_id": "fm01",
@@ -2198,7 +2498,9 @@
       "debut_year": 2020,
       "involvement": 0.98296,
       "passing": -0.02676,
-      "finishing": 0.87432
+      "finishing": 0.87432,
+      "shooting": 1.0,
+      "creating": 1.19397
     },
     {
       "player_id": "fm02",
@@ -2212,7 +2514,9 @@
       "debut_year": 2020,
       "involvement": 1.11632,
       "passing": 0.06,
-      "finishing": 0.86303
+      "finishing": 0.86303,
+      "shooting": 1.34124,
+      "creating": 1.29676
     },
     {
       "player_id": "fm03",
@@ -2226,7 +2530,9 @@
       "debut_year": 2020,
       "involvement": 1.28578,
       "passing": -0.0009,
-      "finishing": 0.85076
+      "finishing": 0.85076,
+      "shooting": 0.86326,
+      "creating": 1.01173
     },
     {
       "player_id": "fm04",
@@ -2240,7 +2546,9 @@
       "debut_year": 2020,
       "involvement": 0.70398,
       "passing": -0.01614,
-      "finishing": 1.14051
+      "finishing": 1.14051,
+      "shooting": 1.42479,
+      "creating": 0.83283
     },
     {
       "player_id": "fm05",
@@ -2254,7 +2562,9 @@
       "debut_year": 2020,
       "involvement": 1.26999,
       "passing": 0.06,
-      "finishing": 1.13167
+      "finishing": 1.13167,
+      "shooting": 0.44192,
+      "creating": 0.50142
     },
     {
       "player_id": "fm06",
@@ -2268,7 +2578,9 @@
       "debut_year": 2020,
       "involvement": 0.99676,
       "passing": 0.03928,
-      "finishing": 1.01886
+      "finishing": 1.01886,
+      "shooting": 0.85638,
+      "creating": 0.58857
     },
     {
       "player_id": "fm07",
@@ -2282,7 +2594,9 @@
       "debut_year": 2020,
       "involvement": 1.26433,
       "passing": 0.06,
-      "finishing": 0.88405
+      "finishing": 0.88405,
+      "shooting": 0.8622,
+      "creating": 0.77801
     },
     {
       "player_id": "fm08",
@@ -2296,7 +2610,9 @@
       "debut_year": 2020,
       "involvement": 0.79288,
       "passing": -0.01071,
-      "finishing": 1.14052
+      "finishing": 1.14052,
+      "shooting": 0.94272,
+      "creating": 1.01997
     },
     {
       "player_id": "fm09",
@@ -2310,7 +2626,9 @@
       "debut_year": 2020,
       "involvement": 0.70057,
       "passing": 0.06,
-      "finishing": 0.90076
+      "finishing": 0.90076,
+      "shooting": 1.06089,
+      "creating": 0.68438
     },
     {
       "player_id": "fm10",
@@ -2324,7 +2642,9 @@
       "debut_year": 2020,
       "involvement": 1.15359,
       "passing": 0.01475,
-      "finishing": 0.92146
+      "finishing": 0.92146,
+      "shooting": 1.22595,
+      "creating": 1.02804
     },
     {
       "player_id": "fm11",
@@ -2338,7 +2658,9 @@
       "debut_year": 2020,
       "involvement": 0.58964,
       "passing": 0.03139,
-      "finishing": 1.13754
+      "finishing": 1.13754,
+      "shooting": 0.61417,
+      "creating": 0.63982
     },
     {
       "player_id": "fm12",
@@ -2352,7 +2674,9 @@
       "debut_year": 2020,
       "involvement": 0.79717,
       "passing": -0.01923,
-      "finishing": 0.86869
+      "finishing": 0.86869,
+      "shooting": 0.37509,
+      "creating": 0.67572
     },
     {
       "player_id": "fm13",
@@ -2366,7 +2690,9 @@
       "debut_year": 2020,
       "involvement": 0.75166,
       "passing": 0.06,
-      "finishing": 0.94042
+      "finishing": 0.94042,
+      "shooting": 0.8271,
+      "creating": 1.23681
     },
     {
       "player_id": "fm14",
@@ -2380,7 +2706,9 @@
       "debut_year": 2020,
       "involvement": 0.63205,
       "passing": -0.02029,
-      "finishing": 1.11759
+      "finishing": 1.11759,
+      "shooting": 1.02764,
+      "creating": 1.00657
     },
     {
       "player_id": "fm15",
@@ -2394,7 +2722,9 @@
       "debut_year": 2020,
       "involvement": 1.06844,
       "passing": -0.03718,
-      "finishing": 0.87505
+      "finishing": 0.87505,
+      "shooting": 1.0,
+      "creating": 1.11586
     },
     {
       "player_id": "bv01",
@@ -2408,7 +2738,9 @@
       "debut_year": 2020,
       "involvement": 1.38982,
       "passing": -0.01501,
-      "finishing": 1.098
+      "finishing": 1.098,
+      "shooting": 1.0,
+      "creating": 0.74833
     },
     {
       "player_id": "bv02",
@@ -2422,7 +2754,9 @@
       "debut_year": 2020,
       "involvement": 0.73754,
       "passing": 0.01232,
-      "finishing": 1.10325
+      "finishing": 1.10325,
+      "shooting": 0.60559,
+      "creating": 0.92291
     },
     {
       "player_id": "bv03",
@@ -2436,7 +2770,9 @@
       "debut_year": 2020,
       "involvement": 0.89212,
       "passing": -0.02862,
-      "finishing": 0.87828
+      "finishing": 0.87828,
+      "shooting": 0.675,
+      "creating": 0.61684
     },
     {
       "player_id": "bv04",
@@ -2450,7 +2786,9 @@
       "debut_year": 2020,
       "involvement": 0.82112,
       "passing": 0.00937,
-      "finishing": 0.8591
+      "finishing": 0.8591,
+      "shooting": 0.74945,
+      "creating": 0.75637
     },
     {
       "player_id": "bv05",
@@ -2464,7 +2802,9 @@
       "debut_year": 2020,
       "involvement": 1.10105,
       "passing": -0.00092,
-      "finishing": 0.92774
+      "finishing": 0.92774,
+      "shooting": 0.32909,
+      "creating": 1.00121
     },
     {
       "player_id": "bv06",
@@ -2478,7 +2818,9 @@
       "debut_year": 2020,
       "involvement": 1.7,
       "passing": -0.01461,
-      "finishing": 1.00954
+      "finishing": 1.00954,
+      "shooting": 0.77187,
+      "creating": 0.94683
     },
     {
       "player_id": "bv07",
@@ -2492,7 +2834,9 @@
       "debut_year": 2020,
       "involvement": 0.74945,
       "passing": 0.01425,
-      "finishing": 1.08555
+      "finishing": 1.08555,
+      "shooting": 0.75374,
+      "creating": 1.16277
     },
     {
       "player_id": "bv08",
@@ -2506,7 +2850,9 @@
       "debut_year": 2020,
       "involvement": 1.6694,
       "passing": -0.0004,
-      "finishing": 0.99789
+      "finishing": 0.99789,
+      "shooting": 0.96256,
+      "creating": 1.53494
     },
     {
       "player_id": "bv09",
@@ -2520,7 +2866,9 @@
       "debut_year": 2020,
       "involvement": 0.78144,
       "passing": 0.02659,
-      "finishing": 1.0388
+      "finishing": 1.0388,
+      "shooting": 1.07288,
+      "creating": 0.73548
     },
     {
       "player_id": "bv10",
@@ -2534,7 +2882,9 @@
       "debut_year": 2020,
       "involvement": 1.06586,
       "passing": -0.0245,
-      "finishing": 0.98484
+      "finishing": 0.98484,
+      "shooting": 0.71858,
+      "creating": 0.63414
     },
     {
       "player_id": "bv11",
@@ -2548,7 +2898,9 @@
       "debut_year": 2020,
       "involvement": 1.60079,
       "passing": -0.00927,
-      "finishing": 0.85369
+      "finishing": 0.85369,
+      "shooting": 0.85439,
+      "creating": 0.65679
     },
     {
       "player_id": "bv12",
@@ -2562,7 +2914,9 @@
       "debut_year": 2020,
       "involvement": 1.7,
       "passing": -0.03586,
-      "finishing": 1.06419
+      "finishing": 1.06419,
+      "shooting": 1.98371,
+      "creating": 0.64285
     },
     {
       "player_id": "bv13",
@@ -2576,7 +2930,9 @@
       "debut_year": 2020,
       "involvement": 1.22796,
       "passing": 0.00051,
-      "finishing": 0.95314
+      "finishing": 0.95314,
+      "shooting": 1.27266,
+      "creating": 0.67436
     },
     {
       "player_id": "bv14",
@@ -2590,7 +2946,9 @@
       "debut_year": 2020,
       "involvement": 1.11911,
       "passing": 0.05634,
-      "finishing": 0.97022
+      "finishing": 0.97022,
+      "shooting": 1.57692,
+      "creating": 1.13567
     },
     {
       "player_id": "bv15",
@@ -2604,7 +2962,9 @@
       "debut_year": 2020,
       "involvement": 0.75205,
       "passing": 0.03186,
-      "finishing": 1.06767
+      "finishing": 1.06767,
+      "shooting": 1.0,
+      "creating": 0.82323
     }
   ]
 }
