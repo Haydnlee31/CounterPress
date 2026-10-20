@@ -1,5 +1,5 @@
 {
-  "version": "grounded-footie-context-v1",
+  "version": "grounded-footie-https-origin-v1",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -11,7 +11,7 @@
     "backend/counterpress/api/main.py": "39742993f5c35de57929c1e0ea4175964fa01bd15abe9f5c018f7f9e76cb3137",
     "backend/counterpress/api/snapshots.py": "7660f6430475f783e9faeb37983f5ccde28368e30135a3952f94f2bfa40eed6e",
     "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
-    "backend/counterpress/assistant/api.py": "c38886b6d31cc933068ce898003db9b9739da67bb0634ef9f588afcaa70393d3",
+    "backend/counterpress/assistant/api.py": "5e71c6ffd501bdc380a6c43e63d8900d87ac84f907ed9e8cf080f49dbef1bfcc",
     "backend/counterpress/assistant/contracts.py": "bec5feb46430b78fa1e7220f42168e46d271992dcc9d0afb5a63f804ebfac7e4",
     "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
     "backend/counterpress/assistant/narrative.py": "eedb17f6f1276e923e79de377fbc6356337293f9ffe66c946518605e88839716",

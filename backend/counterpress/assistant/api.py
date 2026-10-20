@@ -53,7 +53,13 @@ def install_assistant(app,career_service,planner=None,narrator=None):
     async def ask(body:AskRequest,request:Request):
         # Prevent cross-site browser POSTs from triggering paid interpretation.
         origin=request.headers.get('origin')
-        if origin and origin!=str(request.base_url).rstrip('/'):
+        base=str(request.base_url).rstrip('/')
+        # Azure ingress terminates TLS before the HTTP application hop. Accept
+        # only the HTTPS spelling of this same authority, never forwarded hosts.
+        allowed_origins={base}
+        if base.startswith('http://'):
+            allowed_origins.add('https://'+base[len('http://'):])
+        if origin and origin not in allowed_origins:
             raise HTTPException(403,'Open the assistant from CounterPress.')
         now=time.monotonic()
         while calls and now-calls[0]>=60:calls.popleft()

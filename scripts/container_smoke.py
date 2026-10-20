@@ -127,6 +127,10 @@ if not assistant['natural_language']:
     with urlopen(request, timeout=20) as response:
         answer=json.load(response)
     assert answer['status']=='answered' and answer['facts'] and answer['mode']=='lookup'
+    # Reproduce TLS termination: HTTPS browser origin, HTTP container hop.
+    request.headers['Origin']=base.replace('http://','https://',1)
+    with urlopen(request, timeout=20) as response:
+        assert json.load(response)['status']=='answered'
 for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/missing", "/assets/missing.js"):
     try:
         get(path)
