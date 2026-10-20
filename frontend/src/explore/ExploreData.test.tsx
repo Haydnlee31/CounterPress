@@ -1,9 +1,10 @@
 import {readFileSync} from 'node:fs'
-import {cleanup,fireEvent,render,screen,waitFor,within} from '@testing-library/react'
+import {act,cleanup,fireEvent,render,screen,waitFor,within} from '@testing-library/react'
 import {afterEach,beforeEach,expect,test,vi} from 'vitest'
 import type {Snapshot} from '../types'
 import * as api from '../api'
 import ExploreData from './ExploreData'
+import App from '../App'
 vi.mock('../api',()=>({fetchSnapshot:vi.fn(),fetchScenarios:vi.fn()}))
 vi.mock('../revisions',()=>({subscribeRevisions:vi.fn(()=>()=>{})}))
 beforeEach(()=>{
@@ -44,10 +45,10 @@ test('switching highlights clears player/phase state and preserves the return li
  render(<ExploreData/>)
  await screen.findByRole('region',{name:'Highlight timeline'})
  fireEvent.click(screen.getByRole('button',{name:'Players'}))
- fireEvent.click(screen.getByRole('button',{name:'Pass, move, finish'}))
+ fireEvent.click(screen.getByRole('button',{name:/Pass, move, finish/}))
  await screen.findByRole('button',{name:/Bring the ball under control/})
  expect(screen.getByRole('heading',{level:1}).textContent).toBe('Pass, move, finish')
- expect(screen.getByRole('link',{name:/Back to highlight/}).getAttribute('href')).toBe('?story=one-touch#matchday')
+ expect(screen.getByRole('link',{name:'Watch'}).getAttribute('href')).toBe('#matchday')
  expect(window.location.search).toBe('?story=one-touch')
  expect(screen.queryByRole('heading',{name:'Who was involved?'})).toBeNull()
 })
@@ -58,4 +59,26 @@ test('network failure offers recovery instead of stale explanations',async()=>{
  expect(screen.queryByRole('region',{name:'Highlight timeline'})).toBeNull()
  fireEvent.click(screen.getByRole('button',{name:'Try again'}))
  await screen.findByRole('region',{name:'Highlight timeline'})
+})
+
+test('Watch, Breakdown and legacy links keep the mounted pitch, seek position and player selection',async()=>{
+ render(<App/> )
+ await screen.findByRole('region',{name:'Highlight timeline'})
+ const pitch=screen.getByRole('region',{name:'Match pitch'})
+ const slider=within(pitch).getByRole('slider') as HTMLInputElement
+ fireEvent.change(slider,{target:{value:'432'}})
+ fireEvent.click(within(pitch).getByRole('button',{name:'Rory Ellis, Eastbridge'}))
+ async function navigate(hash:string) {
+  await act(async()=>{window.history.pushState(null,'',hash);window.dispatchEvent(new HashChangeEvent('hashchange'))})
+ }
+ await navigate('#matchday')
+ expect(screen.queryByRole('region',{name:'Highlight timeline'})).toBeNull()
+ expect(screen.getByRole('region',{name:'Match pitch'})).toBe(pitch)
+ expect(slider.value).toBe('432')
+ expect(within(pitch).getByRole('button',{name:'Rory Ellis, Eastbridge'}).getAttribute('aria-pressed')).toBe('true')
+ await navigate('#matchday/breakdown')
+ expect(screen.getByRole('region',{name:'Match pitch'})).toBe(pitch)
+ expect(slider.value).toBe('432')
+ expect(screen.getByRole('heading',{name:'Who was involved?'})).toBeTruthy()
+ expect(screen.getByRole('link',{name:'Breakdown'}).getAttribute('aria-current')).toBe('page')
 })

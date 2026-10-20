@@ -8,6 +8,7 @@ import { storiesFor } from './stories'
 import { Moments } from './Moments'
 import { ClubCrest } from './ClubCrest'
 import { MatchPitch } from './MatchPitch'
+import { HighlightExperience } from '../explore/HighlightExperience'
 import { scoreAtPlayhead } from './pitchScene'
 import { replayGallery, highlightTag, replayTime, replayClock } from './replayGallery'
 import './matchday.css'
@@ -20,7 +21,7 @@ const showcases: Record<string, [string, string]> = {
   'contribution-increase': ['Player spotlight', '球员聚焦'],
   'stream-recovery': ['When the story changes', '当故事发生变化'],
 }
-export function Matchday() {
+export function Matchday({breakdown=false}:{breakdown?:boolean}) {
   const m = useMatchday(),
     p = m.request.preferences,
     snapshot = m.snapshot
@@ -85,9 +86,9 @@ export function Matchday() {
   const theme = clubs[(p.club_id ?? 'eastbridge') as keyof typeof clubs]
   return (
     <div
-      className="matchday"
+      className={`matchday matchday-home ${breakdown?'matchday-breakdown':''}`}
       lang={p.language}
-      style={{ '--fan-accent': theme.accent, '--fan-ink': theme.ink, '--fan-background': theme.background, '--fan-soft': theme.soft } as CSSProperties}
+      style={{ '--fan-accent': theme.accent, '--club-accent': theme.accent } as CSSProperties}
     >
       <a className="fan-skip" href="#matchday-content">
         {t('Skip to match story', '跳至比赛故事')}
@@ -263,7 +264,7 @@ export function Matchday() {
             <strong>{clubName('northport')}</strong>
             <ClubCrest club="northport" />
           </div>
-          <div className="fan-score-foot">
+          <div className="fan-score-foot" hidden={isReplayStory}>
             <span>
               {isReplayStory?<>{t(...replayStory.title)} · {t('Replay','回放')}</>:<>{t('Match highlights', '比赛集锦')} · 48:00–{clock(m.end)}</>}
               {snapshot && !isReplayStory && (
@@ -283,7 +284,11 @@ export function Matchday() {
             </button>}
           </div>
         </section>
-        {snapshot && <MatchPitch assistantMatchId={replayStory?.matchId} companion key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language} fromStart={isReplayStory} onPlayhead={isReplayStory?setPitchHead:undefined} />}
+        {isReplayStory && <nav className="fan-view-switch" aria-label={t('Highlight view','集锦视角')}>
+          <a href="#matchday" aria-current={!breakdown?'page':undefined}>{t('Watch','观看')}</a>
+          <a href="#matchday/breakdown" aria-current={breakdown?'page':undefined}>{t('Breakdown','深入解读')}</a>
+        </nav>}
+        {snapshot && !m.error && (isReplayStory ? <HighlightExperience key={m.request.scenario} events={pitchEvents} storyId={m.request.scenario} language={p.language} breakdown={breakdown} onPlayhead={setPitchHead}/> : <MatchPitch companion key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language}/>)}
         {replayOpen && !isReplayStory && (
           <section
             id="fan-replay"

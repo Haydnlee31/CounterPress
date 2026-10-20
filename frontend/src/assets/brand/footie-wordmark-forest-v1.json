@@ -1,0 +1,15 @@
+{
+  "name": "Footie forest wordmark \u2014 concept C, local header preview",
+  "generator": "Built-in image_gen imagegen (transparent edit)",
+  "approved_reference": "call_cd8c0fa7663b4e099a16c793196ec0d3.png",
+  "asset": "footie-wordmark-forest-v1.png",
+  "format": "RGBA PNG; displayed in an SVG viewport, not vector lettering",
+  "ink": "#173E33",
+  "dashboard_surface": "#F3F4ED",
+  "framing": {
+    "source_width": 2172,
+    "source_height": 724,
+    "viewBox": "100 112 1990 516"
+  },
+  "prompt": "Edit this approved Footie logo for use as a website header asset. Preserve the exact lettering, forward slant, spacing, proportions and second-o football design in the reference. Do not redesign it. Remove the entire cream background, including the negative space inside the normal o, e and football panels, making those areas genuinely transparent. The only visible pixels should be the flat deep forest green #173E33 wordmark. Eliminate texture/shading within the green ink. Crop the image framing tightly around the whole wordmark with only a small even safety margin, maintaining the approximately 4:1 wide logo aspect ratio. Include the whole F, i dot and e. No label, text besides Footie, shadow, backdrop or added graphics. Clean sharp anti-aliased contours. Transparent background required."
+}

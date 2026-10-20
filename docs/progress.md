@@ -2688,3 +2688,17 @@ User approved publishing the reviewed local experience. Updated container allowl
 ### Hosted Footie origin correction — 20 October 2026
 
 Release #50 passed 773 backend tests, 171 frontend tests, the full career ledger audit and Azure workflow 39386871850. Hosted health/data/streaming checks passed. A real browser question then exposed an HTTP/HTTPS origin mismatch behind Azure TLS termination: legitimate HTTPS requests received 403 before any model invocation. The assistant now accepts the HTTPS spelling of the same request authority, without trusting arbitrary forwarded hosts. Regression tests reject unrelated hosts, suffix attacks, alternate ports and null origins. Container smoke now reproduces the HTTPS-origin/HTTP-hop case. All 68 targeted assistant/deployment tests pass; the source lock is updated for the reviewed correction. The fix follows the protected PR/main/deploy gates before final hosted answer verification.
+
+### Unified fan layout refresh — local, 20 October 2026
+
+Moved Explore Data into Matchday's Watch/Breakdown views while preserving its phase explanations, player involvement, passing routes, timeline and comparisons. The same pitch and audio track remain mounted through view changes and browser history. Reduced Matchday header/score spacing, standardized main fan surfaces around Clubhouse's cream/forest palette, strengthened Match Centre statistics and compacted standalone Footie's welcome. Phone commentary now follows the pitch. Browser validation also identified and fixed invisible player hit areas intercepting nearby visible markers.
+
+Validation: 172 frontend tests, production build, desktop/tablet/390/360px browser checks, Chinese comparisons, error/empty recovery, reduced motion, instrumented narration continuity and the existing non-Azure Footie context journey pass. No browser errors or paid model/synthesis calls. [Commands, results and limitations](verification/layout-refresh.md). Local preview remains on port 8017; no push or deployment. Next: user reviews Matchday Watch/Breakdown and Match Centre before publication.
+
+### Spacing review — local, 20 October 2026
+
+Fixed the Footie mascot wrapper being shorter than the artwork, with clear gaps between mascot, heading, explanation and starter cards. Auditing the other pages also found and fixed clipped mobile profile actions, tight Breakdown and Live Companion copy, and full-match language/score spacing. Thirteen page layouts pass clipping/spacing checks at four widths; 172 frontend tests, build and the full unified-layout interaction journey pass. No AI calls or publication. See [validation](verification/layout-refresh.md#spacing-follow-up--20-october-2026). Next: user reviews the updated local Footie and mobile profile before publishing.
+
+### Footie logo header test — local, 21 October 2026
+
+User selected the forest-green athletic wordmark with a football replacing the second o. Prepared a transparent asset with the built-in image tool and added it to the shared local header, preserving the home destination and accessible label. Tested 176/144/128px logo widths, including a 320px header adjustment to keep Tools/Language beside the logo. All 172 frontend tests, build, 28 header viewport checks and the 13-page spacing audit pass. Asset/prompt metadata are in `frontend/src/assets/brand/`; screenshots are in ignored `var/logo-validation/`. No publication or full naming migration. Next: review the header, then prepare production vector artwork and a consistent user-facing rename if accepted.
