@@ -1,0 +1,88 @@
+[
+  {
+    "highlight_id": "career-showcase-southbank-redhaven-e00711",
+    "match_id": "career-showcase-southbank-redhaven",
+    "date": "2026-10-19",
+    "title": "Eli Marsh puts Southbank ahead",
+    "scorer_id": "sb10",
+    "score_after": {
+      "southbank": 2,
+      "redhaven": 1
+    },
+    "career_goal_milestone": null,
+    "event_ids": [
+      "e00708",
+      "e00709",
+      "e00710",
+      "e00711"
+    ],
+    "start": {
+      "period": 1,
+      "elapsed_ms": 2657508
+    },
+    "end": {
+      "period": 1,
+      "elapsed_ms": 2666771
+    },
+    "goal_event_id": "e00711"
+  },
+  {
+    "highlight_id": "career-showcase-southbank-redhaven-e01019",
+    "match_id": "career-showcase-southbank-redhaven",
+    "date": "2026-10-19",
+    "title": "Mateo Cross brings Redhaven level",
+    "scorer_id": "rh09",
+    "score_after": {
+      "southbank": 2,
+      "redhaven": 2
+    },
+    "career_goal_milestone": null,
+    "event_ids": [
+      "e01009",
+      "e01010",
+      "e01011",
+      "e01012",
+      "e01013",
+      "e01014",
+      "e01015",
+      "e01016",
+      "e01017",
+      "e01018",
+      "e01019"
+    ],
+    "start": {
+      "period": 2,
+      "elapsed_ms": 1013295
+    },
+    "end": {
+      "period": 2,
+      "elapsed_ms": 1050489
+    },
+    "goal_event_id": "e01019"
+  },
+  {
+    "highlight_id": "career-showcase-southbank-redhaven-e01178",
+    "match_id": "career-showcase-southbank-redhaven",
+    "date": "2026-10-19",
+    "title": "Mateo Cross reaches 75 career goals",
+    "scorer_id": "rh09",
+    "score_after": {
+      "southbank": 2,
+      "redhaven": 3
+    },
+    "career_goal_milestone": 75,
+    "event_ids": [
+      "e01177",
+      "e01178"
+    ],
+    "start": {
+      "period": 2,
+      "elapsed_ms": 1630636
+    },
+    "end": {
+      "period": 2,
+      "elapsed_ms": 1632996
+    },
+    "goal_event_id": "e01178"
+  }
+]

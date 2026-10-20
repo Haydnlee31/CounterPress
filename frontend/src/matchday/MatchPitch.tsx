@@ -8,8 +8,10 @@ import { cue } from '../companion/evidence'
 import {useHighlightTrack} from '../companion/useHighlightTrack'
 import {TrackPlayer,trackPosition,trackTime} from '../companion/highlightTrack'
 import { ClubCrest } from './ClubCrest'
+import {AskFootie} from '../assistant/AskFootie'
+import {matchdayContext} from '../assistant/context'
 
-export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[],companion=false,playback}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[];companion?:boolean;playback?:{index:number;progress:number;playing:boolean}}) {
+export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[],companion=false,playback,assistantMatchId,onAssistantOpen}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[];companion?:boolean;assistantMatchId?:string;onAssistantOpen?:()=>void;playback?:{index:number;progress:number;playing:boolean}}) {
   const zh=language==='zh-Hans', t=(en:string,cn:string)=>zh?cn:en
   const [localIndex,setIndex]=useState(fromStart?0:Math.max(0,events.length-1)), [localProgress,setProgress]=useState(0), [localPlaying,setPlaying]=useState(false)
   const index=playback?.index??localIndex, progress=playback?.progress??localProgress, playing=playback?.playing??localPlaying
@@ -106,6 +108,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       <label className="fan-speed">{t('Speed','速度')} <select aria-label={t('Pitch replay speed','球场回放速度')} value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option></select></label>
       <label className="fan-pitch-scrubber"><span className="sr-only">{t('Replay position','回放位置')}</span><input type="range" aria-label={t('Replay position','回放位置')} min="0" max={Math.max(1,events.length*100)} step="1" value={index*100+progress*100} disabled={!events.length} aria-valuetext={t(`Play ${index+1} of ${events.length}`,`第${index+1}次，共${events.length}次`)} onChange={e=>{const value=Number(e.target.value)/100;setSpeechEpoch(v=>v+1);setPlaying(false);setIndex(Math.min(events.length-1,Math.floor(value)));setProgress(value>=events.length?1:value%1);setSelected(null)}}/></label>
     </div>}
+    {assistantMatchId&&event&&<AskFootie context={matchdayContext(assistantMatchId,event,resolved,`Eastbridge × Northport · ${replayClock(event)}`)} onOpen={()=>{setPlaying(false);onAssistantOpen?.()}}/>}
     <div className="fan-tracker-grid">
       {!compact && <aside className="fan-play-board" aria-label={t('Current play','当前进攻')}>
         <p className="fan-kicker">{t('IN THE ACTION','焦点球员')}</p>

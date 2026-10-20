@@ -131,6 +131,25 @@ def revision_is_ready(app, revision):
             and p.get('provisioningState') == 'Succeeded')
 
 
+def assistant_settings(app, mode):
+    """Reuse existing secret references; do not provision or copy credentials."""
+    result = copy.deepcopy(app)
+    if mode == 'preserve':
+        return result
+    if mode not in ('enable', 'disable'):
+        raise DeploymentError('Unknown assistant deployment mode')
+    container = result['properties']['template']['containers'][0]
+    env = {v['name']: v for v in container.get('env', [])}
+    if mode == 'enable' and any(
+        env.get(name) != {'name': name, 'secretRef': secret}
+        for name, secret in MODEL_SECRETS.items()
+    ):
+        raise DeploymentError('Footie requires existing model secret references')
+    container['env'] = [v for v in container.get('env', []) if v['name'] != 'COUNTERPRESS_ASSISTANT_MODEL'] + [
+        {'name': 'COUNTERPRESS_ASSISTANT_MODEL', 'value': 'azure' if mode == 'enable' else 'off'}]
+    return result
+
+
 def validate_app(app):
     p=app['properties'];container=p['template']['containers'][0]
     env={v['name']:v.get('value') for v in container.get('env',[])}
@@ -148,6 +167,9 @@ def validate_app(app):
         assert all(model_env[k] == {'name': k, 'secretRef': v} for k, v in MODEL_SECRETS.items())
     else:
         assert not model_env
+    assert env.get('COUNTERPRESS_ASSISTANT_MODEL', 'off') in ('off', 'azure')
+    if env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure':
+        assert set(model_env) == set(MODEL_SECRETS)
     assert env.get('COUNTERPRESS_STUDIO', 'off') in ('off', 'entra')
     assert p['configuration']['activeRevisionsMode']=='Single'
     assert p['template']['scale']['minReplicas']==0 and p['template']['scale']['maxReplicas']==1
@@ -185,6 +207,7 @@ def deploy():
     editorial_mode=os.environ.get('CP_EDITORIAL_MODE', 'preserve')
     model=json.loads(os.environ['CP_EDITORIAL_MODEL']) if editorial_mode == 'enable' else None
     expected=editorial_settings(expected, editorial_mode, model)
+    expected=assistant_settings(expected, os.environ.get('CP_ASSISTANT_MODE', 'preserve'))
     if model:
         for value in model.values():
             if isinstance(value, str):print('::add-mask::'+value, flush=True)

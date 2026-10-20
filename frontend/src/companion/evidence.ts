@@ -48,7 +48,8 @@ export function cue(event: Event | undefined, resolved: boolean, zh: boolean, de
   if (resolved && event.action.kind === 'pass' && event.action.outcome === 'incomplete')
     text = zh?`${name}的传球未能找到队友。`:`${name}'s pass does not reach a teammate.`
   if (resolved && event.action.kind === 'duel')
-    text = zh?`${name}${event.action.outcome==='won'?'赢得':'输掉'}这次争抢。`:`${name} ${event.action.outcome==='won'?'wins':'loses'} the challenge.`
+    text = event.action.outcome==='draw' ? (zh?'双方争抢，未分胜负。':'Neither player wins the challenge.')
+      : zh?`${name}${event.action.outcome==='won'?'赢得':'输掉'}这次争抢。`:`${name} ${event.action.outcome==='won'?'wins':'loses'} the challenge.`
   return detailed ? `${text} ${clubName(event.actor.team_id)} · ${location(event,zh)}.` : text
 }
 

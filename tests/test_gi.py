@@ -10,6 +10,23 @@ from counterpress.gi.service import read_match
 ROOT = Path(__file__).resolve().parents[1] / 'fixtures'
 
 
+@pytest.mark.parametrize('mid,keepers', [('wyscout-2058017',{25381:'eb01',135747:'np01'}),
+                                        ('wyscout-2058007',{3429:'eb01',37896:'np01'})])
+def test_source_goalkeepers_map_to_goalkeeper_profiles(mid,keepers):
+    match=read_match(ROOT/'gi',mid)
+    mapping={p.provider_player_id:p.alias_id for p in match.players}
+    assert {pid:mapping[pid] for pid in keepers}==keepers
+    assert match.source.alias_sha256 is not None
+
+
+def test_changed_archive_aliases_fail_checksum(tmp_path):
+    for name in ('manifest.json','aliases.json','france-croatia-2018.json'):
+        (tmp_path/name).write_bytes((ROOT/'gi'/name).read_bytes())
+    with (tmp_path/'aliases.json').open('a') as file:file.write('\n')
+    with pytest.raises(ValueError, match='alias checksum'):
+        read_match(tmp_path)
+
+
 def test_full_match_outcomes_and_lineage():
     match = read_match(ROOT / 'gi')
     assert len(match.events) == 1462

@@ -6,6 +6,7 @@
   "match_source": "https://doi.org/10.6084/m9.figshare.7770422",
   "source_archive_sha256": "877e015b716ffdeea18f04418e3f24fed307ed03c37ff305cabe1f47c4822a45",
   "fixture_sha256": "762574e95d56c84b87f315338693b346a46435dce08f6b7dc761e568ed109a0b",
-  "revision": 1,
-  "changes": "Selected match 2058017. Fictional display aliases. Coordinates scaled from percentage to 105 \u00d7 68 metres; event outcomes derived from provider tags."
+  "revision": 2,
+  "changes": "Selected match 2058017. Fictional display aliases. Coordinates scaled from percentage to 105 \u00d7 68 metres; event outcomes derived from provider tags. Revision 2: map source goalkeepers to the goalkeeper identities eb01/np01 by swapping their former aliases; source events and scores are unchanged.",
+  "alias_sha256": "a336e2ca37a627aca67e11feced6b236a5856c070c6f87dba28d8467abc0a944"
 }

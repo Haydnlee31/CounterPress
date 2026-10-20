@@ -57,7 +57,7 @@ export default function FullMatch(){
         <label className="live-seek"><span>{t('Match clock','比赛时间')}</span><input aria-label="Match clock" type="range" min="0" max={END} step="1000" value={at} onChange={e=>seek(Number(e.target.value))}/></label>
       </section>
       <div className="live-stats" aria-label={t('Match numbers so far','截至目前的比赛数据')}>{stats.map(s=><div key={s.team}><strong>{s.team==='eastbridge'?'Eastbridge':'Northport'}</strong><span>{s.shots} {t('shots','射门')} · {s.passes} {t('completed passes','成功传球')}</span></div>)}</div>
-      <MatchPitch events={frame.visible} language={language} playback={{index:Math.max(0,frame.index),progress:frame.progress,playing}}/>
+      <MatchPitch assistantMatchId={FULL_MATCH} onAssistantOpen={()=>setPlaying(false)} events={frame.visible} language={language} playback={{index:Math.max(0,frame.index),progress:frame.progress,playing}}/>
       <LiveCompanion cutoff={{period:at<HALF?1:2,elapsed_ms:at<HALF?at:at-HALF}} events={frame.visible} sourceEvents={events} index={frame.index} resolved={frame.resolved} playing={playing} finished={at===END||at===HALF} speechEpoch={epoch} language={language} fullMatch/>
       </>}
       <footer className="live-footer"><a href={`?match=${FULL_MATCH}#gi`}>{t('Explore this match','探索这场比赛')} ↗</a><a href="?story=level-first#matchday">{t('Match highlights','比赛集锦')} ↗</a><p>{t('Original clubs and players. Generated match events; player movement is an illustration of the play.','原创球队与球员。比赛事件为生成数据，球员移动为进攻示意。')}</p></footer>

@@ -1,0 +1,22 @@
+/* Palette tokens can be overridden by a club theme without replacing artwork. */
+.footie-mascot{--footie-ink:#193f32;--footie-body:#fff6e3;--footie-shade:#f6e6c7;display:inline-block;flex:none;vertical-align:middle;pointer-events:none}
+.footie-mascot svg{display:block;width:100%;height:100%;overflow:visible}
+.fm-green{fill:var(--footie-ink)}.fm-arm{fill:var(--footie-body)}.fm-highlight{fill:var(--footie-body)}
+.fm-boot-detail{fill:none;stroke:var(--footie-body);stroke-width:2.5;stroke-linecap:round}
+.fm-cream-stop{stop-color:var(--footie-body)}.fm-shade-stop{stop-color:var(--footie-shade)}
+.fm-expression-lines{fill:none;stroke:var(--footie-ink);stroke-width:3.5;stroke-linecap:round}
+.fm-character{transform-origin:100px 160px}.fm-eyes{transition:transform .16s ease-out}
+.fm-blink{transform-origin:100px 100px;animation:fm-blink 7s ease-in-out infinite}
+.fm-arm-left{transform-origin:32px 112px}.fm-arm-right{transform-origin:168px 112px}
+.is-greeting .fm-arm-left{animation:fm-wave .55s ease-in-out 4}
+.is-listening .fm-character{transform:rotate(-5deg)}
+.is-thinking .fm-character{animation:fm-ponder 2.8s ease-in-out infinite}
+.is-thinking .fm-arm-right{opacity:0}
+.is-celebrating .fm-character{animation:fm-hop .75s ease-in-out 3}
+.is-celebrating .fm-arm-left{transform:rotate(65deg)}.is-celebrating .fm-arm-right{transform:rotate(-65deg)}
+.is-resting .fm-character{transform:translateY(5px) scaleY(.94)}
+@keyframes fm-wave{0%,100%{transform:rotate(25deg)}50%{transform:rotate(75deg)}}
+@keyframes fm-blink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.08)}}
+@keyframes fm-ponder{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes fm-hop{0%,100%{transform:translateY(0)}25%{transform:scale(1.03,.95)}55%{transform:translateY(-12px) rotate(-4deg)}}
+@media(prefers-reduced-motion:reduce){.footie-mascot *{animation:none!important;transition:none!important}.footie-mascot .fm-character{transform:none}.footie-mascot .fm-eyes{transform:none!important}}

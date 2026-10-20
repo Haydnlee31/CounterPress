@@ -78,10 +78,59 @@ assert len(comeback['events']) == 1682 and len(comeback['players']) == 26
 assert [team['score'] for team in comeback['teams']] == [3, 2]
 assert [e['goal_for'] for e in comeback['events'] if e['goal_for']] == [9598, 9598, 4418, 4418, 4418]
 assert comeback['source']['license'] == 'CC BY 4.0'
+catalog = json.loads(get('/api/data/catalog')[0])
+assert catalog['counts']['featured_players'] == 44 and catalog['counts']['historical_matches'] == 840
+assert json.loads(get('/api/data/matches')[0])['total'] == 4
+assert json.loads(get('/api/data/players')[0])['total'] == 44
+career = json.loads(get('/api/data/players/sb09')[0])
+assert career['totals']['goals'] > 0 and career['coverage']['tracking_distance_m'] is None
+new_match = 'career-showcase-southbank-redhaven'
+milestone = data(f'/api/data/matches/{new_match}/live?period=2&elapsed_ms=2700000')['milestones'][0]
+at = milestone['available_at']['elapsed_ms']
+period = milestone['available_at']['period']
+count = milestone['career_goals']
+assert not data(f'/api/data/matches/{new_match}/live?period={period}&elapsed_ms={at-1}')['milestones']
+assert data(f'/api/data/matches/{new_match}/live?period={period}&elapsed_ms={at}')['milestones'][0]['career_goals'] == count
+assert len(json.loads(get('/api/data/highlights')[0])) == 3
+assert {t['team_id'] for t in json.loads(get(f'/api/data/matches/{new_match}/replay')[0])['teams']} == {'southbank','redhaven'}
+
+def personalized(path, payload):
+    request = Request(base + '/api/fan/' + path, data=json.dumps(payload).encode(),
+                      headers={'Content-Type': 'application/json'})
+    with urlopen(request, timeout=20) as response:
+        assert response.headers.get('Cache-Control') == 'private, no-store'
+        assert response.headers.get('Set-Cookie') is None
+        return json.load(response)
+
+subject = json.loads(get('/api/data/players/' + milestone['player_id'])[0])['subject']
+preferences = {'favorite_club_ids': [subject['club_id']], 'favorite_player_ids': [subject['player_id']], 'primary_club_id': subject['club_id']}
+home = personalized('home', {'preferences': preferences, 'as_of': '2026-10-20T00:00:00Z'})
+assert len(home['highlights']) == 9 and len(home['matches']) == 4
+assert home['matches'][0]['match_id'] == new_match
+assert home['following']['players'][0]['player']['name'] == subject['name']
+before = personalized('matches/' + new_match, {'preferences': preferences, 'cutoff': {'period': period, 'elapsed_ms': at-1}})
+after = personalized('matches/' + new_match, {'preferences': preferences, 'cutoff': {'period': period, 'elapsed_ms': at}})
+assert not any(c['kind'] == 'career_goal_milestone' for c in before['cards'])
+assert after['cards'][0]['facts'][0]['value'] == count and len(after['focus']['active_player_ids']) == 22
+analyst = personalized('matches/' + new_match, {'preferences': {**preferences, 'depth': 'analyst'}, 'cutoff': {'period': period, 'elapsed_ms': at}})
+assert after['facts'] == analyst['facts'] and after['cards'][0]['text'] != analyst['cards'][0]['text']
+assert personalized('home', {'as_of': '2026-10-20T00:00:00Z'})['following'] == {'players': [], 'clubs': []}
+analytics = data('/api/data/players/rh09/analytics')
+assert analytics
+assistant = json.loads(get('/api/fan/assistant/config')[0])
+assert assistant['available'] is True
+# Hosted smoke never spends model calls; the restricted image tests direct lookup.
+if not assistant['natural_language']:
+    request = Request(base+'/api/fan/assistant/ask',
+                      data=json.dumps({'question':'How many goals does Mateo Cross have?', 'player_id':'rh09'}).encode(),
+                      headers={'Content-Type':'application/json', 'Origin':base})
+    with urlopen(request, timeout=20) as response:
+        answer=json.load(response)
+    assert answer['status']=='answered' and answer['facts'] and answer['mode']=='lookup'
 for path in ("/.env", "/.git/config", "/fixtures/recovery_increase.json", "/api/missing", "/assets/missing.js"):
     try:
         get(path)
         raise AssertionError(f"Unexpected public file: {path}")
     except HTTPError as error:
         assert error.code == 404
-print("PASS: health, readiness, frontend/assets, Studio callback/access boundary, 1-to-4 evidence, control, bilingual recap, three replay goals/rewind, full-match GI events/attribution, private-path 404s")
+print("PASS: health, readiness, frontend/assets, Studio access, evidence/recaps, replay goals, GI attribution, 44 career profiles, four featured matches, nine personalized highlights, causal milestone, 22-player focus, audience fact parity, preference isolation, private-path 404s")

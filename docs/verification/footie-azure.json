@@ -1,0 +1,304 @@
+{
+  "attempts": 8,
+  "responses_with_usage": 7,
+  "reported_usage": {
+    "prompt_tokens": 19022,
+    "completion_tokens": 309,
+    "total_tokens": 19331
+  },
+  "unknown_usage_attempts": 1,
+  "initial_cases": [
+    {
+      "question": "How prolific has Mateo Cross been over his career?",
+      "mode": "azure",
+      "operation": "stats",
+      "passed": true,
+      "seconds": 2.87,
+      "text": [
+        "Mateo Cross \u00b7 career: 75 goals."
+      ],
+      "facts": [
+        {
+          "subject_id": "rh09",
+          "metric": "goals",
+          "value": 75,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 140
+          }
+        }
+      ]
+    },
+    {
+      "question": "Who has supplied the most assists for Redhaven?",
+      "mode": "azure",
+      "operation": "club_leaders",
+      "passed": true,
+      "seconds": 2.22,
+      "text": [
+        "The leading players in this club\u2019s recorded history for the selected metric. Ties share the same value.",
+        "Enzo Clarke \u00b7 career: 21 assists.",
+        "Amir Rhodes \u00b7 career: 19 assists.",
+        "Mateo Cross \u00b7 career: 17 assists.",
+        "Tariq Moss \u00b7 career: 13 assists.",
+        "Ruben Silva \u00b7 career: 9 assists."
+      ],
+      "facts": [
+        {
+          "subject_id": "rh08",
+          "metric": "assists",
+          "value": 21,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 140
+          }
+        },
+        {
+          "subject_id": "rh11",
+          "metric": "assists",
+          "value": 19,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 140
+          }
+        },
+        {
+          "subject_id": "rh09",
+          "metric": "assists",
+          "value": 17,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 140
+          }
+        },
+        {
+          "subject_id": "rh07",
+          "metric": "assists",
+          "value": 13,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 140
+          }
+        },
+        {
+          "subject_id": "rh06",
+          "metric": "assists",
+          "value": 9,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 141
+          }
+        }
+      ]
+    },
+    {
+      "question": "Put Rory Ellis and Dario Voss side by side on goals per 90.",
+      "mode": "azure",
+      "operation": "compare",
+      "passed": true,
+      "seconds": 2.18,
+      "text": [
+        "The higher recorded goals figure is Rory Ellis in the selected period.",
+        "Rory Ellis \u00b7 career: 0.61 per 90 goals.",
+        "Dario Voss \u00b7 career: 0.44 per 90 goals."
+      ],
+      "facts": [
+        {
+          "subject_id": "eb09",
+          "metric": "goals",
+          "value": 0.6087,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 143
+          }
+        },
+        {
+          "subject_id": "sb09",
+          "metric": "goals",
+          "value": 0.4353,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 141
+          }
+        }
+      ]
+    },
+    {
+      "question": "Is Enzo Clarke's recent assist rate higher than across his career?",
+      "mode": "lookup_fallback",
+      "operation": "recent",
+      "passed": false,
+      "seconds": 9.06,
+      "text": [
+        "The higher recorded assists figure is Enzo Clarke in the selected period.",
+        "Recent form compares the last five completed appearances with the selected period, using the same per-90 measure.",
+        "Enzo Clarke \u00b7 last five appearances: 0 per 90 assists.",
+        "Enzo Clarke \u00b7 career: 0.17 per 90 assists."
+      ],
+      "facts": [
+        {
+          "subject_id": "rh08",
+          "metric": "assists",
+          "value": 0.0,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "last_five_appearances",
+            "matches": 5
+          }
+        },
+        {
+          "subject_id": "rh08",
+          "metric": "assists",
+          "value": 0.168,
+          "scope": {
+            "season": null,
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 140
+          }
+        }
+      ]
+    },
+    {
+      "question": "Compare Mateo Cross's goals in 2025-26 and 2026-27.",
+      "mode": "azure",
+      "operation": "seasons",
+      "passed": true,
+      "seconds": 4.59,
+      "text": [
+        "The higher recorded goals figure is Mateo Cross in 2025-26.",
+        "Mateo Cross \u00b7 2025-26: 14 goals.",
+        "Mateo Cross \u00b7 2026-27: 7 goals."
+      ],
+      "facts": [
+        {
+          "subject_id": "rh09",
+          "metric": "goals",
+          "value": 14,
+          "scope": {
+            "season": "2025-26",
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 22
+          }
+        },
+        {
+          "subject_id": "rh09",
+          "metric": "goals",
+          "value": 7,
+          "scope": {
+            "season": "2026-27",
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "whole_period",
+            "matches": 9
+          }
+        }
+      ]
+    },
+    {
+      "question": "Why was the latest goal in this match important?",
+      "mode": "lookup_fallback",
+      "operation": "match",
+      "passed": false,
+      "seconds": 2.71,
+      "text": [
+        "Southbank 2\u20133 Redhaven",
+        "Mateo Cross put the team ahead: 2\u20132 became 2\u20133.",
+        "That was Mateo Cross\u2019s 75th career goal in the recorded history."
+      ],
+      "facts": [
+        {
+          "subject_id": "southbank",
+          "metric": "goals",
+          "value": 2,
+          "scope": {
+            "match_id": "career-showcase-southbank-redhaven",
+            "cutoff": {
+              "period": 2,
+              "elapsed_ms": 2700000
+            },
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "match_at_cutoff"
+          }
+        },
+        {
+          "subject_id": "redhaven",
+          "metric": "goals",
+          "value": 3,
+          "scope": {
+            "match_id": "career-showcase-southbank-redhaven",
+            "cutoff": {
+              "period": 2,
+              "elapsed_ms": 2700000
+            },
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "match_at_cutoff"
+          }
+        },
+        {
+          "subject_id": "rh09",
+          "metric": "career_goals",
+          "value": 75,
+          "scope": {
+            "match_id": "career-showcase-southbank-redhaven",
+            "cutoff": {
+              "period": 2,
+              "elapsed_ms": 2700000
+            },
+            "as_of": "2026-10-20T00:00:00Z",
+            "window": "match_at_cutoff"
+          }
+        }
+      ]
+    }
+  ],
+  "followup_cases": [
+    {
+      "question": "Is Enzo Clarke's recent assist rate higher than across his career?",
+      "mode": "azure",
+      "operation": "recent",
+      "status": "answered",
+      "passed": true,
+      "seconds": 3.22,
+      "text": [
+        "The higher recorded assists figure is Enzo Clarke in the selected period.",
+        "Recent form compares the last five completed appearances with the selected period, using the same per-90 measure.",
+        "Enzo Clarke \u00b7 last five appearances: 0 assists per 90.",
+        "Enzo Clarke \u00b7 career: 0.17 assists per 90."
+      ],
+      "fallback_reason": null
+    },
+    {
+      "question": "Why was the latest goal in this match important?",
+      "mode": "azure",
+      "operation": "match",
+      "status": "answered",
+      "passed": true,
+      "seconds": 2.38,
+      "text": [
+        "Southbank 2\u20133 Redhaven",
+        "Mateo Cross put the team ahead: 2\u20132 became 2\u20133.",
+        "That was Mateo Cross\u2019s 75th career goal in the recorded history."
+      ],
+      "fallback_reason": null
+    }
+  ],
+  "note": "Eight bounded live attempts; initial timeout and rejected plan safely fell back. Both follow-up checks passed. The timed-out attempt may have incurred unreported usage. No endpoint/key/model deployment identifiers are included."
+}

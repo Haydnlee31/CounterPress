@@ -1,0 +1,144 @@
+{
+  "attempts": 4,
+  "results": [
+    {
+      "question": "How many goals does Mateo Cross have?",
+      "operation": "stats",
+      "status": "accepted",
+      "usage": {
+        "prompt_tokens": 263,
+        "completion_tokens": 13,
+        "total_tokens": 276
+      },
+      "blocks": [
+        {
+          "id": "c0",
+          "kind": "figure",
+          "text": "Mateo Cross has 75 goals across the recorded career.",
+          "fact_indices": [
+            0
+          ],
+          "evidence_id": "6a72b3d6366620f9ab0d2de9d072453e2db1460cff025fbea65941d7eaedae92"
+        },
+        {
+          "id": "c1",
+          "kind": "rate",
+          "text": "Across the recorded career, Mateo Cross averages 0.54 goals per appearance: 75 in 140 appearances.",
+          "fact_indices": [
+            0
+          ],
+          "evidence_id": "8e654c30b3b152d9f32198ae78d8fc44587bb1f6aacaae14c91b81f2d87a0610"
+        }
+      ],
+      "duration_ms": 3270
+    },
+    {
+      "question": "Compare Mateo Cross this season and last season",
+      "operation": "seasons",
+      "status": "accepted",
+      "usage": {
+        "prompt_tokens": 415,
+        "completion_tokens": 16,
+        "total_tokens": 431
+      },
+      "blocks": [
+        {
+          "id": "c4",
+          "kind": "comparison",
+          "text": "Mateo Cross (2025-26) is ahead of Mateo Cross (2026-27) by 7 goals. Their totals cover 22 and 9 appearances respectively.",
+          "fact_indices": [
+            1,
+            0
+          ],
+          "evidence_id": "bc27e96d53e88fdec21dfb0e294431c1c564970be1c3a5d880d97d780359c016"
+        },
+        {
+          "id": "c1",
+          "kind": "rate",
+          "text": "Across 2026-27, Mateo Cross averages 0.78 goals per appearance: 7 in 9 appearances.",
+          "fact_indices": [
+            0
+          ],
+          "evidence_id": "5bb94785970bd3973e0a152a76460204c2102731f4e645e171bb018f3f1f59b0"
+        },
+        {
+          "id": "c3",
+          "kind": "rate",
+          "text": "Across 2025-26, Mateo Cross averages 0.64 goals per appearance: 14 in 22 appearances.",
+          "fact_indices": [
+            1
+          ],
+          "evidence_id": "b2c32100a9c94bb4b4c9263246c6e95b09fbb22eb790e51e989f56a180e40db3"
+        }
+      ],
+      "duration_ms": 1591
+    },
+    {
+      "question": "Who leads Redhaven in assists?",
+      "operation": "club_leaders",
+      "status": "accepted",
+      "usage": {
+        "prompt_tokens": 665,
+        "completion_tokens": 13,
+        "total_tokens": 678
+      },
+      "blocks": [
+        {
+          "id": "c0",
+          "kind": "figure",
+          "text": "Enzo Clarke has 21 assists across the recorded career.",
+          "fact_indices": [
+            0
+          ],
+          "evidence_id": "310c498f8e4d04d5c10d01cd4340fb21b095d819495848fcbaed38b67d5d927a"
+        },
+        {
+          "id": "c10",
+          "kind": "comparison",
+          "text": "For this club\u2019s players in the selected period: Enzo Clarke (the recorded career) is ahead of Amir Rhodes (the recorded career) by 2 assists. Their totals cover 140 and 140 appearances respectively.",
+          "fact_indices": [
+            0,
+            1
+          ],
+          "evidence_id": "b9ce602a754dc192cbf49cde3b4144c295d0846bd45487c76e691e56f2c1362e"
+        }
+      ],
+      "duration_ms": 1835
+    },
+    {
+      "question": "Why did the latest goal matter in this match?",
+      "operation": "match",
+      "status": "accepted",
+      "usage": {
+        "prompt_tokens": 263,
+        "completion_tokens": 13,
+        "total_tokens": 276
+      },
+      "blocks": [
+        {
+          "id": "c0",
+          "kind": "moment",
+          "text": "Mateo Cross put the team ahead: 2\u20132 became 2\u20133.",
+          "fact_indices": [
+            0,
+            1,
+            2
+          ],
+          "evidence_id": "d5a73364d59f6424b05b698a9075dbfddfaef74bad686aeabd705d172ed1d161"
+        },
+        {
+          "id": "c1",
+          "kind": "moment",
+          "text": "That was Mateo Cross\u2019s 75th career goal in the recorded history.",
+          "fact_indices": [
+            0,
+            1,
+            2
+          ],
+          "evidence_id": "75c98f7dd89b1a1498e8ab6a647fe62defae5b108c3e8001874fac8c8bb4eea2"
+        }
+      ],
+      "duration_ms": 1773
+    }
+  ]
+}

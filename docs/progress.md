@@ -1,5 +1,37 @@
 # Progress
 
+## 19 October 2026 — local My Football interface
+
+Added a dashboard workspace for testing personalization as a fan: searchable
+44-player directory, four club profiles, device favorites, a Following feed,
+career/season statistics, event heatmaps, paginated history and two-to-four-player
+comparisons. The new career highlights play in a viewer with 22 active players,
+source-clock insight updates, player focus, rewind and replay. Existing highlights
+link back to Matchday. No API payloads are presented in the fan interface.
+
+The new module is isolated under `frontend/src/football/`, with shared changes
+limited to the lazy route and navigation. It is local only, awaiting the user's
+review before further development or deployment. No Azure or model calls added.
+See the [local user test and integration notes](my-football-local.md).
+
+Validation: 152 frontend tests (including nine new UI/replay tests), 14 browser
+adapter tests, production build and real local HTTP smoke checks. Chrome checks
+verified follow/profile, goal milestone/rewind and 390-pixel responsive layouts.
+
+## 19 October 2026 — fan personalization backend and UI handoff
+
+Saved the [Reactor review and product decisions](reactor-review-context.md) as
+important project context. Added device-owned favorite clubs/players, a ranked
+nine-highlight feed, four featured matches, player/club profile presentations,
+common-scope comparisons, bilingual casual/analyst match cards and player focus.
+The independent browser adapter migrates existing preferences and rejects stale
+playback responses. The colleague's frontend source is unchanged; UI integration
+is pending. No new Azure service, deployment or paid model call.
+
+Validation: 671 backend tests, 143 existing UI tests, 14 adapter tests, TypeScript,
+production frontend build and real HTTP smoke checks passed. See the [integration
+guide](fan-personalization.md) and [exact verification](verification/fan-personalization-checks.md).
+
 ## 19 October 2026 — continuous highlight narration
 
 Replaced isolated surname calls with reviewed whole-highlight English/Mandarin
@@ -2561,3 +2593,94 @@ Validation: 91 frontend tests, production build and real-API browser checks pass
 All five workspaces now use a shared header, library and context strip. Highlight identity persists between Matchday and Explore; GI retains filters, selected action and shot-map mode within the browser session. Existing saved club preferences also theme GI. Studio and advanced analysis are grouped under Tools, with their existing authentication/evidence flows unchanged. The advanced view no longer duplicates the brand header. Source-specific highlight/GI records are kept distinct.
 
 97 frontend tests, production build and full navigation/Explore/GI browser checks pass, including saved Northport theme and 360/390px layouts. See [guide](unified-experience.md) and [verification](verification/unified-experience-local.json). Local only; no Azure resources or model calls.
+
+### Local career realism v2, assist coverage and four portrait previews
+
+Responding to the user's unavailable-assist and realism feedback, recovered four provider-awarded archive assists with goal-linked evidence; all 44 featured players now have assist coverage. Added per-metric covered matches/minutes/counts, retained known partial values, and corrected the assist-rate denominator. Direct generated assists now stop after duels or more than 10 metres of carrying; cutoff/window/retraction tests cover those boundaries.
+
+Rebuilt the 840 historical careers using separate shooting/creation traits, role-share calibration and explicit penalties/free kicks/corners. Independent 240-match validation and the entire historical population pass ten declared realism checks each. The v2 world contains 844 fixtures and 1,143,062 events. The selected fourth fixture is Southbank 1–2 Redhaven, with three source-linked highlights including Nico Alder's 30th goal; no goal totals were manually manufactured. Original identities and favorites remain stable.
+
+Added built-in-generated fictional portrait previews for Rory Ellis, Henry Blake, Dario Voss and Enzo Clarke in the local directory/profile views. Retained jersey fallbacks and mobile layouts. The name remains My Football while alternative naming is under consideration. Exact prompts and asset paths: `docs/player-portrait-prompts.json`.
+
+Verification: 677 backend tests; 52 targeted tests after final wording/covered-rate adjustments; 154 frontend tests; successful TypeScript/Vite build; full 844-match audit; HTTP smoke and desktop/mobile browser checks. Source lock version `career-realism-v2` applies to offline/mocked controls only. See `docs/verification/fan-personalization-checks.md` for commands and output. App left running at `http://127.0.0.1:8017/#football`; not pushed or deployed. Next: user reviews statistics and four portraits, then expand the agreed portrait style to the remaining 40 before the grounded assistant phase.
+
+### Clubhouse naming and complete player portrait set — local
+
+Renamed the visible My Football navigation, heading, loading state and footer to Clubhouse while preserving existing `#football` links and saved preferences. Expanded the four approved fictional portraits to all 44 featured players, eleven per club, using separate built-in image generation calls. Every image is saved under `frontend/src/football/portraits/`; exact prompts and asset paths are in `docs/player-portrait-prompts.json`. `portraits.ts` maps stable registry IDs to bundled JPEG URLs across directory, following and profile views. Images load lazily with jersey fallbacks. Mobile club badges sit below faces; the search count now correctly says “1 player”.
+
+Verification: `npm --prefix frontend test` passed 155 tests across 25 files, including complete registry coverage, unique JPEG files and identity mapping. `npm --prefix frontend run build` passed (291 modules; final Vite build 787ms). All 44 built portrait URLs returned HTTP 200 with matching JPEG bytes from the local server. SHA-256 comparisons confirmed all 26 personalization fixture/backend files matched their pre-task state. Chrome checks passed for the Clubhouse labels, 44-player directory, eleven-player club filter, one-player search, existing favorite state, a newly illustrated profile, and 390px layouts without horizontal overflow.
+
+Local app remains at `http://127.0.0.1:8017/#football`. No push or Azure deployment was performed. Next: finish the user's statistics review, then address any findings before progressing to the grounded assistant phase.
+
+### All-position statistical recalibration — local, 20 October 2026
+
+Rebuilt the career population with source-aligned goalkeeper, defender, midfielder and forward involvement, passing, finishing, creation and ground-duel distributions. Wyscout 2017/18 England supplies 304 fitting and 76 held-out matches; per-90 exposure, provider definitions, whole-match bootstrap intervals and individual distribution checks are documented. A frozen model passed all 285 position gates and 20 historical/pooled population gates across the career population and 3,000 fresh simulation matches. Two batch-1 assist-share diagnostics remain visible. Earlier rejected runs, reused holdout and acceptance-protocol revision are explicitly disclosed rather than presented as blind validation.
+
+Audited all 844 fixtures and 1,179,903 events; all 44 careers reconcile. Corrected goalkeeper aliases in both archives, preserved stable identities and portraits, supported drawn-duel replay/commentary, and ensured explicit metric preferences retain a relevant card. Leon now has 437 saves in 141 matches and 77.6% completion from 4,344 passes. The regenerated fourth match is Southbank 2–2 Redhaven; its highlights include Mateo Cross's 80th career goal.
+
+Verification: `.venv/bin/pytest -q` → **689 passed, 1 warning in 74.69s**; `npm test` in frontend → **156 passed**; `npm run build` → successful in **3.97s**. Full ledger audit passed in 127.13s, `git diff --check` is clean, and local HTTP health, archive, replay, profile and final metric-focus checks passed. [Methodology](position-calibration.md), [results and limitations](verification/position-recalibration.md), [ledger audit](verification/personalization-data.json).
+
+The refreshed app is running at `http://127.0.0.1:8017/#football`. Local only, no push/deployment or Azure/model spending. Next: user reviews Clubhouse position profiles and the regenerated showcase before proceeding to the grounded assistant phase.
+
+### Clubhouse maps and extended player statistics — local, 20 October 2026
+
+Researched FotMob's player profiles, Sofascore's spatial maps/comparison features and Wyscout's progression/shot-assist definitions. Added a player pitch explorer (heatmap with exact bins, selectable shot map, filtered aggregate passing routes and ball-winning map), position percentile bars, last-ten-appearance trends, and a searchable category-based statistics library with totals/per-90 selection and expandable coverage. Goalkeepers see relevant numbers first. Shot selection works through both markers and a keyboard/touch picker.
+
+An additive, checksum-bound analytics index covers all 844 fixtures while preserving the calibrated model, ledger, registry and 44 portraits unchanged. The registry has 71 metric definitions; 63 are exposed for outfield players and 68 for goalkeepers. Unsupported headers/woodwork remain unavailable, not misleading zeroes. Continuous carry segments are joined before assessing progression. Revisions and historical availability bypass affected cached reductions; coverage denominators and peer cohorts respect the selected period.
+
+Verification: **702 backend tests**, **162 frontend tests**, TypeScript/Vite build in **953ms**, clean `git diff --check`, real HTTP checks for all four roles, and Chrome desktop/mobile checks at 1470px and 390px. [Guide and methodology](player-analytics.md), [exact results](verification/player-analytics.md). The local app is at `http://127.0.0.1:8017/#football`. No push, cloud deployment or Azure/model spending. Next: user explores the maps and statistics in Clubhouse; richer event types and calibrated movement telemetry would be a separate data-generation stage before exposing tracking-based metrics.
+
+### Extended all-position validation — local, 20 October 2026
+
+Added a read-only independent audit of all 71 metric definitions across GK/DF/MF/FW, featured clubs and eligible individual players. Reconciled all 22,870 player-match rows in 844 fixtures, with zero arithmetic or team reconciliation errors. All 57 original position gates still pass. However, 8 of 136 eligible expanded population comparisons and 16 of 392 club role-share checks flag spatial/passing distribution issues. Two individual progression rates narrowly exceed their reference envelopes. Result is explicitly `needs_recalibration`, not an all-clear.
+
+The reference's missing goal-kick outcomes and corner-sentinel origins exclude several goalkeeper comparisons. Protocol v1.1 corrects eligibility without widening numeric tolerances; the initial run is retained locally. Every metric is classified as externally comparable, model diagnostic, or limited/unbenchmarked. Whole-match bootstrap intervals, sample-size rules and formation-minute-adjusted shares are recorded in [the audit report](verification/player-position-audit.md) and its JSON matrix.
+
+Verification: 29 targeted tests; **710 backend tests passed**, one existing experimental warning; strict audit intentionally exits 1 for unresolved findings; clean `git diff --check`. All 13 calibrated fixture files and the analytics artifact remain unchanged. No push, deployment or Azure/model spending. Next: jointly recalibrate spatial passing, crossing, shot ownership and creation chains, then regenerate and rerun the audit before claiming those metrics are validated.
+
+
+### Spatial and club-role recalibration — local, 20 October 2026
+
+Jointly fitted role-conditioned pass destinations, long-pass completion, wide-area involvement, shooting locations and creation chains. Role traits are centered by actual appearance minutes, preserving relative player strengths without unused bench traits shifting the active role. Rebuilt 840 historical careers and the fourth showcase, retaining all IDs/portraits and the three existing archive files byte-for-byte. Canonical events supply all totals and maps; no post-hoc career quotas were assigned.
+
+The frozen candidate passes 285 original position gates, 20 historical/pooled population gates and all batch diagnostics across 3,000 fresh simulated matches. All 136 eligible expanded career comparisons and 544 expanded independent-cohort checks pass. The full 844-fixture audit reconciles 1,176,374 events and all 44 careers. Zero individual flags or arithmetic errors remain. Of 392 original club-share comparisons, one Eastbridge defender-assist flag remains visible; its 27.34% share lies within the empirical training-club range of 14.41–30.52%. Acceptance-method v1.2 explicitly adds this source-supported style adjudication after observing earlier flags; numerical envelopes remain unchanged. Repeated holdout use, rejected candidates and unbenchmarked metrics are disclosed in [the full report](verification/spatial-recalibration.md).
+
+Verification: **719 backend tests passed**, one existing experimental warning; full ledger audit in 76.71s; actual HTTP health, library, replay, nine-highlight feed, causal milestone and audience parity checks passed. The fourth match is now Southbank 2–3 Redhaven, including Mateo Cross's 75th goal. The accepted audit is checksum-bound into the dataset, and the app rejects an unreviewed spatial model. Offline/mocked source lock updated; no paid pilot or Azure call.
+
+The refreshed app is running at `http://127.0.0.1:8017/#football` using a fresh local history database. Local only; no push or deployment. Next: user reviews updated Clubhouse statistics, positional maps and the regenerated showcase, then proceed to the grounded assistant phase.
+
+### Grounded Footie assistant — local, 20 October 2026
+
+Implemented the separate `#assistant` workspace with natural-language questions, player/club/season context, follow-ups, favorite context, comparison charts, action heatmaps, readable evidence and milestone-to-highlight replay. The existing Azure OpenAI model produces only a bounded structured query plan; Python retrieves canonical data and renders every claim. The server validates subjects, metrics, scope and availability, uses revision-aware reductions, and refuses unsupported claims. At most one model call per question, no retries, a ten-second deadline, twenty attempts per rolling hour and a direct lookup fallback bound local usage. The paid planner remains off in hosted defaults.
+
+Verification: **749 backend tests**, **166 frontend tests**, production build in 868ms, actual desktop/mobile Chrome flow at 1440/390/360px, and the complete existing HTTP smoke passed. Eight bounded Azure attempts tested six question types; an initial timeout and a rejected match plan safely fell back, and both follow-up checks passed after refining the match instructions and schema. Seven responses reported 19,331 total tokens; the timeout has unknown returned usage, so this is not a total billing statement. No new Azure resources, push or deployment. Keys/endpoints remain server-side and were not found in the assistant deliverables or browser bundle.
+
+The app is running at `http://127.0.0.1:8017/#assistant` with Azure interpretation enabled, using a fresh local history database. Career fixtures, portraits and the existing UI screens are preserved. [Guide and architecture](grounded-assistant.md); [verification and limitations](verification/grounded-assistant.md). Next: user tries Footie as a fan, then embed the ask action into player profiles and exact Matchday/Match Centre moments without losing playback or revision context.
+
+### Footie contextual stories — local, 20 October 2026
+
+Added evidence-bound narrative composition after query interpretation. Python derives rates, compatible comparison gaps/ties and match milestone sentences; a second bounded Azure call selects emphasis and order. Every sentence binds the exact supporting facts and evidence fingerprint. Unknown IDs, extra prose, duplicate selections, partial-coverage comparisons and stale revision snapshots cannot become model-authored claims. Timeout/quota failures retain calculated stories; the existing twenty-call hourly budget is shared across both stages. English stories lead the answer, with original figures in an expandable breakdown; Chinese retains its prior localized answer.
+
+Validation: **765 backend tests**, **167 frontend tests**, production build, desktop/390/360px browser journey, four live narrative checks and one integrated two-call question passed. A final same-player wording refinement passed 106 targeted backend/source-lock checks and the integrated Azure question. Six model calls reported 5,128 tokens; no new resources, push or deployment. Secret/endpoint scan found no configured values in assistant deliverables or browser bundles. [Verification](verification/footie-narration.md).
+
+The updated preview runs at `http://127.0.0.1:8017/#assistant`. Next: user tries a comparison, recent-form question and milestone explanation, then integrate Ask Footie into profiles and match moments with their exact evidence/time context.
+
+### Ask Footie within profiles and match moments — local, 20 October 2026
+
+Added an embedded Ask Footie dialog to player/club profiles, linked Matchday highlights, career highlight replay and Match Centre plays. It preserves the selected subject and season or exact event, revision and playback cutoff. Opening pre-fills a question without calling the model; replay pauses and remains at the same place on return. Keyboard dismissal, focus restoration, a sticky close control and mobile layouts are supported.
+
+Selected-action answers now explain the recorded pass, challenge or goal using canonical evidence. Future, retracted, unknown and changed revisions cannot silently substitute another action or reveal a later result. A read-only source lookup resolves legacy highlight clocks to canonical event availability; browser testing caught and fixed a 100ms mismatch at a goal. Original preloaded reconstructions without a canonical career match remain outside this handoff.
+
+Verification: **772 backend tests**, **171 frontend tests**, production build, desktop/390/360px browser journey and two live Azure questions passed. The four model calls reported 6,663 tokens; no new resources, push or deployment. [Exact commands, results and limitations](verification/footie-context.md).
+
+The refreshed app runs at `http://127.0.0.1:8017/#football`. Next: user tries a profile question and a selected-play question in context, then review for publishing.
+
+### Match Centre Footie presentation — local, 20 October 2026
+
+Replaced the detached cream mascot pill with a quiet, pitch-coloured chat control aligned to the right of the play caption. Match Centre now opens Footie in a compact desktop side drawer or mobile bottom sheet. The small mascot remains in the panel header; the selected actor/action and exact cutoff anchor the conversation. Removed the full-workspace welcome treatment and duplicate starter question from this flow, and anchored the composer at the bottom. Dialogs render outside screen-specific layout rules through a portal. Other entry points retain their existing presentation.
+
+Verification: all 171 frontend tests passed; TypeScript/Vite build passed in 840ms. Existing no-Azure browser journey passed profile season, selected-event revision/cutoff, submitted answers, focus restoration and paused return. Additional 1440/390/360px browser checks passed drawer/sheet bounds, no horizontal overflow, no automatic question calls and no browser errors. Rendered pitch, empty panel and answered mobile panel were visually reviewed. Local preview refreshed on port 8017; no model calls, push or deployment. Next: user reviews the Match Centre interaction before publishing.
+
+### Preparing the Clubhouse and Footie hosted release — 20 October 2026
+
+User approved publishing the reviewed local experience. Updated container allowlists for compressed career/analytics records and fictional portraits, and included the independent personalization client in the frontend build. Added an explicit deployment mode for bounded Footie model calls using existing Container Apps model secret references; no additional service or credential is introduced. Deployment-guard tests pass, and the publication-candidate scan found none of the configured private keys/model endpoints in 567 tracked or nonignored files. Full hosted verification follows deployment.

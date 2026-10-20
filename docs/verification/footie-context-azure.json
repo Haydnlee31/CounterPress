@@ -1,0 +1,81 @@
+{
+  "results": [
+    {
+      "kind": "pass",
+      "request": {
+        "question": "What happened in this moment?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e00003",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 1,
+          "elapsed_ms": 14592
+        }
+      },
+      "mode": "azure",
+      "status": "answered",
+      "title": "About this moment",
+      "narrative": {
+        "mode": "azure_selected",
+        "blocks": [
+          {
+            "id": "c0",
+            "kind": "moment",
+            "text": "Adam Keene completed the pass to Dario Voss.",
+            "fact_indices": [
+              0,
+              1
+            ],
+            "evidence_id": "d607620fb96e0cb41459bf52fce64106abc1ba709a42dc55f7243bf973a7b127"
+          },
+          {
+            "id": "c1",
+            "kind": "moment",
+            "text": "The recorded pass travelled 28.7 metres between its start and end locations.",
+            "fact_indices": [
+              0,
+              1
+            ],
+            "evidence_id": "8928d4c9334110a907608e8b8dbe425a28d3e249a97de50a2553009d1bcbbede"
+          }
+        ],
+        "fallback_reason": null
+      },
+      "duration_ms": 6220
+    },
+    {
+      "kind": "shot",
+      "request": {
+        "question": "What happened in this moment?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "mode": "azure",
+      "status": "answered",
+      "title": "Why the moment matters",
+      "narrative": {
+        "mode": "azure_selected",
+        "blocks": [
+          {
+            "id": "c0",
+            "kind": "moment",
+            "text": "Mateo Cross put the team ahead: 2\u20132 became 2\u20133.",
+            "fact_indices": [
+              0,
+              1,
+              2
+            ],
+            "evidence_id": "d5a73364d59f6424b05b698a9075dbfddfaef74bad686aeabd705d172ed1d161"
+          }
+        ],
+        "fallback_reason": null
+      },
+      "duration_ms": 4656
+    }
+  ]
+}

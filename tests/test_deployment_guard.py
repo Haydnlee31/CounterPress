@@ -109,3 +109,23 @@ def test_azure_null_secret_collection_is_equivalent_to_empty_list():
     deploy.validate_app(app)
     empty = copy.deepcopy(app); empty['properties']['configuration']['secrets'] = []
     assert deploy.invariants(app) == deploy.invariants(empty)
+
+
+def test_footie_activation_reuses_only_existing_secret_references():
+    import pytest
+    app = {'properties': {'template': {'containers': [{'env': [
+        {'name': name, 'secretRef': secret} for name, secret in deploy.MODEL_SECRETS.items()
+    ]}]}}}
+    original = copy.deepcopy(app)
+    enabled = deploy.assistant_settings(app, 'enable')
+    assert app == original
+    env = enabled['properties']['template']['containers'][0]['env']
+    assert env[:-1] == original['properties']['template']['containers'][0]['env']
+    assert env[-1] == {'name': 'COUNTERPRESS_ASSISTANT_MODEL', 'value': 'azure'}
+    assert deploy.assistant_settings(enabled, 'preserve') == enabled
+    assert deploy.assistant_settings(enabled, 'disable')['properties']['template']['containers'][0]['env'][-1]['value'] == 'off'
+    for bad in ([], [{'name': name, 'value': 'must-not-use-inline'} for name in deploy.MODEL_SECRETS]):
+        with pytest.raises(deploy.DeploymentError):
+            deploy.assistant_settings({'properties': {'template': {'containers': [{'env': bad}]}}}, 'enable')
+    with pytest.raises(deploy.DeploymentError):
+        deploy.assistant_settings(app, 'unknown')

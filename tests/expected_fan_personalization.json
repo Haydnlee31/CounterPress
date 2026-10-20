@@ -1,0 +1,32 @@
+{
+  "match_id": "career-showcase-southbank-redhaven",
+  "player_id": "rh09",
+  "player_name": "Mateo Cross",
+  "before_goal": {
+    "period": 2,
+    "elapsed_ms": 1632995
+  },
+  "after_goal": {
+    "period": 2,
+    "elapsed_ms": 1632996
+  },
+  "career_goals_pre_match": 73,
+  "career_goals_before": 74,
+  "career_goals_after": 75,
+  "career_goals_final": 75,
+  "score_after": {
+    "southbank": 2,
+    "redhaven": 3
+  },
+  "goal_event_id": "e01178",
+  "final_score": {
+    "southbank": 2,
+    "redhaven": 3
+  },
+  "ordinary_highlight_title": "Mateo Cross puts Redhaven ahead",
+  "home_highlights": 9,
+  "preloaded_highlights": 3,
+  "featured_matches": 4,
+  "club_id": "redhaven",
+  "notes": "Hand-reviewed spatial v4: prior seasonal goals 12+8+11+10+13+14+5=73. First Mateo goal e01019 available at 2H 1050489 adds goal 74 and equalizes 2-2. Free kick e01178 available at 2H 1632996 adds goal 75 and puts Redhaven ahead 3-2. Mateo scores twice; final Southbank 2-3 Redhaven. Expected values are fixed after independently reviewing the event sequence and season totals."
+}

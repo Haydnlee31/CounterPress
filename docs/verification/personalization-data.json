@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "matches": 844,
+  "events": 1176374,
+  "goals": 2447,
+  "featured_profiles": 44,
+  "featured_matches": 4,
+  "highlights": 3,
+  "checks": [
+    "Every event digest and regenerated summary",
+    "Player and club goals including own goals",
+    "Pass/shot/assist totals",
+    "Eleven active players and 990 team player-minutes in each simulation",
+    "Ball flight precedes next action",
+    "All 44 featured careers reconcile with history",
+    "Highlight parent links and native replay contracts"
+  ],
+  "population_checks": {
+    "historical_checks": 10,
+    "validation_checks": 10
+  },
+  "position_checks": 285,
+  "independent_simulation_matches": 3000,
+  "validation_warnings": [],
+  "elapsed_seconds": 76.71
+}

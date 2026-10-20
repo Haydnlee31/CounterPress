@@ -11,6 +11,10 @@
 !fixtures/
 !fixtures/**/
 !fixtures/**/*.json
+!fixtures/**/*.json.gz
+!integrations/
+!integrations/personalization/
+!integrations/personalization/client.ts
 !frontend/
 !frontend/package.json
 !frontend/package-lock.json
@@ -23,6 +27,8 @@
 !frontend/src/**/*.ts
 !frontend/src/**/*.tsx
 !frontend/src/**/*.css
+!frontend/src/football/portraits/
+!frontend/src/football/portraits/*.jpg
 # Tests are not needed by the production frontend build.
 frontend/src/**/*.test.ts
 frontend/src/**/*.test.tsx

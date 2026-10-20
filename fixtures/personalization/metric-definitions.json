@@ -1,0 +1,164 @@
+{
+  "version": "career-metrics-v2",
+  "pitch": {
+    "length_m": 105,
+    "width_m": 68,
+    "coordinates": "acting club attacks positive x"
+  },
+  "window_boundary": "(start,end]",
+  "live_policy": "Select the highest event revision available at or before the cutoff; exclude retractions. Historical baselines include only fixtures before the current kickoff.",
+  "metrics": [
+    {
+      "id": "goals",
+      "unit": "count",
+      "definition": "Goals credited to the player; own goals excluded. Club goals include opponent own goals.",
+      "basis": "event outcomes"
+    },
+    {
+      "id": "assists",
+      "unit": "count",
+      "definition": "Last completed pass directly to the scorer, within 15 seconds in the same period, with no intervening possession change, shot, duel or more than 10 metres of carrying. No penalty or own-goal assists. Adapted archives use explicit provider assist tags linked to the subsequent goal; the source and simulation bases remain identified per fixture.",
+      "basis": "counterpress direct-assist rule, not an official league award"
+    },
+    {
+      "id": "goals_per90",
+      "unit": "goals / 90 minutes",
+      "definition": "90 \u00d7 goals / minutes played. Null with no minutes.",
+      "basis": "counts and appearance intervals"
+    },
+    {
+      "id": "assists_per90",
+      "unit": "assists / 90 minutes",
+      "definition": "90 \u00d7 recorded assists / minutes from matches with assist coverage. Null with no covered minutes. Do not label this an assist percentage.",
+      "basis": "counts and appearance intervals"
+    },
+    {
+      "id": "pass_accuracy_pct",
+      "unit": "percent",
+      "definition": "100 \u00d7 completed passes / passes with known outcome. Unknown outcomes are excluded from the denominator.",
+      "basis": "event outcomes; includes recorded set-piece deliveries"
+    },
+    {
+      "id": "pass_distance_m",
+      "unit": "metres",
+      "definition": "Euclidean pitch-plane distance between start and actual end. This is not 3D aerial trajectory length.",
+      "basis": "event coordinates"
+    },
+    {
+      "id": "completion_probability",
+      "unit": "probability 0\u20131",
+      "definition": "Shrunk source completion probability by pre-pass origin third and declared pass type, adjusted by persistent simulated passing ability and a training-fitted broad-role offset. Failed endpoints are not probability predictors. CounterPress estimate, not provider xPass.",
+      "basis": "career-role-calibration-v3"
+    },
+    {
+      "id": "pass_difficulty",
+      "unit": "probability 0\u20131",
+      "definition": "1 \u2212 completion_probability; higher means less likely to complete under this model, not a judgment of execution quality.",
+      "basis": "model estimate"
+    },
+    {
+      "id": "passing_above_expected_per100",
+      "unit": "completions / 100 modelled passes",
+      "definition": "100 \u00d7 (modelled completed passes \u2212 sum of completion probabilities) / modelled passes. Unmodelled passes are excluded.",
+      "basis": "model estimate and observed synthetic outcomes"
+    },
+    {
+      "id": "xg",
+      "unit": "expected goals",
+      "definition": "Sum of smoothed goal probabilities by pre-shot distance band and central/wide location. Open-play shots use the location model; penalties, direct free kicks and shots following corners use training-set situation conversion rates. Unmodelled archive shots are excluded and coverage counts accompany the result.",
+      "basis": "CounterPress location-only model; not provider xG"
+    },
+    {
+      "id": "shot_conversion_pct",
+      "unit": "percent",
+      "definition": "100 \u00d7 player goals / shots; excludes own goals. Null with no shots.",
+      "basis": "event outcomes"
+    },
+    {
+      "id": "shots_on_target",
+      "unit": "count",
+      "definition": "Goals, saved shots and source-tagged on-target shots. Blocks and woodwork are excluded. A source on-target shot is not automatically a goalkeeper save.",
+      "basis": "event outcomes"
+    },
+    {
+      "id": "shots_off_target",
+      "unit": "count",
+      "definition": "Off-target shots plus woodwork; kept separate from blocked shots and saves.",
+      "basis": "event outcomes"
+    },
+    {
+      "id": "duels_won",
+      "unit": "count",
+      "definition": "Explicit won duels. For generated one-sided duel records, the opponent receives the complementary outcome; source paired duels are counted once per source actor.",
+      "basis": "event outcomes; not automatically tackles"
+    },
+    {
+      "id": "recoveries",
+      "unit": "count",
+      "definition": "Established open-play possession recoveries, excluding restarts.",
+      "basis": "event outcomes"
+    },
+    {
+      "id": "key_passes",
+      "unit": "count",
+      "definition": "Direct completed pass to a shot taker under the same 15-second direct-assist chain rule.",
+      "basis": "CounterPress chain rule; archive coverage incomplete"
+    },
+    {
+      "id": "event_heatmap",
+      "unit": "actions / grid cell",
+      "definition": "12 \u00d7 8 histogram of pass, shot, carry, duel and recovery start locations. It is an activity map, not time spent in a location.",
+      "basis": "event coordinates normalized to the subject club's attacking direction"
+    },
+    {
+      "id": "mean_pass_speed_kmh",
+      "unit": "km/h",
+      "definition": "Arithmetic mean of pitch-plane distance / explicit generated flight duration \u00d7 3.6, over passes with flight telemetry only.",
+      "basis": "authored synthetic physics; not measured speed or next-event gap"
+    },
+    {
+      "id": "mean_shot_speed_kmh",
+      "unit": "km/h",
+      "definition": "Arithmetic mean of pitch-plane distance / explicit generated flight duration \u00d7 3.6, over shots with flight telemetry only. This is mean travel speed, not peak launch speed.",
+      "basis": "authored synthetic physics"
+    },
+    {
+      "id": "minutes",
+      "unit": "minutes",
+      "definition": "Sum of appearance intervals. Simulated matches have precise intervals; adapted source substitutions are minute-precision and reconciled to event boundaries.",
+      "basis": "fixture participation metadata"
+    },
+    {
+      "id": "clean_sheets",
+      "unit": "count",
+      "definition": "Club: completed match with no goals conceded. Player: at least 60 minutes played and no goals conceded during that appearance. Never awarded on an unfinished live cutoff.",
+      "basis": "score events and minutes"
+    },
+    {
+      "id": "career_goal_milestone",
+      "unit": "career goals",
+      "definition": "A goal crosses 1, 25, 75 or a multiple of 10. Count the historical baseline once, then only current events available at the cutoff. Revisions can update or withdraw the insight.",
+      "basis": "event-linked evidence and historical baseline digest"
+    },
+    {
+      "id": "tracking_distance_m",
+      "unit": "metres",
+      "definition": "Unavailable without full player tracking. Never inferred from event-location hops.",
+      "basis": "unavailable"
+    },
+    {
+      "id": "pressure",
+      "unit": "count",
+      "definition": "No proximity-pressure metric is claimed without opponent tracking. Duel exposure is available separately; it must not be renamed measured pressure.",
+      "basis": "unavailable for physical pressure; existing duel proxy remains separate"
+    }
+  ],
+  "simulation_priors": {
+    "pass_speed_mps": "truncated Gaussian: ground mean 15, other mean 20, SD 3, bounds 7\u201325",
+    "shot_speed_mps": "truncated Gaussian: mean 24, SD 4, bounds 12\u201335",
+    "flight_minimum_ms": 100,
+    "traits": "Role involvement, pass length/completion, ground duels and shot outcomes are calibrated on training matches. Match form starts from training goal dispersion. Longitudinal persistence, star designation, lineup rotation and carry geometry remain authored.",
+    "tracking": "No continuous off-ball positions, sprint speed, distance covered or dwell-time heatmap are fabricated from event data.",
+    "goalkeeper_distribution": "Spatial selection stays within the defensive zone; distribution endpoints are capped at x=70m. This is a simulation constraint, not measured player tracking."
+  }
+}

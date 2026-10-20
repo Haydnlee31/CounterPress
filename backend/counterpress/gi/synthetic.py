@@ -21,7 +21,8 @@ def read_synthetic(root: Path, match_id: str) -> Match:
         outcome=getattr(a,'outcome','unknown')
         detail={'carry':'Acceleration','duel':'Ground attacking duel','recovery':'Possession won','pass':'Simple pass','shot':'Shot'}[kind]
         if kind=='recovery' and a.origin=='restart':detail='Restart'
-        events.append(Action(event_id=e.event_id,provider_event_id=None,source_order=e.source_delivery_sequence,
+        events.append(Action(event_id=e.event_id,revision=e.revision,provider_event_id=None,source_order=e.source_delivery_sequence,
+            available_period=e.available_at.period,available_ms=e.available_at.elapsed_ms,
             occurrence_order=e.occurrence_order,period=e.occurred_at.period,elapsed_ms=e.occurred_at.elapsed_ms,
             team_id=ids[e.actor.team_id],player_id=e.actor.player_id,kind=kind.title(),detail=detail,
             outcome={'completed':'complete','saved':'on_target'}.get(outcome,outcome),

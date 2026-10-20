@@ -2,6 +2,7 @@ import { playerName } from '../matchday/identity'
 export type GIEvent = {
   event_id:string; provider_event_id:number|null; revision:number; source_order:number; occurrence_order:number;
   period:1|2; elapsed_ms:number; team_id:number; player_id:string; kind:string; detail:string; outcome:string;
+  available_period?:1|2|null; available_ms?:number|null;
   start:{x:number;y:number}|null; end:{x:number;y:number}|null; goal_for:number|null; review:boolean; tags:number[];
 }
 export type GIPlayer={player_id:string;provider_player_id:number|null;team_id:number;alias_id:string}

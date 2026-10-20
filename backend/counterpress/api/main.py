@@ -46,6 +46,12 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
                 await runtime.close()
 
     application = FastAPI(title="CounterPress", version="0.1.0", lifespan=lifespan)
+    from counterpress.personalization.api import install_personalization
+    career_service = install_personalization(application, root)
+    from counterpress.fan.api import install_fan
+    install_fan(application, career_service, service)
+    from counterpress.assistant.api import install_assistant
+    install_assistant(application, career_service)
     from counterpress.gi.api import install_gi
     install_gi(application, root)
     from counterpress.live.api import install_live
