@@ -121,6 +121,21 @@ def test_endpoint_body_limits_origin_headers_and_bounded_failure(service):
 class WrongPlanner:
     async def plan(self,q,context):return blank('stats',player_ids=['eb09']),{}
 
+@pytest.mark.parametrize('origin,status',[
+    ('https://counterpress.example',200),
+    ('http://counterpress.example',200),
+    ('https://unrelated.example',403),
+    ('https://counterpress.example.evil.example',403),
+    ('https://counterpress.example:8443',403),
+    ('null',403),
+])
+def test_tls_termination_accepts_only_same_authority(service,origin,status):
+    with TestClient(app_for(service),base_url='http://counterpress.example') as client:
+        result=client.post('/api/fan/assistant/ask',
+            headers={'Origin':origin,'X-Forwarded-Host':'unrelated.example'},
+            json={'question':'What is this player salary?'})
+        assert result.status_code==status
+
 def test_invalid_model_subject_falls_back_without_fabrication(service):
     with TestClient(app_for(service,WrongPlanner())) as client:
         r=client.post('/api/fan/assistant/ask',json={'question':'How many goals does Mateo Cross have?'}).json()
