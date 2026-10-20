@@ -1,0 +1,121 @@
+/* Product surfaces share the Clubhouse palette. Club identity stays in crests,
+   portraits and pitch markers; it never changes text or surface contrast. */
+:root {
+  --cp-background: #f3f4ed;
+  --cp-surface: #fffef8;
+  --cp-text: #173e33;
+  --cp-muted: #52695e;
+  --cp-border: #d4ddcf;
+  --cp-soft: #e6ecdf;
+}
+.matchday.matchday {
+  --fan-ink: var(--cp-text);
+  --fan-background: var(--cp-background);
+  --fan-soft: var(--cp-soft);
+  --fan-muted: var(--cp-muted);
+  background: var(--cp-background);
+}
+.cp-shell.cp-shell { --cp-ink: var(--cp-text); background: var(--cp-background); }
+.cp-header.cp-header { padding-top: 16px; padding-bottom: 12px; }
+.matchday-home.matchday main { max-width: 1320px; padding-top: 24px; }
+.matchday-home .fan-intro { margin: 0 0 22px; gap: 20px; }
+.matchday-home .fan-intro h1 { font-size: clamp(30px, 3.2vw, 44px); margin: 6px 0 8px; letter-spacing: -1.5px; }
+.matchday-home .fan-intro .fan-highlight-description { font-size: 15px; max-width: 65ch; line-height: 1.55; }
+.matchday-home .fan-featured-label { margin: 4px 0; font-size: 11px; }
+.matchday-home .fan-intro .fan-kicker { font-size: 10px; }
+.matchday-home .fan-follow { min-width: 190px; padding: 12px 16px; background: var(--cp-surface); border-color: var(--cp-border); border-left: 3px solid var(--club-accent); }
+.matchday-home .fan-score { padding: 14px 24px; border-radius: 16px; }
+.matchday-home .fan-team { font-size: 17px; }
+.matchday-home .fan-team .fan-crest { width: 38px; height: 43px; }
+.matchday-home .fan-score-center > span { font-size: 30px; }
+.matchday-home .fan-score-center time { font-size: 11px; }
+.fan-view-switch { display: flex; gap: 24px; border-bottom: 1px solid var(--cp-border); margin: 16px 0 20px; }
+.fan-view-switch a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 2px; border-bottom: 3px solid transparent; color: var(--cp-muted); font-size: 14px; font-weight: 650; text-decoration: none; }
+.fan-view-switch a[aria-current] { color: var(--cp-text); border-color: var(--cp-text); }
+.matchday-home [hidden], .highlight-experience [hidden] { display: none !important; }
+.highlight-experience.is-watch .explore-workspace { grid-template-columns: minmax(0,1fr); }
+.highlight-experience.is-watch .fan-pitch-canvas svg { max-height: 550px; }
+.highlight-experience .explore-facts { margin: 0 0 12px; }
+.highlight-experience .explore-facts dd { font-size: 24px; }
+.highlight-experience .explore-overlay { min-height: 48px; padding-top: 0; }
+.highlight-experience .explore-overlay label { min-height: 44px; }
+.highlight-experience .explore-insights { margin-top: 48px; background: var(--cp-surface); border-color: var(--cp-border); }
+.highlight-experience .explore-field .fan-pitch-heading { padding-top: 16px; }
+.highlight-experience .explore-field .fan-pitch { border-color: var(--cp-border); }
+.highlight-experience :is(button,select,input):focus-visible { outline: 3px solid #347ea0; outline-offset: 3px; }
+.gi.gi .gi-overview { grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); padding: 28px; gap: 40px; border: 1px solid var(--cp-border); background: var(--cp-surface); }
+.gi.gi .gi-editorial h2 { font-size: clamp(28px,2.6vw,38px); line-height: 1.15; letter-spacing: -1px; }
+.gi.gi .gi-editorial p { max-width: 45ch; font-size: 14px; }
+.gi.gi .gi-comparison strong { font-size: 32px; font-variant-numeric: tabular-nums; }
+.gi.gi .gi-comparison { margin: 20px 0; }
+.gi.gi .gi-match-header { padding-top: 0; padding-bottom: 16px; }
+.gi.gi .gi-match-header h1 { margin-top: 14px; }
+.gi.gi .gi-view-switch { margin-bottom: 20px; }
+.ft-standalone > .ft-main { padding-top: 28px; }
+.ft-standalone > .ft-main .ft-heading { margin-bottom: 22px; }
+.ft-standalone > .ft-main .ft-heading h1 { font-size: clamp(34px,4vw,48px); }
+.ft-standalone > .ft-main .ft-start { display: grid; justify-items: center; gap: 16px; padding: 32px 0 12px; }
+.ft-standalone > .ft-main .ft-welcome-mascot { height: auto; padding: 8px 0; }
+.ft-standalone > .ft-main .ft-starters { width: 100%; gap: 16px; margin: 12px 0 0; }
+.ft-standalone > .ft-main .ft-start h2 { font-size: 27px; line-height: 1.25; margin: 0; }
+.ft-standalone > .ft-main .ft-start > p { max-width: 64ch; margin: 0; line-height: 1.65; }
+@media(max-width:800px) {
+  .matchday-home.matchday main { padding: 20px 16px 32px; }
+  .matchday-home .fan-intro { flex-wrap: wrap; gap: 14px; }
+  .matchday-home .fan-follow { min-width: 0; width: auto; padding: 8px 12px; gap: 2px; }
+  .matchday-home .fan-follow > span { font-size: 9px; }
+  .matchday-home .fan-follow strong { font-size: 12px; }
+  .matchday-home .fan-score { padding: 14px 12px; gap: 10px; }
+  .matchday-home .fan-team { font-size: 12px; gap: 7px; }
+  .matchday-home .fan-team .fan-crest { width: 28px; height: 32px; }
+  .matchday-home .fan-score-center > span { font-size: 28px; }
+  .highlight-experience .explore-insights { margin-top: 0; }
+  .gi.gi .gi-overview { grid-template-columns: 1fr; padding: 22px; gap: 24px; }
+  .gi.gi .gi-comparisons { order: -1; }
+  .gi.gi .gi-editorial { border-top: 1px solid var(--cp-border); padding-top: 20px; }
+}
+@media(max-width:440px) {
+  .matchday-home .fan-intro h1 { font-size: 30px; }
+  .matchday-home .fan-score-center time { font-size: 9px; }
+  .matchday-home .fan-team { flex-direction: column; text-align: center; }
+  .matchday-home .fan-team.away { flex-direction: column-reverse; }
+  .highlight-experience .explore-facts { gap: 4px; }
+  .highlight-experience .explore-facts > div { padding-left: 8px; }
+  .highlight-experience .explore-facts > div:first-child { padding-left: 0; }
+}
+/* Match-level views use the same underline navigation as highlight views. */
+.gi.gi .gi-view-switch { border-bottom: 1px solid var(--cp-border); gap: 24px; padding-bottom: 0; }
+.gi.gi .gi-view-switch > button:not(:last-child) { min-height: 44px; padding: 8px 2px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: var(--cp-muted); font-size: 14px; }
+.gi.gi .gi-view-switch > button[aria-pressed=true] { color: var(--cp-text); border-bottom-color: var(--cp-text); }
+.gi.gi .gi-view-switch > button:last-child { padding: 8px 12px; min-height: 44px; margin-bottom: 6px; font-size: 12px; }
+@media(max-width:760px) {
+  .highlight-experience .fan-pitch > .live-companion { order: 4; margin-top: 0; border-radius: 0; border-width: 1px 0 0; padding: 16px; }
+}
+
+/* Keep related copy together, with a clear gap before the next action. */
+.highlight-experience .explore-insights { padding: 24px; }
+.highlight-experience .explore-insights h2 { margin: 10px 0 20px; }
+.highlight-experience .explore-explanation { margin: 20px 0 0; }
+.highlight-experience .explore-people { margin-top: 18px; gap: 10px; }
+.highlight-experience .explore-comparison-selects { margin-top: 20px; gap: 16px; }
+.highlight-experience .explore-player-summary h3 { margin-bottom: 10px; }
+.highlight-experience .explore-evidence { margin-top: 24px; padding-top: 20px; }
+.highlight-experience .explore-compare-watch { gap: 12px; }
+.gi.gi .gi-editorial > button { margin-top: 20px; }
+.gi.gi .gi-guide > button { margin-top: 16px; margin-right: 12px; }
+.football-hub .fh-profile-actions { flex-wrap: wrap; gap: 12px; }
+.football-hub .fh-profile-actions > * { max-width: 100%; min-height: 44px; }
+.football-hub .fh-directory-title p:last-child { margin-top: 12px; }
+.live-match .live-intro { margin-bottom: 24px; }
+.live-match .live-intro > label { display: flex; align-items: center; gap: 12px; }
+@media(max-width:800px) {
+  .highlight-experience .explore-insights { padding: 22px 20px; }
+  .highlight-experience .explore-overlay { flex-wrap: wrap; column-gap: 16px; row-gap: 4px; padding-bottom: 12px; }
+  .highlight-experience .explore-facts { margin-bottom: 20px; }
+}
+@media(max-width:650px) {
+  .ft-standalone > .ft-main .ft-start { padding-top: 24px; }
+  .ft-standalone > .ft-main .ft-starters { gap: 12px; }
+  .ft-standalone > .ft-main .ft-starters button { gap: 12px; padding: 18px 16px; }
+  .football-hub .fh-profile-actions { row-gap: 12px; }
+}

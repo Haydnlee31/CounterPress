@@ -22,7 +22,7 @@ as important context for this phase and the later Footie assistant.
 The new [GI full-match reader](docs/gi.md) is available at `/#gi`: Eastbridge/Northport club aliases, a pitch canvas and shot map, outcome filters and action context backed by licensed full-match events. Synchronized video seeking is pending. The [unified app navigation](docs/unified-experience.md) now links all workspaces and preserves your browsing context.
 for the live link, a five-minute walkthrough, scenario results and evidence explanations.
 
-The default **Matchday** experience opens with club colours, original crests, an
+The default **Matchday** experience opens with a shared cream/green theme, club accents, original crests, an
 interactive 22-player pitch and plain-language stories. Play the recent sequence,
 select players, catch up and inspect readable evidence without leaving Matchday.
 Team, language and explanation preferences are saved on this device.
@@ -116,7 +116,8 @@ npm run dev
 ```
 
 Open <http://127.0.0.1:5173/>. Click **Catch me up**, then **Show the moments**.
-Use **Explore data** for the original analysis view and negative controls.
+Use **Tools → Evidence desk** for the original analysis view and negative controls.
+For highlight analysis, use **Matchday → Breakdown**.
 Play, pause, reset, speed and seek controls work across the 48:00–58:00 segment.
 The control scenario shows no increase card. See the [interface guide](docs/interface.md)
 for API contracts and verification details. The [history guide](docs/history.md)

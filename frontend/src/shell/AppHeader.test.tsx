@@ -5,9 +5,9 @@ afterEach(cleanup)
 it('keeps highlight identity in every workspace link and identifies the active route',()=>{
  render(<AppHeader active="explore" story="breakaway"/>)
  expect(screen.getByRole('link',{name:'Matchday'}).getAttribute('href')).toBe('?story=breakaway#matchday')
- expect(screen.getByRole('link',{name:'Explore data'}).getAttribute('aria-current')).toBe('page')
+ expect(screen.getByRole('link',{name:'Matchday'}).getAttribute('aria-current')).toBe('page')
  expect(screen.getByRole('link',{name:'Match Centre'}).getAttribute('href')).toBe('?story=breakaway#gi')
- expect(document.querySelector('.cp-context-label')?.textContent).toContain('From halfway to goal')
+ expect(screen.queryByRole('link',{name:'Explore data'})).toBeNull()
 })
 it('offers separate highlight and full-match collections and closes with Escape',()=>{
  const {container}=render(<AppHeader active="gi"/>)
@@ -21,11 +21,11 @@ it('offers separate highlight and full-match collections and closes with Escape'
 })
 it('rejects an unknown highlight when composing navigation links',()=>{
  render(<AppHeader active="matchday" story="not-a-story"/>)
- expect(screen.getByRole('link',{name:'Explore data'}).getAttribute('href')).toBe('?story=last-gasp#explore')
+ expect(screen.getByRole('link',{name:'Matchday'}).getAttribute('href')).toBe('?story=last-gasp#matchday')
 })
-it('keeps the Matchday library highlight-only',()=>{
+it('avoids repeating a match library above the Matchday highlight gallery',()=>{
  render(<AppHeader active="matchday"/>)
  expect(screen.queryByText('Full-match archive')).toBeNull()
  expect(screen.queryByText('Watch the full match')).toBeNull()
- expect(screen.getByText('Highlights')).toBeTruthy()
+ expect(screen.queryByText('Match library')).toBeNull()
 })

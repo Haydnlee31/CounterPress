@@ -141,6 +141,9 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
           return <g key={e.event_id}><path d={`M${a.x} ${a.y}L${b.x} ${b.y}`} stroke="#f5dc90" strokeWidth=".65" opacity=".65"/><circle cx={b.x} cy={b.y} r="1" fill="#f5dc90" opacity=".8"/></g>
         })}</g>
         {event && <path d={`M${scene.start.x} ${scene.start.y} L${scene.end.x} ${scene.end.y}`} stroke="#f5dc90" strokeWidth=".5" strokeDasharray="1.3 1.3" opacity=".7"/>}
+        {/* Expanded touch targets sit behind every visible marker so a nearby
+            player's invisible hit area cannot cover the marker being tapped. */}
+        <g aria-hidden="true">{scene.players.map(p=><circle key={p.player_id} className="player-hit" cx={p.x} cy={p.y} r={portrait?5.2:4} fill="transparent" style={{cursor:'pointer'}} onClick={()=>selectPlayer(p.player_id)}/>)}</g>
         {[...scene.players].sort((a,b)=>Number(a.involved||a.player_id===selected)-Number(b.involved||b.player_id===selected)).map(p=>{
           return <g key={p.player_id} className={`fan-pitch-player ${p.involved?'involved':''} ${p.player_id===selected?'selected':''}`}
           data-player-id={p.player_id}
@@ -149,9 +152,8 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
           onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPlayer(p.player_id)}}}>
           <g transform={portrait?"rotate(-90)":undefined}>
           <title>{playerName(p.player_id)} · {clubName(p.team_id)}</title>
-          <circle className="player-hit" r={portrait?5.2:4} fill="transparent"/>
-          <ellipse className="player-shadow" cy="2.4" rx="2.8" ry="1" fill="#071c16" opacity=".32"/>
-          <circle className="player-halo" r="3.5" fill="none" stroke="#f5d77f" strokeWidth=".5" opacity={p.involved||p.player_id===selected?1:0}/>
+          <ellipse pointerEvents="none" className="player-shadow" cy="2.4" rx="2.8" ry="1" fill="#071c16" opacity=".32"/>
+          <circle pointerEvents="none" className="player-halo" r="3.5" fill="none" stroke="#f5d77f" strokeWidth=".5" opacity={p.involved||p.player_id===selected?1:0}/>
           <circle className="player-disc" r={2.7} fill={p.team_id==='eastbridge'?'#f2d483':'#d0e6fb'} stroke={p.team_id==='eastbridge'?'#183c2e':'#193f70'} strokeWidth=".65"/>
           <text className="player-initials" y=".8" textAnchor="middle" fill={p.team_id==='eastbridge'?'#16382c':'#183d64'} fontSize="2.4" fontWeight="800" pointerEvents="none">{initials(p.player_id)}</text>
           {p.player_id===event?.actor.player_id && <path d={scene.kicking?'M1 2l3 1.4':'M1 2l.8 1'} stroke="#fff4cb" strokeWidth=".9" strokeLinecap="round"/>}

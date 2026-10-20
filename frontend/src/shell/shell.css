@@ -5,3 +5,12 @@
 @media(max-width:800px){.cp-navigation{min-width:0;gap:16px;justify-content:flex-start;overflow-x:auto;max-width:100%;scrollbar-width:thin}.cp-navigation a{flex-shrink:0}}
 
 @media(max-width:500px){.cp-navigation{gap:10px;justify-content:space-between}.cp-navigation a{font-size:11px}}
+
+/* Approved Footie wordmark preview: enough height for the ball's panel seams. */
+.cp-shell .cp-brand { flex-shrink: 0; min-height: 44px; }
+.cp-wordmark { display: block; width: 176px; height: auto; overflow: hidden; }
+@media(max-width:800px) { .cp-wordmark { width: 144px; } }
+@media(max-width:350px) {
+  .cp-shell .cp-header { padding-left: 16px; padding-right: 16px; }
+  .cp-wordmark { width: 128px; }
+}

@@ -21,7 +21,7 @@ in the footer opens the existing analytical stories.
 
 ## Watch more highlights
 
-Below the pitch and commentary, **More highlights** shows the other two plays.
+Below the pitch and commentary, **More highlights** shows the other available plays.
 Each card has a pitch illustration, title, description and duration. Select a card
 to return to the new headline and a paused replay. The address updates so refreshing
 keeps that highlight. The featured turnaround appears here when watching another play.
@@ -97,9 +97,10 @@ The detailed walkthrough below applies to that analysis workspace.
 
 ## Explore the football behind a highlight
 
-From any of the three Matchday highlights, select **Explore data**. The same
-highlight opens in the same club colours and language. **Back to highlight**
-returns to it; the three named highlight tabs let you analyse another play.
+Select **Breakdown** beneath the Matchday score.
+Use **Watch** to return without restarting the replay or narration. The chosen
+player, phase comparisons and route visibility are preserved. **More highlights**
+at the bottom opens another play.
 
 - **Build-up** divides the move into three readable phases. Select a phase or a
   supporting play to move the pitch to that action. Passing routes can be toggled.

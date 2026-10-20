@@ -57,7 +57,7 @@ export default function GI() {
   function inspect(id:string) {setSelected(id);document.getElementById('gi-detail')?.focus({preventScroll:true});if(window.matchMedia?.('(max-width: 800px)').matches)document.getElementById('gi-detail')?.scrollIntoView({block:'start'})}
   function jump(id:string) {setView('moments');setFilter('all');setTeam('');setPlayer('');setPeriod('');setSelected(id);requestAnimationFrame(()=>{document.getElementById('gi-detail')?.focus({preventScroll:true});document.getElementById('gi-detail')?.scrollIntoView({block:'start'})})}
   const metricCards:[Filter,string,number][]=[['shots','Shots',scope.filter(e=>e.kind==='Shot').length],['off_target','Off target',scope.filter(e=>e.kind==='Shot'&&e.outcome==='off_target').length],['passes','Passes',scope.filter(e=>e.kind==='Pass').length],['incomplete','Unsuccessful passes',scope.filter(e=>e.kind==='Pass'&&e.outcome==='incomplete').length]]
-  return <div className="matchday gi" data-club={preference.club_id??'eastbridge'} style={{'--fan-accent':theme.accent,'--fan-ink':theme.ink,'--fan-background':theme.background,'--fan-soft':theme.soft} as CSSProperties}>
+  return <div className="matchday gi" data-club={preference.club_id??'eastbridge'} style={{'--fan-accent':theme.accent,'--club-accent':theme.accent} as CSSProperties}>
     <a className="fan-skip" href="#gi-content" onClick={e=>{e.preventDefault();document.getElementById('gi-content')?.focus()}}>Skip to match centre</a>
     <AppHeader active="gi"/>
     <main id="gi-content" tabIndex={-1}>
