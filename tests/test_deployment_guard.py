@@ -129,3 +129,34 @@ def test_footie_activation_reuses_only_existing_secret_references():
             deploy.assistant_settings({'properties': {'template': {'containers': [{'env': bad}]}}}, 'enable')
     with pytest.raises(deploy.DeploymentError):
         deploy.assistant_settings(app, 'unknown')
+
+
+def test_azure_empty_inline_field_keeps_secret_reference_guard_strict():
+    import pytest
+    app = {'identity': {}, 'properties': {'environmentId': 'test',
+        'template': {'containers': [{'image': 'test', 'env': [
+            {'name': 'COUNTERPRESS_STORAGE', 'value': 'cosmos'},
+            {'name': 'COUNTERPRESS_STREAMING', 'value': 'azure'},
+            {'name': 'COUNTERPRESS_TELEMETRY', 'value': 'on'},
+            {'name': 'COUNTERPRESS_EDITORIAL', 'value': 'entra'},
+            {'name': 'COUNTERPRESS_STUDIO', 'value': 'entra'},
+            {'name': 'COUNTERPRESS_STUDIO_CLIENT_ID', 'value': 'test-client'},
+            {'name': 'COUNTERPRESS_ENTRA_CLIENT_IDS', 'value': 'test-client'},
+            *[{'name': name, 'secretRef': secret} for name, secret in deploy.MODEL_SECRETS.items()]]}],
+            'scale': {'minReplicas': 0, 'maxReplicas': 1}},
+        'configuration': {'secrets': [{'name': s} for s in deploy.MODEL_SECRETS.values()],
+            'activeRevisionsMode': 'Single', 'ingress': {'allowInsecure': False}}}}
+    for value in (None, ''):
+        returned = copy.deepcopy(app)
+        for item in returned['properties']['template']['containers'][0]['env']:
+            if 'secretRef' in item: item['value'] = value
+        original = copy.deepcopy(returned)
+        deploy.validate_app(returned)
+        deploy.validate_app(deploy.assistant_settings(returned, 'enable'))
+        assert returned == original  # Validate the API representation; never rewrite secrets.
+    for changes in ({'value': 'inline-canary'}, {'value': ' '}, {'value': False},
+                    {'secretRef': 'unexpected'}, {'unexpected': ''}):
+        bad = copy.deepcopy(returned)
+        bad['properties']['template']['containers'][0]['env'][-1].update(changes)
+        with pytest.raises(AssertionError): deploy.validate_app(bad)
+        with pytest.raises(deploy.DeploymentError): deploy.assistant_settings(bad, 'enable')
