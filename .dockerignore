@@ -28,10 +28,10 @@
 !frontend/src/**/*.tsx
 !frontend/src/**/*.css
 !frontend/src/football/portraits/
-!frontend/src/football/portraits/*.jpg
+!frontend/src/football/portraits/*.webp
 # Tests are not needed by the production frontend build.
 frontend/src/**/*.test.ts
 frontend/src/**/*.test.tsx
 
 # Approved public header artwork required by FootieWordmark.
-!frontend/src/assets/brand/footie-wordmark-forest-v1.png
+!frontend/src/assets/brand/footie-wordmark-forest-v1.webp

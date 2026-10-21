@@ -2,7 +2,7 @@ import {useState,type CSSProperties} from 'react'
 import {ClubCrest} from '../matchday/ClubCrest'
 import type {Club,Heatmap,Player,Tile} from './data'
 import {shortName,tileValue} from './data'
-import {playerPortraits} from './portraits'
+import {playerPortraits,portraitSrcSet} from './portraits'
 
 export function Badge({club}:{club:Club}){
   if(club.club_id==='eastbridge'||club.club_id==='northport')return <ClubCrest club={club.club_id}/>
@@ -13,10 +13,10 @@ export function Badge({club}:{club:Club}){
     <text x="40" y="20" textAnchor="middle" fill="#fff1cf" fontSize="7" letterSpacing="2">{club.short_name}</text>
   </svg>
 }
-export function Shirt({player,club}:{player:Player;club:Club}){
+export function Shirt({player,club,profile=false}:{player:Player;club:Club;profile?:boolean}){
   const [failed,setFailed]=useState<string|null>(null)
   const portrait=playerPortraits[player.player_id]
-  if(portrait&&failed!==portrait)return <span className="fh-player-portrait"><img src={portrait} alt={`${player.name} in ${club.name} colours`} loading="lazy" decoding="async" width="1254" height="1254" onError={()=>setFailed(portrait)}/><span className="fh-portrait-number">#{player.number}</span></span>
+  if(portrait&&failed!==portrait)return <span className="fh-player-portrait"><img src={portrait} srcSet={portraitSrcSet(player.player_id)} sizes={profile?'(max-width: 760px) 112px, 240px':'(max-width: 760px) 44vw, (max-width: 1100px) 28vw, 300px'} alt={`${player.name} in ${club.name} colours`} loading="lazy" decoding="async" width="1254" height="1254" onError={()=>setFailed(portrait)}/><span className="fh-portrait-number">#{player.number}</span></span>
   return <svg className="fh-shirt" viewBox="0 0 220 210" aria-hidden="true">
     <ellipse cx="110" cy="193" rx="73" ry="8" fill="#000" opacity=".12"/>
     <path d="m72 27 21-8q17 15 34 0l21 8 48 37-28 36-18-13 6 101H64l6-101-18 13-28-36Z" fill={club.primary_color}/>

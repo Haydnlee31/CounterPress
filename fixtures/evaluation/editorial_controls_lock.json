@@ -1,5 +1,5 @@
 {
-  "version": "replay-lineup-continuity-v1",
+  "version": "public-asset-delivery-v1",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -8,7 +8,7 @@
     "backend/counterpress/adaptation/contracts.py": "9f023a23292524f4bead40259988842f4d78abc2ca429842bd9b70f746616aa3",
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
-    "backend/counterpress/api/main.py": "cbfef76b6a90ced52212efe6ed9693e35b87d332df6cb12433d2d51aeb5d7f0e",
+    "backend/counterpress/api/main.py": "a9e3bf462e07ed2b0dafe89667ce6b2c461bafd724e7803328fddae65a379a32",
     "backend/counterpress/api/snapshots.py": "7660f6430475f783e9faeb37983f5ccde28368e30135a3952f94f2bfa40eed6e",
     "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
     "backend/counterpress/assistant/api.py": "42e1f498337365d9d19a1fba2dd591ce908076fcff593bbb79647bd7ca40e00b",

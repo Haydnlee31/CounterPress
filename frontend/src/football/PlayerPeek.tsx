@@ -2,7 +2,7 @@ import {useEffect,useId,useLayoutEffect,useRef,useState} from 'react'
 import {createPortal} from 'react-dom'
 import type {FocusEvent,PointerEvent} from 'react'
 import type {Player} from './data'
-import {playerPortraits} from './portraits'
+import {pitchPortraits} from './portraits'
 import './playerPeek.css'
 
 type Identity=Pick<Player,'player_id'|'name'|'role'|'number'>
@@ -71,7 +71,7 @@ export function usePlayerPeek(known?:Identity[],enabled=true,frameKey?:string|nu
 function PlayerPeek({id,anchor,player,enter,leave}:{id:string;anchor:Anchor;player?:Identity;enter:()=>void;leave:()=>void}){
   const ref=useRef<HTMLDivElement>(null),[position,setPosition]=useState({left:12,top:12}),[failed,setFailed]=useState(false)
   useLayoutEffect(()=>{const r=ref.current!.getBoundingClientRect();setPosition(peekPosition(anchor.x,anchor.y,r.width,r.height,{width:window.innerWidth,height:window.innerHeight}))},[anchor.x,anchor.y,player])
-  const name=player?.name??anchor.name,portrait=playerPortraits[anchor.id]
+  const name=player?.name??anchor.name,portrait=pitchPortraits[anchor.id]
   return <div ref={ref} id={id} role="tooltip" className="player-peek" style={position} onPointerEnter={enter} onPointerLeave={e=>{if(e.pointerType!=='touch')leave()}}>
     <div className="player-peek-avatar" aria-hidden="true">{portrait&&!failed?<img src={portrait} alt="" onError={()=>setFailed(true)}/>:<span>{name.split(' ').map(s=>s[0]).slice(0,2).join('')}</span>}</div>
     <div className="player-peek-copy"><strong>{name}</strong><span>{player?roles[player.role]??'Position unavailable':'Position unavailable'}<i aria-hidden="true">·</i>{player&&Number.isInteger(player.number)?`#${player.number}`:'Shirt unavailable'}</span></div>
