@@ -8,5 +8,6 @@
   "fixture_sha256": "aeecf5197143d82803e1fd0caee98346b17e79c1dbb57fef90cff30e9ee8ee41",
   "revision": 2,
   "changes": "Selected match 2058007. Belgium and Japan mapped to fictional Eastbridge and Northport, with display team IDs 4418 and 9598 and match-scoped player aliases. Coordinates scaled to 105 x 68 metres; event outcomes derived from provider tags. Raw source records retained for audit; no video reproduced. Revision 2: map source goalkeepers to the goalkeeper identities eb01/np01 by swapping their former aliases; source events and scores are unchanged.",
-  "alias_sha256": "d6ffed3bdc3856448ceb8f8ee2b4f34683175fd426895b39d1a78f76ddfbf2cf"
+  "alias_sha256": "d6ffed3bdc3856448ceb8f8ee2b4f34683175fd426895b39d1a78f76ddfbf2cf",
+  "lineup_sha256": "6a43cc91ea5e00efad465ad30629442fc8f1696b1518a61654aa46ca666f84a9"
 }

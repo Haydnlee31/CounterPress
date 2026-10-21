@@ -13,13 +13,13 @@ from counterpress.live.highlight_narrative import narrative, validate_asset, SCR
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--publish',action='store_true');parser.add_argument('--story',choices=list(SCRIPTS));parser.add_argument('--language',choices=['en','zh-Hans']);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--publish',action='store_true');parser.add_argument('--story',choices=list(SCRIPTS));parser.add_argument('--language',choices=['en','zh-Hans']);parser.add_argument('--voice',choices=['broadcast','british','natural'],default='broadcast');args=parser.parse_args()
     import azure.cognitiveservices.speech as sdk
     service=AzureSpeech();directory=Path('var/commentary');directory.mkdir(parents=True,exist_ok=True)
     for language in ([args.language] if args.language else ['en','zh-Hans']):
         for story in ([args.story] if args.story else SCRIPTS):
             events=load_fixture(Path('fixtures')/SCENARIOS[story][0]).events
-            script=narrative(events,language);target=directory/(script['key']+'.json')
+            script=narrative(events,language,args.voice);target=directory/(script['key']+'.json')
             if target.exists():asset=validate_asset(json.loads(target.read_text()),script)
             else:
                 text=' '.join(b['text'] for b in script['beats'])
@@ -38,7 +38,7 @@ def main():
                 validate_asset(asset,script);target.write_text(json.dumps(asset,ensure_ascii=False))
                 # Authoring is serial; also spaces new F0 syntheses across minute boundaries.
                 time.sleep(5)
-            (directory/f'{story}-{language}.mp3').write_bytes(base64.b64decode(asset['audio']))
+            (directory/(f'{story}-{language}'+('' if args.voice=='broadcast' else '-'+args.voice)+'.mp3')).write_bytes(base64.b64decode(asset['audio']))
             if args.publish:service.cache.get_blob_client('narration/v2/'+script['key']+'.json').upload_blob(json.dumps(asset,ensure_ascii=False).encode(),overwrite=True)
             print(f'{story} {language}: {asset["duration"]:.2f}s, {len(asset["markers"])} phrase markers, {"published" if args.publish else "local preview"}',flush=True)
 

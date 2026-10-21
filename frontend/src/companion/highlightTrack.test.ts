@@ -35,3 +35,26 @@ test('late cleanup from a previous play cannot pause a newer seek or speed chang
  expect(t.audio.currentTime).toBe(5)
  current.stop();expect(t.audio.pause).toHaveBeenCalledTimes(1)
 })
+test('keeps the audio as the clock at 2x while preserving vocal pitch',async()=>{
+ const t=track();const player=new TrackPlayer(t,3,2)
+ await player.start()
+ expect(t.audio.playbackRate).toBe(2);expect(t.audio.preservesPitch).toBe(true)
+ t.audio.currentTime=8
+ expect(trackPosition(t,player.position())).toEqual({index:2,progress:expect.closeTo(.6,5)})
+ player.stop()
+})
+
+import {readyAudio} from './highlightTrack'
+test('does not declare commentary ready until the media element is buffered',async()=>{
+ const media=Object.assign(new EventTarget(),{readyState:0,load:vi.fn(),play:vi.fn()}) as unknown as HTMLAudioElement
+ const controller=new AbortController();let ready=false
+ const pending=readyAudio(media,controller.signal).then(()=>{ready=true})
+ await Promise.resolve();expect(ready).toBe(false);expect(media.load).toHaveBeenCalledOnce();expect(media.play).not.toHaveBeenCalled()
+ media.dispatchEvent(new Event('canplaythrough'));await pending;expect(ready).toBe(true)
+})
+test('cancels audio preparation cleanly when the highlight changes',async()=>{
+ const media=Object.assign(new EventTarget(),{readyState:0,load:vi.fn()}) as unknown as HTMLAudioElement
+ const controller=new AbortController(),pending=readyAudio(media,controller.signal)
+ controller.abort();await expect(pending).rejects.toMatchObject({name:'AbortError'})
+ media.dispatchEvent(new Event('canplaythrough'))
+})

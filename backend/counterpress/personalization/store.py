@@ -3,6 +3,7 @@
 Source artifacts contain no keys. Azure storage/stream connections are deliberately
 not configured here. The same reducer handles static and corrected/live views.
 """
+from contextlib import contextmanager
 from functools import lru_cache
 from hashlib import sha256
 import gzip
@@ -10,14 +11,16 @@ import json
 from pathlib import Path
 import sqlite3
 from threading import RLock
+from counterpress.history import HistoryStorageError
 from .contracts import Action,Club,Fixture,MatchRecord,Player
 from .metrics import digest,reduce_record,select_events
 from .simulation import simulate
 
 
 class DataStore:
-    def __init__(self,root:Path,path=':memory:',*,allow_unreviewed_spatial=False):
+    def __init__(self,root:Path,path=':memory:',*,allow_unreviewed_spatial=False,journal=None):
         self.root=root;self.lock=RLock()
+        self.journal=journal;self._frame=None
         self.manifest=json.loads((root/'manifest.json').read_text())
         if self.manifest.get('validation_status','passed')!='passed':
             raise ValueError('Career dataset did not pass validation; keep the previous dataset active')
@@ -113,36 +116,93 @@ class DataStore:
         current=MatchRecord(fixture=record.fixture,events=tuple(selected))
         return reduce_record(current,None if completed else cutoff)
 
-    def ingest(self,mid,events):
-        """Atomic idempotent local ingestion. No public unauthenticated write API.
+    @property
+    def dataset(self):return self.manifest['files']['ledger.json.gz']
 
-        Reordered deliveries are accepted; conflicting identities/sequences fail.
-        Earlier snapshots select the revision actually available at that cutoff.
-        """
+    @contextmanager
+    def snapshot(self):
+        """One consistent compound read, refreshed from shared durable revisions."""
+        with self.lock:
+            if self.journal:self._materialize(self.journal.read(self.dataset))
+            yield self
+
+    def revision_state(self):
+        with self.snapshot():
+            return {'dataset':self.dataset,'generation':self._frame.generation if self._frame else 0,
+                    'enabled':self.journal is not None,
+                    'matches':{mid:sum(e.match_id==mid for e in self._frame.actions) for mid in {e.match_id for e in self._frame.actions}} if self._frame else {}}
+
+    def _materialize(self,frame):
+        if frame.dataset!=self.dataset:raise HistoryStorageError('Career dataset mismatch')
+        if self._frame==frame:return
+        if self._frame and (frame.generation<self._frame.generation or
+                frame.actions[:len(self._frame.actions)]!=self._frame.actions):
+            raise HistoryStorageError('Career correction history regressed')
+        with self.db:
+            local={r[0] for r in self.db.execute('SELECT payload FROM career_revisions')}
+            shared={e.model_dump_json() for e in frame.actions}
+            if not local.issubset(shared):
+                raise HistoryStorageError('Local career revisions differ from shared history')
+            grouped={}
+            for e in frame.actions:
+                if e.model_dump_json() not in local:grouped.setdefault(e.match_id,[]).append(e)
+            try:
+                for mid,incoming in grouped.items():
+                    pending,_=self._validate(mid,incoming,self.events(mid))
+                    self._insert(pending)
+            except (ValueError,KeyError):
+                raise HistoryStorageError('Shared career revisions failed validation') from None
+        self._frame=frame
+
+    def _insert(self,pending):
+        for e in pending:self.db.execute('INSERT INTO career_revisions VALUES(?,?,?,?,?)',
+            (e.match_id,e.event_id,e.revision,e.delivery_sequence,e.model_dump_json()))
+
+    def ingest(self,mid,events):
+        """Validate, durably commit, then materialize; duplicate retries are harmless."""
         incoming=[Action.model_validate_json(e.model_dump_json()) for e in events]
         if any(e.match_id!=mid for e in incoming):raise ValueError('Wrong match')
-        with self.lock,self.db:
-            existing=self.events(mid);by_version={(e.event_id,e.revision):e for e in existing};by_seq={e.delivery_sequence:e for e in existing}
-            identities={e.event_id:e.occurrence_order for e in existing}
-            pending=[]
-            for e in incoming:
-                version=(e.event_id,e.revision)
-                if version in by_version:
-                    if e!=by_version[version]:raise ValueError('Conflicting event revision')
-                    continue
-                if e.delivery_sequence in by_seq:raise ValueError('Conflicting delivery sequence')
-                if e.event_id in identities and e.occurrence_order!=identities[e.event_id]:raise ValueError('Occurrence order is immutable')
-                # A correction must become available after every earlier revision.
-                versions=[v for (eid,_),v in by_version.items() if eid==e.event_id]
-                for old in versions:
-                    if (e.revision>old.revision)!=( (e.available_period,e.available_ms,e.delivery_sequence)>(old.available_period,old.available_ms,old.delivery_sequence)):
-                        raise ValueError('Revision chronology conflicts with availability')
-                by_version[version]=e;by_seq[e.delivery_sequence]=e;identities[e.event_id]=e.occurrence_order;pending.append(e)
-            all_events=(*existing,*pending)
-            # Validate every supplied revision independently, even one superseded
-            # in this batch, as well as the latest whole-match identity set.
-            fixture=self.original(mid).fixture
-            for e in pending:MatchRecord(fixture=fixture,events=(e,))
-            MatchRecord(fixture=fixture,events=tuple(select_events(all_events)))
-            for e in pending:self.db.execute('INSERT INTO career_revisions VALUES(?,?,?,?,?)',(mid,e.event_id,e.revision,e.delivery_sequence,e.model_dump_json()))
-            return {'accepted':len(pending),'duplicates':len(incoming)-len(pending),'received_through_sequence':max(by_seq,default=0)}
+        with self.lock:
+            if not self.journal:
+                with self.db:
+                    pending,result=self._validate(mid,incoming,self.events(mid))
+                    self._insert(pending)
+                return result
+            self._materialize(self.journal.read(self.dataset))
+            result={}
+            def build(previous):
+                # A Cosmos conflict rebuilds against the winning durable frame,
+                # never against an index that missed another replica's commit.
+                existing=(*self.original(mid).events,*(e for e in previous.actions if e.match_id==mid))
+                pending,counts=self._validate(mid,incoming,existing)
+                result.clear();result.update(counts)
+                return (*previous.actions,*pending)
+            frame=self.journal.transact(self.dataset,build)
+            self._materialize(frame)
+            return {**result,'generation':frame.generation}
+
+    def _validate(self,mid,incoming,existing):
+        by_version={(e.event_id,e.revision):e for e in existing};by_seq={e.delivery_sequence:e for e in existing}
+        identities={e.event_id:e.occurrence_order for e in existing}
+        pending=[]
+        for e in incoming:
+            version=(e.event_id,e.revision)
+            if version in by_version:
+                if e!=by_version[version]:raise ValueError('Conflicting event revision')
+                continue
+            if e.delivery_sequence in by_seq:raise ValueError('Conflicting delivery sequence')
+            if e.event_id in identities and e.occurrence_order!=identities[e.event_id]:raise ValueError('Occurrence order is immutable')
+            # A correction must become available after every earlier revision.
+            versions=[v for (eid,_),v in by_version.items() if eid==e.event_id]
+            for old in versions:
+                if (e.revision>old.revision)!=( (e.available_period,e.available_ms,e.delivery_sequence)>(old.available_period,old.available_ms,old.delivery_sequence)):
+                    raise ValueError('Revision chronology conflicts with availability')
+            by_version[version]=e;by_seq[e.delivery_sequence]=e;identities[e.event_id]=e.occurrence_order;pending.append(e)
+        all_events=(*existing,*pending)
+        # Validate every supplied revision independently, even one superseded
+        # in this batch, as well as the latest whole-match identity set.
+        fixture=self.original(mid).fixture
+        for e in pending:MatchRecord(fixture=fixture,events=(e,))
+        MatchRecord(fixture=fixture,events=tuple(select_events(all_events)))
+        return pending,{'accepted':len(pending),'duplicates':len(incoming)-len(pending),
+                        'received_through_sequence':max(by_seq,default=0)}

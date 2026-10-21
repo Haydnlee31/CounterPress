@@ -1,0 +1,714 @@
+{
+  "version": "footie-questions-v1",
+  "created_at": "2026-10-21T03:34:02.893110+00:00",
+  "mode": "azure_sample",
+  "corpus_cases": 58,
+  "dataset_sha256": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef",
+  "source_sha256": {
+    "fixtures/assistant/questions.json": "c71deebc45b2ed9c7c940a69795dcb83cbca56ec18e554e36ba6bb7f5597713c",
+    "scripts/evaluate_footie.py": "dfa39705c3d5afef0d187a01ef2ccf6c1fa0bbe0ee006a4e094e29e1eda839fc",
+    "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
+    "backend/counterpress/assistant/api.py": "5e71c6ffd501bdc380a6c43e63d8900d87ac84f907ed9e8cf080f49dbef1bfcc",
+    "backend/counterpress/assistant/contracts.py": "bec5feb46430b78fa1e7220f42168e46d271992dcc9d0afb5a63f804ebfac7e4",
+    "backend/counterpress/assistant/evaluation.py": "314d7706fcc146eb9897dfb5fae79641a09ea7a32790e0d8f921ca593a0a4295",
+    "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
+    "backend/counterpress/assistant/narrative.py": "eedb17f6f1276e923e79de377fbc6356337293f9ffe66c946518605e88839716",
+    "backend/counterpress/assistant/planner.py": "736d3967f8eb4b55080de687822683c15097ee5429869ec71a8b183a8eb38c03",
+    "backend/counterpress/assistant/service.py": "d224dd23d3b234154f58ecc5edb4bfe3afeef936214cec3dbe60d9a0023a5e13"
+  },
+  "model_attempts": 17,
+  "summary": {
+    "cases": 10,
+    "metrics": {
+      "raw_intent_correct": {
+        "passed": 3,
+        "total": 10
+      },
+      "effective_intent_correct": {
+        "passed": 5,
+        "total": 10
+      },
+      "answer_evidence_correct": {
+        "passed": 5,
+        "total": 10
+      },
+      "narrative_bound": {
+        "passed": 10,
+        "total": 10
+      },
+      "anchors_correct": {
+        "passed": 10,
+        "total": 10
+      },
+      "passed": {
+        "passed": 5,
+        "total": 10
+      }
+    },
+    "model_routing": {
+      "passed": 3,
+      "total": 9
+    },
+    "categories": {
+      "comparison": {
+        "passed": 0,
+        "total": 1
+      },
+      "followup": {
+        "passed": 1,
+        "total": 1
+      },
+      "goalkeeper": {
+        "passed": 0,
+        "total": 1
+      },
+      "metric_distinction": {
+        "passed": 0,
+        "total": 1
+      },
+      "player": {
+        "passed": 0,
+        "total": 1
+      },
+      "preferences": {
+        "passed": 0,
+        "total": 1
+      },
+      "recent": {
+        "passed": 1,
+        "total": 1
+      },
+      "season": {
+        "passed": 1,
+        "total": 1
+      },
+      "temporal": {
+        "passed": 1,
+        "total": 1
+      },
+      "unsupported": {
+        "passed": 1,
+        "total": 1
+      }
+    },
+    "latency_ms": {
+      "p50": 3797,
+      "p95": 5458
+    },
+    "fallbacks": {
+      "plan_rejected": 1
+    },
+    "failed_ids": [
+      "goals_paraphrase",
+      "chance_creation",
+      "save_percentage",
+      "comparison",
+      "favorite"
+    ]
+  },
+  "results": [
+    {
+      "id": "goals_paraphrase",
+      "category": "player",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": true,
+      "mode": "azure",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4580,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3078,
+          "completion_tokens": 45,
+          "total_tokens": 3123
+        },
+        "narrator": {
+          "prompt_tokens": 268,
+          "completion_tokens": 13,
+          "total_tokens": 281
+        }
+      },
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "unreported_usage_attempts": 0
+    },
+    {
+      "id": "chance_creation",
+      "category": "metric_distinction",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": true,
+      "mode": "azure",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4310,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3078,
+          "completion_tokens": 46,
+          "total_tokens": 3124
+        },
+        "narrator": {
+          "prompt_tokens": 220,
+          "completion_tokens": 10,
+          "total_tokens": 230
+        }
+      },
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "unreported_usage_attempts": 0
+    },
+    {
+      "id": "save_percentage",
+      "category": "goalkeeper",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": true,
+      "mode": "azure",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 3993,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3075,
+          "completion_tokens": 45,
+          "total_tokens": 3120
+        },
+        "narrator": {
+          "prompt_tokens": 220,
+          "completion_tokens": 10,
+          "total_tokens": 230
+        }
+      },
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "save_pct",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "save_pct",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "save_pct",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "unreported_usage_attempts": 0
+    },
+    {
+      "id": "comparison",
+      "category": "comparison",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": true,
+      "mode": "azure",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4065,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3083,
+          "completion_tokens": 48,
+          "total_tokens": 3131
+        },
+        "narrator": {
+          "prompt_tokens": 331,
+          "completion_tokens": 10,
+          "total_tokens": 341
+        }
+      },
+      "expected_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "unreported_usage_attempts": 0
+    },
+    {
+      "id": "recent_assists",
+      "category": "recent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": true,
+      "mode": "azure",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 3797,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3082,
+          "completion_tokens": 42,
+          "total_tokens": 3124
+        },
+        "narrator": {
+          "prompt_tokens": 326,
+          "completion_tokens": 10,
+          "total_tokens": 336
+        }
+      },
+      "expected_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "unreported_usage_attempts": 0
+    },
+    {
+      "id": "season_relative",
+      "category": "season",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": true,
+      "mode": "azure",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 3399,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3078,
+          "completion_tokens": 49,
+          "total_tokens": 3127
+        },
+        "narrator": {
+          "prompt_tokens": 417,
+          "completion_tokens": 13,
+          "total_tokens": 430
+        }
+      },
+      "expected_intent": {
+        "operation": "seasons",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": "2025-26"
+      },
+      "actual_intent": {
+        "operation": "seasons",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": "2025-26"
+      },
+      "raw_intent": {
+        "operation": "seasons",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": "2025-26"
+      },
+      "unreported_usage_attempts": 0
+    },
+    {
+      "id": "followup_season",
+      "category": "followup",
+      "raw_intent_correct": false,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": true,
+      "mode": "lookup_fallback",
+      "fallback": "plan_rejected",
+      "narrative_fallback": null,
+      "duration_ms": 1808,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3123,
+          "completion_tokens": 49,
+          "total_tokens": 3172
+        },
+        "narrator": {}
+      },
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "seasons",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": "2025-26"
+      },
+      "unreported_usage_attempts": 0
+    },
+    {
+      "id": "favorite",
+      "category": "preferences",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": true,
+      "mode": "azure",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 3652,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3081,
+          "completion_tokens": 45,
+          "total_tokens": 3126
+        },
+        "narrator": {
+          "prompt_tokens": 268,
+          "completion_tokens": 13,
+          "total_tokens": 281
+        }
+      },
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "unreported_usage_attempts": 0
+    },
+    {
+      "id": "tracking",
+      "category": "unsupported",
+      "raw_intent_correct": false,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 33,
+      "usage": {
+        "planner": {},
+        "narrator": {}
+      },
+      "expected_intent": {
+        "operation": "unsupported"
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": null,
+      "unreported_usage_attempts": 0
+    },
+    {
+      "id": "goal_after",
+      "category": "temporal",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": true,
+      "mode": "azure",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 5458,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3100,
+          "completion_tokens": 46,
+          "total_tokens": 3146
+        },
+        "narrator": {
+          "prompt_tokens": 263,
+          "completion_tokens": 13,
+          "total_tokens": 276
+        }
+      },
+      "expected_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "unreported_usage_attempts": 0
+    }
+  ],
+  "limits": [
+    "Authored regression cases, not unseen fan traffic.",
+    "Oracle uses reviewed intent labels and existing reducers; independent reducer audits remain separate.",
+    "Azure sample is small and single-run; do not present it as population accuracy.",
+    "Token counts exclude unknown billed usage on failed requests; no dollar-cost claim.",
+    "No hosted endpoint, synthesis, streaming write or production data mutation."
+  ]
+}

@@ -1,3 +1,4 @@
+import {useReplaySpeed} from '../football/useReplaySpeed'
 import {useEffect,useMemo,useRef,useState} from 'react'
 import type {CSSProperties} from 'react'
 import type {Event} from '../types'
@@ -13,7 +14,7 @@ import './live.css'
 
 export default function FullMatch(){
   const [events,setEvents]=useState<Event[]>([]),[error,setError]=useState(false)
-  const [at,setAt]=useState(0),[playing,setPlaying]=useState(false),[speed,setSpeed]=useState(1),[epoch,setEpoch]=useState(0)
+  const [at,setAt]=useState(0),[playing,setPlaying]=useState(false),[speed,setSpeed]=useReplaySpeed(),[epoch,setEpoch]=useState(0)
   const [language,setLanguage]=useState(readPreferences().language)
   const zh=language==='zh-Hans',t=(en:string,cn:string)=>zh?cn:en
   const timeRef=useRef(0)
@@ -53,7 +54,7 @@ export default function FullMatch(){
       <section className="live-controls" aria-label={t('Full-match playback','全场回放控制')}>
         <button className="fan-primary" onClick={play}>{playing?t('Pause match','暂停比赛'):at===HALF?t('Start second half','开始下半场'):at===END?t('Replay match','重新播放'):t('Play match','播放比赛')}</button>
         <button onClick={()=>seek(Math.max(0,at-30000))}>{t('Back 30s','后退30秒')}</button><button onClick={()=>seek(Math.min(END,at+30000))}>{t('Forward 30s','前进30秒')}</button>
-        <label>{t('Speed','速度')} <select aria-label="Match playback speed" value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value="1">1×</option><option value="1.5">1.5×</option><option value="3">3×</option></select></label>
+        <label>{t('Speed','速度')} <select aria-label="Match playback speed" value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
         <label className="live-seek"><span>{t('Match clock','比赛时间')}</span><input aria-label="Match clock" type="range" min="0" max={END} step="1000" value={at} onChange={e=>seek(Number(e.target.value))}/></label>
       </section>
       <div className="live-stats" aria-label={t('Match numbers so far','截至目前的比赛数据')}>{stats.map(s=><div key={s.team}><strong>{s.team==='eastbridge'?'Eastbridge':'Northport'}</strong><span>{s.shots} {t('shots','射门')} · {s.passes} {t('completed passes','成功传球')}</span></div>)}</div>

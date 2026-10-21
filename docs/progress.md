@@ -2702,3 +2702,147 @@ Fixed the Footie mascot wrapper being shorter than the artwork, with clear gaps 
 ### Footie logo header test — local, 21 October 2026
 
 User selected the forest-green athletic wordmark with a football replacing the second o. Prepared a transparent asset with the built-in image tool and added it to the shared local header, preserving the home destination and accessible label. Tested 176/144/128px logo widths, including a 320px header adjustment to keep Tools/Language beside the logo. All 172 frontend tests, build, 28 header viewport checks and the 13-page spacing audit pass. Asset/prompt metadata are in `frontend/src/assets/brand/`; screenshots are in ignored `var/logo-validation/`. No publication or full naming migration. Next: review the header, then prepare production vector artwork and a consistent user-facing rename if accepted.
+
+## 21 October 2026 — Footie question benchmark and scope fixes (local)
+
+Implemented a 58-question authored benchmark with a preselected ten-question
+Azure sample, independent intent labels, evidence/visual/action checks, temporal
+and retraction anchors, and a persistent 20-attempt evaluation budget. The offline
+baseline exposed 14 failures; the live sample exposed a career/current-season
+scope mismatch. Fixed metric specificity, ambiguous routing, follow-up periods,
+name resolution and server-side scope validation. Final offline answers pass
+58/58; captured Azure plans pass through corrected API fallback handling. Two
+fresh targeted Azure checks passed. Initial live sample remains recorded at
+5/10, not replaced by an inflated post-fix model-accuracy claim. Total live
+attempts: 20; reported tokens: 37,298. No publication or data-layer regeneration.
+See [methodology and results](verification/footie-question-benchmark.md).
+
+Final backend verification: 858 passed, one existing experimental evaluator warning. Credential scan and diff whitespace checks passed.
+
+## 21 October 2026 — Durable career revision bridge (local)
+
+Connected the existing stream consumer to a separate dataset-pinned career
+Action envelope. Corrections commit to an append-only bounded journal (SQLite
+locally; atomic Cosmos head/body in the existing container in cloud) before
+notification/checkpoint. Compound career, personalized and assistant reads
+refresh their per-instance indexes; Footie also rechecks after narration. Added
+receive-only career refresh negotiation, authoritative revision polling, browser
+invalidation and cancellation without automatic model calls. Layout unchanged.
+
+Verified 75 → 74 → 75 through independent writer/API/assistant instances and the
+actual browser; preserved the profile tab and confirmed loaded widgets/mobile
+width. 28 bridge tests, 886 full backend tests, 176 full frontend tests and the
+production build pass. Final dataset-change refinement passes its 32-test UI
+regression set. No Azure/model calls, new services or publication. The broader
+Azure question sample remains blocked by the unchanged hourly evaluation cap.
+
+See [design and activation](career-revision-bridge.md) and
+[verification](verification/career-revision-bridge.md). Next: rerun the preselected
+Azure question sample when its allowance renews, then perform an isolated cloud
+career correction/restore check before enabling this bridge in the hosted app.
+Legacy replay feeds still need explicit mapping/rebuilding before claiming
+universal correction propagation across every animation.
+
+## 21 October 2026 — Fan feedback: portraits, standings and replay (local)
+
+Added shared portrait pitch markers with initials fallback, a Clubhouse season
+standings page, continuous Match Centre replay and automatic next-sequence
+playback. Speeds include 2× and persist between sequences. Phone pitches rotate
+vertically; compact standings keep points visible. Fixed grouping of identical
+timestamps across halves and cached full-match movement anchors. Added recorded
+bookings/send-offs and time-aware pitch indicators without inventing suspension
+lengths or zero counts for missing card coverage.
+
+Prepared six local British Azure voice comparisons (1,463 metered characters,
+no model calls). Browser testing found and fixed a 1.6-second first-play delay;
+all six tracks now start within 12–15 ms locally and finish without cuts at 2×.
+892 backend tests, 191 frontend tests, production build, three full-match scores,
+mobile layouts and narration controls pass. No push or deployment. See
+[implementation and verification](verification/fan-feedback.md). Next: user
+tries the local build on port 8019 before publishing the accepted changes.
+
+### Commentary preference — original accent retained
+
+User selected the existing accent with less robotic delivery. Added a `natural`
+profile using the original American Guy voice, conversational build-up and
+restrained excitement. Grounded scripts, whole-track playback and Mandarin are
+unchanged. Replaced the British comparison in the active local preview on port
+8019. Six additional Speech F0 recordings used 1,463 reserved characters; the
+two audition rounds total 2,926 characters. No model calls or publication.
+Targeted narrative/API verification: 27 passed in 0.32s.
+All six original-accent tracks also pass actual browser playback at 2×, with
+14–16 ms starts, complete phrase bookmarks, natural ends and no cuts.
+
+### Pitch control layout refinement — local, 21 October 2026
+
+Regrouped Match Centre controls into an inset dock beneath the field. Playback
+is primary; speed, a compact Display disclosure and Auto-play switch are
+secondary. Bookings collapse into a summary with pitch indicators retained.
+Applied shared Display styling to Matchday/Clubhouse and inset Matchday's
+commentary actions. Removed the redundant normal-play instruction. Corrected
+inherited disclosure styles and the mobile Auto-play wrap during screenshot
+review. Four replay surfaces pass at five widths; the wider 13-page spacing
+audit passes at four widths. No backend changes, cloud calls or publication.
+See the control-placement section in [verification](verification/fan-feedback.md).
+Next: user reviews the local Match Centre before publishing.
+
+### Player hover cards — local, 21 October 2026
+
+Added compact full-name/position/shirt-number cards beside the pointer across
+Matchday, Match Centre and Clubhouse replays, using existing roster records and
+portraits. Cards support focus/Escape and phone taps, stay inside the viewport,
+and render correctly above the pitch and inside modal dialogs. No new toggles
+or layout shifts. Unknown substitute attributes remain unavailable. 196 frontend
+tests and the production build pass; actual browser mouse/keyboard/touch checks
+and screenshot review pass. No cloud calls or publication. Next: user tries
+hovering a face or initials on the local pitch before publishing.
+
+### Stable player inspection — local, 21 October 2026
+
+Player hover/tap/selection now works only on paused frames, across Matchday,
+Match Centre and Clubhouse replays. Moving markers do not intercept pointers or
+keyboard navigation. Resume/seek clears the card. Replaced the inherited blue
+SVG focus outline with a thin portrait border. 197 frontend tests, build and
+actual browser checks pass, including stationary inspected-player bounds.
+No additional toggles or annotation tools; no cloud calls or publication.
+Next: user tries pause → inspect → resume before publishing.
+
+### Clarification: hover during playback, no click selection
+
+Restored live hover cards as requested; removed pitch click/Enter selection and
+button semantics across the replay views. Mouse clicks do not focus the SVG or
+interrupt playback. Keyboard/touch remain accessible ways to read details;
+player lists/focus selectors retain deliberate selection. Hover cards dismiss
+when a moving marker leaves the stationary pointer; focused/touch cards track
+the marker. This supersedes the prior paused-only interpretation. Local only.
+
+### 21 October 2026 — Match Centre lower-section spacing
+
+Reworked Shots & passes into a compact metric strip, followed by a full-width Around this moment sequence. Removed the fixed context-list height and mismatched columns; added selected-play styling and compact mobile timeline rows. Local UI only. Frontend 198 tests passed, build passed, and 15 browser layout scenarios across five widths passed with working stat filters/event navigation and no clipping. Details in `docs/verification/fan-feedback.md`.
+
+### 21 October 2026 — restore parallel editorial layout (user preference)
+
+Restored the two-column Shots & passes / Around this moment design, aligning heading and list baselines with shared grid rows. Removed the overview discipline board. Expanded the desktop action list into the formerly blank area below Show more; additional actions scroll without growing the replay. Supersedes the preceding stacked-layout entry. Build, 198 frontend tests and the updated 15-scenario browser audit passed. Local only.
+
+### 21 October 2026 — replay realism and source lineup continuity
+
+Corrected Match Centre replay movement following the ten-minute review. Recorded
+starting XIs/substitutions now determine the lineup; keepers no longer disappear
+when substitutes become involved. New source fixtures have attribution and hash
+checks. Connected actions use bounded speed/acceleration and reachable player
+paths, aerial contestants remain at the challenge, keeper reactions are bounded,
+and missing travel/restarts fade between scenes. Score and insight timing use
+action resolution. Clubhouse shares the motion engine; Matchday's separately
+timed highlight renderer/narration is unchanged.
+
+All three complete archives pass a 100ms motion/lineup/score audit (82,332 samples,
+zero configured-limit violations). 203 frontend tests, 902 backend tests, build,
+12 real-browser motion cases and a 90+ second continuous playback sample pass.
+Responsive controls pass at five widths. Event data cannot recover exact off-ball
+runs, marking, body contact or save trajectories; those remain constrained
+estimates, and replay time compresses stoppages. Details, commands, numeric
+limits and research sources: [verification](verification/fan-feedback.md).
+
+Local preview: http://127.0.0.1:8019/?match=wyscout-2058017#gi . No Azure usage or
+publication. Next: user checks Watch full match at 1×, especially the 17:58 own
+goal and the 54th-minute substitution period, before publishing.

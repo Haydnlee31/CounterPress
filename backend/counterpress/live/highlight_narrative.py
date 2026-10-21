@@ -71,23 +71,29 @@ SCRIPTS = {
 
 REVIEWED_SOURCES = {'last-gasp': 'd8d32f92cb117daed90e63e5638b1c6e3dd176cdf2d2a8c5bd45e359e0b255d9', 'one-touch': '8b640b5d5919ce6effc4da45bd620c77e0d2c1430392b466c7a18dc3db203d8d', 'breakaway': '12137f89c4723e5106c9baad5729b32f5e2174ae21fc3e153f44915fcc100f2d', 'level-first': '36fff78e7dd2ff1043884048cfb8fe272f626ec464bb86e160774cac93fbc7e3', 'take-lead': '4b014ab252fb7a2ddece043438305b817e142de8863ce2a04b5047924e94e7e9', 'level-late': 'e0969b13539cfad6466efea6c881050539312c7a0ebba4198160b6ba554849ba'}
 
-def narrative(events, language):
+def narrative(events, language, voice_profile='broadcast'):
+    if voice_profile not in ('broadcast','british','natural'):raise ValueError('Unknown voice profile')
     story=events[0].match_id.removeprefix('showcase-').removesuffix('-v1')
     if story not in SCRIPTS: raise ValueError('Highlight has no reviewed commentary')
     zh=language=='zh-Hans'
     beats=[{'position':position,'text':cn if zh else en} for position,en,cn in SCRIPTS[story]]
     if any(not 0<=b['position']<len(events) for b in beats): raise ValueError('Script does not match source')
-    voice='zh-CN-YunjianNeural' if zh else 'en-US-GuyNeural'
-    language='zh-CN' if zh else 'en-US'
+    voice='zh-CN-YunjianNeural' if zh else 'en-GB-RyanNeural' if voice_profile=='british' else 'en-US-GuyNeural'
+    language='zh-CN' if zh else 'en-GB' if voice_profile=='british' else 'en-US'
     # One synthesis and one continuous stream. Style changes follow the game's phases.
     parts=[]; previous_style=None
     for i,beat in enumerate(beats):
         event=events[int(beat['position'])]
         exciting=event.action.kind=='shot'
-        style=('sports-commentary-excited' if exciting else 'sports-commentary') if zh else ('excited' if exciting else 'newscast')
+        style=('sports-commentary-excited' if exciting else 'sports-commentary') if zh else (('cheerful' if exciting else 'chat') if voice_profile=='british' else ('excited' if exciting else 'newscast'))
+        # Keep Guy's existing American accent, with conversational build-up and
+        # restrained excitement. Whole phrases retain their natural punctuation.
+        natural=voice_profile=='natural' and not zh
+        if natural: style='excited' if exciting else 'friendly'
+        degree=('0.8' if exciting else '1.0') if natural else '1.15'
         if style!=previous_style:
             if previous_style is not None: parts.append('</mstts:express-as>')
-            parts.append(f'<mstts:express-as style="{style}" styledegree="1.15">')
+            parts.append(f'<mstts:express-as style="{style}" styledegree="{degree}">')
             previous_style=style
         parts.append(f'<bookmark mark="b{i}"/>{escape(beat["text"])}')
     parts.append('</mstts:express-as>')

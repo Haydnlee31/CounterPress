@@ -1,5 +1,5 @@
 """Start the local preview; optional Azure settings never leave the server."""
-import argparse,ast,os
+import argparse,ast,json,os
 from pathlib import Path
 
 
@@ -19,7 +19,23 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--azure',action='store_true',help='Enable bounded intent and narrative selection using existing local model credentials')
     parser.add_argument('--port',type=int,default=8017)
+    parser.add_argument('--commentary-dir',type=Path,help='Serve already validated local commentary bundles without cloud synthesis')
+    parser.add_argument('--voice',choices=['broadcast','british','natural'],default='broadcast')
     args=parser.parse_args()
+    if args.commentary_dir:
+        from counterpress.api.snapshots import SCENARIOS
+        from counterpress.fixture import load_fixture
+        from counterpress.live.highlight_narrative import SCRIPTS,narrative,validate_asset
+        try:
+            for language in ('en','zh-Hans'):
+                for story in SCRIPTS:
+                    script=narrative(load_fixture(Path('fixtures')/SCENARIOS[story][0]).events,language,args.voice)
+                    validate_asset(json.loads((args.commentary_dir/(script['key']+'.json')).read_text()),script)
+        except (OSError,ValueError,KeyError):
+            raise SystemExit('Prepare and validate every commentary bundle before enabling the local voice preview.') from None
+        os.environ['COUNTERPRESS_COMMENTARY_DIR']=str(args.commentary_dir.resolve())
+        os.environ['COUNTERPRESS_COMMENTARY_VOICE']=args.voice
+        os.environ['COUNTERPRESS_SPEECH']='azure'
     if args.azure:
         local_model_settings(Path('.env'))
         from counterpress.adaptation.azure import load_config

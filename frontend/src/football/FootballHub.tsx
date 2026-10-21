@@ -11,12 +11,13 @@ import PlayerInsights from './PlayerInsights'
 import {AskFootie} from '../assistant/AskFootie'
 import {FootieMascot} from '../assistant/FootieMascot'
 import './football.css'
+import {Standings} from './Standings'
 
-type Page={tab:'players'|'following'|'clubs'|'compare';kind?:'player'|'club';id?:string}
+type Page={tab:'players'|'following'|'clubs'|'compare'|'standings';kind?:'player'|'club';id?:string}
 export function readPage():Page{
   const [,part,id]=window.location.hash.split('/')
   if((part==='player'||part==='club')&&id&&/^[a-zA-Z0-9_-]+$/.test(id))return {tab:part==='player'?'players':'clubs',kind:part,id}
-  return {tab:part==='following'||part==='clubs'||part==='compare'?part:'players'}
+  return {tab:part==='following'||part==='clubs'||part==='compare'||part==='standings'?part:'players'}
 }
 function initialPreferences(){try{return readPreferences(window.localStorage)}catch{return {preferences:defaults(),status:'unavailable' as const}}}
 type Context={world:World;prefs:FanPreferences;update:(p:FanPreferences)=>void;follow:(kind:'player'|'club',id:string)=>void;compareIds:string[];toggleCompare:(id:string)=>void;season:string;setSeason:(s:string)=>void;home?:HomeView;watch:(h:Highlight)=>void}
@@ -26,7 +27,7 @@ export default function FootballHub(){
   const [page,setPage]=useState(readPage),[initial]=useState(initialPreferences),[prefs,setPrefs]=useState(initial.preferences)
   const [notice,setNotice]=useState(initial.status==='unavailable'?'Preferences will last for this visit; browser storage is unavailable.':initial.status==='invalid'?'Your saved preferences could not be read. Choose your favorites again.':'')
   const [season,setSeason]=useState(''),[compareIds,setCompareIds]=useState<string[]>([]),[highlight,setHighlight]=useState<Highlight|null>(null)
-  const world=useResource('world',loadWorld)
+  const world=useResource('world',loadWorld,false)
   useEffect(()=>{const route=()=>{setPage(readPage());setHighlight(null);window.scrollTo({top:0,behavior:'instant'})};window.addEventListener('hashchange',route);return()=>window.removeEventListener('hashchange',route)},[])
   useEffect(()=>{const sync=(event:StorageEvent)=>{if(event.key===preferenceKey||event.key===null)setPrefs(initialPreferences().preferences)};window.addEventListener('storage',sync);return()=>window.removeEventListener('storage',sync)},[])
   const registry=useMemo(()=>world.data?{clubIds:new Set(world.data.catalog.clubs.map(c=>c.club_id)),playerIds:new Set(world.data.players.map(p=>p.player_id))}:undefined,[world.data])
@@ -48,7 +49,7 @@ export default function FootballHub(){
       <div className="fh-topline"><div><p className="fh-eyebrow">COUNTERPRESS / {t('PLAYERS & CLUBS','球员与俱乐部')}</p><div className="fh-title-actions"><h1>{t('Clubhouse','Clubhouse')}<span>.</span></h1><a className="ask-footie" href="#assistant"><FootieMascot size={32}/>{t('Ask Footie','问问 Footie')} <span aria-hidden="true">↗</span></a></div></div>
         <div className="fh-settings"><label>{t('Insights','解读')}<select aria-label="Insight depth" value={prefs.depth} onChange={e=>update({...prefs,depth:e.target.value as FanPreferences['depth']})}><option value="casual">{t('At a glance','快速了解')}</option><option value="analyst">{t('In depth','深入分析')}</option></select></label><label>{t('Language','语言')}<select aria-label="Hub language" value={prefs.language} onChange={e=>update({...prefs,language:e.target.value as FanPreferences['language']})}><option value="en">English</option><option value="zh-Hans">中文</option></select></label></div>
       </div>
-      <nav className="fh-tabs" aria-label={t('Clubhouse sections','Clubhouse栏目')}>{([['players','Players','球员'],['clubs','Clubs','俱乐部'],['following','Following','关注'],['compare','Compare','对比']] as const).map(([tab,en,cn])=><a key={tab} href={`#football/${tab}`} aria-current={page.tab===tab?'page':undefined}>{t(en,cn)}{' '}{tab==='following'&&<span>{prefs.favorite_player_ids.length+prefs.favorite_club_ids.length}</span>}{tab==='compare'&&compareIds.length>0&&<span>{compareIds.length}</span>}</a>)}</nav>
+      <nav className="fh-tabs" aria-label={t('Clubhouse sections','Clubhouse栏目')}>{([['players','Players','球员'],['clubs','Clubs','俱乐部'],['following','Following','关注'],['compare','Compare','对比'],['standings','Standings','积分榜']] as const).map(([tab,en,cn])=><a key={tab} href={`#football/${tab}`} aria-current={page.tab===tab?'page':undefined}>{t(en,cn)}{' '}{tab==='following'&&<span>{prefs.favorite_player_ids.length+prefs.favorite_club_ids.length}</span>}{tab==='compare'&&compareIds.length>0&&<span>{compareIds.length}</span>}</a>)}</nav>
       {notice&&<div className="fh-notice" role="status">{notice}<button aria-label="Dismiss notice" onClick={()=>setNotice('')}>×</button></div>}
       {world.error?<Failure retry={world.retry}/>:!world.data?<Loading/>:<HubContent world={world.data} prefs={prefs} update={update} follow={follow} compareIds={compareIds} toggleCompare={toggleCompare} season={season} setSeason={setSeason} page={page} watch={setHighlight}/>}
       <footer className="fh-footer"><span>CounterPress · {t('Clubhouse','Clubhouse')}</span>{world.data&&<span>{t('Stats through','统计截至')} {dateLabel(world.data.throughDate,zh)}</span>}</footer>
@@ -63,7 +64,7 @@ function HubContent(props:Context & {page:Page}){
   const home=useFan<HomeView>(`home:${contextKey(prefs,season)}:${world.asOf}`,client=>client.home(prefs,{as_of:world.asOf,...(season?{season}:{})}))
   const ctx={...props,home:home.data}
   return <>
-    {page.kind&&page.id?<Profile key={`${page.kind}:${page.id}`} {...ctx} kind={page.kind} id={page.id}/>:page.tab==='players'?<Directory {...ctx}/>:page.tab==='clubs'?<Clubs {...ctx}/>:page.tab==='compare'?<Comparison {...ctx}/>:<Following {...ctx} error={!!home.error} retry={home.retry}/>}
+    {page.kind&&page.id?<Profile key={`${page.kind}:${page.id}`} {...ctx} kind={page.kind} id={page.id}/>:page.tab==='standings'?<Standings world={world}/>:page.tab==='players'?<Directory {...ctx}/>:page.tab==='clubs'?<Clubs {...ctx}/>:page.tab==='compare'?<Comparison {...ctx}/>:<Following {...ctx} error={!!home.error} retry={home.retry}/>}
   </>
 }
 export function Loading(){return <div className="fh-loading" role="status"><span/>{'Loading your football…'}</div>}

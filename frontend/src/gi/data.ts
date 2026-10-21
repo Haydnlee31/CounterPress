@@ -5,7 +5,7 @@ export type GIEvent = {
   available_period?:1|2|null; available_ms?:number|null;
   start:{x:number;y:number}|null; end:{x:number;y:number}|null; goal_for:number|null; review:boolean; tags:number[];
 }
-export type GIPlayer={player_id:string;provider_player_id:number|null;team_id:number;alias_id:string}
+export type GIPlayer={player_id:string;provider_player_id:number|null;team_id:number;alias_id:string;role?:'GK'|'DF'|'MF'|'FW'|null;starter?:boolean;entered_at?:{period:1|2;elapsed_ms:number}|null;left_at?:{period:1|2;elapsed_ms:number}|null;formation_slot?:number|null;formation_position?:{x:number;y:number}|null}
 export type GIMatch={match_id:string; synthetic?:boolean; title:string; headline:string; summary:string; source_label:string; display_date:string; competition:string;date:string;
   teams:{team_id:number;name:string;score:number}[]; players:GIPlayer[]; events:GIEvent[];
   source:{provider:string;source:string;license:string;license_url:string;changes:string;fixture_sha256:string};

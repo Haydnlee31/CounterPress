@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react'
 import {createFanClient, StaleFanResponse} from '../../../integrations/personalization/client'
 import type {FanPreferences, FanResponse} from '../../../integrations/personalization/client'
 import type {Event, MatchTime} from '../types'
+import {CAREER_CHANGED} from './revisions'
 
 export type Player={player_id:string;club_id:string;name:string;role:'GK'|'DF'|'MF'|'FW';number:number;featured:boolean;star:boolean;birth_year:number;debut_year:number}
 export type Club={club_id:string;name:string;short_name:string;featured:boolean;primary_color:string}
@@ -41,18 +42,28 @@ export async function loadWorld(signal:AbortSignal):Promise<World>{
   const asOf=new Date(Date.parse(`${throughDate}T00:00:00Z`)+86400000).toISOString().replace('.000Z','Z')
   return {catalog,players:[...a.items,...b.items],asOf,throughDate}
 }
-export function useResource<T>(key:string,load:(signal:AbortSignal)=>Promise<T>){
+export function useResource<T>(key:string,load:(signal:AbortSignal)=>Promise<T>,revisionScope:boolean|string=true){
   const [retry,setRetry]=useState(0)
-  const [state,setState]=useState<{key:string;data?:T;error?:string}>({key:''})
+  useEffect(()=>{
+    const update=(event:globalThis.Event)=>{
+      const detail=(event as CustomEvent<{matches:string[];datasetChanged:boolean}>).detail
+      if(revisionScope===false&&!detail?.datasetChanged)return
+      if(typeof revisionScope==='string'&&!detail?.datasetChanged&&!detail?.matches.includes(revisionScope))return
+      setRetry(v=>v+1)
+    }
+    window.addEventListener(CAREER_CHANGED,update)
+    return()=>window.removeEventListener(CAREER_CHANGED,update)
+  },[revisionScope])
+  const [state,setState]=useState<{key:string;revision?:number;data?:T;error?:string}>({key:''})
   useEffect(()=>{
     const controller=new AbortController();let current=true
-    setState({key})
-    load(controller.signal).then(data=>{if(current)setState({key,data})}).catch(error=>{
-      if(current&&error?.name!=='AbortError'&&!(error instanceof StaleFanResponse))setState({key,error:'We couldn’t load this view. Please try again.'})
+    setState({key,revision:retry})
+    load(controller.signal).then(data=>{if(current)setState({key,revision:retry,data})}).catch(error=>{
+      if(current&&error?.name!=='AbortError'&&!(error instanceof StaleFanResponse))setState({key,revision:retry,error:'We couldn’t load this view. Please try again.'})
     })
     return()=>{current=false;controller.abort()}
   },[key,retry]) // key includes the full viewing context, including preferences.
-  return {...(state.key===key?state:{}),retry:()=>setRetry(v=>v+1)}
+  return {...(state.key===key&&state.revision===retry?state:{}),retry:()=>setRetry(v=>v+1)}
 }
 export function useFan<T extends FanResponse>(key:string,load:(client:ReturnType<typeof createFanClient>)=>Promise<FanResponse>){
   return useResource<T>(key,async signal=>{

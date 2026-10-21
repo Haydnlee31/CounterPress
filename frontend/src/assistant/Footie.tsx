@@ -9,6 +9,7 @@ import {FootieMascot} from './FootieMascot'
 import type {FootieContext} from './context'
 import '../football/football.css'
 import './footie.css'
+import {onCareerChange} from '../football/revisions'
 
 type Plan={operation:string;player_ids:string[];club_id:string|null;match_id:string|null;metric:string;per90:boolean;season:string|null;comparison_season:string|null}
 type Fact={subject_name:string;label:string;value:number|null;unit:string;scope:{season?:string|null;matches?:number;window:string;cutoff?:{period:number;elapsed_ms:number}};coverage:{recorded_matches:number;total_matches:number}|null;evidence:{matches?:unknown[]};href:string}
@@ -30,7 +31,7 @@ export function AnswerVisual({visual}:{visual:Answer['visual']}){
 }
 
 export default function Footie({context,compact=false}:{context?:FootieContext;compact?:boolean}){
-  const world=useResource('footie-world',loadWorld)
+  const world=useResource('footie-world',loadWorld,false)
   const matches=useResource('footie-matches',signal=>getData<{items:Match[]}>('/api/data/matches?featured=true',signal))
   const config=useResource('footie-config',signal=>getData<{natural_language:boolean}>('/api/fan/assistant/config',signal))
   const [prefs,setPrefs]=useState<FanPreferences>(initialPreferences),[question,setQuestion]=useState(context?.question??''),[turns,setTurns]=useState<Turn[]>([])
@@ -40,13 +41,17 @@ export default function Footie({context,compact=false}:{context?:FootieContext;c
   const controller=useRef<AbortController|null>(null),serial=useRef(0),answerRef=useRef<HTMLDivElement>(null),input=useRef<HTMLTextAreaElement>(null)
   useEffect(()=>()=>{controller.current?.abort();serial.current++},[])
   useEffect(()=>{if(!world.data)return;try{const checked=readPreferences(window.localStorage,{playerIds:new Set(world.data.players.map(p=>p.player_id)),clubIds:new Set(world.data.catalog.clubs.map(c=>c.club_id))}).preferences;setPrefs(checked);if(!context&&checked.favorite_player_ids.length===1)setPlayer(checked.favorite_player_ids[0])}catch{setPrefs(defaults())}},[world.data])
+  const [recordsChanged,setRecordsChanged]=useState(false)
+  useEffect(()=>onCareerChange(()=>{
+    controller.current?.abort();serial.current++;setBusy(false);setTurns([]);setHighlight(null);setError('');setRecordsChanged(true)
+  }),[])
   const cancel=()=>{controller.current?.abort();serial.current++;setBusy(false)}
   const reset=()=>{cancel();setTurns([]);setError('');setQuestion('');input.current?.focus()}
   const changeScope=(change:()=>void)=>{cancel();change();setTurns([]);setError('')}
   async function ask(text:string){
     if(!world.data||!text.trim())return
     controller.current?.abort();const token=++serial.current,abort=new AbortController();controller.current=abort
-    setBusy(true);setError('');setLastQuestion(text);setQuestion('')
+    setBusy(true);setRecordsChanged(false);setError('');setLastQuestion(text);setQuestion('')
     const payload={question:text,preferences:prefs,as_of:context?.asOf??world.data.asOf,player_id:player||null,club_id:club||null,match_id:match||null,
       season:season||null,cutoff:context?.cutoff??(match?{period:2,elapsed_ms:2700000}:null),event_id:context?.eventId??null,event_revision:context?.eventRevision??null,previous_plan:turns.at(-1)?.answer.plan??null}
     try{
@@ -67,6 +72,7 @@ export default function Footie({context,compact=false}:{context?:FootieContext;c
       <section className="ft-context" aria-label="Question context" hidden={!!context}><span>Talk about</span><label>Player<select aria-label="Player context" value={player} onChange={e=>changeScope(()=>{setPlayer(e.target.value);setClub('');setMatch('')})}><option value="">Any player</option>{world.data.players.filter(p=>p.featured).map(p=><option key={p.player_id} value={p.player_id}>{prefs.favorite_player_ids.includes(p.player_id)?'♥ ':''}{p.name}</option>)}</select></label><label>Club<select aria-label="Club context" value={club} onChange={e=>changeScope(()=>{setClub(e.target.value);setPlayer('');setMatch('')})}><option value="">Any club</option>{world.data.catalog.clubs.filter(c=>c.featured).map(c=><option key={c.club_id} value={c.club_id}>{c.name}</option>)}</select></label><label>Period<select aria-label="Assistant period" value={season} disabled={!!match} onChange={e=>changeScope(()=>setSeason(e.target.value))}><option value="">Career</option>{world.data.catalog.seasons.map(s=><option key={s}>{s}</option>)}</select></label><details><summary>A match</summary><label>Completed match<select aria-label="Match context" value={match} onChange={e=>changeScope(()=>{setMatch(e.target.value);setPlayer('');setClub('');setSeason('')})}><option value="">Choose a match</option>{matches.data?.items.map(m=><option key={m.match_id} value={m.match_id}>{world.data!.catalog.clubs.find(c=>c.club_id===m.home_id)?.name} × {world.data!.catalog.clubs.find(c=>c.club_id===m.away_id)?.name} · {m.kickoff.slice(0,10)}</option>)}</select></label>{match&&<button onClick={()=>ask('Why did the latest goal matter in this match?')}>Explain the latest goal ↗</button>}</details></section>
       {context&&<div className="ft-source-context"><strong>{context.label}</strong><small>{context.cutoff?`Through ${context.cutoff.period===2?'2nd':'1st'} half · ${Math.floor(context.cutoff.elapsed_ms/60000)}:${String(Math.floor(context.cutoff.elapsed_ms/1000)%60).padStart(2,'0')} in this half`:(context.season||'Career')}{context.matchId?' · Match-time answers':''}</small></div>}
       {!turns.length&&!busy&&<section className="ft-start"><div className="ft-welcome-mascot" hidden={compact}><FootieMascot mood={typing?'listening':'greeting'} size={176} trackPointer/></div><h2>{compact?"Let’s look at this play.":"What caught your eye?"}</h2><p>{compact?"The replay is paused. Ask about the action, then pick up where you left off.":"Start with a name, compare two players, or find the story behind a goal."}</p><div className="ft-starters" hidden={compact}>{(context?[context.question]:player?[`How is ${world.data.players.find(p=>p.player_id===player)?.name} doing recently?`,`How many assists does ${world.data.players.find(p=>p.player_id===player)?.name} have?`]:club?[`Who leads ${world.data.catalog.clubs.find(c=>c.club_id===club)?.name} in goals?`]:match?['Why did the latest goal matter in this match?']:initialQuestions).map((q,i)=><button key={q} onClick={()=>ask(q)}><span>0{i+1}</span>{q}<b>↗</b></button>)}</div></section>}
+      {recordsChanged&&<p className="ft-status" role="status">The match records have changed. Ask again for the latest figures.</p>}
       <div className="ft-conversation" aria-label="Conversation">{turns.map((turn,i)=><section className="ft-turn" key={turn.answer.request_id} ref={i===turns.length-1?answerRef:undefined}><p className="ft-question">{turn.question}</p><article className="ft-answer"><div className="ft-answer-mark"><FootieMascot size={42} mood={i===turns.length-1&&turn.answer.actions.some(a=>a.highlight)?'celebrating':'idle'}/><span>Footie</span></div><h2>{turn.answer.title}</h2>{turn.answer.narrative?.blocks.length?<><div className="ft-story">{turn.answer.narrative.blocks.map(block=><p key={block.id}>{block.text}</p>)}</div><details className="ft-breakdown"><summary>Figures and context</summary>{turn.answer.text.map((p,j)=><p key={j}>{p}</p>)}</details></>:turn.answer.text.map((p,j)=><p key={j}>{p}</p>)}<AnswerVisual visual={turn.answer.visual}/><div className="ft-actions">{turn.answer.actions.map((a,j)=>a.highlight?<button key={j} onClick={()=>openClip(a.highlight!)}>▶ {a.label}</button>:<a key={j} href={a.href}>{a.label} ↗</a>)}</div>{turn.answer.facts.length>0&&<details className="ft-evidence"><summary>Check the numbers · {turn.answer.facts.length} {turn.answer.facts.length===1?'figure':'figures'}</summary>{turn.answer.facts.map((f,j)=><div key={j}><a href={f.href}>{f.subject_name}</a><span>{f.label}{f.unit==='per90'?' /90':''}</span><strong>{format(f.value)}{f.unit==='percent'?'%':f.unit==='metres'?' m':''}</strong><small>{f.scope.cutoff?`Through ${f.scope.cutoff.period===2?45+Math.floor(f.scope.cutoff.elapsed_ms/60000):Math.floor(f.scope.cutoff.elapsed_ms/60000)}′`:f.scope.season??'Career'}{f.coverage?` · ${f.coverage.recorded_matches}/${f.coverage.total_matches} recorded appearances`:''}</small></div>)}</details>}{turn.answer.mode==='lookup_fallback'&&<small className="ft-status">Answered with a direct statistics lookup.</small>}</article></section>)}</div>
       {busy&&<div className="ft-thinking" role="status"><FootieMascot mood="thinking" size={64}/> Reading the match records… <button onClick={cancel}>Cancel</button></div>}
       {error&&<div className="ft-error" role="alert">{error}<button onClick={()=>ask(lastQuestion)}>Try again</button></div>}

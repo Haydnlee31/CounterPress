@@ -1,0 +1,95 @@
+{
+  "match_id": 2058007,
+  "source": "https://doi.org/10.6084/m9.figshare.7770422",
+  "players_source": "https://doi.org/10.6084/m9.figshare.7765196",
+  "license": "CC BY 4.0",
+  "timing_precision": "minute",
+  "source_matches_sha256": "1ddab20c8605c063a62341eb846466c8d040885a5f0f9a3e26d023123786abb6",
+  "source_players_sha256": "877a111cb1005b73df5645e9338bd74fb4b496bace2fbc545a72abb3b73efa2e",
+  "roles": {
+    "134769": "FW",
+    "122": "FW",
+    "36": "DF",
+    "37824": "DF",
+    "7905": "FW",
+    "48": "DF",
+    "25707": "FW",
+    "38021": "MD",
+    "8307": "DF",
+    "70123": "MD",
+    "3429": "GK",
+    "261": "MD",
+    "8249": "MD",
+    "94828": "MD",
+    "94650": "MD",
+    "14836": "MD",
+    "94831": "FW",
+    "37896": "GK",
+    "94695": "DF",
+    "703": "DF",
+    "94814": "DF",
+    "20517": "DF",
+    "14929": "MD",
+    "14816": "MD",
+    "95010": "MD",
+    "101592": "MD"
+  },
+  "teams": [
+    {
+      "team_id": 4418,
+      "starters": [
+        134769,
+        122,
+        36,
+        37824,
+        7905,
+        48,
+        25707,
+        38021,
+        8307,
+        70123,
+        3429
+      ],
+      "substitutions": [
+        {
+          "playerIn": 261,
+          "playerOut": 134769,
+          "minute": 65
+        },
+        {
+          "playerIn": 8249,
+          "playerOut": 122,
+          "minute": 65
+        }
+      ]
+    },
+    {
+      "team_id": 9598,
+      "starters": [
+        94828,
+        94650,
+        14836,
+        94831,
+        37896,
+        94695,
+        703,
+        94814,
+        20517,
+        14929,
+        14816
+      ],
+      "substitutions": [
+        {
+          "playerIn": 95010,
+          "playerOut": 94828,
+          "minute": 81
+        },
+        {
+          "playerIn": 101592,
+          "playerOut": 94650,
+          "minute": 81
+        }
+      ]
+    }
+  ]
+}

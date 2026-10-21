@@ -42,8 +42,10 @@ def test_source_edits_require_narrative_review_and_bad_timing_fails_closed():
   with pytest.raises(ValueError):validate_asset(a,script)
 
 
-def test_serving_reviewed_tracks_is_cache_only_and_validates_entire_highlight(tmp_path,monkeypatch):
- events=feed('one-touch');script=narrative(events,'en');bundle=asset(script)
+@pytest.mark.parametrize('profile',['broadcast','natural'])
+def test_serving_reviewed_tracks_is_cache_only_and_validates_entire_highlight(tmp_path,monkeypatch,profile):
+ monkeypatch.setenv('COUNTERPRESS_COMMENTARY_VOICE',profile)
+ events=feed('one-touch');script=narrative(events,'en',profile);bundle=asset(script)
  (tmp_path/(script['key']+'.json')).write_text(json.dumps(bundle))
  monkeypatch.setenv('COUNTERPRESS_COMMENTARY_DIR',str(tmp_path))
  class NoSynthesis:
@@ -57,3 +59,29 @@ def test_serving_reviewed_tracks_is_cache_only_and_validates_entire_highlight(tm
   assert client.post('/api/voice/highlight',json={**payload,'text':'arbitrary'}).status_code==422
   assert client.post('/api/voice/highlight',json={**payload,'language':'de'}).status_code==422
   assert client.post('/api/voice/highlight',json={**payload,'language':'zh-Hans'}).status_code==503
+
+@pytest.mark.parametrize('story',list(SCRIPTS))
+def test_british_audition_keeps_grounded_script_and_bookmarks_but_separates_cache(story):
+ original=narrative(feed(story),'en')
+ british=narrative(feed(story),'en','british')
+ assert british['beats']==original['beats']
+ assert british['source_hash']==original['source_hash']
+ assert british['key']!=original['key']
+ assert 'en-GB-RyanNeural' in british['ssml'] and 'style="chat"' in british['ssml']
+ assert 'style="cheerful"' in british['ssml'] and 'style="excited"' not in british['ssml']
+ assert validate_asset(asset(british),british)
+ assert narrative(feed(story),'zh-Hans','british')==narrative(feed(story),'zh-Hans')
+
+@pytest.mark.parametrize('story',list(SCRIPTS))
+def test_natural_delivery_preserves_original_voice_grounding_and_mandarin(story):
+ original=narrative(feed(story),'en')
+ natural=narrative(feed(story),'en','natural')
+ assert natural['beats']==original['beats']
+ assert natural['source_hash']==original['source_hash']
+ assert natural['key']!=original['key']
+ assert 'en-US-GuyNeural' in natural['ssml']
+ assert 'style="friendly" styledegree="1.0"' in natural['ssml']
+ assert 'style="excited" styledegree="0.8"' in natural['ssml']
+ assert 'newscast' not in natural['ssml'] and 'en-GB' not in natural['ssml']
+ assert validate_asset(asset(natural),natural)
+ assert narrative(feed(story),'zh-Hans','natural')==narrative(feed(story),'zh-Hans')

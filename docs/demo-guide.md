@@ -326,3 +326,16 @@ Before presenting, open the app, run the recovery comparison once, then reset to
 48:00. After the demo, close unused demo tabs: paused tabs still reconcile updates and hold a live connection.
 For a local backup, follow [local interface startup](interface.md#start-locally).
 No Azure setup is required to run the default local demo.
+
+
+## Final presentation notes: replay limitations
+
+Mention in the final report or spoken demonstration: Match Centre reconstructs
+movement from recorded events, with synthetic supporting positions. It has no
+continuous tracking for all 22 players. Exact marking, off-ball runs, contact and
+save trajectories cannot be verified; close portraits may overlap. Substitution
+times have minute-level source precision. Stoppages are compressed and travel
+time is adjusted, so replay 1× is presentation speed rather than the original
+match clock. Speed/acceleration checks establish configured limits, not tracking
+accuracy. See the replay realism section of
+[verification notes](verification/fan-feedback.md) for sources and results.

@@ -108,3 +108,30 @@ request chooses emphasis and order; Python still owns the facts and wording.
 This adopts the reference application's story-first presentation without
 introducing unrestricted generated factual prose. Both calls share the original
 20-attempt hourly allowance. See [narrative verification](verification/footie-narration.md).
+
+## Finishing review — 21 October 2026
+
+The published application now includes Clubhouse, contextual Footie panels and
+unified Watch/Breakdown views. The original review's missing fan-facing assistant
+is therefore no longer a gap. The remaining priorities are repeatable assistant
+question evaluation, the live career-index bridge, assistant request tracing,
+and managed-identity model access. Retain ACA and evidence-bound sentences.
+
+The first [question benchmark](verification/footie-question-benchmark.md) found
+14 offline failures and a live model tendency to narrow career questions to the
+current season. Local fixes now pass 58 authored regression cases; captured-model
+responses and two fresh targeted Azure checks verify the scope guard. Preserve
+the initial 5/10 live-sample result: a complete post-fix live sample is still
+pending the evaluation allowance renewing. No streaming bridge or cloud release
+was performed in this step.
+
+## Follow-through: career revision bridge (21 October 2026, local)
+
+The career-index gap described above now has a local implementation: distinct
+career Action envelopes through the existing Event Hubs consumer, a dataset-pinned
+atomic correction journal (SQLite locally; existing Cosmos container in cloud),
+and Web PubSub refresh hints. Compound Clubhouse/personalization/Footie reads
+refresh the same durable state. Browser revision checks invalidate outdated
+statistics and assistant answers without automatic model calls. This is not yet
+a hosted deployment or an update to the independent archive replay contracts.
+See [implementation and activation boundaries](career-revision-bridge.md).

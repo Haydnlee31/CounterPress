@@ -1,5 +1,6 @@
 """Display adapter for a native synthetic Event feed; never invent provider identities."""
 import hashlib
+import json
 from pathlib import Path
 from counterpress.fixture import load_fixture
 from counterpress.gi.service import Action, Match, Player, Point, Source, Team
@@ -14,7 +15,8 @@ def read_synthetic(root: Path, match_id: str) -> Match:
     feed=load_fixture(path)
     if feed.match_id!=match_id:raise ValueError('Synthetic match ID mismatch')
     ids={'eastbridge':4418,'northport':9598}
-    players=tuple(Player(player_id=pid,provider_player_id=None,team_id=ids[t.team_id],alias_id=pid) for t in feed.teams for pid in t.player_ids)
+    roles={p['player_id']:p['role'] for p in json.loads((root.parent/'personalization'/'registry.json').read_text())['players']}
+    players=tuple(Player(player_id=pid,provider_player_id=None,team_id=ids[t.team_id],alias_id=pid,role=roles.get(pid),formation_slot=int(pid[2:])-1) for t in feed.teams for pid in t.player_ids)
     events=[]
     for e in feed.events:
         a=e.action;kind=a.kind;end=getattr(a,'end_position',None)
