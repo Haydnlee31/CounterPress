@@ -58,6 +58,14 @@ MODEL_SECRETS = {'AZURE_OPENAI_ENDPOINT': 'editorial-endpoint',
                  'AZURE_OPENAI_API_KEY': 'editorial-key'}
 
 
+def model_reference(item, name, secret):
+    """Azure may serialize an unused value beside a secretRef as null or ''."""
+    return (isinstance(item, dict)
+            and set(item) <= {'name', 'secretRef', 'value'}
+            and item.get('name') == name and item.get('secretRef') == secret
+            and item.get('value') in (None, ''))
+
+
 def editorial_settings(app, mode, model=None):
     """Explicit opt-in on existing resources; model values only in app secrets."""
     result = copy.deepcopy(app)
@@ -141,7 +149,7 @@ def assistant_settings(app, mode):
     container = result['properties']['template']['containers'][0]
     env = {v['name']: v for v in container.get('env', [])}
     if mode == 'enable' and any(
-        env.get(name) != {'name': name, 'secretRef': secret}
+        not model_reference(env.get(name), name, secret)
         for name, secret in MODEL_SECRETS.items()
     ):
         raise DeploymentError('Footie requires existing model secret references')
@@ -164,7 +172,7 @@ def validate_app(app):
         assert env.get('COUNTERPRESS_STUDIO') == 'entra'
         assert env.get('COUNTERPRESS_ENTRA_CLIENT_IDS') == env['COUNTERPRESS_STUDIO_CLIENT_ID']
         assert set(model_env) == set(MODEL_SECRETS) and secrets == set(MODEL_SECRETS.values())
-        assert all(model_env[k] == {'name': k, 'secretRef': v} for k, v in MODEL_SECRETS.items())
+        assert all(model_reference(model_env[k], k, v) for k, v in MODEL_SECRETS.items())
     else:
         assert not model_env
     assert env.get('COUNTERPRESS_ASSISTANT_MODEL', 'off') in ('off', 'azure')
