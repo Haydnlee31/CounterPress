@@ -1,4 +1,4 @@
-import artwork from '../assets/brand/footie-wordmark-forest-v1.png'
+import artwork from '../assets/brand/footie-wordmark-forest-v1.webp'
 
 /** Frame the approved transparent artwork without its presentation margins.
  * This is a raster concept preview, not a vector recreation of the lettering.

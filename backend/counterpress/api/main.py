@@ -4,12 +4,14 @@ from typing import Literal
 from contextlib import asynccontextmanager
 from time import monotonic
 import os
+import re
 import sqlite3
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.gzip import GZipMiddleware
 
 from counterpress.domain.models import Contract
 from counterpress.domain.contributions import PlayerContributionEvidence
@@ -24,6 +26,16 @@ from counterpress.contribution_publications import ContributionChange
 class HealthResponse(Contract):
     status: Literal["ok"] = "ok"
     service: Literal["counterpress"] = "counterpress"
+
+
+class BuildAssets(StaticFiles):
+    """Vite content hashes change URLs on release; entry HTML stays no-store."""
+
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        if response.status_code in (200, 304) and re.search(r"-[\w-]{8,}\.[a-z0-9]+$", path):
+            response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+        return response
 
 
 def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:",
@@ -46,6 +58,9 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
                 await runtime.close()
 
     application = FastAPI(title="CounterPress", version="0.1.0", lifespan=lifespan)
+    # Compress JSON/JS/CSS at a moderate CPU cost. Starlette excludes images,
+    # audio, partial responses and event streams; WebSockets pass through.
+    application.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=5)
     from counterpress.personalization.api import install_personalization
     if career_journal is None and os.environ.get('COUNTERPRESS_CAREER_STREAMING', 'off') == 'on':
         from counterpress.personalization.journal import CosmosCareerJournal, SQLiteCareerJournal
@@ -228,7 +243,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
             return FileResponse(static_dir / "auth.html", headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
 
         # Only expose compiled assets. No catch-all, source files or repository root.
-        application.mount("/assets", StaticFiles(directory=static_dir / "assets"), name="assets")
+        application.mount("/assets", BuildAssets(directory=static_dir / "assets"), name="assets")
 
     return application
 

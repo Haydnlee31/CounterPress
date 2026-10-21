@@ -1,5 +1,5 @@
 import {useEffect,useId,useState} from 'react'
-import {playerPortraits} from './portraits'
+import {pitchPortraits} from './portraits'
 import './pitchIdentity.css'
 const key='footie.pitch.faces.v1',eventName='footie:pitch-faces'
 export function usePitchFaces(){
@@ -15,7 +15,7 @@ export function PitchFaceToggle({faces,change}:{faces:boolean;change:(value:bool
 /** A close head crop, with stable identity and initials if an image is missing. */
 export function PitchIdentity({playerId,name,color,r=2.7,faces=true}:{playerId:string;name:string;color:string;r?:number;faces?:boolean}){
   const clip=useId().replaceAll(':',''),[failed,setFailed]=useState(false)
-  const src=playerPortraits[playerId],show=faces&&src&&!failed
+  const src=pitchPortraits[playerId],show=faces&&src&&!failed
   useEffect(()=>setFailed(false),[src])
   return <g className="pitch-identity" pointerEvents="none">
     <circle r={r} fill={color} stroke="#0e3028" strokeWidth=".35"/>

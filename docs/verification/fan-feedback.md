@@ -1,7 +1,6 @@
 # Fan feedback implementation — 21 October 2026
 
-Local review build; not pushed or deployed. Existing unrelated working changes
-have been preserved.
+Verification notes for the fan-feedback release and subsequent loading-performance pass.
 
 ## Try it
 
@@ -435,3 +434,69 @@ Final validation results:
   keyboard details, initials, inert clicks and dismissal remain intact; no page
   errors. Updated the test to await card dismissal rather than racing React's
   state commit. No hover-card implementation changes were required.
+
+
+## Loading performance follow-up — 21 October 2026
+
+The public artwork keeps the same identities and framing. Pitch markers and
+hover cards use 256px WebP derivatives; player cards/profiles select 256/384/768px
+with `srcset` and display-size hints. Original approved JPEGs remain authoring
+sources but are excluded from the production Docker context. The header artwork
+is a 652px transparent WebP, displayed inside its original SVG frame.
+
+Starlette gzip (level 5, minimum 1KB) compresses JSON/JS/CSS; already compressed
+images/audio, partial responses, event streams and WebSockets keep their normal
+behavior. Successful content-hashed Vite assets have a one-year immutable cache;
+entry HTML, auth callbacks and revision-sensitive APIs retain their existing
+no-store policies. No Azure resource sizing or minimum replicas changed.
+
+Controlled local Chrome comparison: 1440×1000, 10Mbps download, 80ms latency,
+fresh browser context per surface, followed by a real reload in that context.
+Request interception is deliberately absent because it disables browser caching.
+These are single-run diagnostic measurements, not hosted latency guarantees.
+Transferred bytes below count page subresources, excluding the tiny HTML document.
+Image readiness includes visible player artwork and the header logo, after decode.
+
+| Surface | Fresh bytes before → after | Images ready before → after | Repeat bytes before → after |
+| --- | --- | --- | --- |
+| Matchday | 9,183,967 → 323,453 | 7.678s → 1.500s | 17,944 → 5,307 |
+| Match Centre | 9,812,802 → 396,330 | 8.449s → 1.647s | 9,046 → 2,151 |
+| Clubhouse player | 1,865,471 → 241,056 | 1.819s → 1.207s | 94,167 → 22,074 |
+
+The representative Match Centre response is unchanged after decoding:
+603,248 bytes raw, 56,042 bytes gzip. All 44 pitch portraits total 280,802 bytes;
+the wordmark drops from 668,090 bytes to 26,992 bytes. API computation, Azure
+scale-to-zero cold starts and real network conditions can still add latency.
+Warm Clubhouse timing varied; the evidence supports smaller downloads, not a
+claim that every warm navigation became faster.
+
+Reproduce against a built local preview with Playwright available to Node:
+
+```sh
+node scripts/measure_loading.cjs http://127.0.0.1:8019 after
+node scripts/test_player_peek.cjs
+node scripts/test_replay_layout.cjs
+.venv/bin/pytest -q
+npm --prefix frontend test -- --run
+npm --prefix frontend run build
+```
+
+Set `CHROME_EXECUTABLE` when using an installed Chrome instead of Playwright's
+browser. Benchmark JSON and screenshots stay ignored under `var/loading/`.
+The original baseline was collected before rebuilding the optimized assets.
+Validation: 904 backend tests and 203 frontend tests passed; production build and
+local HTTP smoke checks passed. Backend delivery tests verify compressed/raw body equality, encoding negotiation,
+immutable asset caching, conditional requests, no-store preservation and image
+compression exclusions. Portrait tests cover all 44 identities and byte budgets.
+The existing hover and layout checks cover live/paused interaction and five widths
+(360, 390, 800, 1024, 1440px), with no page errors.
+
+Rebuild derivatives only when approved master artwork changes:
+
+```sh
+npm install --prefix /tmp/footie-image-tools --no-save sharp@0.35.5
+NODE_PATH=/tmp/footie-image-tools/node_modules node scripts/optimize_public_images.cjs
+```
+
+Sharp is an authoring dependency only; deployment consumes the committed WebP
+assets and needs no image generation service or additional Azure resources.
