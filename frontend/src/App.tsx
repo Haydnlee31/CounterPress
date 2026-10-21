@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import AnalysisApp from './AnalysisApp'
 import { Matchday } from './matchday/Matchday'
 import './shell/theme.css'
+import {watchCareerRevisions} from './football/revisions'
 
 const FullMatch = lazy(() => import('./live/FullMatch'))
 const Tools = lazy(() => import('./tools/Tools'))
@@ -13,6 +14,7 @@ const FootballHub = lazy(() => import('./football/FootballHub'))
 
 /** Explicit deep link keeps the existing analysis workspace available. */
 export default function App() {
+  useEffect(watchCareerRevisions,[])
   const [route, setRoute] = useState(
     () => window.location.hash,
   )

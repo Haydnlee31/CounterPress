@@ -9,8 +9,8 @@ it('maps replay progress to source availability and does not reveal a goal early
   expect(sourceCutoff(shot,false)).toEqual({period:2,elapsed_ms:446999})
   expect(sourceCutoff(shot,true)).toEqual({period:2,elapsed_ms:447225})
   const timeline=highlightTimeline(replay),last=timeline.actions.at(-1)!
-  const before=highlightFrame(replay,timeline,last.at+last.duration*.79,[],[])
-  const after=highlightFrame(replay,timeline,last.at+last.duration*.8,[],[])
+  const before=highlightFrame(replay,timeline,last.at+last.duration*(last.resolved-.01),[],[])
+  const after=highlightFrame(replay,timeline,last.at+last.duration*last.resolved,[],[])
   expect(before.cutoff.elapsed_ms).toBeLessThan(447225)
   expect(after.cutoff.elapsed_ms).toBe(447225)
 })

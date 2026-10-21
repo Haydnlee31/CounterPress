@@ -7,6 +7,7 @@ from fastapi import APIRouter,HTTPException,Request
 from starlette.concurrency import run_in_threadpool
 from counterpress.adaptation.azure import load_config,ProviderFailure
 from counterpress.fan.service import FanService,PreferenceError
+from counterpress.history import HistoryStorageError
 from .contracts import AskRequest
 from .planner import AzurePlanner
 from .service import AssistantService,UNSUPPORTED,blank,fingerprint
@@ -41,13 +42,16 @@ def install_assistant(app,career_service,planner=None,narrator=None):
     def moment(match_id:str,event_id:str,revision:int,resolved:bool):
         """Resolve legacy presentation clocks to canonical availability; no inference."""
         s=service()
-        with s.store.lock:
-            try:
-                if not s.store.row(match_id)['featured']:raise KeyError()
-                event=next(e for e in s.store.events(match_id) if e.event_id==event_id and e.revision==revision and not e.retracted)
-            except (KeyError,StopIteration):raise HTTPException(404,'Reopen the moment from the match.') from None
-            cutoff={'period':event.available_period,'elapsed_ms':event.available_ms} if resolved else {'period':event.period,'elapsed_ms':max(0,event.elapsed_ms-1)}
-            return {'match_id':match_id,'event_id':event_id,'event_revision':revision,'cutoff':cutoff}
+        try:
+            with s.store.snapshot():
+                try:
+                    if not s.store.row(match_id)['featured']:raise KeyError()
+                    event=next(e for e in s.store.events(match_id) if e.event_id==event_id and e.revision==revision and not e.retracted)
+                except (KeyError,StopIteration):raise HTTPException(404,'Reopen the moment from the match.') from None
+                cutoff={'period':event.available_period,'elapsed_ms':event.available_ms} if resolved else {'period':event.period,'elapsed_ms':max(0,event.elapsed_ms-1)}
+                return {'match_id':match_id,'event_id':event_id,'event_revision':revision,'cutoff':cutoff}
+        except (OSError,sqlite3.Error,ValueError,HistoryStorageError):
+            raise HTTPException(503,'The match records are temporarily unavailable. Please try again.') from None
 
     @router.post('/ask')
     async def ask(body:AskRequest,request:Request):
@@ -81,7 +85,7 @@ def install_assistant(app,career_service,planner=None,narrator=None):
                 else:mode='lookup_fallback';reason='hourly_limit'
             def execute():
                 # Keep compound reads in one revision snapshot; never hold during a model call.
-                with s.store.lock:
+                with s.store.snapshot():
                     try:return s.answer(plan,body),plan
                     except (ValueError,KeyError):return s.answer(blank('clarify'),body),blank('clarify')
             answer,plan=await run_in_threadpool(execute)
@@ -116,7 +120,7 @@ def install_assistant(app,career_service,planner=None,narrator=None):
                 'narrative_mode':story_mode,'narrative_fallback':story_reason,'narrative_usage':story_usage}))
             return answer
         except PreferenceError:raise HTTPException(422,'Choose valid player and club preferences.') from None
-        except (OSError,sqlite3.Error,ValueError,KeyError):raise HTTPException(503,'The match records are temporarily unavailable. Please try again.') from None
+        except (OSError,sqlite3.Error,ValueError,KeyError,HistoryStorageError):raise HTTPException(503,'The match records are temporarily unavailable. Please try again.') from None
 
     app.include_router(router)
     app.state.assistant_service=service

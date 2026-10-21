@@ -58,7 +58,7 @@ def install_fan(app, career_service, snapshots=None):
         try:
             s = service()
             # One consistent revision snapshot for all cards, baselines and focus.
-            with s.store.lock:
+            with s.store.snapshot():
                 return fn(s)
         except PreferenceError as exc:
             raise HTTPException(422, str(exc)) from None

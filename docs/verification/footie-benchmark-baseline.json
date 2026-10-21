@@ -1,0 +1,2699 @@
+{
+  "version": "footie-questions-v1",
+  "created_at": "2026-10-21T03:30:12.303622+00:00",
+  "mode": "offline_lookup",
+  "corpus_cases": 58,
+  "dataset_sha256": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef",
+  "source_sha256": {
+    "fixtures/assistant/questions.json": "c71deebc45b2ed9c7c940a69795dcb83cbca56ec18e554e36ba6bb7f5597713c",
+    "scripts/evaluate_footie.py": "dfa39705c3d5afef0d187a01ef2ccf6c1fa0bbe0ee006a4e094e29e1eda839fc",
+    "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
+    "backend/counterpress/assistant/api.py": "5e71c6ffd501bdc380a6c43e63d8900d87ac84f907ed9e8cf080f49dbef1bfcc",
+    "backend/counterpress/assistant/contracts.py": "bec5feb46430b78fa1e7220f42168e46d271992dcc9d0afb5a63f804ebfac7e4",
+    "backend/counterpress/assistant/evaluation.py": "11bcfa81b1a2688529ef3cb2df23f489fcadd582ad17bd06cefc9491fe6261ff",
+    "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
+    "backend/counterpress/assistant/narrative.py": "eedb17f6f1276e923e79de377fbc6356337293f9ffe66c946518605e88839716",
+    "backend/counterpress/assistant/planner.py": "82d6899c61c7e3567095ff72d9f1e3d6e6e2aaa880ba0c77ff97fc2997152294",
+    "backend/counterpress/assistant/service.py": "a2245706ea6f77d54ebb8f5aa529527f83cea7adf3158f76a15a4af4ce9fe0a2"
+  },
+  "model_attempts": 0,
+  "summary": {
+    "cases": 58,
+    "metrics": {
+      "raw_intent_correct": {
+        "passed": 46,
+        "total": 58
+      },
+      "effective_intent_correct": {
+        "passed": 44,
+        "total": 58
+      },
+      "answer_evidence_correct": {
+        "passed": 44,
+        "total": 58
+      },
+      "narrative_bound": {
+        "passed": 58,
+        "total": 58
+      },
+      "anchors_correct": {
+        "passed": 58,
+        "total": 58
+      },
+      "passed": {
+        "passed": 44,
+        "total": 58
+      }
+    },
+    "model_routing": {
+      "passed": 0,
+      "total": 0
+    },
+    "categories": {
+      "ambiguity": {
+        "passed": 2,
+        "total": 6
+      },
+      "club": {
+        "passed": 2,
+        "total": 3
+      },
+      "comparison": {
+        "passed": 2,
+        "total": 3
+      },
+      "correction": {
+        "passed": 3,
+        "total": 3
+      },
+      "coverage": {
+        "passed": 2,
+        "total": 2
+      },
+      "followup": {
+        "passed": 3,
+        "total": 4
+      },
+      "goalkeeper": {
+        "passed": 2,
+        "total": 4
+      },
+      "language": {
+        "passed": 2,
+        "total": 2
+      },
+      "metric_distinction": {
+        "passed": 2,
+        "total": 5
+      },
+      "player": {
+        "passed": 3,
+        "total": 4
+      },
+      "preferences": {
+        "passed": 4,
+        "total": 4
+      },
+      "recent": {
+        "passed": 3,
+        "total": 3
+      },
+      "season": {
+        "passed": 3,
+        "total": 4
+      },
+      "temporal": {
+        "passed": 5,
+        "total": 5
+      },
+      "unsupported": {
+        "passed": 6,
+        "total": 6
+      }
+    },
+    "latency_ms": {
+      "p50": 35,
+      "p95": 143
+    },
+    "fallbacks": {},
+    "failed_ids": [
+      "goals_paraphrase",
+      "chance_creation",
+      "expected_assists",
+      "completed_passes",
+      "save_percentage",
+      "goals_conceded",
+      "comparison_paraphrase",
+      "season_compare",
+      "followup_metric",
+      "club_chances",
+      "ambiguous_metric",
+      "unknown_player",
+      "ambiguous_creation",
+      "multi_metric"
+    ]
+  },
+  "results": [
+    {
+      "id": "goals_direct",
+      "category": "player",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 58,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "goals_paraphrase",
+      "category": "player",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 21,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "goals_career",
+      "category": "player",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 38,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "assists",
+      "category": "player",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 35,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "chance_creation",
+      "category": "metric_distinction",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 38,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "shot_assists",
+      "category": "metric_distinction",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 35,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "expected_assists",
+      "category": "metric_distinction",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 35,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "xa",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "expected_goals",
+      "category": "metric_distinction",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 36,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "xg",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "xg",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "xg",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "completed_passes",
+      "category": "metric_distinction",
+      "raw_intent_correct": true,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 27,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "passes_completed",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "clarify"
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "passes_completed",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "pass_completion",
+      "category": "goalkeeper",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 34,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "pass_accuracy",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "pass_accuracy",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "pass_accuracy",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "save_percentage",
+      "category": "goalkeeper",
+      "raw_intent_correct": true,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 26,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "save_pct",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "clarify"
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "save_pct",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "clean_sheets",
+      "category": "goalkeeper",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 35,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "clean_sheets",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "clean_sheets",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "clean_sheets",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "goals_conceded",
+      "category": "goalkeeper",
+      "raw_intent_correct": true,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 25,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals_conceded",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "clarify"
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals_conceded",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "unavailable_saves",
+      "category": "coverage",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 35,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "eb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "saves",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "eb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "saves",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "eb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "saves",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "empty_history",
+      "category": "coverage",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 20,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "comparison",
+      "category": "comparison",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 57,
+      "usage": {},
+      "expected_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "comparison_paraphrase",
+      "category": "comparison",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 30,
+      "usage": {},
+      "expected_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "clarify"
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "comparison_percentage",
+      "category": "comparison",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 48,
+      "usage": {},
+      "expected_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "rh09",
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "pass_accuracy",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "rh09",
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "pass_accuracy",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "rh09",
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "pass_accuracy",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "recent",
+      "category": "recent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 38,
+      "usage": {},
+      "expected_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "recent_assists",
+      "category": "recent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 38,
+      "usage": {},
+      "expected_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "recent_five",
+      "category": "recent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 38,
+      "usage": {},
+      "expected_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "season_current",
+      "category": "season",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 22,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "season_previous",
+      "category": "season",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 23,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "season_compare",
+      "category": "season",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 26,
+      "usage": {},
+      "expected_intent": {
+        "operation": "seasons",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": "2026-27"
+      },
+      "actual_intent": {
+        "operation": "clarify"
+      },
+      "raw_intent": {
+        "operation": "compare",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "season_relative",
+      "category": "season",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 24,
+      "usage": {},
+      "expected_intent": {
+        "operation": "seasons",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": "2025-26"
+      },
+      "actual_intent": {
+        "operation": "seasons",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": "2025-26"
+      },
+      "raw_intent": {
+        "operation": "seasons",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": "2025-26"
+      }
+    },
+    {
+      "id": "followup_season",
+      "category": "followup",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 25,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "followup_metric",
+      "category": "followup",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 36,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "followup_rate",
+      "category": "followup",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 36,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "followup_selected",
+      "category": "followup",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 37,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "club_leaders",
+      "category": "club",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 238,
+      "usage": {},
+      "expected_intent": {
+        "operation": "club_leaders",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "club_leaders",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "club_leaders",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "club_chances",
+      "category": "club",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 20,
+      "usage": {},
+      "expected_intent": {
+        "operation": "club_leaders",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "club_total",
+      "category": "club",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 69,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "favorite",
+      "category": "preferences",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 36,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "favorite_ambiguous",
+      "category": "preferences",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 20,
+      "usage": {},
+      "expected_intent": {
+        "operation": "clarify"
+      },
+      "actual_intent": {
+        "operation": "clarify"
+      },
+      "raw_intent": {
+        "operation": "clarify"
+      }
+    },
+    {
+      "id": "favorite_club",
+      "category": "preferences",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 217,
+      "usage": {},
+      "expected_intent": {
+        "operation": "club_leaders",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "club_leaders",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "club_leaders",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "explicit_over_favorite",
+      "category": "preferences",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 35,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "chinese",
+      "category": "language",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 36,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "chinese_season",
+      "category": "language",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 24,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "vague_best",
+      "category": "ambiguity",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 20,
+      "usage": {},
+      "expected_intent": {
+        "operation": "clarify"
+      },
+      "actual_intent": {
+        "operation": "clarify"
+      },
+      "raw_intent": {
+        "operation": "clarify"
+      }
+    },
+    {
+      "id": "ambiguous_metric",
+      "category": "ambiguity",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 20,
+      "usage": {},
+      "expected_intent": {
+        "operation": "clarify"
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "unknown_player",
+      "category": "ambiguity",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 37,
+      "usage": {},
+      "expected_intent": {
+        "operation": "clarify"
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "eb04"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "eb04"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "missing_player",
+      "category": "ambiguity",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 20,
+      "usage": {},
+      "expected_intent": {
+        "operation": "clarify"
+      },
+      "actual_intent": {
+        "operation": "clarify"
+      },
+      "raw_intent": {
+        "operation": "clarify"
+      }
+    },
+    {
+      "id": "ambiguous_creation",
+      "category": "ambiguity",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 20,
+      "usage": {},
+      "expected_intent": {
+        "operation": "clarify"
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "multi_metric",
+      "category": "ambiguity",
+      "raw_intent_correct": false,
+      "effective_intent_correct": false,
+      "answer_evidence_correct": false,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": false,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 38,
+      "usage": {},
+      "expected_intent": {
+        "operation": "clarify"
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "prediction",
+      "category": "unsupported",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 20,
+      "usage": {},
+      "expected_intent": {
+        "operation": "unsupported"
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "injury",
+      "category": "unsupported",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 19,
+      "usage": {},
+      "expected_intent": {
+        "operation": "unsupported"
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "tracking",
+      "category": "unsupported",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 19,
+      "usage": {},
+      "expected_intent": {
+        "operation": "unsupported"
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "salary",
+      "category": "unsupported",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 19,
+      "usage": {},
+      "expected_intent": {
+        "operation": "unsupported"
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "injection",
+      "category": "unsupported",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 20,
+      "usage": {},
+      "expected_intent": {
+        "operation": "unsupported"
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "unsupported_time",
+      "category": "unsupported",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 22,
+      "usage": {},
+      "expected_intent": {
+        "operation": "unsupported"
+      },
+      "actual_intent": {
+        "operation": "unsupported"
+      },
+      "raw_intent": {
+        "operation": "unsupported"
+      }
+    },
+    {
+      "id": "goal_before",
+      "category": "temporal",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 135,
+      "usage": {},
+      "expected_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "goal_after",
+      "category": "temporal",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 112,
+      "usage": {},
+      "expected_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "goal_explicit",
+      "category": "temporal",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 112,
+      "usage": {},
+      "expected_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "goal_unfinished",
+      "category": "temporal",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 37,
+      "usage": {},
+      "expected_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "career_in_replay",
+      "category": "temporal",
+      "raw_intent_correct": false,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 26,
+      "usage": {},
+      "expected_intent": {
+        "operation": "clarify"
+      },
+      "actual_intent": {
+        "operation": "clarify"
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "goal_retracted",
+      "category": "correction",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 143,
+      "usage": {},
+      "expected_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "career_corrected",
+      "category": "correction",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 60,
+      "usage": {},
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    },
+    {
+      "id": "stale_moment",
+      "category": "correction",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": false,
+      "mode": "lookup",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 31,
+      "usage": {},
+      "expected_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      }
+    }
+  ],
+  "limits": [
+    "Authored regression cases, not unseen fan traffic.",
+    "Oracle uses reviewed intent labels and existing reducers; independent reducer audits remain separate.",
+    "Azure sample is small and single-run; do not present it as population accuracy.",
+    "Token counts exclude unknown billed usage on failed requests; no dollar-cost claim.",
+    "No hosted endpoint, synthesis, streaming write or production data mutation."
+  ]
+}

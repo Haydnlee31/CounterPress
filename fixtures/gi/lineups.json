@@ -1,0 +1,101 @@
+{
+  "match_id": 2058017,
+  "source": "https://doi.org/10.6084/m9.figshare.7770422",
+  "players_source": "https://doi.org/10.6084/m9.figshare.7765196",
+  "license": "CC BY 4.0",
+  "timing_precision": "minute",
+  "source_matches_sha256": "1ddab20c8605c063a62341eb846466c8d040885a5f0f9a3e26d023123786abb6",
+  "source_players_sha256": "877a111cb1005b73df5645e9338bd74fb4b496bace2fbc545a72abb3b73efa2e",
+  "roles": {
+    "31528": "MD",
+    "25437": "MD",
+    "26010": "FW",
+    "3309": "DF",
+    "7936": "MD",
+    "353833": "FW",
+    "340646": "DF",
+    "25397": "DF",
+    "279545": "DF",
+    "3682": "FW",
+    "25381": "GK",
+    "8200": "MD",
+    "28115": "MD",
+    "209091": "MD",
+    "69616": "FW",
+    "105361": "DF",
+    "69409": "DF",
+    "25393": "DF",
+    "135747": "GK",
+    "14943": "FW",
+    "3476": "MD",
+    "8287": "MD",
+    "69396": "DF",
+    "69968": "MD",
+    "14812": "MD",
+    "69411": "FW",
+    "135810": "FW"
+  },
+  "teams": [
+    {
+      "team_id": 4418,
+      "starters": [
+        31528,
+        25437,
+        26010,
+        3309,
+        7936,
+        353833,
+        340646,
+        25397,
+        279545,
+        3682,
+        25381
+      ],
+      "substitutions": [
+        {
+          "playerIn": 8200,
+          "playerOut": 31528,
+          "minute": 55
+        },
+        {
+          "playerIn": 209091,
+          "playerOut": 25437,
+          "minute": 73
+        },
+        {
+          "playerIn": 28115,
+          "playerOut": 26010,
+          "minute": 81
+        }
+      ]
+    },
+    {
+      "team_id": 9598,
+      "starters": [
+        69616,
+        105361,
+        69409,
+        25393,
+        135747,
+        14943,
+        3476,
+        8287,
+        69396,
+        69968,
+        14812
+      ],
+      "substitutions": [
+        {
+          "playerIn": 69411,
+          "playerOut": 69616,
+          "minute": 71
+        },
+        {
+          "playerIn": 135810,
+          "playerOut": 105361,
+          "minute": 81
+        }
+      ]
+    }
+  ]
+}

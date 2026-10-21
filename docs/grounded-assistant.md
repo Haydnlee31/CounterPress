@@ -219,3 +219,24 @@ PASS Footie mascot: cursor gaze, typing/listening, pending/thinking, answer avat
 The browser check intercepts the assistant answer; it does not invoke Azure.
 Screenshots are saved under `var/footie-mascot-*.png`. The integration is local;
 it has not been pushed or deployed.
+
+## Question reliability follow-up — 21 October 2026 (local, unpublished)
+
+The assistant and contextual dialogs described above were published in the
+20 October release; the earlier local-only statements are historical. The new
+[58-question benchmark](verification/footie-question-benchmark.md) and its fixes
+are not yet published. Metric phrases now distinguish chance creation, assists,
+expected assists and specific goalkeeper/passing measures. Follow-ups preserve
+scope, and the server rejects a model plan that silently changes a career question
+to the current season. All 58 offline cases pass. The initial live sample and
+subsequent targeted checks are retained separately; they do not establish broad
+model accuracy. The live career-index bridge remains next.
+
+### Shared career corrections
+
+With the opt-in [career revision bridge](career-revision-bridge.md), every compound
+answer reads a refreshed durable career snapshot. The post-narration check also
+refreshes it, catching corrections committed by another instance. Browser revision
+signals clear stale conversation answers and abort pending replies without making
+a replacement model request. Source-sequence/time cutoffs still apply; receiving
+a correction does not expose it in playback before its availability time.

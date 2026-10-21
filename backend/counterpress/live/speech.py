@@ -216,7 +216,7 @@ def install_speech(app, root:Path, adapter=None):
         if not events: raise HTTPException(404,'Unknown highlight')
         if request.events!=[e.event_id for e in events] or request.revisions!=[e.revision for e in events]:
             raise HTTPException(409,'Choose the complete current highlight')
-        try: script=narrative(events,request.language)
+        try: script=narrative(events,request.language,os.environ.get('COUNTERPRESS_COMMENTARY_VOICE','broadcast'))
         except ValueError: raise HTTPException(404,'Highlight commentary is unavailable') from None
         try: asset=validate_asset(recorded_track(script['key']),script)
         except Exception: raise HTTPException(503,'Highlight commentary is being prepared') from None

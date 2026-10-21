@@ -12,23 +12,31 @@ from .replay import native_feed,highlight_feed
 from counterpress.fixture import PossessionFixture
 from .service import CareerService,match_card
 from .store import DataStore
+from counterpress.history import HistoryStorageError
 
 
-def install_personalization(app,root:Path):
+def install_personalization(app,root:Path,journal=None):
     @lru_cache(maxsize=1)
     def service():
-        return CareerService(DataStore(root/'personalization',os.environ.get('COUNTERPRESS_PROFILE_DB_PATH',':memory:')))
+        return CareerService(DataStore(root/'personalization',os.environ.get('COUNTERPRESS_PROFILE_DB_PATH',':memory:'),journal=journal))
 
     def call(fn):
-        try:return fn(service())
+        try:
+            s=service()
+            with s.store.snapshot():return fn(s)
         except KeyError:raise HTTPException(404,'Player, club or match not found') from None
-        except (OSError,ValueError,sqlite3.Error):raise HTTPException(503,'Career data is unavailable or failed validation') from None
+        except (OSError,ValueError,sqlite3.Error,HistoryStorageError):raise HTTPException(503,'Career data is unavailable or failed validation') from None
 
     def date(value):
         if value is not None:
             try:datetime.strptime(value,'%Y-%m-%dT%H:%M:%SZ')
             except ValueError:raise HTTPException(422,'before must be a UTC timestamp such as 2026-10-19T15:00:00Z') from None
         return value
+
+    @app.get('/api/data/revisions',tags=['Career data'])
+    def revisions(response:Response):
+        response.headers['Cache-Control']='no-store'
+        return call(lambda s:s.store.revision_state())
 
     @app.get('/api/data/catalog',tags=['Career data'])
     def catalog():
@@ -154,4 +162,5 @@ def install_personalization(app,root:Path):
             return highlight_feed(native_feed(s.store.original(mid),s.store.clubs),clip)
         return call(read)
 
+    app.state.career_service=service
     return service

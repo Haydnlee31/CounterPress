@@ -85,3 +85,17 @@ it('sends the frozen moment time and source revision instead of full-time career
  await waitFor(()=>expect(requests).toHaveLength(1))
  expect(requests[0]).toMatchObject({match_id:'showcase',cutoff:{period:1,elapsed_ms:1234},event_id:'e9',event_revision:2,player_id:null,season:null})
 })
+it('clears outdated answers and cancels late replies after a career correction without asking again',async()=>{
+ const user=userEvent.setup();render(<Footie/>);
+ await user.click(await screen.findByRole('button',{name:/01.*How many goals does Mateo Cross/}))
+ await screen.findByText('Mateo Cross · career: 75 goals.')
+ delay=true
+ await user.click(screen.getByRole('button',{name:/And last season/}))
+ await waitFor(()=>expect(pending).not.toBeNull())
+ fireEvent(window,new CustomEvent('footie:records-changed',{detail:{matches:['showcase'],datasetChanged:false}}))
+ await screen.findByText('The match records have changed. Ask again for the latest figures.')
+ pending!(reply(answer))
+ await waitFor(()=>expect(screen.queryByText('Mateo Cross · career: 75 goals.')).toBeNull())
+ expect(requests).toHaveLength(2)
+ expect(screen.queryByRole('button',{name:'Cancel'})).toBeNull()
+})

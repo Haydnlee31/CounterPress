@@ -32,3 +32,6 @@
 # Tests are not needed by the production frontend build.
 frontend/src/**/*.test.ts
 frontend/src/**/*.test.tsx
+
+# Approved public header artwork required by FootieWordmark.
+!frontend/src/assets/brand/footie-wordmark-forest-v1.png

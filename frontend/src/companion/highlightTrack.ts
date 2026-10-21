@@ -23,6 +23,21 @@ export function trackTime(track:Track,index:number,progress:number){
   return a.at+(b.at-a.at)*(position-a.position)/(b.position-a.position)
 }
 
+/** Buffer the complete local recording before offering Play; never speak to warm up. */
+export function readyAudio(audio:HTMLAudioElement,signal:AbortSignal):Promise<void>{
+  signal.throwIfAborted()
+  if(audio.readyState>=4)return Promise.resolve()
+  return new Promise((resolve,reject)=>{
+    const cleanup=()=>{clearTimeout(timer);audio.removeEventListener('canplaythrough',ready);audio.removeEventListener('error',failed);signal.removeEventListener('abort',aborted)}
+    const ready=()=>{cleanup();resolve()}
+    const failed=()=>{cleanup();reject(new Error('Narration could not be buffered'))}
+    const aborted=()=>{cleanup();reject(new DOMException('Aborted','AbortError'))}
+    const timer=setTimeout(failed,10000)
+    audio.addEventListener('canplaythrough',ready,{once:true});audio.addEventListener('error',failed,{once:true});signal.addEventListener('abort',aborted,{once:true})
+    try{audio.load()}catch{failed()}
+  })
+}
+
 const cache=new Map<string,{audio:string;markers:Marker[];duration:number;event_count:number}>()
 export async function prepareTrack(context:AudioContext,events:Event[],zh:boolean,_timed:boolean,signal:AbortSignal,onProgress:(done:number,total:number)=>void):Promise<Track>{
   const body=JSON.stringify({match_id:events[0].match_id,events:events.map(e=>e.event_id),revisions:events.map(e=>e.revision),language:zh?'zh-Hans':'en'})
@@ -45,6 +60,7 @@ export async function prepareTrack(context:AudioContext,events:Event[],zh:boolea
   // Keep the complete synthesized recording, including breaths and sentence cadence.
   const url=URL.createObjectURL(new Blob([bytes],{type:'audio/mpeg'})),audio=new Audio(url)
   audio.preload='auto';audio.preservesPitch=true
+  try{await readyAudio(audio,signal);signal.throwIfAborted()}catch(error){audio.pause();URL.revokeObjectURL(url);throw error}
   if(cache.size>=16)cache.delete(cache.keys().next().value!)
   cache.set(body,asset);onProgress(1,1)
   return {markers:asset.markers,duration:decoded.duration,eventCount:events.length,audio,url}

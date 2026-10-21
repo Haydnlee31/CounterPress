@@ -1,7 +1,9 @@
+import {usePlayerPeek} from '../football/PlayerPeek'
+import {useReplaySpeed} from '../football/useReplaySpeed'
 import { useEffect, useId, useState } from 'react'
 import type { Event } from '../types'
 import { replayClock } from '../matchday/replayGallery'
-import { clubName, initials, playerName } from './identity'
+import { clubName, playerName } from './identity'
 import { playDuration, actionLabel, sequenceScene, pitchZone, recipient, fieldPoint } from './pitchScene'
 import { LiveCompanion } from '../companion/LiveCompanion'
 import { cue } from '../companion/evidence'
@@ -9,6 +11,7 @@ import {useHighlightTrack} from '../companion/useHighlightTrack'
 import {TrackPlayer,trackPosition,trackTime} from '../companion/highlightTrack'
 import { ClubCrest } from './ClubCrest'
 import {AskFootie} from '../assistant/AskFootie'
+import {PitchIdentity,PitchFaceToggle,usePitchFaces} from '../football/PitchIdentity'
 import {matchdayContext} from '../assistant/context'
 
 export function MatchPitch({events,language='en',compact=false,fromStart=false,onPlayhead,seekTo,onPlayerSelect,selectedPlayer,routes=[],companion=false,playback,assistantMatchId,onAssistantOpen}:{events:Event[];language?:string;compact?:boolean;fromStart?:boolean;onPlayhead?:(value:{index:number;resolved:boolean})=>void;seekTo?:{index:number;version:number};onPlayerSelect?:(id:string|null)=>void;selectedPlayer?:string|null;routes?:Event[];companion?:boolean;assistantMatchId?:string;onAssistantOpen?:()=>void;playback?:{index:number;progress:number;playing:boolean}}) {
@@ -19,7 +22,9 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   const selected=selectedPlayer===undefined?localSelected:selectedPlayer
   const id=useId().replaceAll(':','')
   const [portrait,setPortrait]=useState(false)
-  const [speed,setSpeed]=useState(1)
+  const [speed,setSpeed]=useReplaySpeed()
+  const [faces,setFaces]=usePitchFaces()
+  const peek=usePlayerPeek()
   const [speechEpoch,setSpeechEpoch]=useState(0)
   const voice=useHighlightTrack(events,language,fromStart,companion&&!playback,()=>{
     setPlaying(false);setIndex(0);setProgress(0);setSpeechEpoch(v=>v+1)
@@ -35,7 +40,6 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
     setIndex(Math.max(0,Math.min(events.length-1,seekTo.index)))
     setProgress(0);setPlaying(false);setSelected(null)
   },[seekTo])
-  const selectPlayer=(player:string)=>{setSelected(player);if(onPlayerSelect){setPlaying(false);onPlayerSelect(player)}}
   useEffect(()=>{
     const query=window.matchMedia?.('(max-width: 640px)')
     if(!query)return
@@ -105,7 +109,8 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       <button className="fan-secondary" disabled={!events.length || index===events.length-1} onClick={()=>select(index+1)} aria-label={t('Next play','下一次进攻')}>→</button>
       <span>{events.length ? `${index+1} / ${events.length}` : '—'}</span>
       <button className="fan-secondary" onClick={()=>select(0)} disabled={!events.length}>{t('Restart','重新开始')} ↺</button>
-      <label className="fan-speed">{t('Speed','速度')} <select aria-label={t('Pitch replay speed','球场回放速度')} value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option></select></label>
+      <PitchFaceToggle faces={faces} change={setFaces}/>
+      <label className="fan-speed">{t('Speed','速度')} <select aria-label={t('Pitch replay speed','球场回放速度')} value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
       <label className="fan-pitch-scrubber"><span className="sr-only">{t('Replay position','回放位置')}</span><input type="range" aria-label={t('Replay position','回放位置')} min="0" max={Math.max(1,events.length*100)} step="1" value={index*100+progress*100} disabled={!events.length} aria-valuetext={t(`Play ${index+1} of ${events.length}`,`第${index+1}次，共${events.length}次`)} onChange={e=>{const value=Number(e.target.value)/100;setSpeechEpoch(v=>v+1);setPlaying(false);setIndex(Math.min(events.length-1,Math.floor(value)));setProgress(value>=events.length?1:value%1);setSelected(null)}}/></label>
     </div>}
     {assistantMatchId&&event&&<AskFootie context={matchdayContext(assistantMatchId,event,resolved,`Eastbridge × Northport · ${replayClock(event)}`)} onOpen={()=>{setPlaying(false);onAssistantOpen?.()}}/>}
@@ -141,22 +146,17 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
           return <g key={e.event_id}><path d={`M${a.x} ${a.y}L${b.x} ${b.y}`} stroke="#f5dc90" strokeWidth=".65" opacity=".65"/><circle cx={b.x} cy={b.y} r="1" fill="#f5dc90" opacity=".8"/></g>
         })}</g>
         {event && <path d={`M${scene.start.x} ${scene.start.y} L${scene.end.x} ${scene.end.y}`} stroke="#f5dc90" strokeWidth=".5" strokeDasharray="1.3 1.3" opacity=".7"/>}
-        {/* Expanded touch targets sit behind every visible marker so a nearby
-            player's invisible hit area cannot cover the marker being tapped. */}
-        <g aria-hidden="true">{scene.players.map(p=><circle key={p.player_id} className="player-hit" cx={p.x} cy={p.y} r={portrait?5.2:4} fill="transparent" style={{cursor:'pointer'}} onClick={()=>selectPlayer(p.player_id)}/>)}</g>
         {[...scene.players].sort((a,b)=>Number(a.involved||a.player_id===selected)-Number(b.involved||b.player_id===selected)).map(p=>{
-          return <g key={p.player_id} className={`fan-pitch-player ${p.involved?'involved':''} ${p.player_id===selected?'selected':''}`}
+          return <g key={p.player_id} {...peek.bind(p.player_id,playerName(p.player_id))} className={`fan-pitch-player ${p.involved?'involved':''} ${p.player_id===selected?'selected':''}`}
           data-player-id={p.player_id}
-          role="button" tabIndex={0} aria-label={`${playerName(p.player_id)}, ${clubName(p.team_id)}`} aria-pressed={selected===p.player_id}
-          transform={`translate(${p.x} ${p.y})`} onClick={()=>selectPlayer(p.player_id)}
-          onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPlayer(p.player_id)}}}>
+          role="group" tabIndex={0} aria-label={`${playerName(p.player_id)}, ${clubName(p.team_id)}`}
+          transform={`translate(${p.x} ${p.y})`}>
           <g transform={portrait?"rotate(-90)":undefined}>
-          <title>{playerName(p.player_id)} · {clubName(p.team_id)}</title>
           <ellipse pointerEvents="none" className="player-shadow" cy="2.4" rx="2.8" ry="1" fill="#071c16" opacity=".32"/>
           <circle pointerEvents="none" className="player-halo" r="3.5" fill="none" stroke="#f5d77f" strokeWidth=".5" opacity={p.involved||p.player_id===selected?1:0}/>
-          <circle className="player-disc" r={2.7} fill={p.team_id==='eastbridge'?'#f2d483':'#d0e6fb'} stroke={p.team_id==='eastbridge'?'#183c2e':'#193f70'} strokeWidth=".65"/>
-          <text className="player-initials" y=".8" textAnchor="middle" fill={p.team_id==='eastbridge'?'#16382c':'#183d64'} fontSize="2.4" fontWeight="800" pointerEvents="none">{initials(p.player_id)}</text>
+          <PitchIdentity playerId={p.player_id} name={playerName(p.player_id)} color={p.team_id==='eastbridge'?'#f2d483':'#d0e6fb'} r={faces?3.1:2.7} faces={faces}/>
           {p.player_id===event?.actor.player_id && <path d={scene.kicking?'M1 2l3 1.4':'M1 2l.8 1'} stroke="#fff4cb" strokeWidth=".9" strokeLinecap="round"/>}
+          <circle className="player-peek-hit" r={faces?3.1:2.7} fill="transparent" pointerEvents="all"/>
           <g className="player-tooltip" pointerEvents="none"><rect x="-11" y="-8" width="22" height="3.8" rx="1" fill="#0c251f"/><text y="-5.4" textAnchor="middle" fontSize="1.8" fill="white">{playerName(p.player_id)}</text></g>
           </g>
         </g>})}
@@ -182,5 +182,6 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       {selected && <button onClick={()=>{setSelected(null);onPlayerSelect?.(null)}}>{t('Back to play','返回回放')}</button>}</div>
 
     {companion && <LiveCompanion narration={{available:voice.available,listen:voice.listen,status:voice.preparing?'loading':voice.status,progress:voice.progress,toggle:voice.toggle,text:voice.track?.markers.slice().reverse().find(m=>m.position<=index+progress)?.text}} speechEpoch={speechEpoch} events={events} index={index} resolved={resolved} playing={playing || (reduced && resolved)} finished={progress>=1 && index===events.length-1} language={language}/>}
+    {peek.card}
   </section>
 }

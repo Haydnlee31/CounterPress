@@ -26,13 +26,13 @@ test('carrying moves actor and ball together without changing the source record'
   expect(JSON.stringify(carry)).toBe(serialized)
   expect(pitchScene(undefined,0).players).toHaveLength(22)
 })
-test('keyboard player selection, manual stepping, and revision reset preserve accessibility',()=>{
+test('hover-only player markers, manual stepping, and revision reset preserve accessibility',()=>{
   const next={...pass,event_id:'pass-2',actor:{team_id:'eastbridge',player_id:'eb08'}}
   const ui=render(<MatchPitch events={[pass,next]}/>)
   const pitch=within(screen.getByRole('group',{name:'Interactive football pitch'}))
-  expect(pitch.getAllByRole('button')).toHaveLength(22)
-  fireEvent.keyDown(pitch.getByRole('button',{name:'Sam Linden, Northport'}),{key:'Enter'})
-  expect(screen.getByText('Back to play')).toBeTruthy()
+  expect(pitch.getAllByRole('group')).toHaveLength(22)
+  fireEvent.keyDown(pitch.getByRole('group',{name:'Sam Linden, Northport'}),{key:'Enter'})
+  expect(screen.queryByText('Back to play')).toBeNull()
   expect(screen.getByText('2 / 2')).toBeTruthy()
   fireEvent.click(screen.getByRole('button',{name:'Previous play'}))
   expect(screen.getByText('1 / 2')).toBeTruthy()

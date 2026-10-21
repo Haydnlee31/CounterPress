@@ -28,7 +28,7 @@ class HealthResponse(Contract):
 
 def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:",
                static_dir: Path | None = None, store: HistoryStore | None = None,
-               revision_publisher=None, editorial=None, studio=None) -> FastAPI:
+               revision_publisher=None, editorial=None, studio=None, career_journal=None) -> FastAPI:
     root = fixture_dir or Path(os.environ.get("COUNTERPRESS_FIXTURE_DIR", Path(__file__).resolve().parents[3] / "fixtures"))
     service = SnapshotService(root, store if store is not None else configured_store(db_path))
     @asynccontextmanager
@@ -37,7 +37,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
         try:
             if os.environ.get('COUNTERPRESS_STREAMING', 'off') == 'azure':
                 from counterpress.streaming.azure import StreamingRuntime
-                runtime = StreamingRuntime(service)
+                runtime = StreamingRuntime(service, career_service if career_journal is not None else None)
                 await runtime.start()
                 application.state.revision_publisher = runtime.publisher
             yield
@@ -47,7 +47,17 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
 
     application = FastAPI(title="CounterPress", version="0.1.0", lifespan=lifespan)
     from counterpress.personalization.api import install_personalization
-    career_service = install_personalization(application, root)
+    if career_journal is None and os.environ.get('COUNTERPRESS_CAREER_STREAMING', 'off') == 'on':
+        from counterpress.personalization.journal import CosmosCareerJournal, SQLiteCareerJournal
+        from counterpress.cosmos_history import CosmosHistoryStore
+        if isinstance(service.store, CosmosHistoryStore):
+            career_journal = CosmosCareerJournal(service.store.container)
+        else:
+            path = os.environ.get('COUNTERPRESS_CAREER_JOURNAL_PATH')
+            if not path or path == ':memory:':
+                raise ValueError('Career streaming requires a durable correction journal')
+            career_journal = SQLiteCareerJournal(path)
+    career_service = install_personalization(application, root, career_journal)
     from counterpress.fan.api import install_fan
     install_fan(application, career_service, service)
     from counterpress.assistant.api import install_assistant
@@ -88,6 +98,25 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
         except Exception:
             raise HTTPException(status_code=503, detail='Live updates unavailable; polling remains available.') from None
 
+    @application.get('/api/data/revisions/negotiate')
+    async def negotiate_career(response: Response):
+        from starlette.concurrency import run_in_threadpool
+        response.headers['Cache-Control'] = 'no-store'
+        response.headers['Referrer-Policy'] = 'no-referrer'
+        publisher = application.state.revision_publisher
+        if career_journal is None or publisher is None:
+            return {'enabled': False}
+        now = monotonic()
+        negotiations[:] = [at for at in negotiations if now - at < 60]
+        if len(negotiations) >= 30:
+            raise HTTPException(429, 'Live updates are busy; polling remains available.', headers={'Retry-After': '60'})
+        negotiations.append(now)
+        try:
+            state = await run_in_threadpool(lambda: career_service().store.revision_state())
+            return await publisher.negotiate_career(state['dataset'])
+        except Exception:
+            raise HTTPException(503, 'Live updates unavailable; polling remains available.') from None
+
     @application.get("/health", response_model=HealthResponse, tags=["health"])
     def health() -> HealthResponse:
         """Process liveness only; no external dependencies."""
@@ -99,6 +128,8 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
         response.headers["Cache-Control"] = "no-store"
         try:
             service.snapshot("increase", 180000)
+            if career_journal is not None:
+                career_service().store.revision_state()
         except (ValueError, OSError, sqlite3.Error, HistoryStorageError) as exc:
             raise HTTPException(status_code=503, detail="Replay is not ready.") from exc
         return HealthResponse()

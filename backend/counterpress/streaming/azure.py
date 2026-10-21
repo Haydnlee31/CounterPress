@@ -29,7 +29,8 @@ class Publisher:
         self.client = client
 
     async def publish(self, notice):
-        await self.client.send_to_group('scenario.' + notice.scenario_id,
+        group = 'career.' + notice.dataset if notice.type == 'career.changed' else 'scenario.' + notice.scenario_id
+        await self.client.send_to_group(group,
             notice.model_dump(mode='json'), content_type='application/json')
 
     async def negotiate(self, scenario):
@@ -37,9 +38,17 @@ class Publisher:
             roles=[], minutes_to_expire=5)
         return {'enabled': True, 'url': token['url']}
 
+    async def negotiate_career(self, dataset):
+        from counterpress.personalization.journal import Frame
+        Frame(dataset=dataset)
+        token = await self.client.get_client_access_token(groups=['career.' + dataset],
+            roles=[], minutes_to_expire=5)
+        return {'enabled': True, 'url': token['url']}
+
 class StreamingRuntime:
-    def __init__(self, service):
+    def __init__(self, service, career_service=None):
         self.service = service
+        self.career_service = career_service
         self.stack = AsyncExitStack()
         self.task = None
         self.publisher = None
@@ -75,7 +84,7 @@ class StreamingRuntime:
                     metadata={'sha256': digest, 'reason': 'invalid_delivery'})
             except ResourceExistsError:
                 pass  # Stable offset identity, already durably quarantined.
-        processor = DeliveryProcessor(self.service, self.publisher, reject, self.telemetry)
+        processor = DeliveryProcessor(self.service, self.publisher, reject, self.telemetry, self.career_service)
         self.checkpoints = BlobCheckpointStore(blob_account_url=blob,
             container_name='eventhub-checkpoints', credential=credential)
         self.consumer = await self.stack.enter_async_context(EventHubConsumerClient(

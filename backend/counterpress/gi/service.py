@@ -53,11 +53,22 @@ class Action(Contract):
     tags: tuple[int, ...]
 
 
+class ReplayTime(Contract):
+    period: Literal[1, 2]
+    elapsed_ms: int = Field(ge=0)
+
+
 class Player(Contract):
     player_id: str
     provider_player_id: int | None
     team_id: int
     alias_id: str
+    role: Literal['GK', 'DF', 'MF', 'FW'] | None = None
+    starter: bool = True
+    entered_at: ReplayTime | None = None
+    left_at: ReplayTime | None = None
+    formation_slot: int | None = Field(default=None, ge=0, le=10)
+    formation_position: Point | None = None
 
 
 class Team(Contract):
@@ -74,6 +85,7 @@ class Source(Contract):
     match_source: str
     source_archive_sha256: str
     fixture_sha256: str
+    lineup_sha256: str | None = None
     alias_sha256: str | None = None
     revision: int
     changes: str
@@ -159,6 +171,10 @@ def read_match(root: Path, match_id: str = MATCH_ID) -> Match:
                   for tid, name in ((4418, 'Eastbridge'), (9598, 'Northport')))
     if tuple(t.score for t in teams) != config['score']:
         raise ValueError('GI score does not reconcile')
+    if not source.lineup_sha256:
+        raise ValueError('Missing recorded lineup metadata')
+    from counterpress.gi.lineups import enrich_lineups
+    players=enrich_lineups(root,players,events,source.lineup_sha256)
     return Match(match_id=match_id, teams=teams, players=players, events=tuple(events), source=source,
                  date=config['date'], display_date=config['display_date'], competition='Match archive', source_label=config['source_label'],
                  headline=config['headline'], summary=config['summary'], video_url=config['video'])

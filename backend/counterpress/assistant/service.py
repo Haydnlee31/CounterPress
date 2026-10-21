@@ -9,11 +9,34 @@ from counterpress.personalization.metrics import select_events
 from .contracts import Plan
 
 METRICS={d[0]:d for d in DEFINITIONS}
-UNSUPPORTED=re.compile(r'\b(salary|injur\w*|predict\w*|bet\w*|odds|sprint\w*|running distance|fastest|top speed|weather|transfer fee|real life|system prompt|api key|endpoint|sql|delete|ignore.*instructions)\b|伤病|薪水|预测|冲刺|跑动距离',re.I)
-ALIASES={'goals':r'\b(goal(?:s)?|scor\w*)\b|进球','assists':r'\b(assist\w*|creat\w*)\b|助攻',
+UNSUPPORTED=re.compile(r'\b(salary|injur\w*|predict\w*|bet(?:s|ting)?|odds|sprint\w*|running distance|how far.*(?:run|ran)|fastest|top speed|weather|transfer fee|real life|system prompt|api key|endpoint|sql|delete|ignore.*instructions)\b|伤病|薪水|预测|冲刺|跑动距离',re.I)
+ALIASES={
+ 'goals':r'\b(goal(?:s)?|scor\w*|found the net|find the net)\b|进球',
+ 'assists':r'\bassist(?:s)?\b|助攻',
+ 'key_passes':r'\b(?:chances? (?:created|creation)|chances?|key passes?|shot assists?)\b',
+ 'xa':r'\b(?:xa|expected assists?)\b',
+ 'xg':r'\b(?:xg|expected goals?)\b',
  'pass_accuracy':r'\b(pass(?:ing)? (?:accuracy|completion)|accurate pass\w*)\b|传球成功率',
- 'passes':r'\b(pass(?:es|ing)?)\b|传球','saves':r'\bsave\w*\b|扑救','clean_sheets':r'clean sheet|零封',
- 'shots':r'\bshot\w*\b|射门','xg':r'\bxg\b|expected goals','duels_won':r'challenge|duel|对抗'}
+ 'passes':r'\b(pass(?:es|ing)?)\b|传球',
+ 'saves':r'\bsave\w*\b|扑救', 'clean_sheets':r'clean sheet|零封',
+ 'shots':r'\bshot\w*\b|射门', 'duels_won':r'challenge|duel|对抗',
+}
+
+
+def requested_metrics(question):
+    """Specific phrases own their spans; 'save percentage' is not a save count.
+
+    Multiple non-overlapping measures require clarification, never arbitrary
+    first-match selection. These are supported synonyms, not tactical inference.
+    """
+    matches=[]
+    for key, pattern in ALIASES.items():
+        matches.extend((m.start(),m.end(),key) for m in re.finditer(pattern,question,re.I))
+    for key, definition in METRICS.items():
+        pattern=r'(?<![a-zA-Z0-9_])'+re.escape(definition[1])+r'(?![a-zA-Z0-9_])'
+        matches.extend((m.start(),m.end(),key) for m in re.finditer(pattern,question,re.I))
+    return {key for start,end,key in matches if not any(
+        a<=start and b>=end and (b-a)>(end-start) for a,b,_ in matches)}
 
 
 def fingerprint(value):return sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
@@ -42,9 +65,9 @@ class AssistantService:
 
     def names(self,text,registry,id_attr):
         # Never resolve a surname shared by multiple players to the first match.
-        full=[getattr(p,id_attr) for p in registry.values() if re.search(r'(?<!\w)'+re.escape(p.name)+r'(?!\w)',text,re.I)]
+        full=[getattr(p,id_attr) for p in registry.values() if re.search(r'(?<![a-zA-Z0-9_])'+re.escape(p.name)+r'(?![a-zA-Z0-9_])',text,re.I)]
         if full:return full
-        candidates=[getattr(p,id_attr) for p in registry.values() if any(re.search(r'(?<!\w)'+re.escape(part)+r'(?!\w)',text,re.I) for part in p.name.split() if len(part)>2)]
+        candidates=[getattr(p,id_attr) for p in registry.values() if any(re.search(r'(?<!\w)'+re.escape(part)+r'(?!\w)',text,re.I) for part in p.name.split()[-1:] if len(part)>2)]
         return candidates if len(candidates)==1 else []
 
     def local_plan(self,request):
@@ -59,30 +82,28 @@ class AssistantService:
             clubs=[request.club_id] if request.club_id else [previous.club_id] if previous and follow and previous.club_id else []
         if not players and not clubs and re.search(r'my favou?rite player|我的最爱球员',q) and len(request.preferences.favorite_player_ids)==1:players=list(request.preferences.favorite_player_ids)
         if not players and not clubs and re.search(r'my club|my team|我的球队',q) and request.preferences.primary_club_id:clubs=[request.preferences.primary_club_id]
-        season=request.season
+        season=request.season if request.season is not None else previous.season if previous and follow and not explicit else None
         match_season=re.search(r'20\d{2}-\d{2}(?!\d)',q)
         if match_season:season=match_season.group()
         if 'last season' in q or '上赛季' in q:season=seasons[1] if len(seasons)>1 else 'unavailable'
         elif 'this season' in q or '本赛季' in q:season=seasons[0] if seasons else 'unavailable'
-        metric=next((key for key,pattern in ALIASES.items() if re.search(pattern,q)),None)
-        if metric=='goals' and ('expected goal' in q):metric='xg'
-        # Exact labels make every catalogue metric accessible without model calls.
-        for key,d in METRICS.items():
-            if d[1].casefold() in q and len(d[1])>len(METRICS.get(metric,('','',''))[1]):metric=key
-        metric=metric or (previous.metric if previous and follow else 'goals')
+        measures=requested_metrics(q)
+        if len(measures)>1:return blank('clarify')
+        if re.search(r'\bcareer\b|生涯',q) and not match_season and 'season' not in q and '赛季' not in q:season=None
+        metric=next(iter(measures),None) or (previous.metric if previous and follow else 'goals')
         per90=bool(re.search(r'per\s*90|/90|每90',q)) or bool(previous and follow and previous.per90)
         if re.search(r'\b(total|count)\b',q):per90=False
         op='stats';mid=request.match_id
         if re.search(r'why|milestone|what happened|moment|this play|match|scoreline|比赛|里程碑|为什么',q) and mid:op='match'
-        elif re.search(r'compare|versus|\bvs\b|对比|比较',q):op='seasons' if len(players)==1 and ('season' in q or '赛季' in q) else 'compare'
+        elif re.search(r'compare|versus|\bvs\b|side by side|对比|比较',q):op='seasons' if len(players)==1 and ('season' in q or '赛季' in q or len(re.findall(r'20\d{2}-\d{2}(?!\d)',q))==2) else 'compare'
         elif re.search(r'recent|form|last five|last 5|最近|状态',q):op='recent'
         elif clubs and re.search(r'who|lead|most|top|contribut|谁|最多|贡献',q):op='club_leaders'
         elif previous and follow and not explicit:op=previous.operation
         if not players and not clubs and op!='match':op='clarify'
-        if re.search(r'\b(best|better|worst)\b',q) and not any(re.search(pattern,q) for pattern in ALIASES.values()):op='clarify'
+        if re.search(r'\b(best|better|worst|creative)\b',q) and not measures:op='clarify'
         # Unknown questions must not silently turn into a goals answer.
         supported=re.search(r'goal|assist|pass|save|shot|sheet|duel|xg|stat|form|recent|season|compare|why|milestone|moment|this play|what happened|match|contribut|scor|how many|进球|助攻|传球|状态|赛季|对比|比赛|扑救|数据|里程碑',q)
-        if op!='clarify' and not supported and not follow and not any(d[1].casefold() in q for d in METRICS.values()):op='unsupported'
+        if op!='clarify' and not supported and not follow and not measures:op='unsupported'
         if op=='seasons' and ('this season' in q or '本赛季' in q):season=seasons[0] if seasons else None
         if op=='seasons' and match_season:
             named_seasons=re.findall(r'20\d{2}-\d{2}(?!\d)',q)
@@ -96,13 +117,43 @@ class AssistantService:
         if request.event_id and (not request.match_id or not request.playback or request.event_revision is None):
             raise ValueError('A moment requires its match, playback time and revision')
         if request.playback and plan.operation!='match':raise ValueError('Choose a career scope or a match-time question')
+        q=request.question.lower()
+        if UNSUPPORTED.search(q) or re.search(r'\b\d+(?:st|nd|rd|th)? minute\b|\b20\d\d-\d\d-\d\d\b',q):
+            raise ValueError('Unsupported question scope')
+        if plan.operation!='match':
+            named_seasons=re.findall(r'20\d{2}-\d{2}(?!\d)',q)
+            if len(named_seasons)==2:
+                if plan.operation!='seasons' or {plan.season,plan.comparison_season}!=set(named_seasons):
+                    raise ValueError('Season comparison mismatch')
+            elif len(named_seasons)==1 and plan.season!=named_seasons[0]:raise ValueError('Season mismatch')
+            elif not named_seasons:
+                this='this season' in q or '本赛季' in q
+                last='last season' in q or '上赛季' in q
+                if this and last:
+                    if len(seasons)<2 or plan.operation!='seasons' or {plan.season,plan.comparison_season}!=set(seasons[:2]):
+                        raise ValueError('Season comparison mismatch')
+                elif last:
+                    if len(seasons)<2 or plan.season!=seasons[1]:raise ValueError('Season mismatch')
+                elif this:
+                    if not seasons or plan.season!=seasons[0]:raise ValueError('Season mismatch')
+                else:
+                    previous=request.previous_plan
+                    follow=bool(re.search(r'^(and|what about|how about|their|his|her|那|他)|\b(per 90|instead)\b',q))
+                    explicit=bool(self.names(q,self.store.players,'player_id') or self.names(q,self.store.clubs,'club_id'))
+                    expected_season=request.season if request.season is not None else previous.season if previous and follow and not explicit else None
+                    if re.search(r'\bcareer\b|生涯',q):expected_season=None
+                    if plan.operation=='seasons' and expected_season is None:
+                        if plan.season not in (None,seasons[0] if seasons else None):raise ValueError('Default season mismatch')
+                    elif plan.season!=expected_season:raise ValueError('Default scope mismatch')
+            if re.search(r'per\s*90|/90|每90',q) and plan.operation!='recent' and not plan.per90:
+                raise ValueError('Rate mismatch')
         if plan.metric not in METRICS:raise ValueError('Unsupported metric')
         if any(p not in self.store.players for p in plan.player_ids):raise ValueError('Unknown player')
         if plan.club_id and plan.club_id not in self.store.clubs:raise ValueError('Unknown club')
         if any(s and s not in seasons for s in (plan.season,plan.comparison_season)):raise ValueError('Unavailable season')
-        explicit_metrics=[key for key,pattern in ALIASES.items() if re.search(pattern,request.question,re.I)]
-        if 'pass_accuracy' in explicit_metrics and 'passes' in explicit_metrics:explicit_metrics.remove('passes')
-        if len(explicit_metrics)==1 and plan.metric!=explicit_metrics[0] and not (plan.metric=='xg' and 'expected goal' in request.question.lower()):raise ValueError('Metric mismatch')
+        explicit_metrics=requested_metrics(request.question)
+        if len(explicit_metrics)>1:raise ValueError('Choose one measure')
+        if explicit_metrics and plan.metric not in explicit_metrics:raise ValueError('Metric mismatch')
         named=self.names(request.question,self.store.players,'player_id')
         if named and set(named)!=set(plan.player_ids):raise ValueError('Subject mismatch')
         allowed=set(named or ([request.player_id] if request.player_id else request.previous_plan.player_ids if request.previous_plan else []))

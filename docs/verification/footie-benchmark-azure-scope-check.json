@@ -1,0 +1,138 @@
+{
+  "version": "footie-questions-v1",
+  "created_at": "2026-10-21T03:35:01.926629+00:00",
+  "mode": "azure_targeted",
+  "corpus_cases": 58,
+  "dataset_sha256": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef",
+  "source_sha256": {
+    "fixtures/assistant/questions.json": "c71deebc45b2ed9c7c940a69795dcb83cbca56ec18e554e36ba6bb7f5597713c",
+    "scripts/evaluate_footie.py": "bd7d556c61724c8726693c83f0aab2d1e00d5b04b9e5382f0c2c24e6dcc71c25",
+    "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
+    "backend/counterpress/assistant/api.py": "5e71c6ffd501bdc380a6c43e63d8900d87ac84f907ed9e8cf080f49dbef1bfcc",
+    "backend/counterpress/assistant/contracts.py": "bec5feb46430b78fa1e7220f42168e46d271992dcc9d0afb5a63f804ebfac7e4",
+    "backend/counterpress/assistant/evaluation.py": "314d7706fcc146eb9897dfb5fae79641a09ea7a32790e0d8f921ca593a0a4295",
+    "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
+    "backend/counterpress/assistant/narrative.py": "eedb17f6f1276e923e79de377fbc6356337293f9ffe66c946518605e88839716",
+    "backend/counterpress/assistant/planner.py": "86e5cf16933b0eb8c867cca864b4b0b272f190846244817a40e45f7e5b8587b4",
+    "backend/counterpress/assistant/service.py": "ef81eef1af66aab83e9880a5f54ff6edd2f75ed3279000bb309ed6e777765e4c"
+  },
+  "model_attempts": 2,
+  "summary": {
+    "cases": 1,
+    "metrics": {
+      "raw_intent_correct": {
+        "passed": 1,
+        "total": 1
+      },
+      "effective_intent_correct": {
+        "passed": 1,
+        "total": 1
+      },
+      "answer_evidence_correct": {
+        "passed": 1,
+        "total": 1
+      },
+      "narrative_bound": {
+        "passed": 1,
+        "total": 1
+      },
+      "anchors_correct": {
+        "passed": 1,
+        "total": 1
+      },
+      "passed": {
+        "passed": 1,
+        "total": 1
+      }
+    },
+    "model_routing": {
+      "passed": 1,
+      "total": 1
+    },
+    "categories": {
+      "player": {
+        "passed": 1,
+        "total": 1
+      }
+    },
+    "latency_ms": {
+      "p50": 4957,
+      "p95": 4957
+    },
+    "fallbacks": {},
+    "failed_ids": []
+  },
+  "results": [
+    {
+      "id": "goals_paraphrase",
+      "category": "player",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "passed": true,
+      "model_attempted": true,
+      "mode": "azure",
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4957,
+      "usage": {
+        "planner": {
+          "prompt_tokens": 3147,
+          "completion_tokens": 42,
+          "total_tokens": 3189
+        },
+        "narrator": {
+          "prompt_tokens": 264,
+          "completion_tokens": 10,
+          "total_tokens": 274
+        }
+      },
+      "expected_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "actual_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "raw_intent": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "unreported_usage_attempts": 0
+    }
+  ],
+  "limits": [
+    "Authored regression cases, not unseen fan traffic.",
+    "Oracle uses reviewed intent labels and existing reducers; independent reducer audits remain separate.",
+    "Azure sample is small and single-run; do not present it as population accuracy.",
+    "Token counts exclude unknown billed usage on failed requests; no dollar-cost claim.",
+    "No hosted endpoint, synthesis, streaming write or production data mutation."
+  ]
+}

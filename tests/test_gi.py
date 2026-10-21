@@ -98,3 +98,29 @@ def test_comeback_match_independent_counts_and_masking():
     with TestClient(create_app()) as client:
         assert client.get('/api/gi/matches/wyscout-2058007').json()['teams'][0]['score'] == 3
         assert client.get('/api/gi/matches/wyscout-2058017').json()['teams'][0]['score'] == 4
+
+@pytest.mark.parametrize('mid,total_subs', [('wyscout-2058017',5),('wyscout-2058007',4)])
+def test_recorded_lineup_intervals_cover_every_touch(mid,total_subs):
+    match=read_match(ROOT/'gi',mid)
+    assert match.source.lineup_sha256
+    assert sum(p.starter for p in match.players)==22
+    assert sum(p.entered_at is not None for p in match.players)==total_subs
+    assert sum(p.left_at is not None for p in match.players)==total_subs
+    def key(t):return t.period,t.elapsed_ms
+    for event in match.events:
+        now=key(event)
+        active=[p for p in match.players if (p.starter or p.entered_at and key(p.entered_at)<=now)
+                and (not p.left_at or now<key(p.left_at))]
+        assert event.player_id in {p.player_id for p in active}
+        assert len(active)==22
+        assert sum(p.role=='GK' for p in active)==2
+        assert len({(p.team_id,p.formation_slot) for p in active})==22
+
+
+def test_lineup_metadata_is_integrity_checked(tmp_path):
+    import shutil
+    shutil.copytree(ROOT/'gi',tmp_path/'gi')
+    path=tmp_path/'gi'/'lineups.json'
+    path.write_text(path.read_text()+'\n')
+    with pytest.raises(ValueError,match='lineup checksum'):
+        read_match(tmp_path/'gi')
