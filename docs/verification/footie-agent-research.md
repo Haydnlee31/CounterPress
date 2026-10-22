@@ -1,8 +1,30 @@
-# Footie bounded research — 22 October 2026
+# Footie bounded research — 23 October 2026
+
+## Latest release gate — passed
+
+The queued full version 5 Azure sample completed at **00:21 Singapore time on
+23 October 2026**, after the existing rolling allowance renewed. The
+[final sanitized report](footie-agent-v5-final-azure.json) records **10/10 overall
+cases passed**, **9/9 eligible agent workflows completed without fallback**, and
+correct handling of the unsupported tracking question without a model call.
+All evidence and temporal-anchor checks passed. It used 18 provider requests;
+median latency was 4.475 seconds and sample p95 was 5.526 seconds.
+
+All evaluated source hashes match the reviewed implementation. This closes the
+small authored-sample release gate; it does not establish accuracy on unseen fan
+questions. The earlier failed runs below remain part of the verification record.
+
+PR #56 CI passed all **981 backend tests**, the reproducible career-ledger audit,
+container smoke checks and Azure template compilation. The frontend passed all
+204 tests, adapter checks and its production build on retry. The initial CI
+attempt had two intermittent replay-position test failures; both the full local
+suite and the focused Node 24 check passed. Those failures are retained in the
+PR/CI history. The PR is now being prepared for merge and exact-commit deployment;
+this paragraph is not a hosted deployment confirmation.
 
 ## Scope and status
 
-This is the **local research and shared-admission stage** of the Reactor-inspired agent roadmap. It does
+This records the **research and shared-admission stage** of the Reactor-inspired agent roadmap. It does
 not change hosted Azure configuration, activate career ingestion, create cloud
 resources, or publish a new release. The dashboard Tools entry points were removed
 in the preceding local change; the operator routes and backend remain available.
@@ -65,8 +87,8 @@ The opt-in agent path is:
 ```
 
 It uses existing server-only local model configuration. No credentials belong in
-source control or the browser. Do not enable `COUNTERPRESS_ASSISTANT_WORKFLOW=agent`
-on the live app until the revised live evaluation passes. Without this flag the
+source control or the browser. The full version 5 live evaluation passed; activation is an explicit deployment
+choice through `assistant_workflow=agent`. Without this flag the
 existing planner/narrator path remains selected when Azure is enabled.
 
 ## Evaluation evidence and unresolved gate
@@ -322,8 +344,8 @@ enable agent mode on the strength of the targeted check alone.
 
 ## Remaining roadmap
 
-1. Finish live-agent validation, especially comparison rates, recent-form arguments,
-   follow-up operations and match cutoffs. Add unseen fan phrasing and human review.
+1. The authored live-agent sample passed. Extend evaluation with unseen fan
+   phrasing and human review; preserve failures and avoid population accuracy claims.
 2. Add useful new tools (e.g. player contribution shares and explicitly defined
    club-wide form rankings) only with independent labels and coverage tests.
    Vague “best player”, tactical causes and unrestricted multi-step research remain

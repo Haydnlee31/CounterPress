@@ -405,7 +405,7 @@ Existing model settings remain in the ignored local `.env`; no new Azure service
 is required. [Verification](docs/verification/grounded-assistant.md).
 
 
-### Footie bounded research (local preview)
+### Footie bounded research
 
 The assistant now supports up to three explicit statistics in one answer or
 comparison, with a separate chart scale per measure. `--azure --agent` opts into
@@ -422,12 +422,12 @@ npm --prefix frontend run build
 
 Try “Compare Rory Ellis and Dario Voss goals and assists last season”, followed
 by “And this season?”. The same UI accepts the existing one-metric and selected
-match-moment questions. Broader agent routing still needs a fresh live evaluation;
-a correct deterministic fallback does not count as a successful agent run.
+match-moment questions. The final authored Azure sample passed 10/10 cases, including 9/9 agent
+workflows without fallback; unseen fan questions still need broader evaluation.
 Agent mode now requires durable SQLite or Cosmos admission: at most ten research
 jobs (twenty reserved model calls) per rolling hour across instances, with
 revision-aware duplicate suppression. Real Cosmos admission passed under the app managed identity, including a write
-conflict and fresh-process quota recovery. The latest broader Azure sample completed
-9/9 agent workflows but failed one follow-up intent check. Version 5 enforces
-operation inheritance for period-only follow-ups and passed its targeted Azure
-check. A fresh full live sample remains a release gate.
+conflict and fresh-process quota recovery. Version 5 enforces operation inheritance
+for period-only follow-ups and passed the final broad Azure check.
+Activation uses the manual deployment workflow’s explicit `assistant_workflow`
+selection; `structured_lookup` supports rollback.
