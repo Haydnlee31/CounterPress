@@ -60,6 +60,18 @@ def test_budget_is_persistent_atomic_and_bounded(tmp_path):
     with pytest.raises(ValueError):AttemptBudget(path,21)
 
 
+def test_agent_gate_does_not_count_fallback_or_half_finished_budget_as_success():
+    from counterpress.assistant.evaluation import release_gate
+    row={'passed':True,'model_attempted':True,'raw_intent_correct':True,'mode':'azure_agent','fallback':None}
+    assert release_gate([row],1,azure=True,agent=True)=='passed'
+    fallback={**row,'mode':'lookup_fallback','fallback':'query_scope_rejected'}
+    assert release_gate([fallback],1,azure=True,agent=True)=='failed'
+    halfway={**fallback,'fallback':'model_allowance_exhausted'}
+    assert release_gate([halfway],1,azure=True,agent=True)=='incomplete'
+    stale={**row,'narrative_fallback':'records_changed'}
+    assert release_gate([stale],1,azure=True,agent=True)=='failed'
+
+
 def test_corpus_requires_matching_dataset_and_unique_ids(service,tmp_path):
     corpus=json.loads((ROOT/'fixtures/assistant/questions.json').read_text())
     for mutation in ['dataset','duplicate']:

@@ -158,6 +158,24 @@ def assistant_settings(app, mode):
     return result
 
 
+def assistant_workflow_settings(app, mode):
+    """Explicit agent activation/rollback; preserve the current workflow by default."""
+    result = copy.deepcopy(app)
+    if mode == 'preserve':
+        return result
+    if mode not in ('agent', 'structured_lookup'):
+        raise DeploymentError('Unknown assistant workflow')
+    container = result['properties']['template']['containers'][0]
+    env = {v['name']: v.get('value') for v in container.get('env', [])}
+    if mode == 'agent' and (env.get('COUNTERPRESS_ASSISTANT_MODEL') != 'azure'
+                            or env.get('COUNTERPRESS_STORAGE') != 'cosmos'):
+        raise DeploymentError('Agent workflow requires Azure inference and shared Cosmos admission')
+    container['env'] = [v for v in container.get('env', [])
+                        if v['name'] != 'COUNTERPRESS_ASSISTANT_WORKFLOW'] + [
+        {'name': 'COUNTERPRESS_ASSISTANT_WORKFLOW', 'value': mode}]
+    return result
+
+
 def validate_app(app):
     p=app['properties'];container=p['template']['containers'][0]
     env={v['name']:v.get('value') for v in container.get('env',[])}
@@ -176,6 +194,7 @@ def validate_app(app):
     else:
         assert not model_env
     assert env.get('COUNTERPRESS_ASSISTANT_MODEL', 'off') in ('off', 'azure')
+    assert env.get('COUNTERPRESS_ASSISTANT_WORKFLOW', 'structured_lookup') in ('structured_lookup', 'agent')
     if env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure':
         assert set(model_env) == set(MODEL_SECRETS)
     assert env.get('COUNTERPRESS_STUDIO', 'off') in ('off', 'entra')
@@ -216,6 +235,7 @@ def deploy():
     model=json.loads(os.environ['CP_EDITORIAL_MODEL']) if editorial_mode == 'enable' else None
     expected=editorial_settings(expected, editorial_mode, model)
     expected=assistant_settings(expected, os.environ.get('CP_ASSISTANT_MODE', 'preserve'))
+    expected=assistant_workflow_settings(expected, os.environ.get('CP_ASSISTANT_WORKFLOW', 'preserve'))
     if model:
         for value in model.values():
             if isinstance(value, str):print('::add-mask::'+value, flush=True)

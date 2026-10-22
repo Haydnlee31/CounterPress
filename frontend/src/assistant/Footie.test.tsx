@@ -99,3 +99,19 @@ it('clears outdated answers and cancels late replies after a career correction w
  expect(requests).toHaveLength(2)
  expect(screen.queryByRole('button',{name:'Cancel'})).toBeNull()
 })
+
+it('renders separate scales for compound answers without turning missing figures into zero',()=>{
+ render(<AnswerVisual visual={{kind:'groups',label:'Measures at a glance',groups:[
+  {kind:'bars',label:'Goals',items:[{label:'Mateo Cross · Career',value:75,unit:'count'},{label:'Rory Ellis · Career',value:51,unit:'count'}]},
+  {kind:'bars',label:'Pass completion',items:[{label:'Mateo Cross · Career',value:82,unit:'percent'},{label:'Rory Ellis · Career',value:null,unit:'percent'}]},
+ ]}}/>);
+ expect(screen.getByRole('region',{name:'Measures at a glance'})).toBeTruthy()
+ expect(screen.getByText('Goals')).toBeTruthy()
+ expect(screen.getByText('Pass completion')).toBeTruthy()
+ expect(screen.getByText('82%')).toBeTruthy()
+ expect(screen.getByText('—')).toBeTruthy()
+ const charts=screen.getAllByRole('figure')
+ expect(charts).toHaveLength(2)
+ expect(charts[0].querySelector('.ft-track span')?.getAttribute('style')).toContain('100%')
+ expect(charts[1].querySelector('.ft-track span')?.getAttribute('style')).toContain('100%')
+})

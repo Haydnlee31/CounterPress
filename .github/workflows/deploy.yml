@@ -21,6 +21,12 @@ on:
         default: preserve
         type: choice
         options: [preserve, enable, disable]
+      assistant_workflow:
+        description: 'Footie workflow; agent requires completed live validation and shared Cosmos admission'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, agent, structured_lookup]
 
 permissions:
   contents: read
@@ -68,5 +74,6 @@ jobs:
           CP_EDITORIAL_MODE: ${{ inputs.editorial_mode }}
           CP_EDITORIAL_MODEL: ${{ secrets.CP_EDITORIAL_MODEL }}
           CP_ASSISTANT_MODE: ${{ inputs.assistant_mode }}
+          CP_ASSISTANT_WORKFLOW: ${{ inputs.assistant_workflow }}
           CP_AZURE_TARGET: ${{ secrets.CP_AZURE_TARGET }}
         run: python3 scripts/deploy_azure.py deploy

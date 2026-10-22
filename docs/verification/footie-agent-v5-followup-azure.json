@@ -1,0 +1,90 @@
+{
+  "evaluation_status": "passed",
+  "created_at": "2026-10-22T15:22:58.892695+00:00",
+  "model_attempts": 2,
+  "reported_tokens": {
+    "prompt_tokens": 6641,
+    "completion_tokens": 62,
+    "total_tokens": 6703
+  },
+  "source_sha256": {
+    "fixtures/assistant/questions.json": "7c1770afa8cf0df5b157375021fde39a5aca89e333ab283c529edb818a0574e7",
+    "scripts/evaluate_footie.py": "3b200abb101a947d2ff0640875228358cdad7a86e55234b997174afaff92c47e",
+    "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
+    "backend/counterpress/assistant/admission.py": "4a9fd344d1dbd876b09543fc2853b13c23909ca91ac97d6938fb00fce0ddb8e5",
+    "backend/counterpress/assistant/api.py": "bb6b954099a833c74813da84c5206fc1227431e3d7ca878bb1f59377771453a8",
+    "backend/counterpress/assistant/contracts.py": "5b610f37e5934baed6f59c6eb1a46372a98e219a752275f05c50868e2a234e81",
+    "backend/counterpress/assistant/evaluation.py": "af5ce905df3e0148c2dc0ff05642a156c5d1859d69d96bbb061e75667bc2a3eb",
+    "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
+    "backend/counterpress/assistant/narrative.py": "70942e8f480fae02e2f523f8f562f8ac4fe3aa677ec67da6096e1437eb671f45",
+    "backend/counterpress/assistant/planner.py": "6e53c2785609a759f129f5ad303def6dcaec9e07589985289defc484f1448622",
+    "backend/counterpress/assistant/research.py": "395b44ecad812a986bd3d7eab237f8d988a22b2dbec478eae2520511e37d7bd4",
+    "backend/counterpress/assistant/service.py": "3f23963a4573feb213ee031990517b69c6bd30297fc1bc273ea86f6e4188f117"
+  },
+  "summary": {
+    "cases": 1,
+    "metrics": {
+      "raw_intent_correct": {
+        "passed": 1,
+        "total": 1
+      },
+      "effective_intent_correct": {
+        "passed": 1,
+        "total": 1
+      },
+      "answer_evidence_correct": {
+        "passed": 1,
+        "total": 1
+      },
+      "narrative_bound": {
+        "passed": 1,
+        "total": 1
+      },
+      "anchors_correct": {
+        "passed": 1,
+        "total": 1
+      },
+      "passed": {
+        "passed": 1,
+        "total": 1
+      }
+    },
+    "model_routing": {
+      "passed": 1,
+      "total": 1
+    },
+    "categories": {
+      "followup": {
+        "passed": 1,
+        "total": 1
+      }
+    },
+    "latency_ms": {
+      "p50": 5737,
+      "p95": 5737
+    },
+    "fallbacks": {},
+    "failed_ids": [],
+    "agent_completion": {
+      "passed": 1,
+      "total": 1
+    },
+    "agent_failed_ids": []
+  },
+  "results": [
+    {
+      "id": "followup_season",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 5737,
+      "provider_requests": 2,
+      "tool_calls": 1
+    }
+  ]
+}

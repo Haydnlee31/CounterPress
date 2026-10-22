@@ -18,10 +18,14 @@ def local_model_settings(path):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--azure',action='store_true',help='Enable bounded intent and narrative selection using existing local model credentials')
+    parser.add_argument('--agent',action='store_true',help='Use bounded Agent Framework research; requires --azure')
     parser.add_argument('--port',type=int,default=8017)
     parser.add_argument('--commentary-dir',type=Path,help='Serve already validated local commentary bundles without cloud synthesis')
     parser.add_argument('--voice',choices=['broadcast','british','natural'],default='broadcast')
     args=parser.parse_args()
+    if args.agent and not args.azure:parser.error('--agent requires --azure')
+    if args.agent:os.environ['COUNTERPRESS_ASSISTANT_WORKFLOW']='agent'
+    else:os.environ.pop('COUNTERPRESS_ASSISTANT_WORKFLOW',None)
     if args.commentary_dir:
         from counterpress.api.snapshots import SCENARIOS
         from counterpress.fixture import load_fixture

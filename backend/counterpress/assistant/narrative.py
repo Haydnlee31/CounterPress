@@ -28,6 +28,15 @@ def period(fact):
 def build_claims(answer,plan,request):
     """Small, immutable sentences with references to the full evidence-bearing facts."""
     if answer['status']!='answered' or request.preferences.language!='en':return []
+    if plan.additional_metrics:
+        combined=[]
+        for metric in [plan.metric,*plan.additional_metrics]:
+            indices=[i for i,f in enumerate(answer['facts']) if f['metric']==metric]
+            part={**answer,'facts':[answer['facts'][i] for i in indices]}
+            for claim in build_claims(part,plan.model_copy(update={'metric':metric,'additional_metrics':[]}),request):
+                combined.append({**claim,'id':f'c{len(combined)}',
+                                 'fact_indices':[indices[i] for i in claim['fact_indices']]})
+        return combined
     facts=answer['facts'];claims=[]
     def add(kind,text,indices):
         claims.append({'id':f'c{len(claims)}','kind':kind,'text':text,'fact_indices':indices,
@@ -63,7 +72,9 @@ def build_claims(answer,plan,request):
         order=sorted(range(len(facts)),key=lambda i: -facts[i]['value'])
         hi,lo=order[:2];a,b=facts[hi],facts[lo]
         measure=a['label'].lower()
-        unit=' percentage points' if a['unit']=='percent' else f' {measure} per 90 minutes' if a['unit']=='per90' else f' {measure}'
+        gap=abs(a['value']-b['value'])
+        gap_measure={'goals':'goal','assists':'assist','shots':'shot','saves':'save','passes':'pass','key passes':'key pass','clean sheets':'clean sheet'}.get(measure,measure) if gap==1 else measure
+        unit=' percentage points' if a['unit']=='percent' else f' {gap_measure} per 90 minutes' if a['unit']=='per90' else f' {gap_measure}'
         left=f"{a['subject_name']} ({period(a)})";right=f"{b['subject_name']} ({period(b)})"
         if a['value']==b['value']:
             text=f"{left} and {right} are level on {measure} at {number(a['value'])}{'%' if a['unit']=='percent' else ' per 90 minutes' if a['unit']=='per90' else ''}."
@@ -79,7 +90,7 @@ def build_claims(answer,plan,request):
         if plan.operation=='club_leaders':
             text='For this club’s players in the selected period: '+text
         if a['unit']=='count':
-            text+=f" These totals cover {a['scope']['matches']} and {b['scope']['matches']} appearances respectively."
+            text+=(f" Both totals cover {a['scope']['matches']} appearances." if a['scope']['matches']==b['scope']['matches'] else f" These totals cover {a['scope']['matches']} and {b['scope']['matches']} appearances respectively.")
         add('comparison',text,[hi,lo])
     return claims
 

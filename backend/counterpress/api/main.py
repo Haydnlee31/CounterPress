@@ -76,7 +76,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
     from counterpress.fan.api import install_fan
     install_fan(application, career_service, service)
     from counterpress.assistant.api import install_assistant
-    install_assistant(application, career_service)
+    install_assistant(application, career_service, history_store=service.store)
     from counterpress.gi.api import install_gi
     install_gi(application, root)
     from counterpress.live.api import install_live

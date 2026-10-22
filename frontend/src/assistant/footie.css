@@ -5,3 +5,10 @@
 
 .ft-story p{font-size:16px;line-height:1.75;color:#284b3c;overflow-wrap:anywhere}.ft-story p:first-child{font-weight:600}.ft-breakdown{margin:16px 0;color:#617367;font-size:13px}.ft-breakdown p{line-height:1.7}.ft-breakdown summary{width:fit-content}
 .ft-context[hidden]{display:none}
+
+/* Each metric keeps its own scale; stack compactly in the contextual drawer. */
+.ft-visual-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:20px;margin:24px 0;min-width:0}
+.ft-visual-groups .ft-bars{margin:0;min-width:0}
+.ft-visual-groups .ft-bar>div:first-child{gap:12px;align-items:start}
+.ft-visual-groups .ft-bar span{overflow-wrap:anywhere}
+.ft-visual-groups .ft-bar strong{flex-shrink:0}

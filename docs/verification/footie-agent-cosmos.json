@@ -1,0 +1,56 @@
+{
+  "status": "passed",
+  "method": "Temporary source overlay in existing app container; seed and verify in separate Python processes",
+  "authentication": "Existing app managed identity",
+  "remote_source_sha256": {
+    "assistant/planner.py": "f4d7709307e5f413e5f8464fa13f5df6a743fff8df6953b6cf9139966f3be62b",
+    "assistant/service.py": "c9362f7d555dfc05873389093492717512c1912f2f78ebf19ee83f381442cea3",
+    "assistant/research.py": "395b44ecad812a986bd3d7eab237f8d988a22b2dbec478eae2520511e37d7bd4",
+    "assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
+    "assistant/evaluation.py": "af5ce905df3e0148c2dc0ff05642a156c5d1859d69d96bbb061e75667bc2a3eb",
+    "assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
+    "assistant/narrative.py": "70942e8f480fae02e2f523f8f562f8ac4fe3aa677ec67da6096e1437eb671f45",
+    "assistant/api.py": "bb6b954099a833c74813da84c5206fc1227431e3d7ca878bb1f59377771453a8",
+    "assistant/contracts.py": "5b610f37e5934baed6f59c6eb1a46372a98e219a752275f05c50868e2a234e81",
+    "assistant/admission.py": "4a9fd344d1dbd876b09543fc2853b13c23909ca91ac97d6938fb00fce0ddb8e5",
+    "scripts/check_assistant_cosmos.py": "89e3801d01a781d6c135b94c6bffd9951cafdede6d9643858c4731a5ff9b7bf9",
+    "scripts/check_editorial_cosmos.py": "695a7b4194eace9b27bebbd57460128b900b59d99305da1063dca7309494046e"
+  },
+  "phases": [
+    {
+      "phase": "seed",
+      "result": {
+        "status": "passed",
+        "real_conflict_statuses": [
+          409
+        ],
+        "duplicate_admitted_once": true,
+        "typed_receipt_restored": true,
+        "reserved_provider_slots": 20,
+        "quota_enforced": true,
+        "external_model_calls": 0,
+        "scope": "isolated verification partition",
+        "clock": "controlled timestamps around current time"
+      }
+    },
+    {
+      "phase": "verify",
+      "result": {
+        "status": "passed",
+        "fresh_process_quota_preserved": true,
+        "typed_receipt_restored": true,
+        "external_model_calls": 0,
+        "clock": "recorded test timestamp",
+        "scope": "isolated verification partition"
+      }
+    }
+  ],
+  "external_model_calls": 0,
+  "app_configuration_changed": false,
+  "production_data_changed": false,
+  "limitations": [
+    "This tests Cosmos admission, not hosted agent inference or Event Hubs career ingestion.",
+    "The isolated verification record is retained; temporary code was removed."
+  ],
+  "uploaded_source_verified": true
+}

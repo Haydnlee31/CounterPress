@@ -26,8 +26,8 @@ ALIASES={
 def requested_metrics(question):
     """Specific phrases own their spans; 'save percentage' is not a save count.
 
-    Multiple non-overlapping measures require clarification, never arbitrary
-    first-match selection. These are supported synonyms, not tactical inference.
+    Multiple non-overlapping measures must all be represented in the plan,
+    never silently discarded. These are supported synonyms, not tactical inference.
     """
     matches=[]
     for key, pattern in ALIASES.items():
@@ -41,6 +41,26 @@ def requested_metrics(question):
 
 def fingerprint(value):return sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 def blank(operation='clarify',**kwargs):return Plan(operation=operation,player_ids=[],club_id=None,match_id=None,metric='goals',per90=False,season=None,comparison_season=None).model_copy(update=kwargs)
+
+
+def constrained_metrics(request):
+    explicit=requested_metrics(request.question)
+    if explicit:return explicit
+    if request.previous_plan and (period_followup_operation(request) or re.search(r'^(and|what about|how about|their|his|her|那|他)|\b(last season|per 90|instead)\b',request.question,re.I)):
+        return {request.previous_plan.metric,*request.previous_plan.additional_metrics}
+    return set()
+
+
+def period_followup_operation(request):
+    """A period-only edit cannot invent a different kind of analysis."""
+    previous = request.previous_plan
+    if not previous or previous.operation not in ('stats', 'compare', 'recent', 'club_leaders'):
+        return None
+    if re.fullmatch(r'\s*(?:(?:and|what about|how about)\s+|那)?'
+                    r'(?:last season|this season|career|20\d{2}-\d{2}|上赛季|本赛季|生涯)'
+                    r'\s*[?？.!。]*\s*', request.question, re.I):
+        return previous.operation
+    return None
 
 
 class AssistantService:
@@ -58,7 +78,9 @@ class AssistantService:
         return {'players':[{'id':p.player_id,'name':p.name,'club':p.club_id} for p in self.store.players.values() if p.featured],
             'clubs':[{'id':c.club_id,'name':c.name} for c in self.store.clubs.values()],
             'matches':[{'id':r['id'],'home':r['home'],'away':r['away'],'date':r['kickoff']} for r in self.store.rows(featured=True) if r['kickoff']<cutoff],
-            'metrics':{k:d[1] for k,d in METRICS.items()},'as_of':cutoff,'seasons':seasons,'current_season':seasons[0] if seasons else None,
+            'metrics':{k:d[1] for k,d in METRICS.items()},'requested_metrics':sorted(constrained_metrics(request)),
+            'period_followup_operation':period_followup_operation(request),
+            'as_of':cutoff,'seasons':seasons,'current_season':seasons[0] if seasons else None,
             'selected':{'player_id':request.player_id,'club_id':request.club_id,'match_id':request.match_id,'season':request.season,'cutoff':request.playback.model_dump() if request.playback else None,'event_id':request.event_id},
             'favorites':{'players':request.preferences.favorite_player_ids,'club':request.preferences.primary_club_id},
             'previous_plan':request.previous_plan.model_dump() if request.previous_plan else None}
@@ -76,7 +98,7 @@ class AssistantService:
         players=self.names(q,self.store.players,'player_id');clubs=self.names(q,self.store.clubs,'club_id')
         explicit=bool(players or clubs)
         previous=request.previous_plan
-        follow=bool(re.search(r'^(and|what about|how about|their|his|her|那|他)|\b(last season|per 90|instead)\b',q))
+        follow=bool(period_followup_operation(request) or re.search(r'^(and|what about|how about|their|his|her|那|他)|\b(last season|per 90|instead)\b',q))
         if not players and not clubs:
             players=[request.player_id] if request.player_id else previous.player_ids if previous and follow else []
             clubs=[request.club_id] if request.club_id else [previous.club_id] if previous and follow and previous.club_id else []
@@ -88,9 +110,11 @@ class AssistantService:
         if 'last season' in q or '上赛季' in q:season=seasons[1] if len(seasons)>1 else 'unavailable'
         elif 'this season' in q or '本赛季' in q:season=seasons[0] if seasons else 'unavailable'
         measures=requested_metrics(q)
-        if len(measures)>1:return blank('clarify')
+        if len(measures)>3:return blank('clarify')
         if re.search(r'\bcareer\b|生涯',q) and not match_season and 'season' not in q and '赛季' not in q:season=None
-        metric=next(iter(measures),None) or (previous.metric if previous and follow else 'goals')
+        ordered=[key for key in METRICS if key in measures]
+        metric=ordered[0] if ordered else previous.metric if previous and follow else 'goals'
+        additional=ordered[1:] if ordered else list(previous.additional_metrics) if previous and follow else []
         per90=bool(re.search(r'per\s*90|/90|每90',q)) or bool(previous and follow and previous.per90)
         if re.search(r'\b(total|count)\b',q):per90=False
         op='stats';mid=request.match_id
@@ -109,7 +133,8 @@ class AssistantService:
             named_seasons=re.findall(r'20\d{2}-\d{2}(?!\d)',q)
             comparison=named_seasons[1] if len(named_seasons)>1 else seasons[1] if len(seasons)>1 else None
         else:comparison=seasons[1] if len(seasons)>1 else None
-        return blank(op,player_ids=players,club_id=clubs[0] if len(clubs)==1 else None,match_id=mid,metric=metric,per90=per90,season=season,comparison_season=comparison)
+        if op in ('match','clarify','unsupported') and additional:return blank('clarify')
+        return blank(op,additional_metrics=additional,player_ids=players,club_id=clubs[0] if len(clubs)==1 else None,match_id=mid,metric=metric,per90=per90,season=season,comparison_season=comparison)
 
     def validate(self,plan,request):
         _,seasons=self.scope(request)
@@ -118,6 +143,9 @@ class AssistantService:
             raise ValueError('A moment requires its match, playback time and revision')
         if request.playback and plan.operation!='match':raise ValueError('Choose a career scope or a match-time question')
         q=request.question.lower()
+        inherited_operation = period_followup_operation(request)
+        if inherited_operation and plan.operation != inherited_operation:
+            raise ValueError('A period-only follow-up must retain its operation')
         if UNSUPPORTED.search(q) or re.search(r'\b\d+(?:st|nd|rd|th)? minute\b|\b20\d\d-\d\d-\d\d\b',q):
             raise ValueError('Unsupported question scope')
         if plan.operation!='match':
@@ -147,13 +175,15 @@ class AssistantService:
                     elif plan.season!=expected_season:raise ValueError('Default scope mismatch')
             if re.search(r'per\s*90|/90|每90',q) and plan.operation!='recent' and not plan.per90:
                 raise ValueError('Rate mismatch')
-        if plan.metric not in METRICS:raise ValueError('Unsupported metric')
+        chosen=[plan.metric,*plan.additional_metrics]
+        if len(chosen)>3 or len(set(chosen))!=len(chosen) or any(m not in METRICS for m in chosen):raise ValueError('Unsupported metric')
         if any(p not in self.store.players for p in plan.player_ids):raise ValueError('Unknown player')
         if plan.club_id and plan.club_id not in self.store.clubs:raise ValueError('Unknown club')
         if any(s and s not in seasons for s in (plan.season,plan.comparison_season)):raise ValueError('Unavailable season')
-        explicit_metrics=requested_metrics(request.question)
-        if len(explicit_metrics)>1:raise ValueError('Choose one measure')
-        if explicit_metrics and plan.metric not in explicit_metrics:raise ValueError('Metric mismatch')
+        explicit_metrics=constrained_metrics(request)
+        if explicit_metrics and set(chosen)!=explicit_metrics:raise ValueError('Metric mismatch')
+        if not explicit_metrics and plan.additional_metrics:raise ValueError('Extra metrics need an explicit request')
+        if plan.additional_metrics and plan.operation not in ('stats','compare','recent','seasons','club_leaders'):raise ValueError('Unsupported compound operation')
         named=self.names(request.question,self.store.players,'player_id')
         if named and set(named)!=set(plan.player_ids):raise ValueError('Subject mismatch')
         allowed=set(named or ([request.player_id] if request.player_id else request.previous_plan.player_ids if request.previous_plan else []))
@@ -224,7 +254,27 @@ class AssistantService:
         return f'{v:,.2f}'.rstrip('0').rstrip('.') if v!=int(v) else f'{int(v):,}'
 
     def answer(self,plan,request):
-        self.validate(plan,request);cutoff,seasons=self.scope(request)
+        self.validate(plan,request)
+        if not plan.additional_metrics:
+            return self._answer_single(plan,request)
+        # One caller-held revision snapshot covers every measure. Never compare
+        # different units on a shared bar axis or let a partial read look complete.
+        parts=[self._answer_single(plan.model_copy(update={'metric':m,'additional_metrics':[]}),request)
+               for m in [plan.metric,*plan.additional_metrics]]
+        facts=[f for part in parts for f in part['facts']]
+        actions={a['href']:a for part in parts for a in part['actions']}
+        zh=request.preferences.language=='zh-Hans'
+        return {'status':'answered','title':'一起看这些数据' if zh else 'The bigger picture',
+                'text':[text for part in parts for text in part['text']], 'facts':facts,
+                'actions':list(actions.values()),
+                'visual':{'kind':'groups','label':'数据对比' if zh else 'Measures at a glance',
+                    'groups':[{'kind':'bars','label':METRICS[m][1],
+                        'items':[{'label':f['subject_name']+' · '+(f['scope']['season'] or ('Last five' if f['scope']['window']=='last_five_appearances' else 'Career')),
+                                  'value':f['value'],'unit':f['unit']} for f in part['facts']]}
+                        for m,part in zip([plan.metric,*plan.additional_metrics],parts)]}}
+
+    def _answer_single(self,plan,request):
+        cutoff,seasons=self.scope(request)
         zh=request.preferences.language=='zh-Hans';t=lambda a,b:b if zh else a
         facts=[];visual=None;actions=[];text=[];scope_label=plan.season or t('career','生涯')
         if plan.operation in ('unsupported','clarify'):

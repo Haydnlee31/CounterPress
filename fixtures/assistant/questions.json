@@ -1,5 +1,5 @@
 {
-  "version": "footie-questions-v1",
+  "version": "footie-questions-v2",
   "purpose": "Authored intent labels, not generated from the router. Regression corpus, not an unseen statistical test set.",
   "ledger_sha256": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef",
   "cases": [
@@ -1058,17 +1058,22 @@
     },
     {
       "id": "multi_metric",
-      "category": "ambiguity",
+      "category": "compound",
       "request": {
         "question": "How many goals and assists does Mateo Cross have?",
         "as_of": "2026-10-20T00:00:00Z"
       },
       "expected_plan": {
-        "operation": "clarify",
-        "player_ids": [],
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
         "club_id": null,
         "match_id": null,
         "metric": "goals",
+        "additional_metrics": [
+          "assists"
+        ],
         "per90": false,
         "season": null,
         "comparison_season": null
@@ -1429,6 +1434,385 @@
       "checks": {
         "status": "clarify"
       }
+    },
+    {
+      "id": "compound_compare",
+      "category": "compound",
+      "request": {
+        "question": "Compare Rory Ellis and Dario Voss in goals and assists",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "compare",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "assists"
+        ],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_three",
+      "category": "compound",
+      "request": {
+        "question": "Show Mateo Cross goals, assists and shots",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "assists",
+          "shots"
+        ],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_recent",
+      "category": "compound",
+      "request": {
+        "question": "Show Enzo Clarke recent goals and assists",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "recent",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "assists"
+        ],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_club",
+      "category": "compound",
+      "request": {
+        "question": "Show Redhaven goals and assists",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "assists"
+        ],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_rankings",
+      "category": "compound",
+      "request": {
+        "question": "Who leads Redhaven in goals and assists?",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "club_leaders",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "assists"
+        ],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_null",
+      "category": "compound",
+      "request": {
+        "question": "Show Rory Ellis goals and saves",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "eb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "saves"
+        ],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_percent",
+      "category": "compound",
+      "request": {
+        "question": "Show Leon Finch saves and pass completion",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "saves",
+        "additional_metrics": [
+          "pass_accuracy"
+        ],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_scope",
+      "category": "compound",
+      "request": {
+        "question": "Show Mateo Cross goals and assists last season",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "assists"
+        ],
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_rate",
+      "category": "compound",
+      "request": {
+        "question": "Compare Mateo Cross and Rory Ellis goals and assists per 90",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "compare",
+        "player_ids": [
+          "rh09",
+          "eb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "assists"
+        ],
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_followup",
+      "category": "compound",
+      "request": {
+        "question": "And last season?",
+        "as_of": "2026-10-20T00:00:00Z",
+        "previous_plan": {
+          "operation": "stats",
+          "player_ids": [
+            "rh09"
+          ],
+          "club_id": null,
+          "match_id": null,
+          "metric": "goals",
+          "additional_metrics": [
+            "assists"
+          ],
+          "per90": false,
+          "season": null,
+          "comparison_season": null
+        }
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "assists"
+        ],
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_replace",
+      "category": "compound",
+      "request": {
+        "question": "And his assists?",
+        "as_of": "2026-10-20T00:00:00Z",
+        "previous_plan": {
+          "operation": "stats",
+          "player_ids": [
+            "rh09"
+          ],
+          "club_id": null,
+          "match_id": null,
+          "metric": "goals",
+          "additional_metrics": [
+            "assists"
+          ],
+          "per90": false,
+          "season": null,
+          "comparison_season": null
+        }
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "additional_metrics": [],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_too_many",
+      "category": "compound",
+      "request": {
+        "question": "Show Mateo Cross goals, assists, shots and key passes",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "clarify",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_unsupported",
+      "category": "compound",
+      "request": {
+        "question": "Show Mateo Cross goals and running distance",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "unsupported",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
+    },
+    {
+      "id": "compound_ambiguous",
+      "category": "compound",
+      "request": {
+        "question": "Who is the most creative player?",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "clarify",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "live_sample": false,
+      "mutation": null,
+      "checks": {}
     }
   ]
 }

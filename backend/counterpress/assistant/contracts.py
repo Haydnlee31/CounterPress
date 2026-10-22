@@ -10,9 +10,19 @@ class Plan(FanContract):
     club_id: Identifier | None
     match_id: Identifier | None
     metric: str
+    additional_metrics: list[str] = Field(default_factory=list, max_length=2)
     per90: bool
     season: str | None
     comparison_season: str | None
+
+    @model_validator(mode='after')
+    def distinct_metrics(self):
+        metrics = [self.metric, *self.additional_metrics]
+        if len(set(metrics)) != len(metrics):
+            raise ValueError('Choose up to three distinct measures')
+        if self.additional_metrics and self.operation not in ('stats', 'compare', 'recent', 'seasons', 'club_leaders'):
+            raise ValueError('This operation does not support multiple measures')
+        return self
 
     @field_validator('player_ids')
     @classmethod
