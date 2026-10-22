@@ -11,10 +11,11 @@ import '../football/football.css'
 import './footie.css'
 import {onCareerChange} from '../football/revisions'
 
-type Plan={operation:string;player_ids:string[];club_id:string|null;match_id:string|null;metric:string;per90:boolean;season:string|null;comparison_season:string|null}
+type Plan={operation:string;player_ids:string[];club_id:string|null;match_id:string|null;metric:string;additional_metrics?:string[];per90:boolean;season:string|null;comparison_season:string|null}
 type Fact={subject_name:string;label:string;value:number|null;unit:string;scope:{season?:string|null;matches?:number;window:string;cutoff?:{period:number;elapsed_ms:number}};coverage:{recorded_matches:number;total_matches:number}|null;evidence:{matches?:unknown[]};href:string}
 type Clip={highlight_id:string;match_id:string;title:string;scorer_id:string;date:string}
-type Answer={narrative?:{mode:string;blocks:{id:string;text:string;fact_indices:number[];evidence_id:string}[]};request_id:string;status:string;title:string;text:string[];facts:Fact[];actions:{label:string;href:string;highlight?:Clip}[];visual:{kind:string;label:string;cells?:{column:number;row:number;actions:number}[];items?:{label:string;value:number|null;unit:string}[]}|null;plan:Plan;as_of:string;mode:string;suggestions:string[]}
+type Visual={kind:string;label:string;cells?:{column:number;row:number;actions:number}[];items?:{label:string;value:number|null;unit:string}[];groups?:Visual[]}
+type Answer={narrative?:{mode:string;blocks:{id:string;text:string;fact_indices:number[];evidence_id:string}[]};request_id:string;status:string;title:string;text:string[];facts:Fact[];actions:{label:string;href:string;highlight?:Clip}[];visual:Visual|null;plan:Plan;as_of:string;mode:string;suggestions:string[]}
 type Turn={question:string;answer:Answer}
 const initialQuestions=['How many goals does Mateo Cross have?','Who leads Redhaven in assists?','Compare Rory Ellis and Dario Voss in goals per 90']
 const format=(v:number|null)=>v===null?'—':new Intl.NumberFormat('en',{maximumFractionDigits:2}).format(v)
@@ -22,12 +23,13 @@ function initialPreferences(){try{return readPreferences(window.localStorage).pr
 
 export function AnswerVisual({visual}:{visual:Answer['visual']}){
   if(!visual)return null
+  if(visual.kind==='groups')return <section className="ft-visual-groups" aria-label={visual.label}>{visual.groups?.map(group=><AnswerVisual key={group.label} visual={group}/>)}</section>
   if(visual.kind==='heatmap'){
     const max=Math.max(1,...(visual.cells??[]).map(c=>c.actions))
     return <figure className="ft-map"><figcaption>{visual.label}</figcaption><svg viewBox="-2 -2 109 72" role="img" aria-label="Action heatmap, attacking from left to right"><rect width="105" height="68" rx="1" fill="#173d32"/>{visual.cells?.map(c=><rect key={`${c.column}-${c.row}`} x={c.column*8.75} y={c.row*8.5} width="8.75" height="8.5" fill="#dcf1a0" opacity={.08+.85*c.actions/max}><title>{c.actions} recorded actions</title></rect>)}<g stroke="#fff" opacity=".5" strokeWidth=".5" fill="none"><rect width="105" height="68"/><path d="M52.5 0v68M0 13.84h16.5v40.32H0M105 13.84H88.5v40.32H105"/><circle cx="52.5" cy="34" r="9.15"/></g></svg><small>Recorded action locations · attacking →</small></figure>
   }
   const max=Math.max(1,...(visual.items??[]).map(i=>i.value??0))
-  return <figure className="ft-bars"><figcaption>{visual.label}</figcaption>{visual.items?.map((item,i)=><div className="ft-bar" key={i}><div><span>{item.label}</span><strong>{format(item.value)}{item.unit==='percent'?'%':item.unit==='per90'?' /90':''}</strong></div><div className="ft-track"><span style={{width:`${Math.max(0,(item.value??0)/max)*100}%`}}/></div></div>)}</figure>
+  return <figure className="ft-bars"><figcaption>{visual.label}</figcaption>{visual.items?.map((item,i)=><div className="ft-bar" key={i}><div><span>{item.label}</span><strong>{format(item.value)}{item.value===null?'':item.unit==='percent'?'%':item.unit==='per90'?' /90':''}</strong></div><div className="ft-track"><span style={{width:`${Math.max(0,(item.value??0)/max)*100}%`}}/></div></div>)}</figure>
 }
 
 export default function Footie({context,compact=false}:{context?:FootieContext;compact?:boolean}){

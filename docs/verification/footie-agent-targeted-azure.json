@@ -1,0 +1,82 @@
+{
+  "status": "passed",
+  "scope": "Targeted Azure regression, not a full release sample",
+  "created_at": "2026-10-22T11:23:35.448456+00:00",
+  "model_attempts": 8,
+  "reported_tokens": {
+    "prompt_tokens": 28108,
+    "completion_tokens": 249,
+    "total_tokens": 28357
+  },
+  "source_sha256": {
+    "fixtures/assistant/questions.json": "7c1770afa8cf0df5b157375021fde39a5aca89e333ab283c529edb818a0574e7",
+    "scripts/evaluate_footie.py": "32d725d109143744997f7e85a09375221eb658ca707b13ffef933a6b56982bde",
+    "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
+    "backend/counterpress/assistant/api.py": "baa840bf4f60eed1911fcef37e5be3d7ce2e1a0f0e7cf6efb4179e6776943275",
+    "backend/counterpress/assistant/contracts.py": "5b610f37e5934baed6f59c6eb1a46372a98e219a752275f05c50868e2a234e81",
+    "backend/counterpress/assistant/evaluation.py": "035f5bd70a9f426b9f17152115e6257ce898a2c28ff07140ac447094eca2ac29",
+    "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
+    "backend/counterpress/assistant/narrative.py": "70942e8f480fae02e2f523f8f562f8ac4fe3aa677ec67da6096e1437eb671f45",
+    "backend/counterpress/assistant/planner.py": "8ab61530ee67362b5b656929f380e9d20db9f41a7d9bb1dfb119a8695b4b40b8",
+    "backend/counterpress/assistant/research.py": "6aea484743cc6ddf4b08c148a023edf20ce027e87b493e6e71ced5c992c94b44",
+    "backend/counterpress/assistant/service.py": "8ccd696ac335fb28453070ab5e412ec43f61beb5e8696518348e12522f716271"
+  },
+  "results": [
+    {
+      "id": "comparison",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4667,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "followup_season",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 3828,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "multi_metric",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 3678,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "goal_after",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 3828,
+      "provider_requests": 2,
+      "tool_calls": 1
+    }
+  ]
+}

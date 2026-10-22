@@ -1,4 +1,4 @@
-"""Bounded local assistant. Model interpretation is explicit opt-in, off in hosted defaults."""
+"""Bounded assistant; Azure interpretation and agent research are explicit runtime modes."""
 import asyncio,json,logging,os,sqlite3,time
 from collections import deque
 from functools import lru_cache
@@ -16,12 +16,19 @@ from .narrative import AzureNarrator,build_claims,default_story,render_story
 log=logging.getLogger('uvicorn.error.footie')
 
 
-def install_assistant(app,career_service,planner=None,narrator=None):
+def install_assistant(app,career_service,planner=None,narrator=None,researcher=None,history_store=None):
     if planner is None and os.environ.get('COUNTERPRESS_ASSISTANT_MODEL')=='azure':
         config=load_config()
         if config:
-            planner=AzurePlanner(config)
-            narrator=narrator or AzureNarrator(config)
+            if os.environ.get('COUNTERPRESS_ASSISTANT_WORKFLOW')=='agent':
+                from .research import ResearchAgent
+                from .admission import shared_researcher
+                from .planner import PROMPT
+                researcher=researcher or shared_researcher(ResearchAgent(config),history_store,
+                    fingerprint({'workflow':'bounded-research-v3','prompt':PROMPT,'deployment':config.deployment}))
+            else:
+                planner=AzurePlanner(config)
+                narrator=narrator or AzureNarrator(config)
     router=APIRouter(prefix='/api/fan/assistant',tags=['Football assistant'])
     calls=deque();model_calls=deque();gate=asyncio.Semaphore(2)
     def reserve_model_call():
@@ -35,8 +42,8 @@ def install_assistant(app,career_service,planner=None,narrator=None):
 
     @router.get('/config')
     def config():
-        return {'available':True,'natural_language':planner is not None,'narrative_selection':narrator is not None,'name':'Footie','storage':'session',
-                'max_question_characters':600,'model_requests_per_hour':20 if planner or narrator else 0}
+        return {'available':True,'natural_language':planner is not None or researcher is not None,'narrative_selection':narrator is not None or researcher is not None,'workflow':'agent' if researcher else 'structured_lookup','name':'Footie','storage':'session',
+                'max_question_characters':600,'model_requests_per_hour':20 if planner or narrator or researcher else 0}
 
     @router.get('/moment')
     def moment(match_id:str,event_id:str,revision:int,resolved:bool):
@@ -69,11 +76,29 @@ def install_assistant(app,career_service,planner=None,narrator=None):
         while calls and now-calls[0]>=60:calls.popleft()
         if len(calls)>=30:raise HTTPException(429,'Please wait a moment before asking again.',headers={'Retry-After':'60'})
         calls.append(now);started=now;request_id=uuid4().hex
-        mode='lookup';usage={};reason=None
+        mode='lookup';usage={};reason=None;research=None;research_counts={'requests':0,'tools':0,'unreported_usage_attempts':0}
         try:
             s=service();FanService(s.career).validate(body.preferences)
             local=s.local_plan(body);plan=local
-            if planner and not UNSUPPORTED.search(body.question):
+            if researcher and not UNSUPPORTED.search(body.question):
+                def reserve_research_call():
+                    accepted=reserve_model_call()
+                    if accepted:
+                        research_counts['requests']+=1
+                        research_counts['unreported_usage_attempts']+=1
+                    return accepted
+                try:
+                    async with asyncio.timeout(14):
+                        async with gate:research=await researcher.research(s,body,reserve_research_call)
+                    plan=research.plan;usage=research.usage;mode='azure_agent'
+                    research_counts={'requests':research.requests,'tools':research.tools,'unreported_usage_attempts':research.requests-research.reported_requests,
+                                     'cached':research.cached}
+                except (TimeoutError,ProviderFailure,ValueError,KeyError) as exc:
+                    plan=local;mode='lookup_fallback';usage=getattr(exc,'usage',{})
+                    research_counts={'requests':getattr(exc,'requests',research_counts['requests']),'tools':getattr(exc,'tools',0),
+                                     'unreported_usage_attempts':getattr(exc,'requests',research_counts['requests'])-getattr(exc,'reported_requests',0)}
+                    reason='timeout' if isinstance(exc,TimeoutError) else exc.reason if isinstance(exc,ProviderFailure) else 'plan_rejected'
+            elif planner and not UNSUPPORTED.search(body.question):
                 if reserve_model_call():
                     try:
                         async with asyncio.timeout(10):
@@ -92,7 +117,12 @@ def install_assistant(app,career_service,planner=None,narrator=None):
             claims=build_claims(answer,plan,body)
             story=default_story(claims,body.preferences.depth)
             story_mode='calculated';story_reason=None;story_usage={}
-            if narrator and claims and mode!='lookup_fallback':
+            if research:
+                if fingerprint(answer)==research.evidence_id:
+                    story=render_story(research.selection,claims,body.preferences.depth) if claims else []
+                    story_mode='agent_selected'
+                else:story_reason='records_changed'
+            if not researcher and narrator and claims and mode!='lookup_fallback':
                 if reserve_model_call():
                     try:
                         async with asyncio.timeout(6):
@@ -117,7 +147,8 @@ def install_assistant(app,career_service,planner=None,narrator=None):
             # Operational fields only: never prompts, credentials, endpoints or conversation bodies.
             log.info('assistant_request %s',json.dumps({'request_id':request_id,'mode':mode,'operation':plan.operation,'status':answer['status'],
                 'duration_ms':round((time.monotonic()-started)*1000),'usage':usage,'fallback':reason,
-                'narrative_mode':story_mode,'narrative_fallback':story_reason,'narrative_usage':story_usage}))
+                'narrative_mode':story_mode,'narrative_fallback':story_reason,'narrative_usage':story_usage,
+                'research':research_counts}))
             return answer
         except PreferenceError:raise HTTPException(422,'Choose valid player and club preferences.') from None
         except (OSError,sqlite3.Error,ValueError,KeyError,HistoryStorageError):raise HTTPException(503,'The match records are temporarily unavailable. Please try again.') from None

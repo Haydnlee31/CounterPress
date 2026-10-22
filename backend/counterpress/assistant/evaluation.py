@@ -12,7 +12,7 @@ from threading import RLock
 from pathlib import Path
 
 from .contracts import AskRequest, Plan
-from .service import blank
+from .service import blank, METRICS
 from .narrative import build_claims, default_story
 
 
@@ -38,6 +38,8 @@ def intent(plan):
         p['comparison_season'] = None
     if p['operation'] == 'recent':
         p['per90'] = True  # recent always calculates per-90 for both windows
+    metrics=sorted([p['metric'],*p['additional_metrics']])
+    p['metric'],p['additional_metrics']=metrics[0],metrics[1:]
     if p['operation'] == 'compare':
         p['player_ids'] = sorted(p['player_ids'])
     return p
@@ -47,10 +49,13 @@ def reference(service, case):
     expected = Plan.model_validate(case['expected_plan'])
     request = AskRequest.model_validate(case['request'])
     # The independent label defines intent, not the same regex/model under test.
-    # Names permit normal subject validation without using question-metric parsing.
+    # Feed canonical subject/measure labels from the authored plan, not a parsed
+    # copy of the test question. This satisfies the explicit-measure read contract.
     names = [service.store.players[p].name for p in expected.player_ids]
     if expected.club_id:
         names.append(service.store.clubs[expected.club_id].name)
+    if expected.operation not in ('clarify','unsupported'):
+        names.extend(METRICS[m][1] for m in [expected.metric,*expected.additional_metrics])
     query = request.model_copy(update={'question': ' '.join(names) or 'Reference', 'season': expected.season})
     with service.store.lock:
         return service.answer(expected, query)
@@ -78,8 +83,12 @@ def canonical_answer(answer):
     facts = sorted(answer['facts'], key=lambda f: json.dumps(f, sort_keys=True))
     actions = sorted(answer['actions'], key=lambda a: json.dumps(a, sort_keys=True))
     visual = answer.get('visual')
-    if visual and visual.get('kind') == 'bars':
-        visual = {**visual, 'items': sorted(visual['items'], key=lambda item: json.dumps(item, sort_keys=True))}
+    def canonical_visual(v):
+        if not v:return v
+        if v['kind']=='groups':return {**v,'groups':sorted([canonical_visual(g) for g in v['groups']],key=lambda g:g['label'])}
+        if v['kind']=='bars':return {**v,'items':sorted(v['items'],key=lambda item:json.dumps(item,sort_keys=True))}
+        return v
+    visual=canonical_visual(visual)
     return {'status': answer['status'], 'facts': facts, 'actions': actions, 'visual': visual}
 
 
@@ -134,6 +143,17 @@ def summarize(rows):
             'latency_ms': {'p50': percentile([r['duration_ms'] for r in rows], .5), 'p95': percentile([r['duration_ms'] for r in rows], .95)},
             'fallbacks': dict(Counter(r['fallback'] for r in rows if r['fallback'])),
             'failed_ids': [r['id'] for r in rows if not r['passed']]}
+
+
+def release_gate(rows, expected_model_cases, *, azure=False, agent=False):
+    """Keep factual fallback success separate from completion of the paid workflow."""
+    attempted=[r for r in rows if r['model_attempted']]
+    interrupted={'model_allowance_exhausted','hourly_limit','evaluation_budget','exhausted'}
+    complete=not azure or (len(attempted)==expected_model_cases and
+        not any(r.get('fallback') in interrupted or r.get('narrative_fallback') in interrupted for r in rows))
+    routing_ok=not azure or not expected_model_cases or sum(r['raw_intent_correct'] for r in attempted)/expected_model_cases>=.9
+    agent_ok=not agent or all(r['mode']=='azure_agent' and not r.get('narrative_fallback') for r in attempted)
+    return 'incomplete' if not complete else 'passed' if all(r['passed'] for r in rows) and routing_ok and agent_ok else 'failed'
 
 
 class AttemptBudget:

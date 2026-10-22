@@ -1,0 +1,257 @@
+{
+  "evaluation_status": "failed",
+  "created_at": "2026-10-22T13:11:12.183940+00:00",
+  "model_attempts": 18,
+  "reported_tokens": {
+    "prompt_tokens": 63025,
+    "completion_tokens": 553,
+    "total_tokens": 63578
+  },
+  "source_sha256": {
+    "fixtures/assistant/questions.json": "7c1770afa8cf0df5b157375021fde39a5aca89e333ab283c529edb818a0574e7",
+    "scripts/evaluate_footie.py": "3b200abb101a947d2ff0640875228358cdad7a86e55234b997174afaff92c47e",
+    "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
+    "backend/counterpress/assistant/admission.py": "4a9fd344d1dbd876b09543fc2853b13c23909ca91ac97d6938fb00fce0ddb8e5",
+    "backend/counterpress/assistant/api.py": "bb6b954099a833c74813da84c5206fc1227431e3d7ca878bb1f59377771453a8",
+    "backend/counterpress/assistant/contracts.py": "5b610f37e5934baed6f59c6eb1a46372a98e219a752275f05c50868e2a234e81",
+    "backend/counterpress/assistant/evaluation.py": "36259695001ab89231cd68de06d77ff6c114789725fa15695a79c3c4125a81c5",
+    "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
+    "backend/counterpress/assistant/narrative.py": "70942e8f480fae02e2f523f8f562f8ac4fe3aa677ec67da6096e1437eb671f45",
+    "backend/counterpress/assistant/planner.py": "8ab61530ee67362b5b656929f380e9d20db9f41a7d9bb1dfb119a8695b4b40b8",
+    "backend/counterpress/assistant/research.py": "1fd0e82f0f126c1251c182610614054b652ad2c2106687ae134bc093979a904a",
+    "backend/counterpress/assistant/service.py": "8ccd696ac335fb28453070ab5e412ec43f61beb5e8696518348e12522f716271"
+  },
+  "summary": {
+    "cases": 10,
+    "metrics": {
+      "raw_intent_correct": {
+        "passed": 8,
+        "total": 10
+      },
+      "effective_intent_correct": {
+        "passed": 10,
+        "total": 10
+      },
+      "answer_evidence_correct": {
+        "passed": 10,
+        "total": 10
+      },
+      "narrative_bound": {
+        "passed": 10,
+        "total": 10
+      },
+      "anchors_correct": {
+        "passed": 10,
+        "total": 10
+      },
+      "passed": {
+        "passed": 10,
+        "total": 10
+      }
+    },
+    "model_routing": {
+      "passed": 8,
+      "total": 9
+    },
+    "categories": {
+      "comparison": {
+        "passed": 1,
+        "total": 1
+      },
+      "followup": {
+        "passed": 1,
+        "total": 1
+      },
+      "goalkeeper": {
+        "passed": 1,
+        "total": 1
+      },
+      "metric_distinction": {
+        "passed": 1,
+        "total": 1
+      },
+      "player": {
+        "passed": 1,
+        "total": 1
+      },
+      "preferences": {
+        "passed": 1,
+        "total": 1
+      },
+      "recent": {
+        "passed": 1,
+        "total": 1
+      },
+      "season": {
+        "passed": 1,
+        "total": 1
+      },
+      "temporal": {
+        "passed": 1,
+        "total": 1
+      },
+      "unsupported": {
+        "passed": 1,
+        "total": 1
+      }
+    },
+    "latency_ms": {
+      "p50": 4330,
+      "p95": 5129
+    },
+    "fallbacks": {
+      "story_validation_rejected": 2
+    },
+    "failed_ids": [],
+    "agent_completion": {
+      "passed": 7,
+      "total": 9
+    },
+    "agent_failed_ids": [
+      "recent_assists",
+      "season_relative"
+    ]
+  },
+  "results": [
+    {
+      "id": "goals_paraphrase",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 5129,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "chance_creation",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4330,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "save_percentage",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4544,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "comparison",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4309,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "recent_assists",
+      "mode": "lookup_fallback",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": "story_validation_rejected",
+      "narrative_fallback": null,
+      "duration_ms": 4669,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "season_relative",
+      "mode": "lookup_fallback",
+      "raw_intent_correct": false,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": "story_validation_rejected",
+      "narrative_fallback": null,
+      "duration_ms": 4668,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "followup_season",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4065,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "favorite",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 3891,
+      "provider_requests": 2,
+      "tool_calls": 1
+    },
+    {
+      "id": "tracking",
+      "mode": "lookup",
+      "raw_intent_correct": false,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 446,
+      "provider_requests": 0,
+      "tool_calls": 0
+    },
+    {
+      "id": "goal_after",
+      "mode": "azure_agent",
+      "raw_intent_correct": true,
+      "effective_intent_correct": true,
+      "answer_evidence_correct": true,
+      "narrative_bound": true,
+      "anchors_correct": true,
+      "fallback": null,
+      "narrative_fallback": null,
+      "duration_ms": 4444,
+      "provider_requests": 2,
+      "tool_calls": 1
+    }
+  ]
+}

@@ -403,3 +403,31 @@ Start the local preview with
 `http://127.0.0.1:8017/#assistant`. Omit `--azure` for direct statistics lookups.
 Existing model settings remain in the ignored local `.env`; no new Azure service
 is required. [Verification](docs/verification/grounded-assistant.md).
+
+
+### Footie bounded research
+
+The assistant now supports up to three explicit statistics in one answer or
+comparison, with a separate chart scale per measure. `--azure --agent` opts into
+a single Microsoft Agent Framework agent using validated, read-only football
+queries and evidence-bound sentence selection. This mode is not enabled in Azure.
+
+See [implementation, evaluation findings and remaining release gates](docs/verification/footie-agent-research.md).
+The current local preview uses port 8021 without paid inference:
+
+```bash
+npm --prefix frontend run build
+.venv/bin/python scripts/run_footie_local.py --port 8021
+```
+
+Try “Compare Rory Ellis and Dario Voss goals and assists last season”, followed
+by “And this season?”. The same UI accepts the existing one-metric and selected
+match-moment questions. The final authored Azure sample passed 10/10 cases, including 9/9 agent
+workflows without fallback; unseen fan questions still need broader evaluation.
+Agent mode now requires durable SQLite or Cosmos admission: at most ten research
+jobs (twenty reserved model calls) per rolling hour across instances, with
+revision-aware duplicate suppression. Real Cosmos admission passed under the app managed identity, including a write
+conflict and fresh-process quota recovery. Version 5 enforces operation inheritance
+for period-only follow-ups and passed the final broad Azure check.
+Activation uses the manual deployment workflow’s explicit `assistant_workflow`
+selection; `structured_lookup` supports rollback.

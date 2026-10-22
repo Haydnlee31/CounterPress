@@ -671,7 +671,6 @@ export function Matchday({breakdown=false}:{breakdown?:boolean}) {
           {replayStory?.source && <a href={replayStory.source} target="_blank" rel="noreferrer">{t('Original clip', '原始片段')} · {replayStory.sourceLabel} ↗</a>}
           {isReplayStory && <a href="?story=increase#matchday">{t('Match analysis', '比赛分析')} ↗</a>}
           {replayStory && <small className="fan-data-note">{t(...replayStory.note)} {!replayStory.matchId&&t('Hand-authored reconstruction with fictional identities, approximate positions and a rebased clock. Visible actions and lanes are estimated from the linked footage; off-camera positions and motion are illustrative, not measured tracking. No footage or audio is reproduced. Short replays are excluded from five-minute comparisons.', '手工重建使用虚构身份、近似位置和重设时钟。可见动作和线路参考所链接影像；镜头外的位置和移动为示意，并非追踪测量。未复制影像或音频。短回放不计入五分钟比较。')}</small>}
-          <a href="#studio">{t("Producer Studio", "制作人工作室")} ↗</a>
           <p>
             {t(
               'About this match',
@@ -685,9 +684,6 @@ export function Matchday({breakdown=false}:{breakdown?:boolean}) {
             · {t('Updated to', '更新至')}{' '}
             {isReplayStory&&pitchEvents.length ? replayClock(pitchEvents[pitchEvents.length-1]) : snapshot ? clock(snapshot.state.at.elapsed_ms) : '—'}
           </span>
-          <a href="#analysis">
-            {t('Analysis & presenter tools', '分析与演示工具')} ↗
-          </a>
           {!replayStory && <small className="fan-data-note">{t('This showcase uses fictional clubs, players and synthetic match events. The 22-player pitch is an illustration: ball actions follow the event records; off-ball positions and movement are animated, not tracking data. Comparisons cover the displayed five-minute windows, excluding the start and including the end.', '本展示使用虚构球队、球员和合成比赛事件。22人球场为示意动画：有球动作来自事件记录，无球位置和移动并非追踪数据。比较覆盖画面中的五分钟时段，不含起点、包含终点。')}</small>}
         </footer>
       </main>

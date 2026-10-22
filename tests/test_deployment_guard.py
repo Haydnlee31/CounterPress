@@ -131,6 +131,28 @@ def test_footie_activation_reuses_only_existing_secret_references():
         deploy.assistant_settings(app, 'unknown')
 
 
+def test_agent_activation_requires_shared_storage_and_supports_explicit_rollback():
+    import pytest
+    app = {'properties': {'template': {'containers': [{'image': 'same', 'env': [
+        {'name': 'COUNTERPRESS_STORAGE', 'value': 'cosmos'},
+        {'name': 'COUNTERPRESS_ASSISTANT_MODEL', 'value': 'azure'},
+        {'name': 'AZURE_OPENAI_API_KEY', 'secretRef': 'existing'}]}]}}}
+    original = copy.deepcopy(app)
+    enabled = deploy.assistant_workflow_settings(app, 'agent')
+    assert app == original
+    assert enabled['properties']['template']['containers'][0]['env'][:-1] == app['properties']['template']['containers'][0]['env']
+    assert deploy.assistant_workflow_settings(enabled, 'preserve') == enabled
+    rollback = deploy.assistant_workflow_settings(enabled, 'structured_lookup')
+    env = rollback['properties']['template']['containers'][0]['env']
+    assert env[-1] == {'name': 'COUNTERPRESS_ASSISTANT_WORKFLOW', 'value': 'structured_lookup'}
+    assert len(env) == 4
+    for index, value in ((0, 'sqlite'), (1, 'off')):
+        bad = copy.deepcopy(app)
+        bad['properties']['template']['containers'][0]['env'][index]['value'] = value
+        with pytest.raises(deploy.DeploymentError): deploy.assistant_workflow_settings(bad, 'agent')
+    with pytest.raises(deploy.DeploymentError): deploy.assistant_workflow_settings(app, 'unknown')
+
+
 def test_azure_empty_inline_field_keeps_secret_reference_guard_strict():
     import pytest
     app = {'identity': {}, 'properties': {'environmentId': 'test',
