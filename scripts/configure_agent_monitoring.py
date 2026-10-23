@@ -25,6 +25,15 @@ def azure_json(*args):
     return json.loads(result.stdout)
 
 
+def validate_monitoring_connection(properties, insights_id):
+    """Validate portal resource resolution separately from SDK credential lookup."""
+    if (properties.get('category') != 'AppInsights'
+            or properties.get('authType') != 'ApiKey'
+            or str(properties.get('target', '')).lower() != insights_id.lower()
+            or str(properties.get('metadata', {}).get('ResourceId', '')).lower() != insights_id.lower()):
+        raise RuntimeError('Foundry monitoring target must reference the Application Insights resource ID')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--resource-group', default='counterpress-dev')
@@ -42,6 +51,9 @@ def main():
     endpoint = project['properties']['endpoints']['AI Foundry API']
     insights_id = base + f'Microsoft.Insights/components/{args.name_prefix}-agents'
     insights = azure_json('resource', 'show', '--ids', insights_id, '--api-version', '2020-02-02')
+    registered_connection = azure_json('resource', 'show', '--ids',
+        project_id + '/connections/footie-agent-monitoring', '--api-version', '2025-06-01')
+    validate_monitoring_connection(registered_connection['properties'], insights_id)
     connection = insights['properties']['ConnectionString']
     if not insights['properties'].get('DisableLocalAuth'):
         raise RuntimeError('App Insights must require Entra-authenticated ingestion')
