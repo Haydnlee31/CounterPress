@@ -1,5 +1,5 @@
 {
-  "version": "footie-bounded-research-v5",
+  "version": "footie-multiagent-foundry-v1",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -8,18 +8,21 @@
     "backend/counterpress/adaptation/contracts.py": "9f023a23292524f4bead40259988842f4d78abc2ca429842bd9b70f746616aa3",
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
-    "backend/counterpress/api/main.py": "3c1182b3a3bdbce9ff9874308d64f89d238d61d4cab0ab1a1195ad8232268bbd",
+    "backend/counterpress/api/main.py": "228e0fb746e00807ce07ccda43bfde7cf41370e1a1c1401884dc600262da3bae",
     "backend/counterpress/api/snapshots.py": "7660f6430475f783e9faeb37983f5ccde28368e30135a3952f94f2bfa40eed6e",
     "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
-    "backend/counterpress/assistant/admission.py": "4a9fd344d1dbd876b09543fc2853b13c23909ca91ac97d6938fb00fce0ddb8e5",
-    "backend/counterpress/assistant/api.py": "bb6b954099a833c74813da84c5206fc1227431e3d7ca878bb1f59377771453a8",
-    "backend/counterpress/assistant/contracts.py": "5b610f37e5934baed6f59c6eb1a46372a98e219a752275f05c50868e2a234e81",
-    "backend/counterpress/assistant/evaluation.py": "af5ce905df3e0148c2dc0ff05642a156c5d1859d69d96bbb061e75667bc2a3eb",
+    "backend/counterpress/assistant/admission.py": "6e33729d99ca1779e51175849d5ad1901a60928ac683d0cc326e617731b07a92",
+    "backend/counterpress/assistant/api.py": "fef8ab82669f7ef8a19d4620cc3485a101613ce87a5b4c2c580f8cc86337cf92",
+    "backend/counterpress/assistant/contracts.py": "a25aac36e6547292f7e67269f3f76b607cae6cc0d27a1d9f1e4322ec1b108a14",
+    "backend/counterpress/assistant/evaluation.py": "b525f941491dee360d443bfb8b729b7c418e6e667442e0e316123497802e4565",
     "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
+    "backend/counterpress/assistant/multiagent.py": "e9dd881b14efd7d82ece74a1aa1aa60619e4b6869479b8b6d16a9f6eda38d20c",
+    "backend/counterpress/assistant/multiagent_evaluation.py": "85ee686feea112f9c5399ca98ba1d4df9fd73a150fddd41960b3b5ff76fc5880",
     "backend/counterpress/assistant/narrative.py": "70942e8f480fae02e2f523f8f562f8ac4fe3aa677ec67da6096e1437eb671f45",
-    "backend/counterpress/assistant/planner.py": "6e53c2785609a759f129f5ad303def6dcaec9e07589985289defc484f1448622",
-    "backend/counterpress/assistant/research.py": "395b44ecad812a986bd3d7eab237f8d988a22b2dbec478eae2520511e37d7bd4",
-    "backend/counterpress/assistant/service.py": "3f23963a4573feb213ee031990517b69c6bd30297fc1bc273ea86f6e4188f117",
+    "backend/counterpress/assistant/observability.py": "dbf8e86007ace9141f22ec4b3fd53527f029b5de2e903710a8fb999d3501b44a",
+    "backend/counterpress/assistant/planner.py": "18f912aa0bd923c2545883d696309d2bf107043b4ccc2f5adc4dcb698657e724",
+    "backend/counterpress/assistant/research.py": "6370bcb71f991b93eebc22c08fb1987da7199b9826bb38222718d85d08e6b400",
+    "backend/counterpress/assistant/service.py": "a1d3955e93e22a9b770197c2e17f4a772e76ea44043bddcb89d43abbf59290ef",
     "backend/counterpress/audience.py": "08e8d5d0977040fc47e0b701cbb0d5b0014565ae19c601ab5d7600f9bb387d79",
     "backend/counterpress/clock.py": "dc56c2b6f04ef1ec2eeb8998b96150f7dbb938b95a7b59c5e54869c9620ba8b1",
     "backend/counterpress/contribution_publications.py": "5c530f1d7625966ca62091f33f820a54925bf09ccc787f71733ea5ebf07341d9",
@@ -131,6 +134,6 @@
     "fixtures/showcases/level-late.json": "cd5ffd86ce1b366f2b933d71ee685aa7d520efa4afd2d33f807d7a5a723aa84f",
     "fixtures/showcases/one_touch.json": "51ac8149002c424e2a48caffdc4def870e1f27696748de4bd7bd6150dd87a9be",
     "fixtures/showcases/take-lead.json": "686b1b93e4d153d0b68ea343977996b6c892ed003fc692b7ea24157478cc6d69",
-    "uv.lock": "fcd26ffd0a3b0918bac98771922ad55b48cbd305b056b04111965a436bc0e914"
+    "uv.lock": "54d7e1909f284f985431b64d18663023bd674162c440c8c98a1890a4734e302c"
   }
 }

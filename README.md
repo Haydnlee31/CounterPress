@@ -55,7 +55,7 @@ The eighth adds bounded Microsoft Agent Framework recap review and approved
 presentation choices, verified offline and with one successful live Azure run.
 
 Stage 9 now has a deployed Azure Container Apps demo, a private container registry
-and managed-identity image pulls, with a USD 75 total trial budget. The hosted app
+and managed-identity image pulls, with a USD 125 total trial budget. The hosted app
 uses serverless Cosmos DB history, Event Hubs ingestion, Blob checkpoints and
 Web PubSub revision delivery. The full streaming path and duplicate delivery have
 been verified live. Local development still defaults to SQLite and HTTP polling.
@@ -410,7 +410,9 @@ is required. [Verification](docs/verification/grounded-assistant.md).
 The assistant now supports up to three explicit statistics in one answer or
 comparison, with a separate chart scale per measure. `--azure --agent` opts into
 a single Microsoft Agent Framework agent using validated, read-only football
-queries and evidence-bound sentence selection. This mode is not enabled in Azure.
+queries and evidence-bound sentence selection. The single-agent mode was enabled
+in Azure in release #56; historical verification notes retain their original
+pre-release status.
 
 See [implementation, evaluation findings and remaining release gates](docs/verification/footie-agent-research.md).
 The current local preview uses port 8021 without paid inference:
@@ -430,4 +432,67 @@ revision-aware duplicate suppression. Real Cosmos admission passed under the app
 conflict and fresh-process quota recovery. Version 5 enforces operation inheritance
 for period-only follow-ups and passed the final broad Azure check.
 Activation uses the manual deployment workflow’s explicit `assistant_workflow`
-selection; `structured_lookup` supports rollback.
+selection. Use `agent` on the current image to roll back multi-agent behavior;
+`structured_lookup` now requires paid inference to be disabled, because its legacy
+planner does not enforce the shared daily allowance.
+
+### Footie multi-agent research and Foundry monitoring
+
+The `multiagent` workflow keeps execution in Azure Container Apps. Footie can
+delegate a compound question to a Match Analyst and a Career Analyst, then select
+an explanation from their calculated evidence. Simple questions use one
+specialist. Python validates the scope, computes statistics and rereads evidence
+before answering. This does not add video interpretation or arbitrary database
+access.
+
+Local preview: `.venv/bin/python scripts/run_footie_local.py --azure --multiagent --port 8021`,
+then open `http://127.0.0.1:8021/#assistant`. This uses the existing ignored `.env`
+and durable local admission; tracing remains off unless explicitly configured.
+
+Foundry external-agent registrations expose sanitized OpenTelemetry traces from
+the existing app through a project-linked Application Insights resource. The
+runtime is not moved into Foundry. See the [monitoring and inspection guide](docs/footie-foundry-monitoring.md).
+
+```mermaid
+flowchart LR
+  UI[Footie dashboard] --> API[FastAPI in Container Apps]
+  API --> Admission[Shared Cosmos admission and cache]
+  Admission --> Footie[Footie orchestrator]
+  Footie --> Match[Match Analyst]
+  Footie --> Career[Career Analyst]
+  Match --> Tools[Validated Python queries]
+  Career --> Tools
+  Tools --> Records[One consistent football-record snapshot]
+  Records --> Verify[Recheck evidence and revisions]
+  Verify --> Answer[Approved explanation and charts]
+  Answer --> UI
+  API -. Sanitized OpenTelemetry spans .-> Insights[Application Insights]
+  Insights --> Foundry[Foundry external-agent traces]
+```
+
+Match Analyst currently covers the selected match's score, goals, recorded moment
+and milestone context. Career Analyst covers players, club totals and leaders,
+comparisons, seasons and recent form. They cannot run arbitrary SQL, browse the
+internet, change records or interpret video. Specialist queries execute against
+one snapshot; a correction arriving during explanation invalidates stale claims.
+A replay combined with player history uses completed history **before kickoff**,
+clearly labelled in the answer. Inclusive live career totals are not yet supported.
+
+Compound follow-ups currently ask for clarification because the dashboard's
+conversation contract stores one previous query. Partial answers visibly identify
+unavailable scope. Model failure returns a verified calculated answer where
+possible. These behaviours are tested separately from successful agent completion
+in the [benchmark protocol and results](docs/verification/footie-multiagent-benchmark.md).
+
+The manual deployment workflow explicitly selects `assistant_workflow=multiagent`,
+`assistant_tracing=enable`, and optionally `assistant_allowance=pilot125` after
+validation. The pilot reserves up to 120 model calls per rolling hour and 400 per
+rolling day. Each new multi-agent job reserves four slots conservatively, including
+simple questions that may use only two; this permits up to 30 new jobs/hour and
+100/day. Cached repeats make no new model calls. The US$125 Azure budget is a
+project-wide alert envelope, not an automatic spending stop.
+
+Rollback uses `assistant_workflow=agent` **on this image or a newer compatible
+image**. The admission document now tracks weighted reservations; older images
+cannot read that format and fail closed. Do not delete the control document to
+make a rollback work: that would reset the shared spending allowance.

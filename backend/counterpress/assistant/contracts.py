@@ -6,7 +6,7 @@ from counterpress.domain.models import Identifier
 
 class Plan(FanContract):
     operation: Literal['stats','compare','recent','seasons','club_leaders','match','unsupported','clarify']
-    player_ids: list[Identifier]
+    player_ids: list[Identifier] = Field(max_length=4)
     club_id: Identifier | None
     match_id: Identifier | None
     metric: str

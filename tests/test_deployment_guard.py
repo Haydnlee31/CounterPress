@@ -111,6 +111,40 @@ def test_azure_null_secret_collection_is_equivalent_to_empty_list():
     assert deploy.invariants(app) == deploy.invariants(empty)
 
 
+def test_configuration_patch_restores_known_private_values_without_changing_runtime():
+    import pytest
+    app = {'properties': {'template': {'containers': [{'env': [{'name': 'COUNTERPRESS_EDITORIAL', 'value': 'off'}]}]},
+        'configuration': {'secrets': [{'name': name} for name in deploy.MODEL_SECRETS.values()] + [
+            {'name': deploy.MONITOR_SECRET, 'value': 'already-prepared-monitoring'}]}}}
+    model = {'AZURE_OPENAI_ENDPOINT': 'https://demo.openai.azure.com',
+             'AZURE_OPENAI_DEPLOYMENT': 'test', 'AZURE_OPENAI_API_KEY': 'dummy'}
+    original = copy.deepcopy(app)
+    restored = deploy.rehydrate_configuration_secrets(app, model)
+    assert app == original
+    assert restored['properties']['template'] == app['properties']['template']
+    values = {s['name']: s['value'] for s in restored['properties']['configuration']['secrets']}
+    assert values == {**{name: model[key] for key, name in deploy.MODEL_SECRETS.items()},
+                      deploy.MONITOR_SECRET: 'already-prepared-monitoring'}
+    with pytest.raises(deploy.DeploymentError): deploy.rehydrate_configuration_secrets(app)
+    for entry in ({'name': 'unexpected'}, {'name': 'editorial-key', 'keyVaultUrl': 'unreviewed'}):
+        bad = copy.deepcopy(app); bad['properties']['configuration']['secrets'] = [entry]
+        with pytest.raises(deploy.DeploymentError): deploy.rehydrate_configuration_secrets(bad, model)
+
+
+def test_editorial_configuration_update_also_preserves_monitoring_secret():
+    import pytest
+    app = {'properties': {'template': {'containers': [{'env': []}]},
+        'configuration': {'secrets': [{'name': deploy.MONITOR_SECRET}]}}}
+    monitoring = {'COUNTERPRESS_AGENT_TRACING': 'azure',
+        'APPLICATIONINSIGHTS_CONNECTION_STRING': 'InstrumentationKey=11111111-1111-4111-8111-111111111111;IngestionEndpoint=https://eastus.in.applicationinsights.azure.com/',
+        'COUNTERPRESS_AGENT_TRACING_CLIENT_ID': '22222222-2222-4222-8222-222222222222',
+        'COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO': '1.0'}
+    restored = deploy.rehydrate_configuration_secrets(app, monitoring=monitoring)
+    assert restored['properties']['template'] == app['properties']['template']
+    assert restored['properties']['configuration']['secrets'][0]['value'] == monitoring['APPLICATIONINSIGHTS_CONNECTION_STRING']
+    with pytest.raises(deploy.DeploymentError): deploy.rehydrate_configuration_secrets(app)
+
+
 def test_footie_activation_reuses_only_existing_secret_references():
     import pytest
     app = {'properties': {'template': {'containers': [{'env': [
@@ -142,14 +176,19 @@ def test_agent_activation_requires_shared_storage_and_supports_explicit_rollback
     assert app == original
     assert enabled['properties']['template']['containers'][0]['env'][:-1] == app['properties']['template']['containers'][0]['env']
     assert deploy.assistant_workflow_settings(enabled, 'preserve') == enabled
-    rollback = deploy.assistant_workflow_settings(enabled, 'structured_lookup')
+    with pytest.raises(deploy.DeploymentError): deploy.assistant_workflow_settings(enabled, 'structured_lookup')
+    offline = deploy.assistant_settings(enabled, 'disable')
+    rollback = deploy.assistant_workflow_settings(offline, 'structured_lookup')
     env = rollback['properties']['template']['containers'][0]['env']
     assert env[-1] == {'name': 'COUNTERPRESS_ASSISTANT_WORKFLOW', 'value': 'structured_lookup'}
     assert len(env) == 4
+    multi = deploy.assistant_workflow_settings(app, 'multiagent')
+    assert multi['properties']['template']['containers'][0]['env'][-1]['value'] == 'multiagent'
     for index, value in ((0, 'sqlite'), (1, 'off')):
         bad = copy.deepcopy(app)
         bad['properties']['template']['containers'][0]['env'][index]['value'] = value
         with pytest.raises(deploy.DeploymentError): deploy.assistant_workflow_settings(bad, 'agent')
+        with pytest.raises(deploy.DeploymentError): deploy.assistant_workflow_settings(bad, 'multiagent')
     with pytest.raises(deploy.DeploymentError): deploy.assistant_workflow_settings(app, 'unknown')
 
 
@@ -182,3 +221,49 @@ def test_azure_empty_inline_field_keeps_secret_reference_guard_strict():
         bad['properties']['template']['containers'][0]['env'][-1].update(changes)
         with pytest.raises(AssertionError): deploy.validate_app(bad)
         with pytest.raises(deploy.DeploymentError): deploy.assistant_settings(bad, 'enable')
+
+
+def test_allowance_is_explicit_bounded_and_requires_durable_admission():
+    import pytest
+    app = {'properties': {'template': {'containers': [{'env': [
+        {'name': 'COUNTERPRESS_STORAGE', 'value': 'cosmos'},
+        {'name': 'COUNTERPRESS_ASSISTANT_WORKFLOW', 'value': 'multiagent'}]}]}}}
+    original = copy.deepcopy(app)
+    assert deploy.assistant_allowance_settings(app, 'preserve') == original
+    raised = deploy.assistant_allowance_settings(app, 'pilot125')
+    assert app == original
+    env = {v['name']: v['value'] for v in raised['properties']['template']['containers'][0]['env']}
+    assert env['COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR'] == '120'
+    assert env['COUNTERPRESS_ASSISTANT_CALLS_PER_DAY'] == '400'
+    restored = deploy.assistant_allowance_settings(raised, 'conservative')
+    assert next(v['value'] for v in restored['properties']['template']['containers'][0]['env']
+                if v['name'] == 'COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR') == '20'
+    for bad in ('unlimited', '1000000'):
+        with pytest.raises(deploy.DeploymentError): deploy.assistant_allowance_settings(app, bad)
+    app['properties']['template']['containers'][0]['env'][0]['value'] = 'sqlite'
+    with pytest.raises(deploy.DeploymentError): deploy.assistant_allowance_settings(app, 'pilot125')
+
+
+def test_tracing_keeps_connection_private_and_preserves_other_runtime_settings():
+    import pytest
+    app = {'properties': {'template': {'containers': [{'env': [
+        {'name': 'COUNTERPRESS_STORAGE', 'value': 'cosmos'}]}]},
+        'configuration': {'secrets': [{'name': 'editorial-key'}]}}}
+    settings = {'COUNTERPRESS_AGENT_TRACING': 'azure',
+        'APPLICATIONINSIGHTS_CONNECTION_STRING': 'InstrumentationKey=11111111-1111-4111-8111-111111111111;IngestionEndpoint=https://eastus.in.applicationinsights.azure.com/',
+        'COUNTERPRESS_AGENT_TRACING_CLIENT_ID': '22222222-2222-4222-8222-222222222222',
+        'COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO': '1.0'}
+    original = copy.deepcopy(app)
+    enabled = deploy.agent_monitoring_settings(app, 'enable', settings)
+    assert app == original
+    env = {v['name']: v for v in enabled['properties']['template']['containers'][0]['env']}
+    assert env['APPLICATIONINSIGHTS_CONNECTION_STRING'] == {'name': 'APPLICATIONINSIGHTS_CONNECTION_STRING', 'secretRef': deploy.MONITOR_SECRET}
+    assert enabled['properties']['configuration']['secrets'][0] == {'name': 'editorial-key'}
+    assert deploy.agent_monitoring_settings(enabled, 'preserve') == enabled
+    disabled = deploy.agent_monitoring_settings(enabled, 'disable')
+    assert disabled['properties']['template']['containers'][0]['env'] == [
+        {'name': 'COUNTERPRESS_STORAGE', 'value': 'cosmos'}, {'name': 'COUNTERPRESS_AGENT_TRACING', 'value': 'off'}]
+    for bad in (settings | {'unexpected': 'secret'}, settings | {'APPLICATIONINSIGHTS_CONNECTION_STRING': 'InstrumentationKey=bad'},
+                settings | {'APPLICATIONINSIGHTS_CONNECTION_STRING': settings['APPLICATIONINSIGHTS_CONNECTION_STRING'].replace('eastus.in.applicationinsights.azure.com', 'untrusted.example')},
+                settings | {'COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO': '0.5'}):
+        with pytest.raises(deploy.DeploymentError): deploy.agent_monitoring_settings(app, 'enable', bad)

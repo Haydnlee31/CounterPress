@@ -26,7 +26,19 @@ on:
         required: true
         default: preserve
         type: choice
-        options: [preserve, agent, structured_lookup]
+        options: [preserve, multiagent, agent, structured_lookup]
+      assistant_allowance:
+        description: 'Reviewed US$125 pilot: 120 model calls/hour, 400/day; preserves defaults unless selected'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, pilot125, conservative]
+      assistant_tracing:
+        description: 'Foundry-linked agent tracing; enable after monitoring infrastructure validation'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, enable, disable]
 
 permissions:
   contents: read
@@ -75,5 +87,7 @@ jobs:
           CP_EDITORIAL_MODEL: ${{ secrets.CP_EDITORIAL_MODEL }}
           CP_ASSISTANT_MODE: ${{ inputs.assistant_mode }}
           CP_ASSISTANT_WORKFLOW: ${{ inputs.assistant_workflow }}
+          CP_ASSISTANT_ALLOWANCE: ${{ inputs.assistant_allowance }}
+          CP_ASSISTANT_TRACING: ${{ inputs.assistant_tracing }}
           CP_AZURE_TARGET: ${{ secrets.CP_AZURE_TARGET }}
         run: python3 scripts/deploy_azure.py deploy

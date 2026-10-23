@@ -56,6 +56,9 @@ STUDIO_KEYS = {'COUNTERPRESS_STUDIO', 'COUNTERPRESS_STUDIO_CLIENT_ID',
 MODEL_SECRETS = {'AZURE_OPENAI_ENDPOINT': 'editorial-endpoint',
                  'AZURE_OPENAI_DEPLOYMENT': 'editorial-deployment',
                  'AZURE_OPENAI_API_KEY': 'editorial-key'}
+MONITOR_SECRET = 'agent-monitor-connection'
+MONITOR_KEYS = {'COUNTERPRESS_AGENT_TRACING', 'APPLICATIONINSIGHTS_CONNECTION_STRING',
+                'COUNTERPRESS_AGENT_TRACING_CLIENT_ID', 'COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO'}
 
 
 def model_reference(item, name, secret):
@@ -79,15 +82,7 @@ def editorial_settings(app, mode, model=None):
     if mode == 'enable':
         if env.get('COUNTERPRESS_STUDIO') != 'entra':
             raise DeploymentError('Editorial activation requires Studio')
-        if not isinstance(model, dict) or set(model) != set(MODEL_SECRETS):
-            raise DeploymentError('Private model settings are incomplete')
-        if not all(isinstance(v, str) and v.strip() and '\n' not in v and '\r' not in v for v in model.values()):
-            raise DeploymentError('Private model settings are invalid')
-        url = urlsplit(model['AZURE_OPENAI_ENDPOINT'])
-        if (url.scheme != 'https' or not url.hostname or not url.hostname.endswith(('.openai.azure.com', '.services.ai.azure.com'))
-                or url.port not in (None, 443) or url.username or url.password or url.query or url.fragment
-                or url.path.rstrip('/') not in ('', '/openai/v1')):
-            raise DeploymentError('Private model destination is invalid')
+        validate_model_settings(model)
         client = env.get('COUNTERPRESS_STUDIO_CLIENT_ID')
         if not client or str(UUID(client)) != client:
             raise DeploymentError('Studio client must be configured')
@@ -99,6 +94,45 @@ def editorial_settings(app, mode, model=None):
             {'name': secret, 'value': model[name]} for name, secret in MODEL_SECRETS.items()]
     removed = {*MODEL_SECRETS, 'COUNTERPRESS_EDITORIAL', 'COUNTERPRESS_ENTRA_CLIENT_IDS'}
     container['env'] = [v for v in container.get('env', []) if v['name'] not in removed] + additions
+    return result
+
+
+def validate_model_settings(model):
+    if not isinstance(model, dict) or set(model) != set(MODEL_SECRETS):
+        raise DeploymentError('Private model settings are incomplete')
+    if not all(isinstance(v, str) and v.strip() and '\n' not in v and '\r' not in v for v in model.values()):
+        raise DeploymentError('Private model settings are invalid')
+    url = urlsplit(model['AZURE_OPENAI_ENDPOINT'])
+    if (url.scheme != 'https' or not url.hostname or not url.hostname.endswith(('.openai.azure.com', '.services.ai.azure.com'))
+            or url.port not in (None, 443) or url.username or url.password or url.query or url.fragment
+            or url.path.rstrip('/') not in ('', '/openai/v1')):
+        raise DeploymentError('Private model destination is invalid')
+
+
+def rehydrate_configuration_secrets(app, model=None, monitoring=None):
+    """Do not depend on ARM preserving secret values omitted from a configuration PATCH.
+
+    Restore known values from reviewed GitHub configuration and monitoring metadata,
+    never by listing the application's secret values. Runtime settings stay unchanged.
+    """
+    result = copy.deepcopy(app)
+    secrets = result['properties']['configuration'].get('secrets') or []
+    missing = [s for s in secrets if not s.get('value')]
+    if any(set(s) != {'name'} for s in missing):
+        raise DeploymentError('Unexpected secret representation; configuration update stopped')
+    names = {s['name'] for s in missing}
+    if names - set(MODEL_SECRETS.values()) - {MONITOR_SECRET}:
+        raise DeploymentError('Unknown secret; configuration update stopped')
+    values = {}
+    if names & set(MODEL_SECRETS.values()):
+        validate_model_settings(model)
+        values.update({secret: model[key] for key, secret in MODEL_SECRETS.items()})
+    if MONITOR_SECRET in names:
+        validated = agent_monitoring_settings(app, 'enable', monitoring)
+        values[MONITOR_SECRET] = next(s['value'] for s in validated['properties']['configuration']['secrets']
+                                      if s['name'] == MONITOR_SECRET)
+    for secret in missing:
+        secret['value'] = values[secret['name']]
     return result
 
 
@@ -163,16 +197,36 @@ def assistant_workflow_settings(app, mode):
     result = copy.deepcopy(app)
     if mode == 'preserve':
         return result
-    if mode not in ('agent', 'structured_lookup'):
+    if mode not in ('agent', 'multiagent', 'structured_lookup'):
         raise DeploymentError('Unknown assistant workflow')
     container = result['properties']['template']['containers'][0]
     env = {v['name']: v.get('value') for v in container.get('env', [])}
-    if mode == 'agent' and (env.get('COUNTERPRESS_ASSISTANT_MODEL') != 'azure'
+    if mode in ('agent', 'multiagent') and (env.get('COUNTERPRESS_ASSISTANT_MODEL') != 'azure'
                             or env.get('COUNTERPRESS_STORAGE') != 'cosmos'):
         raise DeploymentError('Agent workflow requires Azure inference and shared Cosmos admission')
+    if mode == 'structured_lookup' and env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure':
+        raise DeploymentError('Use agent for bounded paid rollback, or disable inference for structured lookup')
     container['env'] = [v for v in container.get('env', [])
                         if v['name'] != 'COUNTERPRESS_ASSISTANT_WORKFLOW'] + [
         {'name': 'COUNTERPRESS_ASSISTANT_WORKFLOW', 'value': mode}]
+    return result
+
+
+def assistant_allowance_settings(app, mode):
+    """Named, reviewed call envelopes; never accept an arbitrary unlimited budget."""
+    result = copy.deepcopy(app)
+    if mode == 'preserve':
+        return result
+    if mode not in ('pilot125', 'conservative'):
+        raise DeploymentError('Unknown assistant allowance')
+    container = result['properties']['template']['containers'][0]
+    env = {v['name']: v.get('value') for v in container.get('env', [])}
+    if env.get('COUNTERPRESS_STORAGE') != 'cosmos' or env.get('COUNTERPRESS_ASSISTANT_WORKFLOW') not in ('agent', 'multiagent'):
+        raise DeploymentError('Paid allowance requires durable agent admission')
+    values = {'COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR': '120' if mode == 'pilot125' else '20',
+              'COUNTERPRESS_ASSISTANT_CALLS_PER_DAY': '400'}
+    container['env'] = [v for v in container.get('env', []) if v['name'] not in values] + [
+        {'name': key, 'value': value} for key, value in values.items()]
     return result
 
 
@@ -183,24 +237,83 @@ def validate_app(app):
     assert env.get('COUNTERPRESS_STREAMING')=='azure'
     assert env.get('COUNTERPRESS_TELEMETRY')=='on'
     secrets = {s['name'] for s in (p['configuration'].get('secrets') or [])}
-    assert secrets <= set(MODEL_SECRETS.values())
+    assert secrets <= set(MODEL_SECRETS.values()) | {MONITOR_SECRET}
     assert env.get('COUNTERPRESS_EDITORIAL', 'off') in ('off', 'entra')
     model_env = {v['name']: v for v in container.get('env', []) if v['name'].startswith('AZURE_OPENAI')}
     if env.get('COUNTERPRESS_EDITORIAL', 'off') == 'entra':
         assert env.get('COUNTERPRESS_STUDIO') == 'entra'
         assert env.get('COUNTERPRESS_ENTRA_CLIENT_IDS') == env['COUNTERPRESS_STUDIO_CLIENT_ID']
-        assert set(model_env) == set(MODEL_SECRETS) and secrets == set(MODEL_SECRETS.values())
+        assert set(model_env) == set(MODEL_SECRETS) and set(MODEL_SECRETS.values()) <= secrets
         assert all(model_reference(model_env[k], k, v) for k, v in MODEL_SECRETS.items())
     else:
         assert not model_env
     assert env.get('COUNTERPRESS_ASSISTANT_MODEL', 'off') in ('off', 'azure')
-    assert env.get('COUNTERPRESS_ASSISTANT_WORKFLOW', 'structured_lookup') in ('structured_lookup', 'agent')
+    assert env.get('COUNTERPRESS_ASSISTANT_WORKFLOW', 'structured_lookup') in ('structured_lookup', 'agent', 'multiagent')
     if env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure':
         assert set(model_env) == set(MODEL_SECRETS)
+        if env.get('COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR'):
+            assert env.get('COUNTERPRESS_ASSISTANT_WORKFLOW') in ('agent', 'multiagent')
     assert env.get('COUNTERPRESS_STUDIO', 'off') in ('off', 'entra')
+    assert env.get('COUNTERPRESS_AGENT_TRACING', 'off') in ('off', 'azure')
+    if env.get('COUNTERPRESS_AGENT_TRACING') == 'azure':
+        entries = {v['name']: v for v in container.get('env', [])}
+        assert MONITOR_SECRET in secrets
+        assert model_reference(entries.get('APPLICATIONINSIGHTS_CONNECTION_STRING'),
+                               'APPLICATIONINSIGHTS_CONNECTION_STRING', MONITOR_SECRET)
+        assert str(UUID(env['COUNTERPRESS_AGENT_TRACING_CLIENT_ID'])) == env['COUNTERPRESS_AGENT_TRACING_CLIENT_ID']
+        assert env.get('COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO') == '1.0'
     assert p['configuration']['activeRevisionsMode']=='Single'
     assert p['template']['scale']['minReplicas']==0 and p['template']['scale']['maxReplicas']==1
     assert p['configuration']['ingress']['allowInsecure'] is False
+
+
+def agent_monitoring_settings(app, mode, settings=None):
+    result = copy.deepcopy(app)
+    if mode == 'preserve': return result
+    if mode not in ('enable', 'disable'): raise DeploymentError('Unknown agent tracing mode')
+    container = result['properties']['template']['containers'][0]
+    additions = [{'name': 'COUNTERPRESS_AGENT_TRACING', 'value': 'off'}]
+    if mode == 'enable':
+        if not isinstance(settings, dict) or set(settings) != MONITOR_KEYS:
+            raise DeploymentError('Incomplete monitoring configuration')
+        if settings['COUNTERPRESS_AGENT_TRACING'] != 'azure' or settings['COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO'] != '1.0':
+            raise DeploymentError('Invalid tracing mode')
+        try:
+            client = settings['COUNTERPRESS_AGENT_TRACING_CLIENT_ID']
+            assert str(UUID(client)) == client
+            connection = settings['APPLICATIONINSIGHTS_CONNECTION_STRING']
+            assert isinstance(connection, str) and '\n' not in connection and '\r' not in connection
+            items = [item.split('=', 1) for item in connection.strip(';').split(';')]
+            fields = dict(items)
+            assert len(fields) == len(items)
+            assert set(fields) <= {'InstrumentationKey', 'IngestionEndpoint', 'LiveEndpoint', 'ApplicationId'}
+            UUID(fields['InstrumentationKey'])
+            destination = urlsplit(fields['IngestionEndpoint'])
+            assert destination.scheme == 'https' and destination.hostname.endswith('.in.applicationinsights.azure.com')
+            assert not destination.username and not destination.password and not destination.query and not destination.fragment
+            assert destination.port in (None, 443) and destination.path in ('', '/')
+        except (AssertionError, ValueError, TypeError, KeyError, AttributeError):
+            raise DeploymentError('Invalid private monitoring settings') from None
+        additions = [{'name': key, 'value': value} for key, value in settings.items()
+                     if key != 'APPLICATIONINSIGHTS_CONNECTION_STRING'] + [
+                         {'name': 'APPLICATIONINSIGHTS_CONNECTION_STRING', 'secretRef': MONITOR_SECRET}]
+        config = result['properties']['configuration']
+        config['secrets'] = [s for s in (config.get('secrets') or []) if s['name'] != MONITOR_SECRET] + [
+            {'name': MONITOR_SECRET, 'value': connection}]
+    container['env'] = [v for v in container.get('env', []) if v['name'] not in MONITOR_KEYS] + additions
+    return result
+
+
+def read_monitoring_settings(group):
+    insights = run(['az', 'resource', 'show', '-g', group, '-n', 'counterpress-agents',
+                    '--resource-type', 'Microsoft.Insights/components', '--api-version', '2020-02-02', '-o', 'json'], parse=True)
+    if not insights['properties'].get('DisableLocalAuth'):
+        raise DeploymentError('Tracing requires Entra-authenticated ingestion')
+    identity = run(['az', 'identity', 'show', '-g', group, '-n', 'counterpress-history', '-o', 'json'], parse=True)
+    return {'COUNTERPRESS_AGENT_TRACING': 'azure',
+            'APPLICATIONINSIGHTS_CONNECTION_STRING': insights['properties']['ConnectionString'],
+            'COUNTERPRESS_AGENT_TRACING_CLIENT_ID': identity['clientId'],
+            'COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO': '1.0'}
 
 
 def require_ci():
@@ -232,13 +345,25 @@ def deploy():
     expected=copy.deepcopy(before)
     expected['properties']['template']=studio_template(before['properties']['template'], mode, identity)
     editorial_mode=os.environ.get('CP_EDITORIAL_MODE', 'preserve')
-    model=json.loads(os.environ['CP_EDITORIAL_MODEL']) if editorial_mode == 'enable' else None
+    tracing_mode = os.environ.get('CP_ASSISTANT_TRACING', 'preserve')
+    configuration_update = editorial_mode == 'enable' or tracing_mode == 'enable'
+    model=json.loads(os.environ['CP_EDITORIAL_MODEL']) if configuration_update else None
+    if model:
+        validate_model_settings(model)
+        for value in model.values():
+            if isinstance(value, str):print('::add-mask::'+value, flush=True)
     expected=editorial_settings(expected, editorial_mode, model)
     expected=assistant_settings(expected, os.environ.get('CP_ASSISTANT_MODE', 'preserve'))
     expected=assistant_workflow_settings(expected, os.environ.get('CP_ASSISTANT_WORKFLOW', 'preserve'))
-    if model:
-        for value in model.values():
-            if isinstance(value, str):print('::add-mask::'+value, flush=True)
+    expected=assistant_allowance_settings(expected, os.environ.get('CP_ASSISTANT_ALLOWANCE', 'preserve'))
+    has_monitoring = any(s['name'] == MONITOR_SECRET for s in expected['properties']['configuration'].get('secrets') or [])
+    monitoring = read_monitoring_settings(group) if tracing_mode == 'enable' or configuration_update and has_monitoring else None
+    if monitoring:
+        for key in ('APPLICATIONINSIGHTS_CONNECTION_STRING', 'COUNTERPRESS_AGENT_TRACING_CLIENT_ID'):
+            print('::add-mask::'+monitoring[key], flush=True)
+    expected = agent_monitoring_settings(expected, tracing_mode, monitoring)
+    if configuration_update:
+        expected = rehydrate_configuration_secrets(expected, model, monitoring)
     validate_app(expected)
     baseline=invariants(expected)
     old_image=before['properties']['template']['containers'][0]['image']
@@ -258,7 +383,7 @@ def deploy():
     template['containers'][0]['image']=image
     template['revisionSuffix']='gh-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
     properties={'template':template}
-    if editorial_mode == 'enable':
+    if configuration_update:
         properties['configuration'] = expected['properties']['configuration']
     payload_path=Path(os.environ['RUNNER_TEMP'], 'counterpress-update.json')
     payload_path.touch(mode=0o600)

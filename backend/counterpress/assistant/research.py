@@ -104,6 +104,9 @@ class ResearchResult:
     tools: int
     reported_requests: int
     cached: bool = False
+    tasks: tuple = ()
+    plans: tuple[Plan, ...] = ()
+    partial_failures: tuple[str, ...] = ()
 
 
 class ResearchFailure(ProviderFailure):
@@ -116,6 +119,8 @@ class ResearchFailure(ProviderFailure):
 
 
 class ResearchAgent:
+    max_requests = 2
+    deadline_seconds = 12
     def __init__(self, config, transport_factory=None, observer=None):
         self.config = config
         self.observer = observer
