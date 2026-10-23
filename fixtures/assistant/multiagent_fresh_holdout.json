@@ -1,0 +1,307 @@
+{
+  "version": "footie-multiagent-fresh-holdout-v1",
+  "purpose": "Eight independently authored questions reserved AFTER initial baseline and BEFORE runtime fixes; not shared with the implementation agent or included in prompts. This is not external fan testing or a population accuracy estimate.",
+  "ledger_sha256": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef",
+  "cases": [
+    {
+      "id": "fresh_career_assists",
+      "category": "player",
+      "request": {
+        "question": "For Mateo Cross, give me the total number of assists across his career.",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "assists",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "assists",
+      "tasks": [],
+      "expected_roles": [
+        "career"
+      ]
+    },
+    {
+      "id": "fresh_club_creation",
+      "category": "club",
+      "request": {
+        "question": "Which Redhaven player has the highest total for key passes?",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "club_leaders",
+        "player_ids": [],
+        "club_id": "redhaven",
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "club_chances",
+      "tasks": [],
+      "expected_roles": [
+        "career"
+      ]
+    },
+    {
+      "id": "fresh_keeper_percentage",
+      "category": "goalkeeper",
+      "request": {
+        "question": "What percentage of the shots on target Leon Finch has faced did he save?",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "save_pct",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "save_percentage",
+      "tasks": [],
+      "expected_roles": [
+        "career"
+      ]
+    },
+    {
+      "id": "fresh_favorite_season",
+      "category": "season",
+      "request": {
+        "question": "How many goals has my favourite player scored this season?",
+        "as_of": "2026-10-20T00:00:00Z",
+        "preferences": {
+          "favorite_player_ids": [
+            "rh09"
+          ]
+        }
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2026-27",
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "season_current",
+      "tasks": [],
+      "expected_roles": [
+        "career"
+      ]
+    },
+    {
+      "id": "fresh_future_health",
+      "category": "unsupported",
+      "request": {
+        "question": "Can you tell me which player will get injured next month?",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "unsupported",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "injury",
+      "tasks": [],
+      "expected_roles": []
+    },
+    {
+      "id": "fresh_vague_comparison",
+      "category": "ambiguity",
+      "request": {
+        "question": "Which of these two is the better footballer: Dario Voss or Mateo Cross?",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "clarify",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "ambiguous_metric",
+      "tasks": [],
+      "expected_roles": [
+        "career"
+      ]
+    },
+    {
+      "id": "fresh_moment_assists",
+      "category": "cross_specialist",
+      "request": {
+        "question": "Explain this moment; then show Enzo Clarke assists last season.",
+        "as_of": "2026-10-20T00:00:00Z",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "event_id": "e01178",
+        "event_revision": 1
+      },
+      "expected_plan": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {
+        "milestone": 75
+      },
+      "source_case": "goal_explicit",
+      "expected_roles": [
+        "match",
+        "career"
+      ],
+      "tasks": [
+        {
+          "role": "match",
+          "start": 0,
+          "end": 19,
+          "scope": "selected",
+          "expected_plan": {
+            "operation": "match",
+            "player_ids": [],
+            "club_id": null,
+            "match_id": "career-showcase-southbank-redhaven",
+            "metric": "goals",
+            "per90": false,
+            "season": null,
+            "comparison_season": null
+          }
+        },
+        {
+          "role": "career",
+          "start": 26,
+          "end": 63,
+          "scope": "pre_match",
+          "expected_plan": {
+            "operation": "stats",
+            "player_ids": [
+              "rh08"
+            ],
+            "club_id": null,
+            "match_id": null,
+            "metric": "assists",
+            "per90": false,
+            "season": "2025-26",
+            "comparison_season": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "fresh_moment_rates",
+      "category": "cross_specialist",
+      "request": {
+        "question": "How did the latest goal change this match?; then compare Mateo Cross and Dario Voss on goals per 90 before this match.",
+        "as_of": "2026-10-20T00:00:00Z",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "event_id": "e01178",
+        "event_revision": 1
+      },
+      "expected_plan": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {
+        "milestone": 75
+      },
+      "source_case": "goal_explicit",
+      "expected_roles": [
+        "match",
+        "career"
+      ],
+      "tasks": [
+        {
+          "role": "match",
+          "start": 0,
+          "end": 42,
+          "scope": "selected",
+          "expected_plan": {
+            "operation": "match",
+            "player_ids": [],
+            "club_id": null,
+            "match_id": "career-showcase-southbank-redhaven",
+            "metric": "goals",
+            "per90": false,
+            "season": null,
+            "comparison_season": null
+          }
+        },
+        {
+          "role": "career",
+          "start": 49,
+          "end": 118,
+          "scope": "pre_match",
+          "expected_plan": {
+            "operation": "compare",
+            "player_ids": [
+              "rh09",
+              "sb09"
+            ],
+            "club_id": null,
+            "match_id": null,
+            "metric": "goals",
+            "per90": true,
+            "season": null,
+            "comparison_season": null
+          }
+        }
+      ]
+    }
+  ]
+}

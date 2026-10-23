@@ -21,6 +21,13 @@ dependencies = [
     "azure-messaging-webpubsubservice>=1.2,<2",
     "aiohttp>=3.11,<4",
     "azure-storage-blob>=12.25,<13",
+    "azure-monitor-opentelemetry-exporter>=1.0.0b46,<2",
+    "opentelemetry-sdk>=1.39,<2",
+]
+
+[project.optional-dependencies]
+foundry-admin = [
+    "azure-ai-projects>=2.3,<3",
 ]
 
 [dependency-groups]

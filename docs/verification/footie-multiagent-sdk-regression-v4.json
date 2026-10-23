@@ -1,0 +1,153 @@
+{
+  "evaluation_status": "passed",
+  "mode": "azure_multiagent",
+  "split": "regression",
+  "created_at": "2026-10-23T03:38:17.697923+00:00",
+  "corpus_cases": 34,
+  "dataset_sha256": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef",
+  "source_sha256": {
+    "fixtures/assistant/multiagent_questions.json": "215ea967e080f60ca481a96f506161d216a536b6ea2914c02b88dc129745fd22",
+    "scripts/evaluate_footie_multiagent.py": "cd832b0497c82bfbdadac7f15c086fa6b193e71f8f8d861991c740a7954bd0e5",
+    "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
+    "backend/counterpress/assistant/admission.py": "6e33729d99ca1779e51175849d5ad1901a60928ac683d0cc326e617731b07a92",
+    "backend/counterpress/assistant/api.py": "fef8ab82669f7ef8a19d4620cc3485a101613ce87a5b4c2c580f8cc86337cf92",
+    "backend/counterpress/assistant/contracts.py": "a25aac36e6547292f7e67269f3f76b607cae6cc0d27a1d9f1e4322ec1b108a14",
+    "backend/counterpress/assistant/evaluation.py": "b525f941491dee360d443bfb8b729b7c418e6e667442e0e316123497802e4565",
+    "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
+    "backend/counterpress/assistant/multiagent.py": "e9dd881b14efd7d82ece74a1aa1aa60619e4b6869479b8b6d16a9f6eda38d20c",
+    "backend/counterpress/assistant/multiagent_evaluation.py": "85ee686feea112f9c5399ca98ba1d4df9fd73a150fddd41960b3b5ff76fc5880",
+    "backend/counterpress/assistant/narrative.py": "70942e8f480fae02e2f523f8f562f8ac4fe3aa677ec67da6096e1437eb671f45",
+    "backend/counterpress/assistant/observability.py": "dbf8e86007ace9141f22ec4b3fd53527f029b5de2e903710a8fb999d3501b44a",
+    "backend/counterpress/assistant/planner.py": "18f912aa0bd923c2545883d696309d2bf107043b4ccc2f5adc4dcb698657e724",
+    "backend/counterpress/assistant/research.py": "6370bcb71f991b93eebc22c08fb1987da7199b9826bb38222718d85d08e6b400",
+    "backend/counterpress/assistant/service.py": "a1d3955e93e22a9b770197c2e17f4a772e76ea44043bddcb89d43abbf59290ef"
+  },
+  "sources_changed_during_run": [],
+  "model_attempts": 1,
+  "summary": {
+    "cases": 1,
+    "paid_model_calls": 1,
+    "mocked_provider_calls": 0,
+    "metrics": {
+      "facts_passed": {
+        "passed": 1,
+        "total": 1
+      },
+      "routing_correct": {
+        "passed": 1,
+        "total": 1
+      },
+      "workflow_completed": {
+        "passed": 1,
+        "total": 1
+      },
+      "calls_bounded": {
+        "passed": 1,
+        "total": 1
+      },
+      "passed": {
+        "passed": 1,
+        "total": 1
+      }
+    },
+    "latency_ms": {
+      "p50": 5252,
+      "p95": 5252
+    },
+    "failed_ids": [],
+    "limitations": [
+      "Authored questions, not population accuracy.",
+      "Numerical oracle uses existing canonical reducers; independent accounting audits remain necessary.",
+      "Single-run model results do not establish repeatability."
+    ]
+  },
+  "results": [
+    {
+      "id": "multi_ambiguous_metric",
+      "category": "ambiguity",
+      "intent_correct": true,
+      "facts_correct": true,
+      "actions_correct": true,
+      "status_correct": true,
+      "visual_correct": true,
+      "narrative_bound": true,
+      "narrative_coverage": true,
+      "narrative_role_bound": true,
+      "anchors_correct": true,
+      "framing_safe": true,
+      "facts_passed": true,
+      "routing_correct": true,
+      "workflow_completed": true,
+      "calls_bounded": true,
+      "passed": true,
+      "mode": "azure_agent",
+      "fallback": null,
+      "narrative_fallback": null,
+      "partial_failures": [],
+      "expected_roles": [
+        "career"
+      ],
+      "actual_roles": [
+        "career"
+      ],
+      "expected_intents": [
+        {
+          "operation": "clarify"
+        }
+      ],
+      "actual_intents": [
+        {
+          "operation": "clarify"
+        }
+      ],
+      "duration_ms": 5252,
+      "execution": {
+        "requests": 1,
+        "roles": [
+          "career"
+        ],
+        "plans": [
+          {
+            "operation": "clarify",
+            "player_ids": [
+              "sb09",
+              "rh09"
+            ],
+            "club_id": null,
+            "match_id": null,
+            "metric": "goals",
+            "additional_metrics": [],
+            "per90": false,
+            "season": null,
+            "comparison_season": null
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 3694,
+          "completion_tokens": 50,
+          "total_tokens": 3744
+        },
+        "partial_failures": [],
+        "completed_result": true,
+        "query_proposals": [
+          {
+            "operation": "clarify",
+            "player_ids": [
+              "sb09",
+              "rh09"
+            ],
+            "club_id": null,
+            "match_id": null,
+            "metric": "goals",
+            "additional_metrics": [],
+            "per90": false,
+            "season": null,
+            "comparison_season": null
+          }
+        ],
+        "tools": 1,
+        "unreported_usage_attempts": 0
+      }
+    }
+  ]
+}

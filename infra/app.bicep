@@ -19,6 +19,11 @@ param useStreaming bool = false
 @description('Emit bounded numeric streaming telemetry; provision monitoring.bicep and telemetry-ingestion.bicep first.')
 param useTelemetry bool = false
 
+@description('Enable only after agent-monitoring.bicep and external-agent registrations are verified. Requires Cosmos identity.')
+param useAgentTracing bool = false
+
+var agentTracingEnabled = useAgentTracing && useCosmos
+
 @description('Enable Studio after browser/identity and Cosmos verification.')
 param useStudio bool = false
 
@@ -68,6 +73,9 @@ resource pubsub 'Microsoft.SignalRService/webPubSub@2024-03-01' existing = if (u
 }
 
 resource monitorRule 'Microsoft.Insights/dataCollectionRules@2023-03-11' existing = if (useTelemetry) { name: '${namePrefix}-ops-ingest' }
+resource agentInsights 'Microsoft.Insights/components@2020-02-02' existing = if (agentTracingEnabled) {
+  name: '${namePrefix}-agents'
+}
 
 resource app 'Microsoft.App/containerApps@2025-07-01' = {
   name: namePrefix
@@ -82,11 +90,13 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
     configuration: {
       activeRevisionsMode: 'Single'
       maxInactiveRevisions: 1
-      secrets: editorialEnabled ? [
+      secrets: concat(editorialEnabled ? [
         { name: 'editorial-endpoint', value: editorialModel.AZURE_OPENAI_ENDPOINT }
         { name: 'editorial-deployment', value: editorialModel.AZURE_OPENAI_DEPLOYMENT }
         { name: 'editorial-key', value: editorialModel.AZURE_OPENAI_API_KEY }
-      ] : []
+      ] : [], agentTracingEnabled ? [
+        { name: 'agent-monitor-connection', value: agentInsights!.properties.ConnectionString }
+      ] : [])
       ingress: {
         external: true
         targetPort: 8000
@@ -122,6 +132,11 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
           ] : [], useTelemetry ? [
             { name: 'COUNTERPRESS_MONITOR_ENDPOINT', value: monitorRule!.properties.endpoints.logsIngestion }
             { name: 'COUNTERPRESS_MONITOR_DCR_ID', value: monitorRule!.properties.immutableId }
+          ] : [], agentTracingEnabled ? [
+            { name: 'COUNTERPRESS_AGENT_TRACING', value: 'azure' }
+            { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', secretRef: 'agent-monitor-connection' }
+            { name: 'COUNTERPRESS_AGENT_TRACING_CLIENT_ID', value: historyIdentity!.properties.clientId }
+            { name: 'COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO', value: '1.0' }
           ] : [], useStudio ? [
             { name: 'COUNTERPRESS_STUDIO', value: 'entra' }
             { name: 'COUNTERPRESS_STUDIO_CLIENT_ID', value: studioIdentity.client_id }

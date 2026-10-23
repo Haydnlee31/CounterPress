@@ -1,0 +1,309 @@
+{
+  "version": "footie-multiagent-heldout-v1",
+  "purpose": "Separately authored paraphrases; keep out of prompt-tuning examples. Once evaluated, results are a small heldout diagnostic, not population accuracy.",
+  "ledger_sha256": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef",
+  "cases": [
+    {
+      "id": "heldout_keeper_ratio",
+      "category": "goalkeeper",
+      "request": {
+        "question": "What fraction of shots faced has Leon Finch saved?",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "sb01"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "save_pct",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "save_percentage",
+      "expected_roles": [
+        "career"
+      ],
+      "tasks": []
+    },
+    {
+      "id": "heldout_chance_setup",
+      "category": "metric_distinction",
+      "request": {
+        "question": "How many chances has Enzo Clarke set up?",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "rh08"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "key_passes",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "chance_creation",
+      "expected_roles": [
+        "career"
+      ],
+      "tasks": []
+    },
+    {
+      "id": "heldout_forward_rate",
+      "category": "comparison",
+      "request": {
+        "question": "Put Dario Voss alongside Rory Ellis for goals per 90.",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "compare",
+        "player_ids": [
+          "eb09",
+          "sb09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": true,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "comparison",
+      "expected_roles": [
+        "career"
+      ],
+      "tasks": []
+    },
+    {
+      "id": "heldout_previous_year",
+      "category": "season",
+      "request": {
+        "question": "Give me Mateo Cross goals for last season.",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": "2025-26",
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "season_previous",
+      "expected_roles": [
+        "career"
+      ],
+      "tasks": []
+    },
+    {
+      "id": "heldout_two_totals",
+      "category": "compound",
+      "request": {
+        "question": "I want Mateo Cross goals and assists together.",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "stats",
+        "player_ids": [
+          "rh09"
+        ],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "additional_metrics": [
+          "assists"
+        ],
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "multi_metric",
+      "expected_roles": [
+        "career"
+      ],
+      "tasks": []
+    },
+    {
+      "id": "heldout_unknown_tracking",
+      "category": "unsupported",
+      "request": {
+        "question": "What was Mateo Cross top speed in this match?",
+        "as_of": "2026-10-20T00:00:00Z"
+      },
+      "expected_plan": {
+        "operation": "unsupported",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": null,
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {},
+      "source_case": "tracking",
+      "expected_roles": [],
+      "tasks": []
+    },
+    {
+      "id": "heldout_history_context",
+      "category": "cross_specialist",
+      "request": {
+        "question": "Explain this moment; how many career goals has Mateo Cross scored?",
+        "as_of": "2026-10-20T00:00:00Z",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "event_id": "e01178",
+        "event_revision": 1
+      },
+      "expected_plan": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {
+        "milestone": 75
+      },
+      "source_case": "goal_explicit",
+      "expected_roles": [
+        "match",
+        "career"
+      ],
+      "tasks": [
+        {
+          "role": "match",
+          "start": 0,
+          "end": 19,
+          "expected_plan": {
+            "operation": "match",
+            "player_ids": [],
+            "club_id": null,
+            "match_id": "career-showcase-southbank-redhaven",
+            "metric": "goals",
+            "per90": false,
+            "season": null,
+            "comparison_season": null
+          },
+          "scope": "selected"
+        },
+        {
+          "role": "career",
+          "start": 21,
+          "end": 66,
+          "expected_plan": {
+            "operation": "stats",
+            "player_ids": [
+              "rh09"
+            ],
+            "club_id": null,
+            "match_id": null,
+            "metric": "goals",
+            "per90": false,
+            "season": null,
+            "comparison_season": null
+          },
+          "scope": "pre_match"
+        }
+      ]
+    },
+    {
+      "id": "heldout_season_context",
+      "category": "cross_specialist",
+      "request": {
+        "question": "Why did the latest goal matter in this match?; give me Mateo Cross goals this season.",
+        "as_of": "2026-10-20T00:00:00Z",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "event_id": "e01178",
+        "event_revision": 1
+      },
+      "expected_plan": {
+        "operation": "match",
+        "player_ids": [],
+        "club_id": null,
+        "match_id": "career-showcase-southbank-redhaven",
+        "metric": "goals",
+        "per90": false,
+        "season": null,
+        "comparison_season": null
+      },
+      "mutation": null,
+      "checks": {
+        "milestone": 75
+      },
+      "source_case": "goal_explicit",
+      "expected_roles": [
+        "match",
+        "career"
+      ],
+      "tasks": [
+        {
+          "role": "match",
+          "start": 0,
+          "end": 45,
+          "expected_plan": {
+            "operation": "match",
+            "player_ids": [],
+            "club_id": null,
+            "match_id": "career-showcase-southbank-redhaven",
+            "metric": "goals",
+            "per90": false,
+            "season": null,
+            "comparison_season": null
+          },
+          "scope": "selected"
+        },
+        {
+          "role": "career",
+          "start": 47,
+          "end": 85,
+          "expected_plan": {
+            "operation": "stats",
+            "player_ids": [
+              "rh09"
+            ],
+            "club_id": null,
+            "match_id": null,
+            "metric": "goals",
+            "per90": false,
+            "season": "2026-27",
+            "comparison_season": null
+          },
+          "scope": "pre_match"
+        }
+      ]
+    }
+  ]
+}

@@ -84,7 +84,7 @@ def test_completed_read_reused_after_restart_without_storing_user_text(service,a
         assert len(calls)==2
         state=admissions().store.transact(lambda state:state).model_dump_json()
         assert request.question not in state and 'Mateo Cross' not in state
-        assert len(json.loads(state)['reservations'])==1
+        assert json.loads(state)['weighted']==[[100,2]]
     asyncio.run(run())
 
 
@@ -183,3 +183,31 @@ def test_preferences_and_release_version_have_separate_receipts(service,admissio
             assert not result.cached
         assert len(calls)==6
     asyncio.run(run())
+
+
+def test_weighted_four_call_reservation_and_daily_limit_survive_restart(tmp_path):
+    path=tmp_path/'weighted.sqlite3'
+    def admission():return Admission(SQLiteAdmissionStore(path),hourly_limit=8,daily_limit=12,lease_seconds=28)
+    for key,at in [('a',100),('b',101)]:
+        status,job=admission().reserve(key,at,4)
+        assert status=='reserved' and job.until==at+28
+        admission().finish(key,job.owner,at)
+    assert admission().reserve('c',102,4)[0]=='hourly_limit'
+    status,job=admission().reserve('c',3700,4)
+    assert status=='reserved'
+    admission().finish('c',job.owner,3700)
+    assert admission().reserve('d',7301,2)[0]=='daily_limit'
+    assert admission().reserve('d',86500,4)[0]=='reserved'
+
+
+def test_legacy_reservations_are_preserved_during_weighted_migration(tmp_path):
+    from counterpress.assistant.admission import State
+    store=SQLiteAdmissionStore(tmp_path/'migration.sqlite3')
+    store.transact(lambda _:State(reservations=(100,101,102)))
+    admission=Admission(store,hourly_limit=8)
+    assert admission.reserve('too-many',103,4)[0]=='hourly_limit'
+    status,job=admission.reserve('fits',103,2)
+    assert status=='reserved'
+    state=store.transact(lambda s:s)
+    assert not state.reservations
+    assert sum(n for _,n in state.weighted)==8

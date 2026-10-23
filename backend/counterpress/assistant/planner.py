@@ -22,6 +22,22 @@ def query_schema(context):
     inherited=context.get('period_followup_operation')
     if inherited in ('stats','compare','recent','club_leaders'):
         schema['properties']['operation']['enum']=[inherited,'clarify','unsupported']
+    expected=context.get('requested_operation')
+    if expected:
+        schema['properties']['operation']['enum']=list(dict.fromkeys([expected,'clarify','unsupported']))
+    if type(context.get('requested_per90')) is bool:
+        schema['properties']['per90']['enum']=[context['requested_per90']]
+    subjects=context.get('resolved_subjects')
+    schema['properties']['player_ids']['maxItems']=4
+    if subjects is not None:
+        ids=subjects['player_ids']
+        if expected in ('match','club_leaders') or not ids:
+            schema['properties']['player_ids']['maxItems']=0
+        else:
+            schema['properties']['player_ids']['maxItems']=min(4,len(ids))
+            schema['properties']['player_ids']['items']['enum']=ids
+        schema['properties']['club_id']['enum']=[None,*([subjects['club_id']] if subjects['club_id'] else [])]
+        schema['properties']['match_id']['enum']=[None,*([subjects['match_id']] if subjects['match_id'] else [])]
     metrics=list(context.get('metrics',{'goals':'Goals'}))
     # Explicit named measures already constrain service.validate. Apply that same
     # boundary before generation so a rate cannot add its denominator as a metric.

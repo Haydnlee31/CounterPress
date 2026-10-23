@@ -20,6 +20,7 @@ ALIASES={
  'passes':r'\b(pass(?:es|ing)?)\b|传球',
  'saves':r'\bsave\w*\b|扑救', 'clean_sheets':r'clean sheet|零封',
  'shots':r'\bshot\w*\b|射门', 'duels_won':r'challenge|duel|对抗',
+ 'save_pct':r'\b(?:fraction|percentage|proportion|share|percent) of (?:the )?shots(?: on target)?\b(?:(?!\b(?:and|or|plus)\b)[a-z -]){0,70}\bfaced\b(?:(?!\b(?:and|or|plus)\b)[a-z -]){0,70}\b(?:save|saved|stop|stopped)\b|扑救成功率|扑救率',
 }
 
 
@@ -37,6 +38,17 @@ def requested_metrics(question):
         matches.extend((m.start(),m.end(),key) for m in re.finditer(pattern,question,re.I))
     return {key for start,end,key in matches if not any(
         a<=start and b>=end and (b-a)>(end-start) for a,b,_ in matches)}
+
+
+def unresolved_percentage(question):
+    """An unrecognized ratio must not quietly become its numerator counts."""
+    asks_ratio=re.search(r'\b(?:percentage|fraction|proportion|percent)\b|\bshare of\b|百分比|比例',question,re.I)
+    return bool(asks_ratio and not any(METRICS[m][5]=='percent' for m in requested_metrics(question)))
+
+
+def player_superlative(question):
+    return bool(re.search(r'\b(?:highest|greatest|largest|maximum)\b|最高|最多',question,re.I)
+        and re.search(r'\b(?:players?|squad|teammates?|footballers?|who)\b|球员|谁',question,re.I))
 
 
 def fingerprint(value):return sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
@@ -75,11 +87,15 @@ class AssistantService:
 
     def context(self,request):
         cutoff,seasons=self.scope(request)
+        local=self.local_plan(request)
         return {'players':[{'id':p.player_id,'name':p.name,'club':p.club_id} for p in self.store.players.values() if p.featured],
             'clubs':[{'id':c.club_id,'name':c.name} for c in self.store.clubs.values()],
             'matches':[{'id':r['id'],'home':r['home'],'away':r['away'],'date':r['kickoff']} for r in self.store.rows(featured=True) if r['kickoff']<cutoff],
             'metrics':{k:d[1] for k,d in METRICS.items()},'requested_metrics':sorted(constrained_metrics(request)),
             'period_followup_operation':period_followup_operation(request),
+            'requested_operation':self.operation_constraint(request),
+            'requested_per90':local.per90,
+            'resolved_subjects':{'player_ids':local.player_ids,'club_id':local.club_id,'match_id':request.match_id},
             'as_of':cutoff,'seasons':seasons,'current_season':seasons[0] if seasons else None,
             'selected':{'player_id':request.player_id,'club_id':request.club_id,'match_id':request.match_id,'season':request.season,'cutoff':request.playback.model_dump() if request.playback else None,'event_id':request.event_id},
             'favorites':{'players':request.preferences.favorite_player_ids,'club':request.preferences.primary_club_id},
@@ -92,9 +108,27 @@ class AssistantService:
         candidates=[getattr(p,id_attr) for p in registry.values() if any(re.search(r'(?<!\w)'+re.escape(part)+r'(?!\w)',text,re.I) for part in p.name.split()[-1:] if len(part)>2)]
         return candidates if len(candidates)==1 else []
 
+    def operation_constraint(self,request):
+        """Bind explicit user intent, while leaving unrecognized phrasing to the model."""
+        q=request.question
+        if unresolved_percentage(q):return 'clarify'
+        if re.search(r'\b(?:lowest|fewest|least|minimum)\b|最少|最低',q,re.I):return 'clarify'
+        if re.search(r'\b(best|better|worst|creative|naturally superior)\b',q,re.I) and not constrained_metrics(request):
+            return 'clarify'
+        local=self.local_plan(request)
+        if local.operation in ('unsupported','clarify'):return None
+        if local.operation=='match' and (local.metric!='goals' or local.additional_metrics or local.per90):
+            return 'clarify'
+        explicit=bool(constrained_metrics(request) or period_followup_operation(request)
+            or re.search(r'\b(recent|form|last five|last 5|compare|versus|vs|season|moment|this play|what happened|match|milestone)\b|最近|状态|对比|比较|赛季|比赛|里程碑',q,re.I))
+        if not explicit:return None
+        if local.operation=='stats' and len(local.player_ids)>1:return 'compare'
+        return local.operation
+
     def local_plan(self,request):
         q=request.question.lower();_,seasons=self.scope(request)
         if UNSUPPORTED.search(q) or re.search(r'\b\d+(?:st|nd|rd|th)? minute\b|\b20\d\d-\d\d-\d\d\b',q):return blank('unsupported')
+        if unresolved_percentage(q) or re.search(r'\b(?:lowest|fewest|least|minimum)\b|最少|最低',q,re.I):return blank('clarify')
         players=self.names(q,self.store.players,'player_id');clubs=self.names(q,self.store.clubs,'club_id')
         explicit=bool(players or clubs)
         previous=request.previous_plan
@@ -121,7 +155,7 @@ class AssistantService:
         if re.search(r'why|milestone|what happened|moment|this play|match|scoreline|比赛|里程碑|为什么',q) and mid:op='match'
         elif re.search(r'compare|versus|\bvs\b|side by side|对比|比较',q):op='seasons' if len(players)==1 and ('season' in q or '赛季' in q or len(re.findall(r'20\d{2}-\d{2}(?!\d)',q))==2) else 'compare'
         elif re.search(r'recent|form|last five|last 5|最近|状态',q):op='recent'
-        elif clubs and re.search(r'who|lead|most|top|contribut|谁|最多|贡献',q):op='club_leaders'
+        elif clubs and (re.search(r'who|lead|most|top|contribut|谁|最多|贡献',q) or player_superlative(q)):op='club_leaders'
         elif previous and follow and not explicit:op=previous.operation
         if not players and not clubs and op!='match':op='clarify'
         if re.search(r'\b(best|better|worst|creative)\b',q) and not measures:op='clarify'
@@ -146,6 +180,13 @@ class AssistantService:
         inherited_operation = period_followup_operation(request)
         if inherited_operation and plan.operation != inherited_operation:
             raise ValueError('A period-only follow-up must retain its operation')
+        expected_operation=self.operation_constraint(request)
+        if expected_operation and plan.operation!=expected_operation:
+            raise ValueError('Requested operation mismatch')
+        if re.search(r'\b(total|count)\b',q) and (plan.per90 or plan.operation=='recent'):
+            raise ValueError('Requested count cannot become a rate or recent-form window')
+        if plan.operation not in ('match','recent') and plan.per90!=self.local_plan(request).per90:
+            raise ValueError('Requested rate mismatch')
         if UNSUPPORTED.search(q) or re.search(r'\b\d+(?:st|nd|rd|th)? minute\b|\b20\d\d-\d\d-\d\d\b',q):
             raise ValueError('Unsupported question scope')
         if plan.operation!='match':
@@ -198,8 +239,11 @@ class AssistantService:
         if plan.operation in ('stats','recent','seasons') and len(plan.player_ids)!=1 and not (plan.operation=='stats' and plan.club_id and not plan.player_ids):raise ValueError('Choose a subject')
         if plan.operation=='compare' and not 2<=len(plan.player_ids)<=4:raise ValueError('Choose two to four players')
         if plan.operation=='club_leaders' and not plan.club_id:raise ValueError('Choose a club')
+        if plan.operation=='club_leaders' and plan.player_ids:raise ValueError('A club ranking cannot select a player subset')
         if plan.operation=='seasons' and (not plan.comparison_season or not seasons):raise ValueError('Choose two seasons')
         if plan.operation=='match':
+            if plan.metric!='goals' or plan.additional_metrics or plan.per90:
+                raise ValueError('Match aggregate supports score and recorded goal milestones only')
             if not plan.match_id or plan.match_id!=request.match_id:raise ValueError('Choose a match')
             if not request.playback:raise ValueError('Choose a playback time')
             row=self.store.row(plan.match_id)

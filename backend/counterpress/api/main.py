@@ -45,6 +45,9 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
     service = SnapshotService(root, store if store is not None else configured_store(db_path))
     @asynccontextmanager
     async def lifespan(application):
+        from counterpress.assistant.observability import configure_agent_tracing, shutdown_agent_tracing
+        from asyncio import to_thread
+        application.state.agent_tracing = configure_agent_tracing()
         runtime = None
         try:
             if os.environ.get('COUNTERPRESS_STREAMING', 'off') == 'azure':
@@ -56,6 +59,7 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
         finally:
             if runtime:
                 await runtime.close()
+            await to_thread(shutdown_agent_tracing)
 
     application = FastAPI(title="CounterPress", version="0.1.0", lifespan=lifespan)
     # Compress JSON/JS/CSS at a moderate CPU cost. Starlette excludes images,

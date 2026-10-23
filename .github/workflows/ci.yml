@@ -18,7 +18,7 @@ jobs:
   backend:
     name: Backend tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -96,3 +96,4 @@ jobs:
           "$RUNNER_TEMP/bicep" build infra/deployment-identity.bicep --outfile "$RUNNER_TEMP/deployment-identity.json"
           "$RUNNER_TEMP/bicep" build infra/monitoring.bicep --outfile "$RUNNER_TEMP/monitoring.json"
           "$RUNNER_TEMP/bicep" build infra/telemetry-ingestion.bicep --outfile "$RUNNER_TEMP/telemetry-ingestion.json"
+          "$RUNNER_TEMP/bicep" build infra/agent-monitoring.bicep --outfile "$RUNNER_TEMP/agent-monitoring.json"

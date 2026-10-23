@@ -54,9 +54,20 @@ def reference(service, case):
     names = [service.store.players[p].name for p in expected.player_ids]
     if expected.club_id:
         names.append(service.store.clubs[expected.club_id].name)
-    if expected.operation not in ('clarify','unsupported'):
-        names.extend(METRICS[m][1] for m in [expected.metric,*expected.additional_metrics])
-    query = request.model_copy(update={'question': ' '.join(names) or 'Reference', 'season': expected.season})
+    subject = ' and '.join(names)
+    measures = ' and '.join(METRICS[m][1] for m in [expected.metric,*expected.additional_metrics])
+    rate = ' per 90' if expected.per90 else ''
+    # Encode the authored operation and scope explicitly. Bare names/metrics
+    # would violate the production guard for comparisons, rankings and rates.
+    canonical = f'Show {subject} {measures}{rate}'
+    if expected.operation == 'compare': canonical = f'Compare {subject} in {measures}{rate}'
+    elif expected.operation == 'seasons':
+        canonical = f'Compare {subject} {measures}{rate} in {expected.season} and {expected.comparison_season}'
+    elif expected.operation == 'recent': canonical = f'Show {subject} recent {measures}'
+    elif expected.operation == 'club_leaders': canonical = f'Who leads {subject} in {measures}{rate}?'
+    elif expected.operation == 'match': canonical = 'Explain this moment'
+    elif expected.operation in ('clarify','unsupported'): canonical = 'Reference'
+    query = request.model_copy(update={'question': canonical, 'season': expected.season, 'previous_plan': None})
     with service.store.lock:
         return service.answer(expected, query)
 
@@ -157,20 +168,31 @@ def release_gate(rows, expected_model_cases, *, azure=False, agent=False):
 
 
 class AttemptBudget:
-    """Persist before sending. CLI restarts cannot reset the 20-attempt hourly limit."""
-    def __init__(self, path, limit=20):
-        if not 1 <= limit <= 20: raise ValueError('Use 1–20 model attempts')
+    """Persist before sending; shared CLI ledger survives restarts and mode changes.
+
+    Legacy callers retain 20/hour. The multi-agent evaluator may explicitly choose
+    up to 240/hour under the approved project allowance, with 400/day hard ceiling.
+    """
+    def __init__(self, path, limit=20, *, hourly_limit=20, daily_limit=400):
+        if not 1 <= hourly_limit <= 240 or not hourly_limit <= daily_limit <= 400:
+            raise ValueError('Evaluation allowance must be bounded')
+        if not 1 <= limit <= min(120, hourly_limit): raise ValueError('Attempt limit exceeds evaluation allowance')
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(path, timeout=10, check_same_thread=False)
         self.db.execute('CREATE TABLE IF NOT EXISTS attempts(at REAL NOT NULL)')
         self.limit, self.used = limit, 0
+        self.hourly_limit, self.daily_limit, self.denied = hourly_limit, daily_limit, False
         self.lock = RLock()
 
     def reserve(self):
         with self.lock, self.db:
             self.db.execute('BEGIN IMMEDIATE')
-            count = self.db.execute('SELECT COUNT(*) FROM attempts WHERE at > ?', (time.time()-3600,)).fetchone()[0]
-            if count >= 20 or self.used >= self.limit: return False
+            now = time.time()
+            count = self.db.execute('SELECT COUNT(*) FROM attempts WHERE at > ?', (now-3600,)).fetchone()[0]
+            daily = self.db.execute('SELECT COUNT(*) FROM attempts WHERE at > ?', (now-86400,)).fetchone()[0]
+            if count >= self.hourly_limit or daily >= self.daily_limit or self.used >= self.limit:
+                self.denied = True
+                return False
             self.db.execute('INSERT INTO attempts VALUES(?)', (time.time(),))
             self.used += 1
         return True
