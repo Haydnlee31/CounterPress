@@ -101,6 +101,15 @@ the existing Cosmos identity. For the existing app, use the guarded image releas
 path so unrelated environment variables, secrets, identities and scaling survive.
 Do not redeploy the entire app template merely to turn tracing on.
 
+The AppInsights connection's `target` must be the Application Insights **ARM
+resource ID**, with the connection string stored only in `credentials.key`.
+`metadata.ResourceId` points to that same component. Putting the connection
+string in `target` can let SDK connection-string lookup and direct Log Analytics
+queries succeed while Foundry's Tracing/Monitoring pages fail with a non-HTTPS
+bearer-token error. The helper validates these bindings separately; portal
+verification remains required. This follows the
+[Microsoft Aspire connection implementation](https://source.dot.net/Aspire.Hosting.Foundry/Project/ProjectBuilderExtension.cs.html).
+
 An ARM configuration update resupplies the three known model-secret values from
 the existing private GitHub `CP_EDITORIAL_MODEL` configuration, and the monitoring
 connection from its resource metadata. It does not assume omitted values survive
@@ -143,8 +152,17 @@ AppDependencies
 | order by TimeGenerated desc
 ```
 
-Token counters are per stage; do not sum a request aggregate and all its children
-as separate usage. Filter to provider stage spans to estimate provider usage.
+Token counters are exported only on provider stages; request aggregates are
+removed at the export boundary so Foundry's trace sum does not double-count them.
+Manual request spans start an independent server root, with an explicit empty
+parent, and model-backed workflows carry the fixed `gen_ai.provider.name` label.
+Foundry's classic trace query requires a provider label and an exported root.
+This does not enable automatic HTTP instrumentation or message-content capture.
+
+The first release's traces remain readable directly in Application Insights, but
+may not appear in Foundry's classic list because they predate these discovery
+attributes. Verify new requests after updating the runtime. Blank Input/Output
+columns are expected because raw conversation content is deliberately excluded.
 
 If ingestion fails, check the identity is attached to the app, the configured
 client ID selects it, its role assignment exists at the Application Insights

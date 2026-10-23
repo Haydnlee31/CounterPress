@@ -60,6 +60,10 @@ def sanitized_span(span):
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import ReadableSpan
     attributes = safe_attributes(span.attributes)
+    # Foundry sums usage across the trace. Request totals duplicate provider stages.
+    if span.name == 'footie.request':
+        attributes.pop('gen_ai.usage.input_tokens', None)
+        attributes.pop('gen_ai.usage.output_tokens', None)
     role = attributes.get('footie.role', 'orchestrator')
     attributes.setdefault('gen_ai.agent.id', AGENT_IDS[role])
     attributes['gen_ai.agent.name'] = attributes['gen_ai.agent.id']
@@ -97,6 +101,9 @@ class ContentFreeAzureMonitorTraceExporter(AzureMonitorTraceExporter):
         }
         if clean.parent and clean.parent.span_id:
             envelope.tags['ai.operation.parentId'] = f'{clean.parent.span_id:016x}'
+        elif clean.name == 'footie.request':
+            # Explicit boundary: Azure must not infer an unexported dependency parent.
+            envelope.tags['ai.operation.parentId'] = ''
         data = envelope.data.base_data
         data.name = clean.name
         # Azure custom dimensions are strings. Rebuild only approved properties.
@@ -226,14 +233,21 @@ def agent_span(name, *, role='orchestrator', attributes=None):
         raise ValueError('Unknown agent trace stage')
     attrs = safe_attributes(attributes)
     attrs.update({'footie.role': role, 'gen_ai.agent.id': AGENT_IDS[role]})
+    if name in {'footie.route', 'footie.specialist', 'footie.query', 'footie.synthesize', 'footie.story'} or (
+            name == 'footie.request' and attrs.get('footie.workflow') in {'agent', 'multiagent'}):
+        attrs['gen_ai.provider.name'] = 'azure.ai.openai'
     if name in {'footie.request', 'footie.specialist', 'footie.query'}:
         attrs['gen_ai.operation.name'] = 'invoke_agent'
     elif name in {'footie.route', 'footie.synthesize', 'footie.story'}:
         attrs['gen_ai.operation.name'] = 'chat'
     elif name == 'footie.tool':
         attrs['gen_ai.operation.name'] = 'execute_tool'
+    from opentelemetry.context import Context
+    # The content-free export is its own trace boundary. Do not inherit a parent
+    # that is deliberately excluded by the allowlist; Foundry needs a visible root.
+    root_options = {'context': Context(), 'kind': trace.SpanKind.SERVER} if name == 'footie.request' else {}
     with trace.get_tracer('counterpress.assistant').start_as_current_span(
-        name, attributes=attrs, record_exception=False, set_status_on_exception=False,
+        name, attributes=attrs, record_exception=False, set_status_on_exception=False, **root_options,
     ) as span:
         try:
             yield span

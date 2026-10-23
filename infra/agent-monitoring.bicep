@@ -73,9 +73,11 @@ resource connection 'Microsoft.CognitiveServices/accounts/projects/connections@2
   properties: {
     category: 'AppInsights'
     authType: 'ApiKey'
-    target: insights.properties.ConnectionString
+    // Foundry resolves this ARM resource ID to query traces in the portal.
+    // A connection string here passes SDK telemetry lookup but breaks portal queries.
+    target: insights.id
     credentials: { key: insights.properties.ConnectionString }
-    metadata: { ApiType: 'Azure', ResourceId: insights.id }
+    metadata: { ApiType: 'Azure', ResourceId: insights.id, location: insights.location }
     isSharedToAll: false
   }
 }

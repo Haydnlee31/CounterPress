@@ -149,7 +149,7 @@ def test_real_sdk_conversion_strips_host_and_user_content_preserves_correlation(
     assert CANARY not in json.dumps([envelope.as_dict() for envelope in envelopes])
     parent, child = envelopes
     assert parent.tags == {'ai.cloud.role': 'footie-agents', 'ai.operation.id': '0'*31+'1',
-                           'ai.operation.name': 'footie.request'}
+                           'ai.operation.name': 'footie.request', 'ai.operation.parentId': ''}
     assert child.tags['ai.operation.parentId'] == parent.data.base_data.id
     assert child.tags['ai.operation.id'] == parent.tags['ai.operation.id']
     assert child.data.base_data.properties == {
@@ -170,3 +170,35 @@ def test_resource_metric_and_event_bypass_disabled_even_without_env_flag(monkeyp
     assert instance.export([sanitized_span(_azure_test_span())]) == SpanExportResult.SUCCESS
     instance._get_otel_resource_envelope.assert_not_called()
     assert len(instance._transmit.call_args.args[0]) == 1
+
+
+def test_foundry_discovers_trace_without_content_or_hidden_parent_and_counts_usage_once(monkeypatch):
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+    from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+    from counterpress.assistant import observability as module
+    exporter = InMemorySpanExporter()
+    provider = TracerProvider()
+    provider.add_span_processor(SimpleSpanProcessor(SanitizingExporter(exporter)))
+    tracer = provider.get_tracer('test')
+    monkeypatch.setattr(module.trace, 'get_tracer', lambda name: tracer)
+    with tracer.start_as_current_span('unexported-http-parent') as upstream:
+        with module.agent_span('footie.request', attributes={
+                'footie.workflow': 'multiagent', 'gen_ai.usage.input_tokens': 100,
+                'gen_ai.usage.output_tokens': 20}) as root:
+            with module.agent_span('footie.specialist', role='career', attributes={
+                    'gen_ai.usage.input_tokens': 100, 'gen_ai.usage.output_tokens': 20}):
+                pass
+        assert root.get_span_context().trace_id != upstream.get_span_context().trace_id
+    child, root = exporter.get_finished_spans()
+    assert root.kind == SpanKind.SERVER and root.parent is None
+    assert child.parent.span_id == root.context.span_id
+    assert all(s.attributes['gen_ai.provider.name'] == 'azure.ai.openai' for s in (root, child))
+    assert sum(s.attributes.get('gen_ai.usage.input_tokens', 0) for s in (root, child)) == 100
+    assert sum(s.attributes.get('gen_ai.usage.output_tokens', 0) for s in (root, child)) == 20
+    instance = _azure_test_exporter()
+    envelope = instance._span_to_envelope(root)
+    assert envelope.data.base_type == 'RequestData'
+    assert envelope.tags['ai.operation.parentId'] == ''
+    assert CANARY not in json.dumps(envelope.as_dict())
+    provider.shutdown()
