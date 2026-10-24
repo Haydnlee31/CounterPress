@@ -11,6 +11,7 @@ from agent_framework import Agent
 from agent_framework.openai import OpenAIChatCompletionClient
 from openai import AsyncOpenAI
 
+from counterpress.adaptation.azure import model_auth
 from counterpress.recaps import build_recap
 from counterpress.recap_adaptation import identities, validate_draft
 from counterpress.workflow.budget import GuardedTransport
@@ -46,9 +47,8 @@ class SingleEditorService(RecapWorkflowService):
         http = httpx2.AsyncClient(
             transport=GuardedTransport(budget, 'producer', self.transport_factory()),
             timeout=self.timeout_seconds, follow_redirects=False)
-        async with AsyncOpenAI(api_key=self.config.api_key.get_secret_value(),
+        async with http, model_auth(self.config) as auth, AsyncOpenAI(**auth.sdk_kwargs(),
                 base_url=self.config.url.removesuffix('chat/completions'),
-                default_headers={'api-key': self.config.api_key.get_secret_value()},
                 max_retries=0, http_client=http) as sdk:
             client = OpenAIChatCompletionClient(model=self.config.deployment, async_client=sdk)
             editor = Agent(client, name='RecapEditor', instructions=(

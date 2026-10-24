@@ -151,3 +151,22 @@ def test_recorded_live_wrong_scopes_fall_back_correctly(service):
         result=score(service,case,response.json(),row['raw_intent'],0,attempted=True)
         assert result['passed'],result
         if not row['raw_intent_correct']:assert response.json()['mode']=='lookup_fallback'
+
+
+def test_approved_daily_ceiling_preserves_existing_usage(tmp_path):
+    import time
+    path = tmp_path / 'existing.sqlite3'
+    old = AttemptBudget(path, hourly_limit=240, daily_limit=400)
+    with old.db:
+        old.db.executemany('INSERT INTO attempts VALUES(?)', [(time.time()-7200,)]*400)
+    assert not old.reserve()
+    old.close()
+    raised = AttemptBudget(path, limit=120, hourly_limit=240, daily_limit=600)
+    assert raised.reserve()
+    with raised.db:
+        raised.db.executemany('INSERT INTO attempts VALUES(?)', [(time.time()-7200,)]*199)
+    assert not raised.reserve()
+    assert raised.db.execute('SELECT COUNT(*) FROM attempts').fetchone()[0] == 600
+    raised.close()
+    with pytest.raises(ValueError):
+        AttemptBudget(path, hourly_limit=240, daily_limit=601)

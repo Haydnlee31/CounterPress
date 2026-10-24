@@ -34,6 +34,7 @@ class Receipt(Contract):
     tasks: tuple[Task, ...] = Field(default=(),max_length=2)
     plans: tuple[Plan, ...] = Field(default=(),max_length=2)
     partial_failures: tuple[str, ...] = Field(default=(),max_length=3)
+    selection_mode: Literal['agent_selected','calculated'] = 'agent_selected'
 
     @model_validator(mode='after')
     def bundle_shape(self):
@@ -77,6 +78,32 @@ def configured_limits():
     return value('COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR',20,240),value('COUNTERPRESS_ASSISTANT_CALLS_PER_DAY',400,2000)
 
 
+def legacy_cacheable(receipt):
+    """The shared v1 ledger must remain readable by the rollback revision.
+
+    Old runtimes forbid unknown receipt/plan fields. Only plans with unchanged
+    semantics can be cached there; never strip a non-null analysis into a legacy
+    goals query or relabel a calculated selection as model-selected.
+    """
+    return receipt.selection_mode=='agent_selected' and all(
+        plan.analysis is None and plan.investigate_player_id is None
+        for plan in (receipt.plan,*receipt.plans))
+
+
+def legacy_state_payload(state):
+    """Emit the v1 wire shape without changing admission accounting or leases."""
+    payload=state.model_dump(mode='json')
+    for key,job in state.jobs.items():
+        if job.receipt is None:continue
+        if not legacy_cacheable(job.receipt):
+            raise ValueError('An incompatible receipt cannot be persisted in the v1 ledger')
+        receipt=payload['jobs'][key]['receipt']
+        receipt.pop('selection_mode')
+        for plan in (receipt['plan'],*receipt['plans']):
+            plan.pop('analysis');plan.pop('investigate_player_id')
+    return payload
+
+
 class SQLiteAdmissionStore:
     def __init__(self, path):
         if str(path) == ':memory:':
@@ -92,7 +119,7 @@ class SQLiteAdmissionStore:
                 row = db.execute('SELECT payload FROM assistant_control WHERE id=1').fetchone()
                 state = State.model_validate_json(row[0]) if row else State()
                 updated = build(state)
-                db.execute('INSERT OR REPLACE INTO assistant_control VALUES (1, ?)', (updated.model_dump_json(),))
+                db.execute('INSERT OR REPLACE INTO assistant_control VALUES (1, ?)', (json.dumps(legacy_state_payload(updated)),))
                 return updated
         except (sqlite3.Error, ValueError):
             raise HistoryStorageError('Assistant admission is unavailable') from None
@@ -117,7 +144,7 @@ class CosmosAdmissionStore:
                 state = State.model_validate_json(json.dumps(old['payload'])) if old else State()
                 updated = build(state)
                 if old and updated == state:return updated
-                body = {'id':'control', 'scenario_id':self.partition, 'payload':updated.model_dump(mode='json')}
+                body = {'id':'control', 'scenario_id':self.partition, 'payload':legacy_state_payload(updated)}
                 operation = ('replace', ('control', body), {'if_match_etag':old['_etag']}) if old else ('create', (body,), {})
                 try:
                     self.container.execute_item_batch(batch_operations=[operation], partition_key=self.partition)
@@ -165,8 +192,14 @@ class Admission:
             job = state.jobs.get(key)
             if not job or job.owner != owner or job.state != 'pending' or job.until <= now:
                 return state
+            if result is not None and not legacy_cacheable(result):
+                # Successful new answers remain available to this caller, but
+                # are not stored in a format that could break rollback. Removing
+                # only this completed job permits a repeat within the unchanged
+                # charged allowance; a genuine failure retains its cooldown.
+                return state.model_copy(update={'jobs':{k:j for k,j in state.jobs.items() if k!=key}})
             receipt = Receipt(plan=result.plan, selection=result.selection, evidence_id=result.evidence_id,
-                tasks=result.tasks,plans=result.plans,partial_failures=result.partial_failures) if result else None
+                tasks=result.tasks,plans=result.plans,partial_failures=result.partial_failures,selection_mode=result.selection_mode) if result else None
             return state.model_copy(update={'jobs':{**state.jobs, key:Job(owner=owner, until=now+60,
                 state='done', receipt=receipt)}})
         self.store.transact(build)
@@ -194,7 +227,7 @@ class SharedResearcher:
             if job.receipt:
                 r = job.receipt
                 return ResearchResult(r.plan, r.selection, r.evidence_id, {}, 0, 0, 0, cached=True,
-                    tasks=r.tasks,plans=r.plans,partial_failures=r.partial_failures)
+                    tasks=r.tasks,plans=r.plans,partial_failures=r.partial_failures,selection_mode=r.selection_mode)
             raise ProviderFailure('limited', 'recent_attempt_failed')
         if outcome != 'reserved':raise ProviderFailure('limited', outcome)
         result = None

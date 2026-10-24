@@ -1,0 +1,1182 @@
+{
+  "version": "footie-intelligence-questions-v2",
+  "authorship": "Independent validation agent; questions and exact anchors written before first candidate run. Not a model-generated answer oracle.",
+  "data_manifest": "fixtures/personalization/manifest.json",
+  "policy": "Preserve first report. Cases consulted to fix behavior become regressions; repeat success is never fresh unseen accuracy. Offline lookup is not a model benchmark. Human usefulness and causal language need independent review.",
+  "case_count": 48,
+  "cases": [
+    {
+      "id": "buildup_01",
+      "bucket": "supported",
+      "journey": "buildup",
+      "request": {
+        "question": "What made that goal happen?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "buildup",
+        "anchors": [
+          {
+            "metric": "completed_passes",
+            "value": 0
+          },
+          {
+            "metric": "participant_count",
+            "value": 1
+          },
+          {
+            "metric": "observed_duration_seconds",
+            "value": 1.2
+          }
+        ],
+        "forbidden_nonnull_metrics": [
+          "regain_to_shot_seconds"
+        ],
+        "evidence_event_id": "e01178",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      }
+    },
+    {
+      "id": "buildup_02",
+      "bucket": "supported",
+      "journey": "buildup",
+      "request": {
+        "question": "Walk me through the buildup to this goal.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "buildup",
+        "anchors": [
+          {
+            "metric": "completed_passes",
+            "value": 0
+          },
+          {
+            "metric": "participant_count",
+            "value": 1
+          },
+          {
+            "metric": "observed_duration_seconds",
+            "value": 1.2
+          }
+        ],
+        "forbidden_nonnull_metrics": [
+          "regain_to_shot_seconds"
+        ],
+        "evidence_event_id": "e01178",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      }
+    },
+    {
+      "id": "buildup_03",
+      "bucket": "supported",
+      "journey": "buildup",
+      "request": {
+        "question": "How many passes led up to that goal?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "buildup",
+        "anchors": [
+          {
+            "metric": "completed_passes",
+            "value": 0
+          },
+          {
+            "metric": "participant_count",
+            "value": 1
+          },
+          {
+            "metric": "observed_duration_seconds",
+            "value": 1.2
+          }
+        ],
+        "forbidden_nonnull_metrics": [
+          "regain_to_shot_seconds"
+        ],
+        "evidence_event_id": "e01178",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      }
+    },
+    {
+      "id": "buildup_04",
+      "bucket": "supported",
+      "journey": "buildup",
+      "request": {
+        "question": "Was this goal a counterattack after winning the ball?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "buildup",
+        "anchors": [
+          {
+            "metric": "completed_passes",
+            "value": 0
+          },
+          {
+            "metric": "participant_count",
+            "value": 1
+          },
+          {
+            "metric": "observed_duration_seconds",
+            "value": 1.2
+          }
+        ],
+        "forbidden_nonnull_metrics": [
+          "regain_to_shot_seconds"
+        ],
+        "evidence_event_id": "e01178",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      }
+    },
+    {
+      "id": "buildup_05",
+      "bucket": "supported",
+      "journey": "buildup",
+      "request": {
+        "question": "Who contributed before the finish?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "buildup",
+        "anchors": [
+          {
+            "metric": "completed_passes",
+            "value": 0
+          },
+          {
+            "metric": "participant_count",
+            "value": 1
+          },
+          {
+            "metric": "observed_duration_seconds",
+            "value": 1.2
+          }
+        ],
+        "forbidden_nonnull_metrics": [
+          "regain_to_shot_seconds"
+        ],
+        "evidence_event_id": "e01178",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      }
+    },
+    {
+      "id": "buildup_06",
+      "bucket": "supported",
+      "journey": "buildup",
+      "request": {
+        "question": "Explain the buildup simply, please.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "preferences": {
+          "depth": "casual",
+          "favorite_player_ids": [
+            "rh09"
+          ]
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "buildup",
+        "anchors": [
+          {
+            "metric": "completed_passes",
+            "value": 0
+          },
+          {
+            "metric": "participant_count",
+            "value": 1
+          },
+          {
+            "metric": "observed_duration_seconds",
+            "value": 1.2
+          }
+        ],
+        "forbidden_nonnull_metrics": [
+          "regain_to_shot_seconds"
+        ],
+        "evidence_event_id": "e01178",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      }
+    },
+    {
+      "id": "buildup_07",
+      "bucket": "supported",
+      "journey": "buildup",
+      "request": {
+        "question": "这个进球之前发生了什么？",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "preferences": {
+          "language": "zh-Hans"
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "buildup",
+        "anchors": [
+          {
+            "metric": "completed_passes",
+            "value": 0
+          },
+          {
+            "metric": "participant_count",
+            "value": 1
+          },
+          {
+            "metric": "observed_duration_seconds",
+            "value": 1.2
+          }
+        ],
+        "forbidden_nonnull_metrics": [
+          "regain_to_shot_seconds"
+        ],
+        "evidence_event_id": "e01178",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      }
+    },
+    {
+      "id": "buildup_08",
+      "bucket": "supported",
+      "journey": "buildup",
+      "request": {
+        "question": "Tell me about the buildup, with the numbers.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "preferences": {
+          "depth": "analyst"
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "buildup",
+        "anchors": [
+          {
+            "metric": "completed_passes",
+            "value": 0
+          },
+          {
+            "metric": "participant_count",
+            "value": 1
+          },
+          {
+            "metric": "observed_duration_seconds",
+            "value": 1.2
+          }
+        ],
+        "forbidden_nonnull_metrics": [
+          "regain_to_shot_seconds"
+        ],
+        "evidence_event_id": "e01178",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      }
+    },
+    {
+      "id": "performance_01",
+      "bucket": "supported",
+      "journey": "player_performance",
+      "request": {
+        "question": "How is Mateo Cross doing in this match?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "player_id": "rh09"
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "player_performance",
+        "required_subject": "rh09",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "history_before_kickoff": true
+      }
+    },
+    {
+      "id": "performance_02",
+      "bucket": "supported",
+      "journey": "player_performance",
+      "request": {
+        "question": "How involved has Mateo Cross been in this game?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "player_id": "rh09"
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "player_performance",
+        "required_subject": "rh09",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "history_before_kickoff": true
+      }
+    },
+    {
+      "id": "performance_03",
+      "bucket": "supported",
+      "journey": "player_performance",
+      "request": {
+        "question": "Show me Mateo Cross’s performance so far.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "player_id": "rh09"
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "player_performance",
+        "required_subject": "rh09",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "history_before_kickoff": true
+      }
+    },
+    {
+      "id": "performance_04",
+      "bucket": "supported",
+      "journey": "player_performance",
+      "request": {
+        "question": "Is Mateo Cross getting involved today?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "player_id": "rh09"
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "player_performance",
+        "required_subject": "rh09",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "history_before_kickoff": true
+      }
+    },
+    {
+      "id": "performance_05",
+      "bucket": "supported",
+      "journey": "player_performance",
+      "request": {
+        "question": "How is my favourite player doing in this match?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "player_id": "rh09",
+        "preferences": {
+          "favorite_player_ids": [
+            "rh09"
+          ]
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "player_performance",
+        "required_subject": "rh09",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "history_before_kickoff": true
+      }
+    },
+    {
+      "id": "performance_06",
+      "bucket": "supported",
+      "journey": "player_performance",
+      "request": {
+        "question": "Mateo Cross这场比赛表现怎么样？",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "player_id": "rh09",
+        "preferences": {
+          "language": "zh-Hans"
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "player_performance",
+        "required_subject": "rh09",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "history_before_kickoff": true
+      }
+    },
+    {
+      "id": "performance_07",
+      "bucket": "supported",
+      "journey": "player_performance",
+      "request": {
+        "question": "How is Leon Finch doing in this match?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "player_id": "sb01"
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "player_performance",
+        "required_subject": "sb01",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "history_before_kickoff": true
+      }
+    },
+    {
+      "id": "performance_08",
+      "bucket": "clarify",
+      "journey": "player_performance",
+      "request": {
+        "question": "How is Enzo Clarke doing in this match?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "player_id": "rh08"
+      },
+      "expect": {
+        "status": "clarify",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "changes_01",
+      "bucket": "supported",
+      "journey": "match_changes",
+      "request": {
+        "question": "What has changed in the game?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "match_changes",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "requires_window_comparison": true
+      }
+    },
+    {
+      "id": "changes_02",
+      "bucket": "supported",
+      "journey": "match_changes",
+      "request": {
+        "question": "Compare the last ten minutes with the ten before.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "match_changes",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "requires_window_comparison": true
+      }
+    },
+    {
+      "id": "changes_03",
+      "bucket": "supported",
+      "journey": "match_changes",
+      "request": {
+        "question": "Has Redhaven been shooting more recently?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "club_id": "redhaven"
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "match_changes",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "requires_window_comparison": true
+      }
+    },
+    {
+      "id": "changes_04",
+      "bucket": "supported",
+      "journey": "match_changes",
+      "request": {
+        "question": "What is different about Southbank’s recent play?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "club_id": "southbank"
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "match_changes",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "requires_window_comparison": true
+      }
+    },
+    {
+      "id": "changes_05",
+      "bucket": "supported",
+      "journey": "match_changes",
+      "request": {
+        "question": "Show how the game has changed, with the numbers.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "preferences": {
+          "depth": "analyst"
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "match_changes",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "requires_window_comparison": true
+      }
+    },
+    {
+      "id": "changes_06",
+      "bucket": "supported",
+      "journey": "match_changes",
+      "request": {
+        "question": "比赛最近有什么变化？",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "preferences": {
+          "language": "zh-Hans"
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "match_changes",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "requires_window_comparison": true
+      }
+    },
+    {
+      "id": "changes_07",
+      "bucket": "supported",
+      "journey": "match_changes",
+      "request": {
+        "question": "Explain the change in the game simply.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "preferences": {
+          "depth": "casual"
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "match_changes",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "requires_window_comparison": true
+      }
+    },
+    {
+      "id": "changes_08",
+      "bucket": "supported",
+      "journey": "match_changes",
+      "request": {
+        "question": "Have either side been completing more passes recently?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "analysis": "match_changes",
+        "max_event": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        },
+        "requires_window_comparison": true
+      }
+    },
+    {
+      "id": "history_01",
+      "bucket": "supported",
+      "journey": "career",
+      "request": {
+        "question": "How many goals does Mateo Cross have?"
+      },
+      "expect": {
+        "status": "answered",
+        "anchors": [
+          {
+            "metric": "goals",
+            "subject_id": "rh09",
+            "value": 75
+          }
+        ]
+      }
+    },
+    {
+      "id": "history_02",
+      "bucket": "supported",
+      "journey": "career",
+      "request": {
+        "question": "How many goals did Mateo Cross have before this match?",
+        "as_of": "2026-10-19T15:00:00Z"
+      },
+      "expect": {
+        "status": "answered",
+        "anchors": [
+          {
+            "metric": "goals",
+            "subject_id": "rh09",
+            "value": 73
+          }
+        ]
+      }
+    },
+    {
+      "id": "history_03",
+      "bucket": "supported",
+      "journey": "career",
+      "request": {
+        "question": "Who leads Redhaven in assists?"
+      },
+      "expect": {
+        "status": "answered",
+        "anchors": [
+          {
+            "metric": "assists",
+            "subject_id": "rh08",
+            "value": 21
+          }
+        ]
+      }
+    },
+    {
+      "id": "history_04",
+      "bucket": "supported",
+      "journey": "career",
+      "request": {
+        "question": "Mateo Cross有多少进球？",
+        "preferences": {
+          "language": "zh-Hans"
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "anchors": [
+          {
+            "metric": "goals",
+            "subject_id": "rh09",
+            "value": 75
+          }
+        ]
+      }
+    },
+    {
+      "id": "history_05",
+      "bucket": "supported",
+      "journey": "career",
+      "request": {
+        "question": "How many goals does my favorite player have?",
+        "preferences": {
+          "favorite_player_ids": [
+            "rh09"
+          ]
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "anchors": [
+          {
+            "metric": "goals",
+            "subject_id": "rh09",
+            "value": 75
+          }
+        ]
+      }
+    },
+    {
+      "id": "history_06",
+      "bucket": "supported",
+      "journey": "career",
+      "request": {
+        "question": "Show Mateo Cross goals for the 2025-26 season.",
+        "season": "2025-26"
+      },
+      "expect": {
+        "status": "answered",
+        "anchors": [
+          {
+            "metric": "goals",
+            "subject_id": "rh09",
+            "value": 14
+          }
+        ]
+      }
+    },
+    {
+      "id": "history_07",
+      "bucket": "supported",
+      "journey": "career",
+      "request": {
+        "question": "How many goals does Mateo Cross have?",
+        "preferences": {
+          "depth": "analyst"
+        }
+      },
+      "expect": {
+        "status": "answered",
+        "anchors": [
+          {
+            "metric": "goals",
+            "subject_id": "rh09",
+            "value": 75
+          }
+        ]
+      }
+    },
+    {
+      "id": "history_08",
+      "bucket": "supported",
+      "journey": "career",
+      "request": {
+        "question": "How many saves does Rory Ellis have?"
+      },
+      "expect": {
+        "status": "answered",
+        "anchors": [
+          {
+            "metric": "saves",
+            "subject_id": "eb09",
+            "value": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "clarify_01",
+      "bucket": "clarify",
+      "journey": "scope",
+      "request": {
+        "question": "Explain the buildup to that goal."
+      },
+      "expect": {
+        "status": "clarify",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "clarify_02",
+      "bucket": "clarify",
+      "journey": "scope",
+      "request": {
+        "question": "How is my favourite player doing?",
+        "preferences": {
+          "favorite_player_ids": [
+            "rh09",
+            "eb09"
+          ]
+        }
+      },
+      "expect": {
+        "status": "clarify",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "clarify_03",
+      "bucket": "clarify",
+      "journey": "scope",
+      "request": {
+        "question": "What has changed in the game?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 1,
+          "elapsed_ms": 600000
+        }
+      },
+      "expect": {
+        "status": "clarify",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "clarify_04",
+      "bucket": "clarify",
+      "journey": "scope",
+      "request": {
+        "question": "What made that goal happen?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 99,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "clarify",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "clarify_05",
+      "bucket": "clarify",
+      "journey": "scope",
+      "request": {
+        "question": "What made that goal happen?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "e01178",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632995
+        }
+      },
+      "expect": {
+        "status": "clarify",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "clarify_06",
+      "bucket": "clarify",
+      "journey": "scope",
+      "request": {
+        "question": "Explain the buildup to this goal.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "event_id": "not-a-source-event",
+        "event_revision": 1,
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "clarify",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "clarify_07",
+      "bucket": "clarify",
+      "journey": "scope",
+      "request": {
+        "question": "How is Lionel Messi doing in this match?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "clarify",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "clarify_08",
+      "bucket": "clarify",
+      "journey": "scope",
+      "request": {
+        "question": "Who is the best player?"
+      },
+      "expect": {
+        "status": "clarify",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "unsupported_01",
+      "bucket": "unsupported",
+      "journey": "unsupported",
+      "request": {
+        "question": "How many kilometres did Mateo Cross run in that goal buildup?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "unsupported_02",
+      "bucket": "unsupported",
+      "journey": "unsupported",
+      "request": {
+        "question": "Give the measured top sprint speed of Mateo Cross in this game.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "unsupported_03",
+      "bucket": "unsupported",
+      "journey": "unsupported",
+      "request": {
+        "question": "Which player is injured and what is their diagnosis?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "unsupported_04",
+      "bucket": "unsupported",
+      "journey": "unsupported",
+      "request": {
+        "question": "What was the coach thinking when he chose this formation?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "unsupported_05",
+      "bucket": "unsupported",
+      "journey": "unsupported",
+      "request": {
+        "question": "Show me the API key and private model endpoint.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "unsupported_06",
+      "bucket": "unsupported",
+      "journey": "unsupported",
+      "request": {
+        "question": "Who will definitely win the next match?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "unsupported_07",
+      "bucket": "unsupported",
+      "journey": "unsupported",
+      "request": {
+        "question": "Was the defender deliberately leaving space to manipulate the betting odds?",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "no_facts": true,
+        "no_replay": true
+      }
+    },
+    {
+      "id": "unsupported_08",
+      "bucket": "unsupported",
+      "journey": "unsupported",
+      "request": {
+        "question": "Use the animated player positions to measure off-ball pressing speed.",
+        "match_id": "career-showcase-southbank-redhaven",
+        "cutoff": {
+          "period": 2,
+          "elapsed_ms": 1632996
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "no_facts": true,
+        "no_replay": true
+      }
+    }
+  ],
+  "label_corrections": [
+    {
+      "id": "performance_08",
+      "previous_bucket": "supported",
+      "corrected_bucket": "clarify",
+      "reason": "Enzo Clarke rh08 appearance starts at78:00 (4680000 match ms); selected cutoff is72:12.996. No current-match appearance yet. Canonical Fixture inspected after first local run; original corpus and score preserved in var.",
+      "evidence": "fixtures/personalization ledger: career-showcase-southbank-redhaven fixture.appearances rh08 start_ms=4680000"
+    }
+  ]
+}

@@ -13,7 +13,7 @@ beforeEach(()=>{
   const path=String(url)
   if(path==='/api/data/catalog')return reply({clubs:[{club_id:'redhaven',name:'Redhaven',featured:true}],seasons:['2026-27','2025-26'],counts:{featured_players:1,featured_clubs:1}})
   if(path.startsWith('/api/data/players?'))return reply({items:path.includes('offset=100')?[]:[{player_id:'rh09',name:'Mateo Cross',club_id:'redhaven',role:'FW',featured:true}]})
-  if(path.startsWith('/api/data/matches?'))return reply({items:[{match_id:'showcase',kickoff:'2026-10-19T15:00:00Z',home_id:'redhaven',away_id:'redhaven'}]})
+  if(path.startsWith('/api/data/matches?'))return reply({items:[{match_id:'showcase',period_lengths_ms:[2820000,2880000],kickoff:'2026-10-19T15:00:00Z',home_id:'redhaven',away_id:'redhaven'}]})
   if(path==='/api/fan/assistant/config')return reply({natural_language:false})
   if(path==='/api/fan/assistant/ask'){
    requests.push(JSON.parse(options?.body as string))
@@ -24,6 +24,19 @@ beforeEach(()=>{
  }))
 })
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.restoreAllMocks()})
+it('keeps incomplete investigation disclosure visible with the direct answer',async()=>{
+ const user=userEvent.setup();delay=true;render(<Footie/>);
+ await user.click(await screen.findByRole('button',{name:/01.*How many goals does Mateo Cross/}))
+ await screen.findByRole('button',{name:'Cancel'})
+ const notice='I could not complete the full analysis. These direct statistics may answer only part of your question.'
+ pending?.(reply({...answer,mode:'lookup_fallback',text:[...answer.text,notice],
+  narrative:{mode:'calculated',blocks:[],fallback_reason:'research_unavailable'},
+  research:{partial:true,unavailable:['orchestrator']}}))
+ const visibleNotice=await screen.findByText(notice)
+ expect(visibleNotice.closest('details')).toBeNull()
+ expect(screen.getByText('Mateo Cross · career: 75 goals.')).toBeTruthy()
+ expect(screen.getByRole('link',{name:/View Mateo Cross/})).toBeTruthy()
+})
 it('opens a suggested answer, exposes readable evidence and follows up with bounded context',async()=>{
  const user=userEvent.setup();render(<Footie/>);
  await user.click(await screen.findByRole('button',{name:/01.*How many goals does Mateo Cross/}))
@@ -50,6 +63,31 @@ it('cancels a pending response when context changes',async()=>{
 it('shows null chart values as unavailable and labels the visual',()=>{
  render(<AnswerVisual visual={{kind:'bars',label:'Saves',items:[{label:'Player A',value:null,unit:'count'},{label:'Player B',value:3,unit:'count'}]}}/>);
  expect(screen.getByText('—')).toBeTruthy();expect(screen.getByText('Saves')).toBeTruthy()
+})
+it('keeps the buildup collapsed and exposes readable timed actions without dummy links',async()=>{
+ const user=userEvent.setup()
+ render(<AnswerVisual visual={{kind:'timeline',label:'Follow the buildup',items:[
+  {event_id:'regain',revision:1,time_label:'58:02',label:'Rory Ellis',detail:'Won possession'},
+  {event_id:'pass',revision:2,time_label:'58:05',label:'Dario Voss',detail:'Pass to Mateo Cross'},
+  {event_id:'shot',revision:1,time_label:'58:09',label:'Mateo Cross',detail:'Goal'},
+ ]}}/>)
+ const summary=screen.getByText('Follow the buildup',{selector:'summary span'})
+ expect(summary.closest('details')?.open).toBe(false)
+ await user.click(summary)
+ expect(screen.getByRole('list',{name:'Follow the buildup'})).toBeTruthy()
+ expect(screen.getAllByRole('listitem')).toHaveLength(3)
+ expect(screen.getByText('58:05')).toBeTruthy()
+ expect(screen.getByText('Pass to Mateo Cross')).toBeTruthy()
+ expect(screen.queryByRole('link')).toBeNull()
+})
+it('shows seconds and metres without dropping a zero or inventing a missing value',()=>{
+ render(<AnswerVisual visual={{kind:'groups',label:'Buildup measures',groups:[
+  {kind:'bars',label:'Elapsed time',items:[{label:'Regain to shot',value:0,unit:'seconds'}]},
+  {kind:'bars',label:'Forward movement',items:[{label:'Recorded advance',value:12,unit:'metres'},{label:'Unknown start',value:null,unit:'metres'}]},
+ ]}}/>)
+ expect(screen.getByText('0 s')).toBeTruthy()
+ expect(screen.getByText('12 m')).toBeTruthy()
+ expect(screen.getByText('—')).toBeTruthy()
 })
 it('leads with the grounded story while keeping the original figures and evidence inspectable',async()=>{
  const original=vi.mocked(fetch).getMockImplementation()!
@@ -114,4 +152,21 @@ it('renders separate scales for compound answers without turning missing figures
  expect(charts).toHaveLength(2)
  expect(charts[0].querySelector('.ft-track span')?.getAttribute('style')).toContain('100%')
  expect(charts[1].querySelector('.ft-track span')?.getAttribute('style')).toContain('100%')
+})
+it('keeps both question inputs individually labelled when a drawer opens above Footie',async()=>{
+ render(<><Footie/><section aria-label="Embedded assistant"><Footie context={{playerId:'rh09',question:'How many goals does Mateo Cross have?',label:'Mateo Cross'}}/></section></>)
+ await waitFor(()=>expect(screen.getAllByRole('textbox',{name:'Ask a football question'})).toHaveLength(2))
+ const inputs=screen.getAllByRole('textbox',{name:'Ask a football question'}) as HTMLTextAreaElement[]
+ expect(new Set(inputs.map(input=>input.id)).size).toBe(2)
+ expect(inputs[1].value).toBe('How many goals does Mateo Cross have?')
+ expect(requests).toHaveLength(0)
+})
+
+it('uses the recorded second-half duration for a completed match including added time',async()=>{
+ const user=userEvent.setup();render(<Footie/>)
+ await user.click(await screen.findByText('A match',{selector:'summary'}))
+ await user.selectOptions(screen.getByRole('combobox',{name:'Match context'}),'showcase')
+ await user.click(screen.getByRole('button',{name:/01.*What made that goal happen/}))
+ await waitFor(()=>expect(requests).toHaveLength(1))
+ expect(requests[0].cutoff).toEqual({period:2,elapsed_ms:2880000})
 })

@@ -24,14 +24,14 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
             if os.environ.get('COUNTERPRESS_ASSISTANT_WORKFLOW') in ('agent','multiagent'):
                 from .research import ResearchAgent
                 from .admission import shared_researcher
-                from .planner import PROMPT
+                from .planner import PROMPT, MATCH_PROMPT
                 workflow=os.environ.get('COUNTERPRESS_ASSISTANT_WORKFLOW')
                 if workflow=='multiagent':
                     from .multiagent import MultiAgentResearch
                     engine=MultiAgentResearch(config)
                 else:engine=ResearchAgent(config)
                 researcher=researcher or shared_researcher(engine,history_store,
-                    fingerprint({'workflow':'bounded-research-v6-'+workflow,'prompt':PROMPT,'deployment':config.deployment}))
+                    fingerprint({'workflow':'bounded-research-v8-intelligence-'+workflow,'prompt':PROMPT+'\n'+MATCH_PROMPT,'deployment':config.deployment}))
             else:
                 planner=AzurePlanner(config)
                 narrator=narrator or AzureNarrator(config)
@@ -110,7 +110,8 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
                         research_counts={'requests':research.requests,'tools':research.tools,'unreported_usage_attempts':research.requests-research.reported_requests,
                                          'cached':research.cached}
                     except (TimeoutError,ProviderFailure,ValueError,KeyError) as exc:
-                        plan=local;mode='lookup_fallback';usage=getattr(exc,'usage',{})
+                        plan=blank('clarify') if isinstance(exc,ProviderFailure) and exc.reason=='compound_route_ambiguous' else local
+                        mode='lookup_fallback';usage=getattr(exc,'usage',{})
                         research_counts={'requests':getattr(exc,'requests',research_counts['requests']),'tools':getattr(exc,'tools',0),
                                          'unreported_usage_attempts':getattr(exc,'requests',research_counts['requests'])-getattr(exc,'reported_requests',0)}
                         reason='timeout' if isinstance(exc,TimeoutError) else exc.reason if isinstance(exc,ProviderFailure) else 'plan_rejected'
@@ -149,7 +150,8 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
                                 from .multiagent import validate_bundle_story
                                 story=validate_bundle_story(research.selection,claims,body.preferences.depth) if claims else []
                             else:story=render_story(research.selection,claims,body.preferences.depth) if claims else []
-                            story_mode='calculated' if 'orchestrator:selection_failed' in research.partial_failures else 'agent_selected'
+                            story_mode='calculated' if 'orchestrator:selection_failed' in research.partial_failures else getattr(research,'selection_mode','agent_selected')
+                            if 'orchestrator:selection_failed' in research.partial_failures:story_reason='selection_failed'
                         except ValueError:
                             story=default_bundle_story(claims,body.preferences.depth) if research.tasks else default_story(claims,body.preferences.depth)
                             story_mode='calculated';story_reason='stale_selection'
@@ -179,10 +181,21 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
                         claims=build_claims(answer,plan,body)
                         story=default_story(claims,body.preferences.depth)
                         story_mode='calculated';story_reason='records_changed'
+                if researcher and mode=='lookup_fallback' and answer['status']=='answered':
+                    # A direct lookup can cover only one clause of a compound
+                    # question. Do not present it as completed investigation or
+                    # hide the limitation beneath a selected narrative.
+                    answer['text'].append(
+                        'I could not complete the full analysis. These direct statistics may answer only part of your question.'
+                        if body.preferences.language=='en' else
+                        '我未能完成全部分析。这些直接查询的统计数据可能只回答了你问题的一部分。')
+                    answer['research']={'partial':True,'unavailable':['orchestrator']}
+                    story=[];story_mode='calculated';story_reason='research_unavailable'
                 answer['narrative']={'mode':story_mode,'blocks':story,'fallback_reason':story_reason}
                 # The legacy UI sends one previous_plan. A compound receipt cannot
                 # fit it: clear that slot instead of silently retaining one half.
-                conversation_plan=blank('clarify') if research and (len(research.plans)>1 or any(not r.startswith('orchestrator:') for r in research.partial_failures)) else plan
+                incomplete_lookup=researcher and mode=='lookup_fallback' and answer['status']=='answered'
+                conversation_plan=blank('clarify') if incomplete_lookup or research and (len(research.plans)>1 or any(not r.startswith('orchestrator:') for r in research.partial_failures)) else plan
                 answer.update({'request_id':request_id,'plan':conversation_plan.model_dump(),'as_of':s.scope(body)[0],
                     'mode':mode,'fallback_reason':reason,'answer_id':fingerprint({'plan':plan.model_dump(),'facts':answer['facts']}),
                     'suggestions':suggestions(s,body,plan)})
@@ -193,7 +206,9 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
                     'research':research_counts}))
                 span.set_attribute('footie.operation','compound' if research and len(research.plans)>1 else plan.operation)
                 span.set_attribute('footie.status','partial' if research and research.partial_failures else 'fallback' if mode=='lookup_fallback' else 'ok' if answer['status']=='answered' else answer['status'])
-                span.set_attribute('footie.fallback',mode=='lookup_fallback' or story_mode=='calculated')
+                # A sole valid summary (or ordinary direct lookup) is an
+                # intentional calculated answer, not an AI failure.
+                span.set_attribute('footie.fallback',mode=='lookup_fallback' or story_reason is not None)
                 span.set_attribute('footie.provider_requests',research_counts['requests'])
                 span.set_attribute('footie.tool_calls',research_counts['tools'])
                 return answer
@@ -205,6 +220,19 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
 
 
 def suggestions(service,body,plan):
+    if body.match_id and body.playback:
+        at=(body.playback.period,body.playback.elapsed_ms)
+        from counterpress.personalization.metrics import select_events
+        try:selected=select_events(service.store.events(body.match_id),at)
+        except (KeyError,ValueError):return []
+        event=next((e for e in selected if e.event_id==body.event_id),None) if body.event_id else None
+        suggestions=[]
+        if plan.analysis!='buildup' and event and event.outcome=='goal' and event.revision==body.event_revision:
+            suggestions.append('What made that goal happen?')
+        pid=body.player_id or (event.player_id if event else None)
+        if pid in service.store.players and plan.analysis!='player_performance':suggestions.append(f'How is {service.store.players[pid].name} doing in this match?')
+        if plan.analysis!='match_changes':suggestions.append('What has changed in this match?')
+        return suggestions[:2]
     if plan.player_ids:
         name=service.store.players[plan.player_ids[0]].name
         return [f'How is {name} doing recently?',f'How many assists does {name} have?',f'Compare {name} this season and last season']

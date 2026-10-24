@@ -171,10 +171,10 @@ class AttemptBudget:
     """Persist before sending; shared CLI ledger survives restarts and mode changes.
 
     Legacy callers retain 20/hour. The multi-agent evaluator may explicitly choose
-    up to 240/hour under the approved project allowance, with 400/day hard ceiling.
+    up to 240/hour under the approved project allowance, with a user-approved 600/day hard ceiling.
     """
-    def __init__(self, path, limit=20, *, hourly_limit=20, daily_limit=400):
-        if not 1 <= hourly_limit <= 240 or not hourly_limit <= daily_limit <= 400:
+    def __init__(self, path, limit=20, *, hourly_limit=20, daily_limit=600):
+        if not 1 <= hourly_limit <= 240 or not hourly_limit <= daily_limit <= 600:
             raise ValueError('Evaluation allowance must be bounded')
         if not 1 <= limit <= min(120, hourly_limit): raise ValueError('Attempt limit exceeds evaluation allowance')
         Path(path).parent.mkdir(parents=True, exist_ok=True)
