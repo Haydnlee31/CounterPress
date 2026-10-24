@@ -272,3 +272,93 @@ def test_real_patch_uses_private_temporary_merge_document_and_removes_it_on_fail
     with pytest.raises(staging.DeploymentError,match='Unexpected app-scoped'):
         azure.patch({'configuration':{'secrets':[]}})
     assert len(observed) == 1
+
+
+def azure_read_shapes():
+    """Sanitized structural regression for actual app/revision reads, 24 Oct 2026."""
+    revision = fixture()['properties']['template']
+    revision['scale'].update(cooldownPeriod=None,pollingInterval=None)
+    application = copy.deepcopy(revision)
+    application['containers'][0]['resources']['ephemeralStorage'] = '2Gi'
+    application['scale'].update(cooldownPeriod=300,pollingInterval=30)
+    application['scale']['rules'].reverse()
+    for entry in application['containers'][0]['env']:
+        if entry.get('secretRef'):entry['value'] = ''
+    return application,revision
+
+
+def test_known_azure_default_serializations_compare_equal_without_mutating_source():
+    app,revision = azure_read_shapes()
+    before = copy.deepcopy((app,revision))
+    assert staging.template_value(app) == staging.template_value(revision)
+    assert (app,revision) == before
+    missing = copy.deepcopy(revision)
+    missing['scale'].pop('cooldownPeriod');missing['scale'].pop('pollingInterval')
+    for e in missing['containers'][0]['env']:
+        if e.get('secretRef'):e['value'] = None
+    missing['containers'][0]['resources']['ephemeralStorage'] = None
+    assert staging.template_value(app) == staging.template_value(missing)
+
+
+@pytest.mark.parametrize('change', ['storage','cpu','memory','cooldown','polling','replicas',
+    'secret_value','secret_ref','literal_empty','scaler_identity','scaler_threshold','probe','budget'])
+def test_normalization_retains_meaningful_configuration_differences(change):
+    app,revision = azure_read_shapes()
+    resources = app['containers'][0]['resources'];env = app['containers'][0]['env'];scale = app['scale']
+    if change == 'storage':resources['ephemeralStorage'] = '4Gi'
+    if change == 'cpu':resources['cpu'] = 1
+    if change == 'memory':resources['memory'] = '2Gi'
+    if change == 'cooldown':scale['cooldownPeriod'] = 301
+    if change == 'polling':scale['pollingInterval'] = 31
+    if change == 'replicas':scale['maxReplicas'] = 2
+    if change == 'secret_value':next(e for e in env if e.get('secretRef'))['value'] = 'nonempty-canary'
+    if change == 'secret_ref':next(e for e in env if e.get('secretRef'))['secretRef'] = 'changed'
+    if change == 'literal_empty':
+        env.append({'name':'LITERAL','value':''});revision['containers'][0]['env'].append({'name':'LITERAL'})
+    if change == 'scaler_identity':next(r for r in scale['rules'] if 'custom' in r)['custom']['identity'] = 'changed'
+    if change == 'scaler_threshold':next(r for r in scale['rules'] if 'http' in r)['http']['metadata']['concurrentRequests'] = '11'
+    if change == 'probe':app['containers'][0]['probes'] = [{'type':'Readiness','httpGet':{'path':'/different'}}]
+    if change == 'budget':next(e for e in env if e['name']=='COUNTERPRESS_ASSISTANT_CALLS_PER_DAY')['value'] = '600'
+    assert staging.template_value(app) != staging.template_value(revision)
+
+
+@pytest.mark.parametrize('change', ['second_container','init_container','different_cpu','different_memory'])
+def test_storage_default_is_not_inferred_outside_reviewed_replica_shape(change):
+    app,revision = azure_read_shapes()
+    for template in (app,revision):
+        if change == 'second_container':template['containers'].append({'name':'sidecar','resources':{'cpu':0.25,'memory':'0.5Gi'},'env':[]})
+        if change == 'init_container':template['initContainers'] = [{'name':'init','resources':{'cpu':0.25,'memory':'0.5Gi'}}]
+        if change == 'different_cpu':template['containers'][0]['resources']['cpu'] = 1
+        if change == 'different_memory':template['containers'][0]['resources']['memory'] = '2Gi'
+    assert staging.template_value(app) != staging.template_value(revision)
+
+
+def test_duplicate_rule_names_are_rejected_instead_of_sorted_as_equivalent():
+    template = fixture()['properties']['template']
+    template['scale']['rules'][1]['name'] = 'http'
+    with pytest.raises(staging.DeploymentError,match='distinct names'):staging.template_value(template)
+
+
+def test_stage_and_cleanup_accept_real_azure_readback_defaults_but_preserve_original_template():
+    cloud = Cloud();application,revision = azure_read_shapes()
+    cloud.value['properties']['template'] = application
+    cloud.rows[PRODUCTION] = cloud.row(PRODUCTION,revision)
+    run_stage(cloud)
+    staged = cloud.rows[CANDIDATE]['properties']['template']
+    # Comparison normalization must not invent values in the actual PATCH.
+    assert 'ephemeralStorage' not in staged['containers'][0]['resources']
+    assert staged['scale']['cooldownPeriod'] is None
+    staging.cleanup(cloud,PRODUCTION,CANDIDATE)
+    restored = cloud.rows[RESTORED]['properties']['template']
+    assert staging.template_value(restored) == staging.template_value(revision)
+    assert restored['scale'] == revision['scale']
+
+
+def test_storage_default_inference_cannot_authorize_a_different_workload_profile():
+    cloud = Cloud();cloud.value['properties']['workloadProfileName'] = 'Dedicated'
+    with pytest.raises(staging.DeploymentError,match='Consumption'):run_stage(cloud)
+    assert not cloud.events
+    cloud = Cloud();run_stage(cloud);cloud.events.clear()
+    cloud.value['properties']['workloadProfileName'] = 'Dedicated'
+    with pytest.raises(staging.DeploymentError,match='Consumption'):staging.cleanup(cloud,PRODUCTION,CANDIDATE)
+    assert not cloud.events

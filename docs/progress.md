@@ -2992,3 +2992,15 @@ template compiled with only revision read/deactivate permissions added. The
 candidate workflow and cleanup have an independent source review; hosted behavior
 still requires activation. Docker is unavailable locally, so GitHub CI must verify
 the Linux container before staging. Private model key/endpoint comparison passed.
+
+PR #59 merged as `ee01265`; exact-main CI passed **1,338 backend tests**, frontend,
+Linux container smoke, Bicep compilation and the career audit. The existing
+app-scoped deployment role now has only the two additional revision read/deactivate
+actions; assignments, data-plane access and model authentication are unchanged.
+
+Read-only Azure preflight caught app/revision serialization differences before
+any application mutation. A narrow comparison fix handles documented 300/30-second
+scale defaults, 2-GiB storage for the existing Consumption shape, blank secret-ref
+values and named-rule ordering. Meaningful drift still fails closed. **59 focused
+staging/deployment tests** and fresh real-Azure template parity passed. The follow-up
+must pass protected CI before candidate activation. Production remains unchanged.
