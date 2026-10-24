@@ -22,10 +22,36 @@ def require(condition, message):
 
 
 def template_value(template):
+    """Compare documented defaults without changing the submitted template.
+
+    Azure's app and immutable-revision reads serialize these values differently.
+    Keep this deliberately narrower than a general ARM template normalizer.
+    """
     value = copy.deepcopy(template)
     value.pop('revisionSuffix', None)
-    for container in value.get('containers', []):
+    containers = value.get('containers', [])
+    for container in containers:
+        for entry in container.get('env', []):
+            if isinstance(entry.get('secretRef'), str) and entry['secretRef'] and entry.get('value') in (None, ''):
+                entry.pop('value', None)
         container['env'] = sorted(container.get('env', []), key=lambda e:e['name'])
+        resources = container.get('resources', {})
+        # Only the current one-container Consumption shape is approved. Do not
+        # infer storage for a changed CPU/memory allocation or extra containers.
+        if (len(containers) == 1 and not value.get('initContainers')
+                and resources.get('cpu') == 0.5 and resources.get('memory') == '1Gi'
+                and resources.get('ephemeralStorage') is None):
+            resources['ephemeralStorage'] = '2Gi'
+    scale = value.get('scale')
+    if isinstance(scale, dict):
+        for key, default in (('cooldownPeriod', 300), ('pollingInterval', 30)):
+            if scale.get(key) is None:scale[key] = default
+        rules = scale.get('rules')
+        if isinstance(rules, list):
+            names = [r.get('name') for r in rules]
+            require(all(isinstance(n, str) and n for n in names) and len(set(names)) == len(names),
+                    'Scale rules must have distinct names')
+            scale['rules'] = sorted(rules, key=lambda r:r['name'])
     return value
 
 
@@ -88,6 +114,7 @@ def staging_template(original, image, suffix):
 def validate_production(app):
     validate_app(app)
     p = app['properties']; name = p.get('latestRevisionName', '')
+    require(p.get('workloadProfileName') == 'Consumption', 'Staging requires the reviewed Consumption workload')
     require(REVISION.fullmatch(name), 'Invalid production revision')
     require(p.get('latestReadyRevisionName') == name and p.get('provisioningState') == 'Succeeded',
             'Production must be ready before staging')
@@ -219,6 +246,8 @@ def cleanup(azure, production, candidate):
             and production != candidate, 'Invalid cleanup revision identities')
     restored = candidate.replace('--stage-', '--restore-', 1)
     current = azure.app(); revisions = {r['name']:r for r in azure.revisions()}
+    require(current['properties'].get('workloadProfileName') == 'Consumption',
+            'Cleanup requires the reviewed Consumption workload')
     require(all(not r['properties'].get('active') or name in (production,candidate,restored)
                 for name,r in revisions.items()), 'Unexpected active revision; cleanup stopped')
     require(production in revisions, 'Original production revision is unavailable; manual reviewed recovery required')

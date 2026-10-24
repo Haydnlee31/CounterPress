@@ -145,6 +145,26 @@ Actual credit expiry is **13 November 2026 at 14:09:17 Singapore time**
 (06:09:17 UTC), earlier than the budget's 14 November 00:00 UTC end. Use the
 credit expiry for cleanup planning. Recheck current billing before activation.
 
+## Azure readback normalization
+
+The read-only activation preflight on 24 October found that the application and
+its immutable revision serialize equivalent settings differently. Comparison now
+normalizes only the observed, documented cases: omitted/null/empty `value` beside
+an existing nonempty secret reference; ordering of distinctly named scale rules;
+omitted/null KEDA cooldown and polling values versus their 300/30-second defaults;
+and omitted/null ephemeral storage versus 2 GiB for this single-container,
+no-init-container, 0.5-vCPU/1-GiB replica shape.
+
+This changes comparison only. Candidate and restoration PATCH templates still
+come from the immutable original revision. Nondefault scale/storage settings,
+CPU/memory, replica limits, secret references or nonempty values, probes, scaler
+identities/thresholds, and model allowances remain significant differences.
+Other replica shapes do not receive inferred storage defaults. Duplicate rule
+names are rejected. This is not a general relaxation of template parity.
+
+Sources: [KEDA defaults in the 2025-07-01 API](https://learn.microsoft.com/en-us/rest/api/resource-manager/containerapps/container-apps/get?view=rest-resource-manager-containerapps-2025-07-01)
+and [ephemeral storage by vCPU allocation](https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts?pivots=azure-portal).
+
 ## Sources and local verification
 
 The 2025-07-01 update API explicitly uses JSON Merge Patch. The script sends only
