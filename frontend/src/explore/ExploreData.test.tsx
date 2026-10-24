@@ -18,7 +18,9 @@ beforeEach(()=>{
 })
 afterEach(()=>{cleanup();vi.restoreAllMocks()})
 test('supporting plays seek the pitch, player selections expose evidence and phase counts are comparable',async()=>{
- render(<ExploreData/>)
+ // The snapshot resolves asynchronously. Flush that initial commit and its
+ // playback/phase effects before issuing a user action against the loaded UI.
+ await act(async()=>{render(<ExploreData/>)})
  const timeline=await screen.findByRole('region',{name:'Highlight timeline'})
  const pitch=screen.getByRole('region',{name:'Match pitch'})
  expect(within(pitch).getAllByRole('group').filter(e=>e.classList.contains('fan-pitch-player'))).toHaveLength(22)

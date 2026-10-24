@@ -6,6 +6,7 @@ The agent never calculates/display-authors facts. API commit rereads the evidenc
 import asyncio
 import json
 from dataclasses import dataclass
+from typing import Literal
 
 import httpx2
 from agent_framework import Agent, tool
@@ -13,11 +14,11 @@ from agent_framework.openai import OpenAIChatCompletionClient
 from openai import AsyncOpenAI
 from starlette.concurrency import run_in_threadpool
 
-from counterpress.adaptation.azure import ProviderFailure
+from counterpress.adaptation.azure import ProviderFailure, model_auth
 from counterpress.workflow.budget import Budget, GuardedTransport, ToolGuard
 from .contracts import Plan
 from .narrative import StoryPlan, build_claims, render_story
-from .planner import PROMPT, query_schema
+from .planner import PROMPT, query_schema, prompt_for
 from .service import fingerprint
 
 
@@ -107,6 +108,8 @@ class ResearchResult:
     tasks: tuple = ()
     plans: tuple[Plan, ...] = ()
     partial_failures: tuple[str, ...] = ()
+    stage_timings: tuple[dict, ...] = ()
+    selection_mode: Literal['agent_selected','calculated'] = 'agent_selected'
 
 
 class ResearchFailure(ProviderFailure):
@@ -116,6 +119,7 @@ class ResearchFailure(ProviderFailure):
         self.requests = sum(budget.requests.values())
         self.tools = budget.tools
         self.reported_requests = budget.reported_requests
+        self.stage_timings = tuple(getattr(budget, 'stage_timings', ()))
 
 
 class ResearchAgent:
@@ -165,18 +169,17 @@ class ResearchAgent:
                         query_schema(service.context(request)), self.observer,
                         supporting_limit=2 if request.preferences.depth=='analyst' else 1),
                                          timeout=8, follow_redirects=False)
-                async with AsyncOpenAI(api_key=self.config.api_key.get_secret_value(),
+                async with http, model_auth(self.config) as auth, AsyncOpenAI(**auth.sdk_kwargs(),
                         base_url=self.config.url.removesuffix('chat/completions'),
-                        default_headers={'api-key': self.config.api_key.get_secret_value()},
                         max_retries=0, http_client=http) as sdk:
                     client = OpenAIChatCompletionClient(model=self.config.deployment, async_client=sdk,
                         function_invocation_configuration={'max_iterations': 2, 'max_function_calls': 1,
                             'max_duration_seconds': 12, 'allow_concurrent_invocation': False,
                             'terminate_on_unknown_calls': True, 'include_detailed_errors': False})
                     agent = Agent(client, name='FootieResearch', middleware=[ToolGuard(budget)],
-                        instructions=PROMPT.replace('Return a read-only query plan, never an answer.',
+                        instructions=prompt_for(service.context(request)).replace('Return a read-only query plan, never an answer.',
                             'Call read_football_records exactly once with a read-only query plan.') +
-                            '\nAfter the tool: return ONLY a StoryPlan choosing its verified sentence IDs. '
+                            '\nCall read_football_records exactly once with the query plan. After the tool: return ONLY a StoryPlan choosing its verified sentence IDs. '
                             'Do not write answer prose. Casual audiences get at most two IDs in total, '
                             'analysts three. Prefer comparisons, represent different requested metrics, '
                             'and never repeat IDs. With no sentences use lead="", supporting=[].',

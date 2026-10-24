@@ -11,7 +11,7 @@ from .coverage import metric_coverage,covered_rates
 def match_card(row,summary):
     f=json.loads(row['fixture'])
     return {k:f[k] for k in ('match_id','kickoff','season','home_id','away_id','competition','featured','source_kind','minutes_basis')}|{
-        'score':summary['score'],'replay_available':f['featured'],'event_count':summary['event_count']}
+        'period_lengths_ms':f['period_lengths_ms'],'score':summary['score'],'replay_available':f['featured'],'event_count':summary['event_count']}
 
 
 class CareerService:

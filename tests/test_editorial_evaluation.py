@@ -169,7 +169,9 @@ def test_full_frozen_matrix_runs_three_variants_with_no_paid_calls_for_ineligibl
     assert result['checks'] == {'passed': 45, 'failed': 0, 'errored': 0}
     assert result['human_usefulness_ratings'] is None
     assert result['summary']['single_editor']['dispatched_requests'] == 11
-    assert result['summary']['analyst_producer']['dispatched_requests'] == 33
+    assert result['summary']['analyst_producer']['dispatched_requests'] == 33, [
+        (row['case_id'], row['status'], row['reason'], row['dispatched_requests'])
+        for row in result['rows'] if row['variant']=='analyst_producer' and row['model_eligible']]
     assert result['summary']['single_editor']['latency_ms_p95'] is None
     # Mock two-role responses deliberately omit usage; never silently price it as free.
     assert result['summary']['analyst_producer']['usage_missing_requests'] == 33

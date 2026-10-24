@@ -13,12 +13,12 @@ from pathlib import Path
 import re
 from threading import Barrier
 from time import time
-from types import SimpleNamespace
 
 from azure.cosmos.exceptions import CosmosHttpResponseError, CosmosBatchOperationError
 import httpx2
 from pydantic import SecretStr, TypeAdapter
 
+from counterpress.adaptation.azure import AzureConfig
 from counterpress.api.snapshots import SnapshotService
 from counterpress.audience import ViewingPreferences
 from counterpress.cosmos_check import ScopedStore
@@ -75,8 +75,8 @@ def synthetic_response(request):
 
 def mock_config():
     # Only passed to an in-memory mock transport. No private model settings loaded.
-    return SimpleNamespace(endpoint='https://invalid.example', deployment='synthetic-probe',
-        url='https://invalid.example/openai/v1/chat/completions', api_key=SecretStr('unused'))
+    return AzureConfig(endpoint='https://synthetic-probe.openai.azure.com',
+        deployment='synthetic-probe', api_key=SecretStr('unused'))
 
 
 def seed(scope, store, fixtures):

@@ -144,7 +144,14 @@ def test_invalid_model_subject_falls_back_without_fabrication(service):
 def test_preferences_do_not_change_facts(service):
     a=answer(service,'How many goals does Mateo Cross have?')
     b=answer(service,'How many goals does Mateo Cross have?',preferences={'favorite_player_ids':['eb09'],'language':'zh-Hans','depth':'analyst'})
-    assert a['facts']==b['facts']
+    c=answer(service,'How many goals does Mateo Cross have?',preferences={'favorite_player_ids':['eb09'],'depth':'analyst'})
+    assert a['facts']==c['facts']
+    # Language changes the display label, never the value, scope, evidence,
+    # entity, metric identifier, denominator or machine-readable unit.
+    assert [{k:v for k,v in f.items() if k!='label'} for f in a['facts']]==[
+        {k:v for k,v in f.items() if k!='label'} for f in b['facts']]
+    assert [f['label'] for f in a['facts']]==['Goals']
+    assert [f['label'] for f in b['facts']]==['进球']
 
 def test_azure_uses_structured_plan_one_request_and_sanitized_failure():
     requests=[]

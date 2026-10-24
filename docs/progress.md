@@ -2846,3 +2846,149 @@ limits and research sources: [verification](verification/fan-feedback.md).
 Local preview: http://127.0.0.1:8019/?match=wyscout-2058017#gi . No Azure usage or
 publication. Next: user checks Watch full match at 1×, especially the 17:58 own
 goal and the 54th-minute substitution period, before publishing.
+
+### 23 October 2026 — core Footie intelligence, local implementation
+
+Implemented deterministic goal buildup, player involvement with compatible
+pre-kickoff baselines, and adjacent-window match comparisons. Footie and its
+existing specialists can investigate bounded compound match/history questions,
+with source revisions, evidence checks and replay/profile actions. Added collapsed
+timelines and responsive comparisons within the existing interface. Proactive
+buildup cards use existing fan snapshots and do not trigger automatic model calls.
+
+Independent unseen-wording evaluation: 28/30 supported (93.3%); later known-case
+regression: 40/40 scored checks, with one safe clarification fallback. Supported
+p95 remains 10.875 seconds against the eight-second target; explanation gaps are
+recorded for further work. A ten-case matched architecture check showed multiagent
+9/10 and single-agent 8/10 with unequal call budgets, not broad superiority.
+
+Frontend: 208 tests and build passed; desktop/mobile/replay-to-Footie checks passed.
+Backend full suite: 1,245 passed, one old probe fixture failure; typed mock-config
+repair then passed all 39 related probe/auth/editorial tests. Historical evaluation
+results remain preserved. Exact commands, scores, caveats and local report paths:
+[verification](verification/footie-intelligence.md).
+
+User approved an evaluation-only ceiling of 600 calls per rolling 24 hours; ledger
+retained, production limits and US$125 project cap unchanged. Managed-identity
+support and curated Foundry exports are prepared locally. No push, deployment,
+new service, role assignment or hosted ingestion activation in this increment.
+Local lookup preview: http://127.0.0.1:8027/?story=last-gasp#assistant .
+Next: stage-level latency measurement/connection reuse and remaining explanation
+fixes, then staged hosted revision/identity checks after the core gate passes.
+
+### 23 October 2026 — request reuse, stage diagnostics and clearer explanations
+
+Shared one HTTP pool and authentication context across each question's model
+stages while keeping concurrent questions isolated and specialist schemas/budgets
+separate. Added sanitized stage timing to local evaluation and curated Foundry
+exports. Repaired unknown-possession-start answers, carry-led goal descriptions,
+goalkeeper saves/stint-conceded summaries and Chinese metric labels.
+
+Final relevant combined regression: 511 passed in 236.06s; desktop/390px checks
+passed without horizontal overflow or console errors. Three matched live questions
+passed, taking 5.243/3.733/7.992s versus 11.066/6.918/7.865s previously. Background
+load and one workload differed, so this does not establish a causal speedup or
+release p95. Three targeted live explanation cases also passed with independent
+prose/evidence review. Details: [verification](verification/footie-intelligence.md).
+
+The 23 approved calls in this increment brought evaluation to its 600-call rolling
+24-hour ceiling. US$125 total budget and production limits unchanged. No more paid
+checks, push, cloud changes or publication. Updated local lookup preview remains
+on port 8027. Next: larger controlled latency/reliability validation once sufficient
+old calls expire, followed by the gated staging correction/identity work. The prior
+full supported p95 was 10.875s; the new implementation's full p95 remains unverified.
+
+### 24 October 2026 — warm evaluation, honest fallbacks and summary selection
+
+Expanded twelve-case warm regression recorded 10/12: the isolated test app's
+default twenty-call hourly cap blocked the final two compound requests before
+Azure dispatch. Preserved the raw failure report. The harness now matches its
+bounded invocation allowance while retaining persistent 240/hour and 600/rolling
+day evaluation controls; production settings remain unchanged. One genuine
+provider planning stage took 9.204 seconds, so latency is still a release risk.
+
+Repaired incomplete research fallbacks: retain available direct facts, visibly
+disclose that the full question could not be checked, and clear inherited query
+scope. Skip synthesis only when exactly one validated story bundle exists, with
+honest calculated/model-selected metadata persisted in cached receipts. Final
+evidence validation remains unchanged. Backend lock advanced to v3 after reviewing
+four changed assistant modules.
+
+Four preselected live recovery regressions passed in 2.990–7.073 seconds, including
+both match/history compound questions. Twelve calls, 15,441 tokens, no fallback,
+partial result or missing usage. This is a small known-case regression, not a new
+fresh accuracy or full-suite latency claim. Across both live runs: 32 attempts,
+32,715 reported tokens and one cancelled optional call with unknown usage.
+
+Final combined checks: **526 passed**, one existing evaluator warning; interface
+checks: **14 passed**. Both reports exported locally for Foundry review, preserving
+failures. Lookup preview on port 8027 restarted and health returned `ok`. No push,
+deployment, cloud configuration changes or upload. Final ledger observation was
+555/600 after natural expiries. Next: broader latency/reliability verification,
+then staged hosted correction and identity activation once the core gate passes.
+
+### 24 October 2026 — twenty-case latency pass and rollback compatibility
+
+The fixed first half of the forty-question regression passed **20/20**, with
+**39 live calls**, 36,177 reported tokens and no missing usage, partial answers or
+fallbacks. Local API plus live Azure latency: **p50 4.223s, p95 6.279s**, maximum
+6.385s. Source hashes stayed stable during the run. The remaining twenty questions
+were not run; this is neither a full release-suite result nor a deployed browser
+latency claim. The full original report and local Foundry export are preserved.
+
+Release audit caught a shared-state compatibility problem before deployment:
+old strict readers would reject new fields in cached plans/receipts before pruning
+expired jobs. The writer now retains the v1 admission format. Advanced/calculated
+successful answers skip shared receipt caching, removing only their completed
+job while retaining all charged slots and pending siblings. Older-compatible
+answers still cache; failures keep their cooldown. Monitoring now distinguishes
+intentional calculated answers from actual fallbacks.
+
+**56 compatibility/admission/transport tests** and **23 fallback/monitoring tests**
+passed. An independent round trip through the actual `7ce9b8` SQLite reader/writer
+preserved all eighteen charged slots and denied a four-slot request at limit20.
+Cosmos transaction races and wire compatibility are tested with a local double;
+hosted activation remains pending. The reviewed v4 lock changes only admission
+and API modules after the live run; previous evaluation hashes remain untouched.
+
+Final evaluation ledger observation: **594/600**, six calls available. No new
+service, quota reset, push, deployment or cloud configuration change. Next: resume
+the remaining live regression when enough prior reservations expire, then complete
+staged correction/identity checks after the core gate is satisfied. See
+[verification](verification/footie-intelligence.md) for exact commands and limits.
+
+### 24 October 2026 — complete intelligence regression and isolated staging
+
+The complete forty-question warm regression now passes on the v4 compatibility
+build: **30/30 supported, 5/5 clarification, 5/5 unsupported**, including all four
+compound questions. Supported latency is **p50 3.408s, p95 5.167s**, maximum 5.497s.
+69 provider calls, 88,093 tokens, no unreported usage or supported-answer partial
+failures/fallbacks. One missing-favorite-player request safely fell back to a
+clarification. Independent evidence/prose review and all 38 source hashes passed.
+
+This meets the local eight-second engineering target. It remains known-case
+regression; the independent fresh-wording accuracy is still **28/30 (93.3%)**.
+Hosted browser/network performance and recruited-fan usability are not established
+by this result. The forty curated rows were exported locally for Foundry review,
+without uploading them or adding model calls.
+
+Read-only Azure audit reports US$4.728 delayed actual spending and US$37.904
+forecast against the US$125 cap. Trial credit expires **13 November 2026 at
+14:09:17 Singapore time**, earlier than the budget end. This is not a claim of
+real-time balance. Existing production model limits remain 120/hour and 400/day.
+
+The normal deploy action changes Single-revision production automatically. A
+separate reviewed staging path is being prepared to pin the live revision,
+disable the candidate's background ingestion/scaler, preserve shared admission
+state, and restore the original production configuration before cleanup. No new
+service is required. Model managed-identity activation and hosted correction/
+reconnect checks remain subsequent steps.
+
+Release checks passed: **1,315 backend tests**, **209 frontend tests**, production
+build, **14 adapter tests**, and the 844-match reproducibility audit. **38 focused
+staging/deployment checks** passed separately; the additional staging cases were
+written after the full backend collection. The app-scoped deployment identity
+template compiled with only revision read/deactivate permissions added. The
+candidate workflow and cleanup have an independent source review; hosted behavior
+still requires activation. Docker is unavailable locally, so GitHub CI must verify
+the Linux container before staging. Private model key/endpoint comparison passed.

@@ -5,6 +5,8 @@ from counterpress.domain.models import Identifier
 
 
 class Plan(FanContract):
+    investigate_player_id: Identifier | None = None
+    analysis: Literal['buildup', 'player_performance', 'match_changes'] | None = None
     operation: Literal['stats','compare','recent','seasons','club_leaders','match','unsupported','clarify']
     player_ids: list[Identifier] = Field(max_length=4)
     club_id: Identifier | None
@@ -17,6 +19,10 @@ class Plan(FanContract):
 
     @model_validator(mode='after')
     def distinct_metrics(self):
+        if self.investigate_player_id and self.analysis != 'buildup':
+            raise ValueError('Participant follow-up requires a goal buildup')
+        if self.analysis and self.operation != 'match':
+            raise ValueError('Match analysis requires match scope')
         metrics = [self.metric, *self.additional_metrics]
         if len(set(metrics)) != len(metrics):
             raise ValueError('Choose up to three distinct measures')

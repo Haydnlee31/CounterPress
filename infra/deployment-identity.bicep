@@ -28,11 +28,19 @@ resource role 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
   name: guid(resourceGroup().id, namePrefix, 'image-deployer')
   properties: {
     roleName: '${namePrefix}-image-deployer-${uniqueString(resourceGroup().id)}'
-    description: 'Read and update the existing CounterPress app; no role assignments, resource creation or data-plane access.'
+    description: 'Update the existing CounterPress app, inspect revisions and deactivate staging revisions; no role assignments or data-plane access.'
     type: 'CustomRole'
     assignableScopes: [resourceGroup().id]
     permissions: [{
-      actions: ['Microsoft.App/containerApps/read', 'Microsoft.App/containerApps/write']
+      // Traffic weights and labels use the existing app write permission.
+      // Revision reads verify readiness; deactivation cleans up staging only.
+      // https://learn.microsoft.com/azure/role-based-access-control/permissions/compute#microsoftapp
+      actions: [
+        'Microsoft.App/containerApps/read'
+        'Microsoft.App/containerApps/write'
+        'Microsoft.App/containerApps/revisions/read'
+        'Microsoft.App/containerApps/revisions/deactivate/action'
+      ]
       notActions: []
       dataActions: []
       notDataActions: []

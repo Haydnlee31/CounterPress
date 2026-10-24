@@ -11,7 +11,7 @@ from agent_framework import Agent, WorkflowBuilder, WorkflowContext, executor, t
 from agent_framework.openai import OpenAIChatCompletionClient
 from openai import AsyncOpenAI
 
-from counterpress.adaptation.azure import AzureConfig, ProviderFailure
+from counterpress.adaptation.azure import AzureConfig, ProviderFailure, model_auth
 from counterpress.adaptation.service import utc_ms
 from counterpress.api.snapshots import BASELINE, CURRENT, START, horizon, replay_session, PlaybackRangeError
 from counterpress.audience import ViewingPreferences
@@ -140,12 +140,13 @@ class RecapWorkflowService:
                 'limitations': [s.narrative.qualification for s in recap.statements]})
 
         async with AsyncExitStack() as stack:
+            auth = await stack.enter_async_context(model_auth(self.config))
             async def client(role):
                 http = httpx2.AsyncClient(transport=GuardedTransport(budget, role, self.transport_factory()),
                                          timeout=self.timeout_seconds, follow_redirects=False)
-                sdk = await stack.enter_async_context(AsyncOpenAI(api_key=self.config.api_key.get_secret_value(),
+                sdk = await stack.enter_async_context(AsyncOpenAI(**auth.sdk_kwargs(),
                     base_url=self.config.url.removesuffix('chat/completions'),
-                    default_headers={'api-key': self.config.api_key.get_secret_value()}, max_retries=0, http_client=http))
+                    max_retries=0, http_client=http))
                 return OpenAIChatCompletionClient(model=self.config.deployment, async_client=sdk,
                     function_invocation_configuration={'max_iterations': 3, 'max_function_calls': 3,
                         'max_duration_seconds': self.timeout_seconds, 'allow_concurrent_invocation': False,

@@ -122,4 +122,4 @@ def test_expanded_evaluation_budget_keeps_old_ledger_and_daily_bound(tmp_path):
     assert sum(daily.reserve() for _ in range(40)) == 10
     daily.close()
     with pytest.raises(ValueError): AttemptBudget(path, limit=121, hourly_limit=121)
-    with pytest.raises(ValueError): AttemptBudget(path, limit=20, daily_limit=401)
+    with pytest.raises(ValueError): AttemptBudget(path, limit=20, daily_limit=601)

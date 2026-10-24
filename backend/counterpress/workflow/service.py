@@ -11,7 +11,7 @@ from agent_framework import Agent, WorkflowBuilder, WorkflowContext, executor, t
 from agent_framework.openai import OpenAIChatCompletionClient
 from openai import AsyncOpenAI
 
-from counterpress.adaptation.azure import AzureConfig, ProviderFailure
+from counterpress.adaptation.azure import AzureConfig, ProviderFailure, model_auth
 from counterpress.adaptation.contracts import expected_fields, validate_and_render
 from counterpress.adaptation.service import utc_ms
 from counterpress.api.snapshots import BASELINE, CURRENT, END, SnapshotService, horizon, replay_session
@@ -135,13 +135,13 @@ class WorkflowService:
                                "events": [event.model_dump(mode="json") for event in events[-12:]]})
 
         async with AsyncExitStack() as stack:
+            auth = await stack.enter_async_context(model_auth(self.config))
             async def client(role):
                 transport = GuardedTransport(budget, role, self.transport_factory())
                 http = httpx2.AsyncClient(transport=transport, timeout=self.timeout_seconds, follow_redirects=False)
                 sdk = await stack.enter_async_context(AsyncOpenAI(
-                    api_key=self.config.api_key.get_secret_value(),
+                    **auth.sdk_kwargs(),
                     base_url=self.config.url.removesuffix("chat/completions"),
-                    default_headers={"api-key": self.config.api_key.get_secret_value()},
                     max_retries=0, http_client=http,
                 ))
                 return OpenAIChatCompletionClient(model=self.config.deployment, async_client=sdk,

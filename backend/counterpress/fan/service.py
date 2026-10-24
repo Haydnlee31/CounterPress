@@ -6,6 +6,7 @@ All methods run under the career store's read/write lock through the API boundar
 from datetime import datetime
 import json
 
+from counterpress.assistant.intelligence import goal_buildup
 from counterpress.personalization.contracts import Fixture
 from counterpress.personalization.metrics import digest, rates, select_events
 from counterpress.personalization.coverage import metric_coverage,covered_rates
@@ -168,6 +169,104 @@ class FanService:
                     'title': words(p, 'Follow your football', '关注你的足球世界'),
                     'text': words(p, 'Choose players and clubs to bring their moments closer.', '选择球员和俱乐部，更快找到他们的精彩时刻。')}}
 
+    def buildup_card(self, fixture, events, request, source_id):
+        """One short-lived, deterministic insight, never an automatic model call.
+
+        Lifetime follows the goal occurrence, so delayed corrections cannot
+        resurrect stale cards. Snapshot replacement withdraws removed goals.
+        """
+        p = request.preferences
+        cutoff = (request.cutoff.period, request.cutoff.elapsed_ms)
+        goals = [e for e in events if e.kind == 'shot' and e.outcome == 'goal'
+                 and e.goal_for == e.club_id and e.period == cutoff[0]
+                 and e.elapsed_ms <= cutoff[1] < min(e.elapsed_ms + 30000, fixture.period_lengths_ms[e.period - 1])]
+        if not goals:
+            return None
+        goal = goals[-1]
+        result = goal_buildup(fixture, events, event_id=goal.event_id, cutoff=cutoff,
+                              expected_revision=goal.revision)
+        if result['status'] != 'available':
+            return None
+        metrics = result['metrics']
+        situation = 'penalty' if goal.penalty else goal.situation
+        direct = situation in ('free_kick', 'penalty')
+        if not direct and not metrics['completed_passes'] and not metrics['carry_count'] and metrics['regain_to_shot_seconds'] is None:
+            return None
+        contributions = {c['player_id']: c for c in result['contributions']}
+        if p.focus_player_id in contributions:
+            favorite = p.focus_player_id if p.focus_player_id != goal.player_id else None
+        else:
+            favorite = next((pid for pid in p.favorite_player_ids
+                             if pid in contributions and pid != goal.player_id), None)
+        selected = favorite or goal.player_id
+        scorer = self.store.players[goal.player_id].name
+        scope = {'kind': 'goal_buildup', 'match_id': fixture.match_id,
+                 'event_id': goal.event_id, 'event_revision': goal.revision,
+                 'window': result['window'], 'cutoff': request.cutoff.model_dump()}
+        audience = fingerprint(p.model_dump())
+        refs = result['evidence']
+        evidence_id = fingerprint({'rule_version': result['rule_version'], 'events': refs})
+        facts = []
+        title = words(p, 'How the goal came together', '进球是如何形成的')
+        if direct:
+            text = words(p, f'{scorer} scored from a {"penalty" if situation == "penalty" else "free kick"}.',
+                         f'{scorer}通过{"点球" if situation == "penalty" else "任意球"}破门。')
+            facts.append(fact('player', goal.player_id, 'goal_situation', situation, scope, evidence_id, 'category'))
+        elif favorite and contributions[favorite]['completed_passes']:
+            player = self.store.players[favorite].name
+            passes = contributions[favorite]['completed_passes']
+            text = words(p, f'{player} completed {passes} {"pass" if passes == 1 else "passes"} in the buildup to {scorer}’s goal.',
+                         f'在{scorer}进球前的组织中，{player}完成了{passes}次传球。')
+            title = words(p, 'Your player in the buildup', '你关注的球员参与了进攻')
+            facts.append(fact('player', favorite, 'buildup_completed_passes', passes, scope, evidence_id))
+        elif metrics['regain_to_shot_seconds'] is not None:
+            seconds = metrics['regain_to_shot_seconds']
+            displayed = round(seconds, 1)
+            approximate = displayed != seconds
+            text = words(p, f'{scorer} took the scoring shot {"about " if approximate else ""}{displayed:g} seconds after the ball was won back.',
+                         f'夺回球权{"约" if approximate else ""}{displayed:g}秒后，{scorer}射门得分。')
+            facts.append(fact('club', goal.club_id, 'regain_to_shot_seconds', seconds, scope, evidence_id, 'seconds'))
+        elif metrics['completed_passes']:
+            passes = metrics['completed_passes']
+            text = words(p, f'The buildup to {scorer}’s goal includes {passes} completed {"pass" if passes == 1 else "passes"}.',
+                         f'{scorer}进球前的组织包含{passes}次成功传球。')
+            facts.append(fact('club', goal.club_id, 'buildup_completed_passes', passes, scope, evidence_id))
+        else:
+            carrier = next(c for c in result['contributions'] if c['carries'])
+            player = self.store.players[carrier['player_id']].name
+            text = words(p, f'{player} carried the ball in the buildup to {scorer}’s goal.',
+                         f'在{scorer}进球前的组织中，{player}带球推进。')
+            facts.append(fact('player', carrier['player_id'], 'buildup_carry_segments', carrier['carries'], scope, evidence_id, 'segments'))
+        if p.depth == 'analyst' and not direct:
+            duration = metrics['observed_duration_seconds']
+            participants = metrics['participant_count']
+            text += words(p, f' The recorded sequence spans {duration:g} seconds and involves {participants} players.',
+                          f'这段已记录的进攻历时{duration:g}秒，共有{participants}名球员参与。')
+            facts += [fact('club', goal.club_id, 'observed_buildup_seconds', duration, scope, evidence_id, 'seconds'),
+                      fact('club', goal.club_id, 'buildup_participants', participants, scope, evidence_id, 'players')]
+        # A goal card is not itself a reviewed replay binding. Keep navigation
+        # to the profile and grounded assistant; their replay resolver separately
+        # checks the authored source. This also preserves historical snapshots
+        # when a correction exists but is not yet available at this playhead.
+        navigation = action('profile', selected, words(p, 'Open player', '查看球员'), subject_kind='player')
+        evidence = {'match_id': fixture.match_id, 'event_id': goal.event_id, 'event_revision': goal.revision,
+                    'event_digest': source_id, 'evidence_fingerprint': evidence_id, 'events': refs,
+                    'rule_version': result['rule_version'], 'source_kind': fixture.source_kind,
+                    'occurred_at': {'period': goal.period, 'elapsed_ms': goal.elapsed_ms},
+                    'available_at': {'period': goal.available_period, 'elapsed_ms': goal.available_ms},
+                    'expires_at': {'period': goal.period, 'elapsed_ms': min(goal.elapsed_ms + 30000, fixture.period_lengths_ms[goal.period - 1])},
+                    'audience_id': audience, 'coverage': result['coverage']}
+        relevance = self.relevance(list(contributions), [goal.club_id], p)
+        output = card(f'{fixture.match_id}:{goal.event_id}:buildup', 'goal_buildup', title, text,
+                      facts, evidence, navigation, 170 + relevance['score'])
+        output['replay_available'] = False
+        output['replay_status'] = 'not_attached'
+        output['ask_footie'] = {'match_id': fixture.match_id, 'event_id': goal.event_id,
+            'event_revision': goal.revision, 'cutoff': request.cutoff.model_dump(),
+            'question': words(p, 'What made that goal happen?', '这粒进球是如何形成的？'),
+            'label': words(p, f'{scorer}’s goal', f'{scorer}的进球')}
+        return output
+
     def match(self, mid, request):
         envelope = self.envelope(request); p = request.preferences
         row = self.store.row(mid); fixture = Fixture.model_validate_json(row['fixture'])
@@ -268,6 +367,9 @@ class FanService:
                       f'{name}{stats["shots"]}次射门中有{stats["shots_on_target"]}次射正。'),
                 [fact('club', cid, metric, stats[metric], scope, source_id) for metric in ('shots', 'shots_on_target')], evidence,
                 action('match', mid, words(p, 'Explore the chances', '查看射门机会')), 60 + self.relevance([], [cid], p)['score'] + (30 if p.metric_focus == 'scoring' else 0)))
+        buildup = self.buildup_card(fixture, events, request, source_id) if request.card_budget else None
+        if buildup:
+            candidates.append(buildup)
         # Explicit viewing intent must survive a match with several milestones;
         # otherwise they can consume the entire card budget and hide the lens.
         focus_kinds={'passing':{'player_passing'},'creating':{'player_creating'},
