@@ -1,8 +1,14 @@
 # Review a Footie revision without switching production
 
-This workflow is implemented locally and tested with an offline Azure state
-machine. **It has not been activated or verified against Azure yet.** It creates
-no service and does not promote a candidate. The normal deployment workflow is
+This workflow is tested with an offline Azure state machine and was first staged
+against Azure on 24 October 2026. Candidate routing, configuration, hosted answers
+and sanitized traces passed review. The first cleanup removed the review label
+but Azure rejected the following restoration PATCH with
+`ContainerAppOperationInProgress`; production remained pinned at 100%. Reviewed
+local recovery subsequently restored the original image/settings, deactivated
+the candidate and verified Single mode. See the
+[release verification](verification/footie-intelligence.md) for recovery status.
+It creates no service and does not promote a candidate. The normal deployment workflow is
 unchanged and still deploys directly to production in Single revision mode.
 
 ## Before staging
@@ -131,6 +137,11 @@ limits, or fall back to a different resource. Read the printed cleanup identitie
 and inspect routing before retrying cleanup. If Azure accepted a request but the
 client lost its response, inspect the live revision state; failure is not proof
 that no cloud change occurred. Do not switch traffic to “latest” manually.
+
+Exact routing no-ops skip PATCH. The exact Azure management-lock conflict may be
+retried up to six times, with a fresh comparison of mutation-relevant app state
+before each resend. Other errors, timeout or configuration drift stop. Metadata
+reads can extend total wall time beyond the 180-second retry eligibility window.
 
 Once cleanup is confirmed, the ordinary **Deploy Azure** workflow may deploy the
 reviewed commit using its existing production safeguards. Promotion from staging

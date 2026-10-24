@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import tempfile
 import time
 
@@ -131,6 +132,31 @@ def revision_ready(revision):
             and p.get('healthState') == 'Healthy')
 
 
+def management_lock_conflict(stderr):
+    """Recognize az rest's HTTP 409 wrapper and exact ARM error code only.
+
+    Do not retry other conflicts, an error-message substring, or unknown output.
+    Raw CLI output remains private and must never enter an exception/log.
+    """
+    match = re.fullmatch(r'\s*ERROR:\s*Conflict\((\{.*\})\)\s*', stderr, re.DOTALL)
+    if not match:return False
+    try:
+        error = json.loads(match.group(1)).get('error', {})
+        return isinstance(error, dict) and error.get('code') == 'ContainerAppOperationInProgress'
+    except (ValueError, AttributeError):return False
+
+
+def patch_state(app):
+    """Exclude changing provisioning status, retain every mutation-relevant value."""
+    p = app['properties']
+    return {'id':app['id'], 'application':application_value(app),
+            'template':template_value(p['template']),
+            'suffix':p['template'].get('revisionSuffix'),
+            'latest':p.get('latestRevisionName'),
+            'mode':p['configuration']['activeRevisionsMode'],
+            'traffic':p['configuration']['ingress'].get('traffic')}
+
+
 class Azure:
     def __init__(self, target):
         require(target.get('resource_group') == 'counterpress-dev', 'Unexpected resource group')
@@ -152,12 +178,33 @@ class Azure:
         require(set(config) <= {'activeRevisionsMode','ingress'}
                 and set(config.get('ingress', {})) <= {'traffic'}, 'Unexpected app-scoped update')
         app = self.app()
+        # A no-op routing PATCH can itself acquire Azure's management lock.
+        if properties == {'configuration':config} and config == {
+                'activeRevisionsMode':app['properties']['configuration']['activeRevisionsMode'],
+                'ingress':{'traffic':app['properties']['configuration']['ingress'].get('traffic')}}:
+            return
+        baseline = patch_state(app)
         # This is a merge PATCH, never a PUT or a full app configuration copy.
         fd, name = tempfile.mkstemp(prefix='footie-stage-', suffix='.json', dir=os.environ.get('RUNNER_TEMP'))
         try:
             with os.fdopen(fd, 'w') as f:json.dump({'properties':properties}, f)
-            run(['az','rest','--method','patch','--url',app['id']+'?api-version='+API,
-                 '--body','@'+name,'--only-show-errors','-o','json'], timeout=300)
+            command = ['az','rest','--method','patch','--url',app['id']+'?api-version='+API,
+                       '--body','@'+name,'--only-show-errors','-o','json']
+            deadline = time.monotonic()+180
+            for attempt in range(6):
+                if attempt:
+                    time.sleep(5)
+                    require(patch_state(self.app()) == baseline,
+                            'Application changed during management-lock retry; stopped')
+                remaining = deadline-time.monotonic()
+                require(remaining > 0, 'Azure management lock did not clear; retry cleanup after inspection')
+                try:
+                    result = subprocess.run(command,capture_output=True,text=True,timeout=min(60,remaining))
+                except (OSError, subprocess.TimeoutExpired):
+                    raise DeploymentError('Azure staging PATCH did not complete; inspect before retrying') from None
+                if result.returncode == 0:return
+                require(management_lock_conflict(result.stderr), 'Azure staging PATCH failed; private details omitted')
+            raise DeploymentError('Azure management lock did not clear; retry cleanup after inspection')
         finally:Path(name).unlink(missing_ok=True)
 
     def deactivate(self, name):

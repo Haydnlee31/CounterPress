@@ -896,3 +896,73 @@ must pass in GitHub CI before any staged release. A private-value comparison fou
 neither the configured model key nor its endpoint in the release files; values
 were never printed. `var/`, `.env`, `reports/` and `research_notes/` are excluded
 from this release. See [staging](../staging.md) for the reviewed activation path.
+
+#### First hosted candidate — 24 October 2026
+
+Exact main commit `0d7313a4c8e5b3195ec5914a1243acceb79a1670` passed CI
+[40069777802](https://github.com/Haydnlee31/CounterPress/actions/runs/40069777802):
+**1,359 backend tests**, **209 frontend tests**, production build, restricted
+container smoke, Azure template compilation and career audit with no warnings.
+
+Staging [40070457872](https://github.com/Haydnlee31/CounterPress/actions/runs/40070457872)
+created `counterpress--stage-40070457872-1`. Independent control-plane review
+confirmed the old production revision at 100%, the candidate's review label at
+0%, both revisions healthy, exact approved template differences and preserved
+identities, model configuration and allowances. Candidate ingestion was disabled.
+
+The hosted container smoke passed health/readiness/assets, protected Studio,
+44 career profiles, four featured matches, nine highlights, causal milestones,
+22-player focus, audience fact parity, preference isolation and private-path 404s.
+It made no inference calls.
+
+The bounded hosted regression passed **4/4** authored cases without retry:
+
+| Case | Hosted response | Trace-confirmed provider calls |
+| --- | ---: | ---: |
+| Unsupported tracking-speed question | 2.573s | 0 |
+| Goal buildup | 4.886s | 3 |
+| Completed comparison windows | 2.896s | 1 |
+| Match and career compound question | 4.820s | 4 |
+
+Independent response review confirmed numbers, attribution, source availability,
+pre-kickoff career history and valid actions. The 12 conservative evaluation
+reservations remain charged; they are not the actual provider-call count.
+Request-ID-correlated Azure monitoring showed four roots and 19 connected spans,
+eight provider calls, **9,237 input / 273 output tokens**, successful final
+validation, no supported-answer fallback or partial result, and no cache hits.
+The compound request connected the orchestrator and both specialists. Token
+totals count provider stages only; root token totals are intentionally omitted.
+Trace metadata excludes source-event details, which the response audit checks.
+Artifacts: `var/footie-hosted-candidate-release.json` and
+`var/footie-hosted-candidate-traces.json` (private/local, not committed).
+
+These are targeted hosted observations, not a load test, p95 estimate or fresh
+accuracy result. The original 28/30 fresh-wording result remains unchanged.
+Desktop browser review confirmed the assistant loaded and its suggestion cards
+remained reachable beneath the fixed composer. No additional UI inference call
+was made.
+
+Cleanup [40071017273](https://github.com/Haydnlee31/CounterPress/actions/runs/40071017273)
+removed the review label, then failed before creating the restoration revision.
+Azure Activity Log identified `ContainerAppOperationInProgress` (HTTP Conflict).
+Independent inspection confirmed production still healthy and explicitly pinned
+at 100%, with no restoration revision or production promotion. The app remained
+in Multiple mode; switching directly to Single would have been unsafe. Recovery
+and the production release are recorded below only after verification.
+
+Local recovery using the independently reviewed conflict-handling fix succeeded:
+`PASS: original production image/settings restored; candidate inactive; Single
+mode restored`. The restoration revision is
+`counterpress--restore-40070457872-1`. Recovery skipped the already-removed label,
+created the original production image/settings, waited for exact-revision health,
+then deactivated the candidate and verified Single mode. It neither reset nor
+refunded shared admission state. Focused checks: **78 passed in 0.10s**.
+
+The fix retries only the exact ARM `ContainerAppOperationInProgress` HTTP Conflict,
+up to six attempts, with configuration/identity/template/routing drift checks
+before each resend. Other errors and timeouts stop with sanitized messages.
+The 180-second retry deadline bounds resend eligibility, not the total wall time
+of separate metadata reads. Normal production workflow
+[40071500453](https://github.com/Haydnlee31/CounterPress/actions/runs/40071500453)
+was dispatched for the already-tested application commit; its final outcome is
+authoritative in that workflow, not implied by successful candidate validation.

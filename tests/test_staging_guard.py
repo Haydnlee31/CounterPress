@@ -266,7 +266,7 @@ def test_real_patch_uses_private_temporary_merge_document_and_removes_it_on_fail
         assert stat.S_IMODE(path.stat().st_mode) == 0o600
         assert json.loads(path.read_text()) == {'properties':staging.routing(PRODUCTION)}
         raise staging.DeploymentError('simulated Azure failure')
-    monkeypatch.setattr(staging,'run',command)
+    monkeypatch.setattr(staging.subprocess,'run',command)
     with pytest.raises(staging.DeploymentError):azure.patch(staging.routing(PRODUCTION))
     assert observed and not observed[0].exists()
     with pytest.raises(staging.DeploymentError,match='Unexpected app-scoped'):
@@ -362,3 +362,113 @@ def test_storage_default_inference_cannot_authorize_a_different_workload_profile
     cloud.value['properties']['workloadProfileName'] = 'Dedicated'
     with pytest.raises(staging.DeploymentError,match='Consumption'):staging.cleanup(cloud,PRODUCTION,CANDIDATE)
     assert not cloud.events
+
+
+LOCK_ERROR = 'ERROR: Conflict({"error":{"code":"ContainerAppOperationInProgress","message":"privatecanary endpoint token"}})'
+
+
+def patch_transport(monkeypatch,tmp_path,responses,change=None):
+    from types import SimpleNamespace
+    azure = staging.Azure({'resource_group':'counterpress-dev','registry_name':'privatecanary'})
+    state = fixture();calls=[];sleeps=[];reads=[]
+    def app():
+        reads.append(True)
+        if len(reads)>1 and change:change(state)
+        return copy.deepcopy(state)
+    def command(args,**kwargs):
+        path=Path(args[args.index('--body')+1][1:]);calls.append((path,kwargs))
+        result=responses[min(len(calls)-1,len(responses)-1)]
+        if isinstance(result,Exception):raise result
+        return SimpleNamespace(returncode=result[0],stderr=result[1],stdout='privatecanary response')
+    monkeypatch.setattr(azure,'app',app)
+    monkeypatch.setattr(staging.subprocess,'run',command)
+    monkeypatch.setattr(staging.time,'sleep',sleeps.append)
+    monkeypatch.setenv('RUNNER_TEMP',str(tmp_path))
+    return azure,state,calls,sleeps,reads
+
+
+def test_operation_in_progress_retries_same_private_patch_after_rechecking_state(monkeypatch,tmp_path,capsys):
+    azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[(1,LOCK_ERROR),(0,'')])
+    azure.patch(staging.routing(PRODUCTION))
+    assert len(calls)==2 and len(reads)==2 and sleeps==[5]
+    assert calls[0][0]==calls[1][0] and not calls[0][0].exists()
+    assert all(c[1]['timeout']<=60 for c in calls)
+    assert 'privatecanary' not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize('stderr',[
+    'ERROR: Forbidden({"error":{"code":"ContainerAppOperationInProgress"}})',
+    'ERROR: Conflict({"error":{"code":"OtherConflict"}})',
+    'ERROR: Conflict({"error":{"code":"OtherConflict","message":"ContainerAppOperationInProgress"}})',
+    'ERROR: Conflict({"message":"ContainerAppOperationInProgress"})',
+    'ERROR: Conflict(not JSON)',
+    'ERROR: ContainerAppOperationInProgress',
+])
+def test_other_errors_never_retry_or_expose_private_details(monkeypatch,tmp_path,stderr):
+    azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[(1,stderr)])
+    with pytest.raises(staging.DeploymentError,match='private details omitted') as failure:
+        azure.patch(staging.routing(PRODUCTION))
+    assert len(calls)==1 and sleeps==[] and len(reads)==1
+    assert 'ContainerAppOperationInProgress' not in str(failure.value)
+    assert not calls[0][0].exists()
+
+
+@pytest.mark.parametrize('change',['identity','routing','mode','template','latest','suffix','secrets','budget'])
+def test_management_lock_retry_aborts_on_control_plane_drift(monkeypatch,tmp_path,change):
+    def mutate(state):
+        p=state['properties']
+        if change=='identity':state['identity']={}
+        if change=='routing':p['configuration']['ingress']['traffic']=[{'revisionName':CANDIDATE,'weight':100}]
+        if change=='mode':p['configuration']['activeRevisionsMode']='Multiple'
+        if change=='template':p['template']['containers'][0]['image']=IMAGE
+        if change=='latest':p['latestRevisionName']=CANDIDATE
+        if change=='suffix':p['template']['revisionSuffix']='other'
+        if change=='secrets':p['configuration']['secrets'].append({'name':'other'})
+        if change=='budget':p['template']['containers'][0]['env'].append({'name':'NEW_BUDGET','value':'999'})
+    azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[(1,LOCK_ERROR)],mutate)
+    with pytest.raises(staging.DeploymentError,match='Application changed'):
+        azure.patch(staging.routing(PRODUCTION))
+    assert len(calls)==1 and len(reads)==2 and not calls[0][0].exists()
+
+
+def test_lock_retries_are_bounded_and_do_not_retry_timeouts(monkeypatch,tmp_path):
+    azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[(1,LOCK_ERROR)])
+    with pytest.raises(staging.DeploymentError,match='lock did not clear'):
+        azure.patch(staging.routing(PRODUCTION))
+    assert len(calls)==6 and sleeps==[5]*5 and not calls[0][0].exists()
+    azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[staging.subprocess.TimeoutExpired('privatecanary',60)])
+    with pytest.raises(staging.DeploymentError,match='inspect before retrying'):
+        azure.patch(staging.routing(PRODUCTION))
+    assert len(calls)==1 and sleeps==[] and not calls[0][0].exists()
+
+
+def test_lock_retry_deadline_and_failed_state_read_both_stop_before_resending(monkeypatch,tmp_path):
+    azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[(1,LOCK_ERROR)])
+    clock=iter([0,0,181]);monkeypatch.setattr(staging.time,'monotonic',lambda:next(clock))
+    with pytest.raises(staging.DeploymentError,match='lock did not clear'):
+        azure.patch(staging.routing(PRODUCTION))
+    assert len(calls)==1 and not calls[0][0].exists()
+    monkeypatch.setattr(staging.time,'monotonic',lambda:0)
+    azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[(1,LOCK_ERROR)])
+    app=azure.app
+    def failing_read():
+        if reads:raise staging.DeploymentError('Metadata read unavailable')
+        return app()
+    monkeypatch.setattr(azure,'app',failing_read)
+    with pytest.raises(staging.DeploymentError,match='Metadata read unavailable'):
+        azure.patch(staging.routing(PRODUCTION))
+    assert len(calls)==1 and not calls[0][0].exists()
+
+
+def test_noop_routing_does_not_reacquire_management_lock(monkeypatch,tmp_path):
+    azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[(0,'')])
+    merge(state['properties'],staging.routing(PRODUCTION))
+    azure.patch(staging.routing(PRODUCTION))
+    assert calls==[] and sleeps==[] and list(tmp_path.iterdir())==[]
+
+
+def test_background_provisioning_status_progress_is_not_configuration_drift(monkeypatch,tmp_path):
+    def progress(state):state['properties']['provisioningState']='Updating'
+    azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[(1,LOCK_ERROR),(0,'')],progress)
+    azure.patch(staging.routing(PRODUCTION))
+    assert len(calls)==2
