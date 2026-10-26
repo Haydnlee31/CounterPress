@@ -5,6 +5,10 @@ The default remains API-key authentication until an explicit configuration chang
 is reviewed and staged inference succeeds. A role assignment or successful local
 test alone does not establish hosted model access.
 
+For the actual staging, cleanup and production verification outcome, see the
+[Phase 5 release review](https://github.com/Haydnlee31/CounterPress/pull/65).
+That record distinguishes prepared controls from successful hosted inference.
+
 ## Configuration
 
 Existing settings continue to work:

@@ -5,6 +5,11 @@ authored synthetic intelligence corpus and its scored evaluation report. It does
 not upload, request credentials, run a judge model or read production conversations.
 Production traces remain metadata-only.
 
+Hosted publication results and final-release verification are recorded in the
+[Phase 5 release review](https://github.com/Haydnlee31/CounterPress/pull/65).
+Keep the pre-routing-fix, pre-prose-fix and final runs distinct: deterministic
+fact checks alone did not catch the missing visible pass-count sentence.
+
 ## Export a preserved report
 
 ```sh
