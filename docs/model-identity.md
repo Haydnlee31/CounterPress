@@ -1,9 +1,13 @@
 # Model authentication with managed identity
 
-Local implementation prepared 23 October 2026. This document does not imply
-hosted activation or successful live inference with managed identity. The default
-remains API-key authentication until an explicit configuration change is reviewed
-and the core intelligence release gate passes.
+Implementation and guarded deployment support prepared through 26 October 2026.
+The default remains API-key authentication until an explicit configuration change
+is reviewed and staged inference succeeds. A role assignment or successful local
+test alone does not establish hosted model access.
+
+For the actual staging, cleanup and production verification outcome, see the
+[Phase 5 release review](https://github.com/Haydnlee31/CounterPress/pull/65).
+That record distinguishes prepared controls from successful hosted inference.
 
 ## Configuration
 
@@ -84,15 +88,40 @@ Sources checked 23 October 2026:
 - [Microsoft: Azure OpenAI managed identity authentication](https://learn.microsoft.com/en-us/azure/foundry-classic/openai/how-to/managed-identity)
 - [Microsoft: Foundry keyless authentication and v1 token audience](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/configure-entra-id)
 
-## Read-only deployment audit
+## Deployment audit and scoped role assignment
 
 The app has four user-assigned identities: `counterpress-pull`,
 `counterpress-history`, `counterpress-stream`, and `counterpress-feed`.
 `counterpress-history` already serves application data/monitoring work and is a
-candidate for reuse. A read-only role-assignment query found **no applicable model
-resource roles** for that identity on `counterpress-dev-01`, including inherited
-roles. No role was granted, no identity was attached and no app setting changed.
-No tokens, model endpoints or keys were printed during the audit.
+candidate for reuse. The initial read-only audit found no applicable model roles.
+On 26 October, the existing identity received **Cognitive Services OpenAI User**
+on `counterpress-dev-01` only. Readback confirmed the assignment and preserved the
+existing assignments. No additional identity or service was created, and this
+step did not change the app's authentication configuration. Private role and
+rollback receipts remain outside version control; no tokens, model endpoints or
+keys were printed.
+
+## Guarded deployment controls
+
+`stage.yml` accepts `model_authentication=managed_identity` for the candidate only.
+The original production revision retains 100% traffic; the candidate receives 0%
+and a separate review label. Staging disables stream consumers and career
+ingestion, retains shared model admission, and selects the already attached
+`counterpress-history` identity explicitly. Its environment contains no
+`AZURE_OPENAI_API_KEY` reference.
+
+Cleanup reconstructs the candidate from the immutable original revision and the
+permitted authentication change. Unrelated environment, resource or scaler
+changes fail validation. Cleanup restores the original template and single
+revision mode; it never promotes the candidate.
+
+After successful staged inference and cleanup, `deploy.yml` accepts
+`model_authentication=managed_identity`. `preserve` is the default. The explicit
+`api_key` option restores the retained server-side `editorial-key` secret
+reference for rollback. This is an operator action, never an automatic runtime
+fallback. Deployment preserves secret configuration, model deployment,
+production limits and attached identities. The old secret is retained for
+rollback; removing its runtime environment reference does not revoke the key.
 
 ## Activation sequence after the core gate
 
@@ -119,6 +148,7 @@ subject to the shared usage gate and the actual spend review.
 
 ```sh
 .venv/bin/python -m pytest -q tests/test_model_identity.py tests/test_adaptation.py
+.venv/bin/pytest -q tests/test_model_identity.py tests/test_deployment_model_auth.py tests/test_deployment_guard.py tests/test_staging_guard.py tests/test_staging_model_identity.py tests/test_phase4_guard.py
 ```
 
 Tests cover explicit mode selection, legacy compatibility, secret-safe errors,

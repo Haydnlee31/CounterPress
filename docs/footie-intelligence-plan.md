@@ -8,8 +8,10 @@ expiry and durable checkpoints. Career ingestion was enabled in production on
 evidence are recorded in [the verification report](verification/footie-intelligence.md).
 This document does not claim the full sequence has shipped.
 
-Managed-identity support and a curated Foundry export are prepared locally. Existing
-production model authentication remains unchanged. Builds
+Managed-identity deployment controls and curated Foundry publication are implemented.
+The staged inference, activation and final evaluation results are recorded in
+[the Phase 5 release review](https://github.com/Haydnlee31/CounterPress/pull/65);
+code availability alone does not establish hosted activation. Builds
 on the bounded assistant, personalized cards, event revisions and application-hosted
 agents.
 
@@ -191,7 +193,7 @@ compatible consumers and a bounded producer/rollback plan.
 
 ## Phase 5 — purposeful Microsoft integration and release
 
-1. **Foundry quality management:** export curated synthetic evaluation trajectories
+1. **Foundry quality management:** publish curated synthetic evaluation results
    and compare releases. Keep raw user conversations out of production telemetry.
    Local evaluation begins in Phase 0; Foundry integration extends it here.
 2. **Azure Speech, Follow by ear:** focus on highlights, using the same validated

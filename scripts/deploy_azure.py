@@ -56,6 +56,7 @@ STUDIO_KEYS = {'COUNTERPRESS_STUDIO', 'COUNTERPRESS_STUDIO_CLIENT_ID',
 MODEL_SECRETS = {'AZURE_OPENAI_ENDPOINT': 'editorial-endpoint',
                  'AZURE_OPENAI_DEPLOYMENT': 'editorial-deployment',
                  'AZURE_OPENAI_API_KEY': 'editorial-key'}
+MODEL_AUTH_KEYS = {'AZURE_OPENAI_AUTH_MODE', 'AZURE_OPENAI_MANAGED_IDENTITY_CLIENT_ID'}
 MONITOR_SECRET = 'agent-monitor-connection'
 MONITOR_KEYS = {'COUNTERPRESS_AGENT_TRACING', 'APPLICATIONINSIGHTS_CONNECTION_STRING',
                 'COUNTERPRESS_AGENT_TRACING_CLIENT_ID', 'COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO'}
@@ -69,6 +70,97 @@ def model_reference(item, name, secret):
             and item.get('value') in (None, ''))
 
 
+def model_environment(app):
+    containers = app['properties']['template']['containers']
+    if len(containers) != 1:
+        raise DeploymentError('Expected one application container')
+    entries = containers[0].get('env', [])
+    env = {entry['name']: entry for entry in entries}
+    if len(env) != len(entries):
+        raise DeploymentError('Duplicate environment settings are not accepted')
+    model = {name: entry for name, entry in env.items() if name.startswith('AZURE_OPENAI')}
+    if set(model) - set(MODEL_SECRETS) - MODEL_AUTH_KEYS:
+        raise DeploymentError('Unknown model authentication setting')
+    return env, model
+
+
+def literal_setting(entry, name):
+    if (not isinstance(entry, dict) or entry.get('name') != name
+            or set(entry) - {'name', 'value', 'secretRef'} or entry.get('secretRef') not in (None, '')
+            or not isinstance(entry.get('value'), str) or not entry['value']):
+        raise DeploymentError('Authentication settings must be explicit server literals')
+    return entry['value']
+
+
+def history_model_identity(app, env):
+    """Use the already-attached history identity; never infer a credential chain."""
+    client = literal_setting(env.get('COUNTERPRESS_COSMOS_CLIENT_ID'), 'COUNTERPRESS_COSMOS_CLIENT_ID')
+    try:
+        if str(UUID(client)) != client:raise ValueError
+    except (ValueError, TypeError, AttributeError):
+        raise DeploymentError('The history identity client ID must be canonical') from None
+    identities = app.get('identity', {}).get('userAssignedIdentities', {})
+    matches = [resource for resource, value in identities.items() if value.get('clientId') == client]
+    suffix = '/providers/microsoft.managedidentity/userassignedidentities/counterpress-history'
+    if (len(matches) != 1 or not matches[0].casefold().endswith(suffix)
+            or not re.fullmatch(r'/subscriptions/[0-9a-f-]{36}/resourcegroups/[^/]+/providers/microsoft\.managedidentity/userassignedidentities/counterpress-history', matches[0], re.I)):
+        raise DeploymentError('Model authentication requires the attached history identity')
+    if app.get('id') and matches[0].casefold().split('/providers/')[0] != app['id'].casefold().split('/providers/')[0]:
+        raise DeploymentError('History identity must remain in the application resource group')
+    return client
+
+
+def validate_model_authentication(app, *, required=True, check_secrets=False):
+    env, model = model_environment(app)
+    if not model and not required:return 'api_key'
+    mode = literal_setting(model['AZURE_OPENAI_AUTH_MODE'], 'AZURE_OPENAI_AUTH_MODE') if 'AZURE_OPENAI_AUTH_MODE' in model else 'api_key'
+    if mode not in ('api_key', 'managed_identity'):
+        raise DeploymentError('Unknown model authentication mode')
+    expected = set(MODEL_SECRETS)
+    if mode == 'managed_identity':
+        expected.remove('AZURE_OPENAI_API_KEY')
+        expected |= MODEL_AUTH_KEYS
+        client = literal_setting(model.get('AZURE_OPENAI_MANAGED_IDENTITY_CLIENT_ID'), 'AZURE_OPENAI_MANAGED_IDENTITY_CLIENT_ID')
+        if client != history_model_identity(app, env):
+            raise DeploymentError('Model identity must match the attached history identity')
+    elif 'AZURE_OPENAI_AUTH_MODE' in model:
+        expected.add('AZURE_OPENAI_AUTH_MODE')
+    if set(model) != expected:
+        raise DeploymentError('Model authentication fields do not match the selected mode')
+    references = {name: secret for name, secret in MODEL_SECRETS.items() if name in expected}
+    if any(not model_reference(model[name], name, secret) for name, secret in references.items()):
+        raise DeploymentError('Footie requires existing model secret references')
+    if check_secrets:
+        entries = app['properties']['configuration'].get('secrets') or []
+        names = {entry['name'] for entry in entries}
+        if len(names) != len(entries) or not set(MODEL_SECRETS.values()) <= names:
+            raise DeploymentError('Referenced model secrets are missing or duplicated')
+    return mode
+
+
+def model_authentication_settings(app, mode):
+    """Template-only authentication switch, retaining the existing rollback key."""
+    result = copy.deepcopy(app)
+    if mode == 'preserve':return result
+    if mode not in ('managed_identity', 'api_key'):
+        raise DeploymentError('Unknown model authentication deployment mode')
+    validate_model_authentication(result, check_secrets=True)
+    env, _ = model_environment(result)
+    secrets = {entry['name'] for entry in result['properties']['configuration'].get('secrets') or []}
+    if not set(MODEL_SECRETS.values()) <= secrets:
+        raise DeploymentError('Authentication switching requires the existing rollback secrets')
+    additions = [{'name': 'AZURE_OPENAI_AUTH_MODE', 'value': mode}]
+    if mode == 'managed_identity':
+        additions.append({'name': 'AZURE_OPENAI_MANAGED_IDENTITY_CLIENT_ID', 'value': history_model_identity(result, env)})
+    else:
+        additions.append({'name': 'AZURE_OPENAI_API_KEY', 'secretRef': MODEL_SECRETS['AZURE_OPENAI_API_KEY']})
+    container = result['properties']['template']['containers'][0]
+    container['env'] = [entry for entry in container.get('env', [])
+                        if entry['name'] not in MODEL_AUTH_KEYS | {'AZURE_OPENAI_API_KEY'}] + additions
+    validate_model_authentication(result, check_secrets=True)
+    return result
+
+
 def editorial_settings(app, mode, model=None):
     """Explicit opt-in on existing resources; model values only in app secrets."""
     result = copy.deepcopy(app)
@@ -78,6 +170,8 @@ def editorial_settings(app, mode, model=None):
         raise DeploymentError('Unknown editorial deployment mode')
     container = result['properties']['template']['containers'][0]
     env = {v['name']: v.get('value') for v in container.get('env', [])}
+    _, existing_model = model_environment(result)
+    authentication = validate_model_authentication(result) if existing_model else 'api_key'
     additions = [{'name': 'COUNTERPRESS_EDITORIAL', 'value': 'off'}]
     if mode == 'enable':
         if env.get('COUNTERPRESS_STUDIO') != 'entra':
@@ -88,11 +182,16 @@ def editorial_settings(app, mode, model=None):
             raise DeploymentError('Studio client must be configured')
         additions = [{'name': 'COUNTERPRESS_EDITORIAL', 'value': 'entra'},
                      {'name': 'COUNTERPRESS_ENTRA_CLIENT_IDS', 'value': client},
-                     *[{'name': name, 'secretRef': secret} for name, secret in MODEL_SECRETS.items()]]
+                     *[{'name': name, 'secretRef': secret} for name, secret in MODEL_SECRETS.items()
+                       if name != 'AZURE_OPENAI_API_KEY' or authentication == 'api_key']]
         config = result['properties']['configuration']
         config['secrets'] = [s for s in (config.get('secrets') or []) if s['name'] not in MODEL_SECRETS.values()] + [
             {'name': secret, 'value': model[name]} for name, secret in MODEL_SECRETS.items()]
     removed = {*MODEL_SECRETS, 'COUNTERPRESS_EDITORIAL', 'COUNTERPRESS_ENTRA_CLIENT_IDS'}
+    if mode == 'disable' and (authentication == 'managed_identity' or env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure'):
+        removed -= set(MODEL_SECRETS)  # Shared inference retains its explicit authentication mode.
+    elif mode == 'disable':
+        removed |= MODEL_AUTH_KEYS
     container['env'] = [v for v in container.get('env', []) if v['name'] not in removed] + additions
     return result
 
@@ -181,12 +280,7 @@ def assistant_settings(app, mode):
     if mode not in ('enable', 'disable'):
         raise DeploymentError('Unknown assistant deployment mode')
     container = result['properties']['template']['containers'][0]
-    env = {v['name']: v for v in container.get('env', [])}
-    if mode == 'enable' and any(
-        not model_reference(env.get(name), name, secret)
-        for name, secret in MODEL_SECRETS.items()
-    ):
-        raise DeploymentError('Footie requires existing model secret references')
+    if mode == 'enable':validate_model_authentication(result, check_secrets='configuration' in result['properties'])
     container['env'] = [v for v in container.get('env', []) if v['name'] != 'COUNTERPRESS_ASSISTANT_MODEL'] + [
         {'name': 'COUNTERPRESS_ASSISTANT_MODEL', 'value': 'azure' if mode == 'enable' else 'off'}]
     return result
@@ -326,18 +420,17 @@ def validate_app(app):
     secrets = {s['name'] for s in (p['configuration'].get('secrets') or [])}
     assert secrets <= set(MODEL_SECRETS.values()) | {MONITOR_SECRET}
     assert env.get('COUNTERPRESS_EDITORIAL', 'off') in ('off', 'entra')
-    model_env = {v['name']: v for v in container.get('env', []) if v['name'].startswith('AZURE_OPENAI')}
+    try:
+        validate_model_authentication(app, required=env.get('COUNTERPRESS_EDITORIAL') == 'entra'
+            or env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure', check_secrets=True)
+    except DeploymentError:
+        raise AssertionError('Invalid model authentication configuration') from None
     if env.get('COUNTERPRESS_EDITORIAL', 'off') == 'entra':
         assert env.get('COUNTERPRESS_STUDIO') == 'entra'
         assert env.get('COUNTERPRESS_ENTRA_CLIENT_IDS') == env['COUNTERPRESS_STUDIO_CLIENT_ID']
-        assert set(model_env) == set(MODEL_SECRETS) and set(MODEL_SECRETS.values()) <= secrets
-        assert all(model_reference(model_env[k], k, v) for k, v in MODEL_SECRETS.items())
-    else:
-        assert not model_env
     assert env.get('COUNTERPRESS_ASSISTANT_MODEL', 'off') in ('off', 'azure')
     assert env.get('COUNTERPRESS_ASSISTANT_WORKFLOW', 'structured_lookup') in ('structured_lookup', 'agent', 'multiagent')
     if env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure':
-        assert set(model_env) == set(MODEL_SECRETS)
         if env.get('COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR'):
             assert env.get('COUNTERPRESS_ASSISTANT_WORKFLOW') in ('agent', 'multiagent')
     assert env.get('COUNTERPRESS_STUDIO', 'off') in ('off', 'entra')
@@ -440,6 +533,8 @@ def deploy():
         for value in model.values():
             if isinstance(value, str):print('::add-mask::'+value, flush=True)
     expected=editorial_settings(expected, editorial_mode, model)
+    authentication_mode=os.environ.get('CP_MODEL_AUTHENTICATION', 'preserve')
+    expected=model_authentication_settings(expected, authentication_mode)
     expected=assistant_settings(expected, os.environ.get('CP_ASSISTANT_MODE', 'preserve'))
     expected=assistant_workflow_settings(expected, os.environ.get('CP_ASSISTANT_WORKFLOW', 'preserve'))
     expected=assistant_allowance_settings(expected, os.environ.get('CP_ASSISTANT_ALLOWANCE', 'preserve'))
@@ -503,7 +598,7 @@ def deploy():
     if summary:
         with open(summary,'a') as f:
             f.write(f'## Verified CounterPress deployment\n\nCommit: `{sha}`\n\nImage digest: `{digest}`\n\n'
-                    f'Public HTTPS smoke and historical correction checks passed. Studio mode: {mode}. Editorial mode: {editorial_mode}. Career streaming mode: {career_mode}. Cosmos, streaming, telemetry, identities and scale limits preserved.\n')
+                    f'Public HTTPS smoke and historical correction checks passed. Studio mode: {mode}. Editorial mode: {editorial_mode}. Model authentication: {authentication_mode}. Career streaming mode: {career_mode}. Cosmos, streaming, telemetry, identities and scale limits preserved.\n')
 
 
 if __name__=='__main__':

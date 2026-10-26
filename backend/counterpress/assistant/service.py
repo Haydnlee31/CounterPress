@@ -140,9 +140,24 @@ def scoring_possessors(question):
     return result
 
 
+def sequence_pass_count_intent(q):
+    """True for one sequence count, False for aggregates, None for other questions."""
+    # A count of the passes leading into one finish belongs to that observed
+    # sequence, not the career pass-total tool or a generic match score query.
+    sequence_pass_count = (
+        re.search(r'\b(?:how many|number of|count(?: the)?)\s+(?:(?:completed|successful)\s+)?passes\b',q,re.I)
+        and re.search(r'\bpasses\s+(?:that\s+)?(?:(?:led|leading)\s+(?:up\s+)?to|preceded)\s+.{0,80}\b'+SCORING_MOMENT+r'\b',q,re.I))
+    if sequence_pass_count:
+        history_or_rate=re.search(r'\b(?:career|season|seasons|matches|games|fixtures|history|historical|recent|average|percentage|accuracy|rate)\b|\b(?:last five|last 5|per\s*90|whole match|entire match)\b|/90',q,re.I)
+        return not bool(history_or_rate)
+    return None
+
+
 def requested_analysis(request):
     """Recognize the three investigation intents without replacing career questions."""
     q=request.question
+    count_intent=sequence_pass_count_intent(q)
+    if count_intent is not None:return 'buildup' if count_intent else None
     if scoring_contributor(q):
         return None if RELATION_HISTORY.search(q) else 'buildup'
     if re.search(r'what (?:made|led to|created|set up) (?:that|this|the) goal|how (?:was|did).*(?:goal|buildup)|build[ -]?up|before (?:the |that |this )?(?:goal|finish)|进球.*(?:过程|形成)|如何.*进球',q,re.I):
@@ -763,6 +778,10 @@ class AssistantService:
                         share=round(count/total*100,1) if total else 0
                         text.insert(1,t(f'This buildup accounts for {count} of {pname}’s {total} {label[0]} by this goal ({share:g}%).',
                             f'这段进攻包含{pname}本场截至目前{total}次{label[1]}中的{count}次（{share:g}%），体现了其在这次进攻与整场比赛中的参与。'))
+            if sequence_pass_count_intent(request.question) is True:
+                position=1 if asks_regain_interval(request.question) and metrics['regain_to_shot_seconds'] is None else 0
+                text.insert(position,t(f'The recorded buildup contains {passes} completed '+('pass.' if passes==1 else 'passes.'),
+                                       f'已记录的进攻过程包含{passes}次成功传球。'))
             actions=[{'label':t('View ','查看 ')+name,'href':f'#football/player/{goal["player_id"]}'}]
             for clip in json.loads((self.store.root/'highlights.json').read_text()):
                 if (clip['match_id']==plan.match_id and clip['goal_event_id']==goal_id and self.store.evidence_digest(plan.match_id)==row['digest']

@@ -160,3 +160,116 @@ def test_chinese_answer_keeps_named_contribution_without_model_sentence_selectio
     assert answer['status']=='answered'
     assert answer['text'][0]=='Luca Bennett在进攻过程中贡献了1次成功传球、1次接球。'
     assert build_claims(answer,plan,body)==[]  # Chinese uses the complete calculated answer.
+
+
+@pytest.mark.parametrize('question',[
+    'How many passes led up to that goal?',
+    'How many completed passes led to the equalizer?',
+    'Count the passes leading up to Mateo Cross’s finish.',
+    'What was the number of passes that preceded that goal?',
+])
+def test_single_sequence_pass_counts_use_buildup_not_career_totals(service,question):
+    body=request(question);plan=service.local_plan(body)
+    assert plan.operation=='match' and plan.analysis=='buildup' and plan.player_ids==[]
+    service.validate(plan,body)
+    context=service.context(body)
+    assert context['requested_operation']=='match' and context['requested_analysis']=='buildup'
+    assert query_schema(context)['properties']['analysis']['enum']==[None,'buildup']
+    answer=service.answer(plan,body)
+    assert answer['status']=='answered'
+    fact=next(f for f in answer['facts'] if f['metric']=='completed_passes')
+    assert fact['value']==4 and fact['scope']['window']=='buildup'
+    assert fact['scope']['cutoff']=={'period':2,'elapsed_ms':1050489}
+    assert all(ref['elapsed_ms']<=1050020 for ref in fact['evidence']['events'] if ref['period']==2)
+    assert any(ref['event_id']=='e01019' for ref in fact['evidence']['events'])
+
+
+@pytest.mark.parametrize('question',[
+    'How many passes did Luca Bennett complete this season?',
+    'How many career passes led up to that goal?',
+    'How many passes led to that goal on average across matches?',
+    'How many passes led to goals per 90 this season?',
+    'How many passes led up to that goal in the last ten matches?',
+    'Count the passes leading up to the goal over the past 12 games.',
+    'How many shots led up to that goal?',
+])
+def test_other_measures_and_historical_pass_counts_do_not_become_buildup(service,question):
+    body=request(question)
+    assert service.local_plan(body).analysis is None
+    assert query_schema(service.context(body))['properties']['analysis']['enum']==[None]
+
+
+def test_pass_count_intent_cannot_override_unsupported_tracking_or_missing_context(service):
+    unsupported=request('How many passes led up to that goal, and what was the off-ball speed?')
+    assert service.local_plan(unsupported).operation=='unsupported'
+    assert query_schema(service.context(unsupported))['properties']['analysis']['enum']==[None]
+    absent=AskRequest(question='How many passes led up to that goal?')
+    answer=service.answer(service.local_plan(absent),absent)
+    assert answer['status']=='clarify' and not answer['facts']
+
+
+def test_observed_regression_pass_count_on_direct_free_kick_is_zero_not_invented_chain(service):
+    # Separate fixed oracle: e01178 follows a restart, not the earlier recovery.
+    body=AskRequest(question='How many passes led up to that goal?',
+        match_id='career-showcase-southbank-redhaven',event_id='e01178',event_revision=1,
+        cutoff={'period':2,'elapsed_ms':1632996})
+    plan=service.local_plan(body);service.validate(plan,body)
+    answer=service.answer(plan,body)
+    assert answer['status']=='answered' and plan.analysis=='buildup'
+    facts={f['metric']:f for f in answer['facts']}
+    assert facts['completed_passes']['value']==0
+    assert facts['participant_count']['value']==1
+    assert facts['observed_duration_seconds']['value']==1.2
+    assert facts['regain_to_shot_seconds']['value'] is None
+    assert 'e01176' not in {ref['event_id'] for ref in facts['completed_passes']['evidence']['events']}
+    assert answer['text'][0]=='The recorded buildup contains 0 completed passes.'
+    assert any('free kick' in sentence for sentence in answer['text'])
+
+
+@pytest.mark.parametrize('event_id,elapsed_ms,expected_count',[
+    ('e01178',1632996,0),
+    ('e01019',1050489,4),
+])
+@pytest.mark.parametrize('depth',['casual','analyst'])
+def test_direct_pass_count_survives_adversarial_goal_only_selection(service,event_id,elapsed_ms,expected_count,depth):
+    from counterpress.assistant.multiagent import story_candidates,validate_bundle_story
+    body=request('How many passes led up to that goal?',event_id=event_id,
+        cutoff={'period':2,'elapsed_ms':elapsed_ms},preferences={'depth':depth})
+    plan=service.local_plan(body);answer=service.answer(plan,body)
+    sentence=f'The recorded buildup contains {expected_count} completed passes.'
+    assert answer['text'][0]==sentence
+    claims=[{**c,'source_role':'match'} for c in build_claims(answer,plan,body)]
+    required=next(c for c in claims if c['text']==sentence)
+    assert required['required']
+    assert any(answer['facts'][i]['metric']=='completed_passes' and
+        answer['facts'][i]['value']==expected_count for i in required['fact_indices'])
+    goal_only=next(c for c in claims if not c.get('required'))
+    with pytest.raises(ValueError,match='required'):
+        render_story({'lead':goal_only['id'],'supporting':[]},claims,depth)
+    # Every offered model bundle must answer the numerical question, even when
+    # its lead emphasizes the scorer or the free kick instead.
+    candidates=story_candidates(claims,depth)
+    assert candidates
+    for selection in candidates.values():
+        assert sentence in [c['text'] for c in validate_bundle_story(selection,claims,depth)]
+
+
+def test_direct_pass_count_keeps_unknown_regain_scope_required(service):
+    body=request('How many passes led up to that goal after the team won the ball?')
+    plan=service.local_plan(body);answer=service.answer(plan,body)
+    claims=build_claims(answer,plan,body)
+    required=[c for c in claims if c.get('required')]
+    assert len(required)==2
+    assert any('does not establish' in c['text'] for c in required)
+    assert any(c['text']=='The recorded buildup contains 4 completed passes.' for c in required)
+    for omitted in required:
+        kept=next(c for c in required if c['id']!=omitted['id'])
+        with pytest.raises(ValueError,match='required'):
+            render_story({'lead':kept['id'],'supporting':[]},claims,'analyst')
+
+
+def test_chinese_pass_count_is_visible_without_narrative_selection(service):
+    body=request('How many passes led up to that goal?',preferences={'language':'zh-Hans'})
+    plan=service.local_plan(body);answer=service.answer(plan,body)
+    assert answer['text'][0]=='已记录的进攻过程包含4次成功传球。'
+    assert build_claims(answer,plan,body)==[]

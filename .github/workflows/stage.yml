@@ -9,6 +9,12 @@ on:
         default: stage
         type: choice
         options: [stage, cleanup]
+      model_authentication:
+        description: 'Candidate only: test managed identity with live production still pinned to its original revision'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, managed_identity]
       production_revision:
         description: 'Cleanup only: original production revision printed by staging'
         required: false
@@ -65,6 +71,7 @@ jobs:
         if: inputs.operation == 'stage'
         env:
           CP_AZURE_TARGET: ${{ secrets.CP_AZURE_TARGET }}
+          CP_MODEL_AUTHENTICATION: ${{ inputs.model_authentication }}
         run: python3 scripts/stage_azure.py stage
       - name: Restore original production and remove candidate
         if: inputs.operation == 'cleanup'

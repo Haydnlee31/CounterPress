@@ -27,6 +27,12 @@ on:
         default: preserve
         type: choice
         options: [preserve, multiagent, agent, structured_lookup]
+      model_authentication:
+        description: 'Model auth; managed_identity requires prior role assignment and staged verification; api_key restores the retained secret'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, managed_identity, api_key]
       assistant_allowance:
         description: 'Reviewed US$125 pilot: 120 model calls/hour, 400/day; preserves defaults unless selected'
         required: true
@@ -93,6 +99,7 @@ jobs:
           CP_EDITORIAL_MODEL: ${{ secrets.CP_EDITORIAL_MODEL }}
           CP_ASSISTANT_MODE: ${{ inputs.assistant_mode }}
           CP_ASSISTANT_WORKFLOW: ${{ inputs.assistant_workflow }}
+          CP_MODEL_AUTHENTICATION: ${{ inputs.model_authentication }}
           CP_ASSISTANT_ALLOWANCE: ${{ inputs.assistant_allowance }}
           CP_ASSISTANT_TRACING: ${{ inputs.assistant_tracing }}
           CP_CAREER_STREAMING: ${{ inputs.career_streaming }}

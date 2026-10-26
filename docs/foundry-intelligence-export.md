@@ -5,6 +5,11 @@ authored synthetic intelligence corpus and its scored evaluation report. It does
 not upload, request credentials, run a judge model or read production conversations.
 Production traces remain metadata-only.
 
+Hosted publication results and final-release verification are recorded in the
+[Phase 5 release review](https://github.com/Haydnlee31/CounterPress/pull/65).
+Keep the pre-routing-fix, pre-prose-fix and final runs distinct: deterministic
+fact checks alone did not catch the missing visible pass-count sentence.
+
 ## Export a preserved report
 
 ```sh
@@ -91,3 +96,124 @@ missing response handling, content filtering, allowlisted fields, curated-path
 restriction and preservation of existing exports. No cloud API is exercised.
 Pattern-based secret checks are deliberately conservative and not a guarantee;
 local human review remains necessary before uploading any artifact.
+
+## Publish deterministic contracts without a judge model
+
+`scripts/publish_intelligence_foundry.py` publishes **precomputed synthetic
+outputs** to the existing CounterPress Foundry project. Footie continues running
+in Container Apps. This path uses the project client's OpenAI Evals API with
+`type="custom"`, `include_sample_schema=false`, inline JSONL items and two
+`type="python"` testing criteria. It creates no hosted agent, model deployment,
+endpoint evaluator, or judge-model request.
+
+The Microsoft [Foundry Evals REST reference](https://learn.microsoft.com/en-us/rest/api/microsoft-foundry/azureopenai/evals#openaievalgraderpython)
+documents Python criteria with `source` and `pass_threshold`.
+The [evaluation creation reference](https://ai.azure.com/api-reference/evals/create-eval/)
+also supports this criterion on the project evaluation surface. The script uses
+`AIProjectClient.get_openai_client()` with the optional `foundry-admin`
+dependencies; its wire payload is tested using the actual Projects/OpenAI SDKs
+and an in-memory HTTP transport. No model name is needed for this direct Python
+grader path. This differs from a registered catalog code evaluator, whose
+orchestration schema currently asks for a deployment name.
+
+Two metrics have deliberately narrow meanings:
+
+- **local_contract_pass** imports the original deterministic pass and its boolean
+  checks. Failed cases remain failed; this is not a fresh AI quality judgment.
+- **recorded_fact_assertions** independently recomputes the exported status,
+  numeric or presence-only anchors, null metrics, required subjects and available
+  event/availability boundaries against the authored expectations. It does not
+  re-evaluate every local check: analysis routing, replay links, historical
+  denominator semantics and usefulness may require information beyond the export.
+
+Neither metric is called groundedness, instruction adherence, native tool-call
+accuracy, or football causality. An empty recorded response stays empty and stays
+in the local-score denominator; the fact-assertion metric assigns it zero.
+
+### Review first
+
+The command defaults to a local dry run. It validates the reviewed manifest SHA,
+recreates the export from its bound original report and curated corpus, and
+compares every artifact byte. It refuses more than 64 scored rows, datasets over
+8 MB, unreviewed corpus paths, changed artifacts and mismatched source claims.
+It does not alter the exporter, expected answers or preserved reports.
+
+```sh
+.venv/bin/python scripts/publish_intelligence_foundry.py \
+  --export-dir var/foundry-warm-release-full \
+  --report var/footie-intelligence-warm-release-full.json \
+  --manifest-sha256 <reviewed-manifest-sha256> \
+  --source-status historical \
+  --release-label warm-release-20261024
+```
+
+The 24 October warm-release export contains 40/40 original regression passes.
+Six recorded backend source hashes differ from the later `b0ef550` runtime.
+It is historical evidence, not a certificate for the current release. A repeat
+on the same 40-case corpus remains **regression** evidence. The later 48-case
+`intelligence_questions.json` suite is a different corpus: publish its full
+denominator and failures separately, without claiming a matched improvement
+over the earlier 40-case run. Each preserved run gets a new export directory. `--source-status current` requires every recorded
+source hash to match the current checkout. Compare matched case IDs, identical
+corpus/grader hashes and original workflow budgets. Do not compare a small
+success-only subset against the historical full denominator.
+
+### Controlled publication
+
+The operator supplies a mode-0600 private JSON configuration derived from the
+existing project's ARM metadata. It contains only `project_endpoint`,
+`endpoint_sha256`, `project_resource_sha256`, `project_name`, `account_name`, and
+`resource_group`. Its canonical sorted compact JSON SHA256 must be reviewed
+separately and supplied with `--project-binding-sha256`. The fixed resource names,
+endpoint path/host and endpoint hash are checked before authentication. The
+endpoint and resource identity are never printed.
+
+After reviewing the exact dry-run plan, repeat its arguments with:
+
+```sh
+  --apply \
+  --project-config <private-project-config.json> \
+  --project-binding-sha256 <reviewed-project-binding-sha256> \
+  --poll-seconds 30
+```
+
+The submitting identity needs the existing project's evaluation permissions;
+see Microsoft's [evaluation permissions guide](https://learn.microsoft.com/en-us/azure/foundry/observability/how-to/evaluation-permissions).
+No production transcript or telemetry-message capture is enabled. The script
+uses Azure CLI identity, disables SDK request retries and rejects verbose SDK
+logging. It may incur evaluation-service execution/storage usage even though it
+makes no target or judge inference calls.
+
+Private receipts live in `var/foundry-publication-receipts/` (directory 0700,
+files 0600). A publication key binds project, reviewed manifest and grader.
+Receipts are written **before** each cloud mutation. A lost mutation response
+blocks further submission and requires an operator to reconcile the existing
+remote object; do not delete the receipt or blindly rerun under another identity.
+For a known submitted run, replace `--apply` with `--resume`. This explicit
+read-only mode requires an existing `run_created` or `verified` receipt; it cannot
+create an evaluation or run. It revalidates the original report, export, graders
+and project binding. Checkout drift is allowed only for this receipt-bound read;
+the preserved source status means **at submission**, not the current release.
+New submissions still require strict current-source validation when labelled
+current. Only bounded GET reads are retried. Completed receipts return their prior
+verification result. No automatic delete or reset operation exists.
+
+The final check reads every remote row, matches its exact submitted case data,
+accepts consistent service-generated flattened aliases alongside the exact
+nested input item, compares both scores against local execution of the same grader programs, and
+rejects errors or unexpected model usage. Preserve failure receipts and compare
+runs using the Foundry evaluation view and original case IDs. The publication
+job's duration/tokens are not the original application's latency/token measures.
+
+```sh
+.venv/bin/python -m pytest -q \
+  tests/test_foundry_intelligence_export.py \
+  tests/test_foundry_intelligence_publication.py
+```
+
+The publication suite includes failed-anchor controls, future evidence,
+unknown subjects, missing responses, source drift, artifact tampering, private
+project binding, the 64-row cap, idempotent receipts, uncertain-mutation recovery,
+remote score substitution and actual SDK request serialization. The SDK wire
+test requires the optional `foundry-admin` dependencies; all other controls run
+without them. Tests do not contact Azure.
