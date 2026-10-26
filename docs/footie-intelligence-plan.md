@@ -3,13 +3,13 @@
 Status: implementation in progress, 26 October 2026. The core intelligence release
 shipped on 24 October. Phase 4's isolated Azure lifecycle verification now passes,
 including two audience views, correction, withdrawal, duplicate, restoration,
-expiry and durable checkpoints. Career ingestion remains disabled in production
-pending a controlled rollout. Independent evaluation and release
+expiry and durable checkpoints. Career ingestion was enabled in production on
+26 October; public match/highlight data remains unchanged. Independent evaluation and release
 evidence are recorded in [the verification report](verification/footie-intelligence.md).
 This document does not claim the full sequence has shipped.
 
 Managed-identity support and a curated Foundry export are prepared locally. Existing
-production model authentication and ingestion configuration remain unchanged. Builds
+production model authentication remains unchanged. Builds
 on the bounded assistant, personalized cards, event revisions and application-hosted
 agents.
 
@@ -148,8 +148,8 @@ and cost. Model-based grading supplements deterministic and human checks.
 
 After the core quality gate, connect the improved intelligence to the existing
 Event Hubs → Container Apps → Cosmos → Web PubSub path. First verify the current
-hosted configuration: the career revision bridge is documented as locally
-implemented and pending cloud activation.
+hosted configuration: the career revision bridge is now active, with checkpoint
+12/12 and no production corrections committed at activation.
 
 Extend existing milestone and focused-player cards. Use deterministic candidate
 triggers for significant completed plays, supported pattern changes and milestones;
@@ -183,9 +183,11 @@ absent; the public health and data checks still passed after cleanup.
 Verified exit: duplicate delivery, correction, restoration, expiry and explicit
 review were inspected in two hosted browser viewers; an independent WebSocket
 client verified reconnect, and Blob metadata proved durable checkpointing. These
-operational results are not AI reasoning traces. Next: deploy the reviewed code
-through the production guard, then explicitly activate the career bridge only
-with all consumers compatible and a bounded producer/rollback plan.
+operational results are not AI reasoning traces. The reviewed code subsequently
+passed the production guard and career activation. Independent API, browser and
+receive-only socket checks preserved all four featured matches and nine
+highlights. No production producer was invoked. Future corrections still require
+compatible consumers and a bounded producer/rollback plan.
 
 ## Phase 5 — purposeful Microsoft integration and release
 
@@ -257,8 +259,8 @@ The complete run includes the compatibility and telemetry fixes, superseding the
 earlier twenty-case sample for release regression evidence. Full application checks,
 isolated staging and the core production release subsequently passed. Phase 4 adds
 explicit revision review without advancing a paused viewer or replaying withdrawn
-source material. Next: create an isolated hosted career journal, ingestion stream,
-checkpoint and notification scope for correction/reconnect validation. Do not run
+source material. Isolated hosted correction/reconnect validation and public
+activation are complete. Do not run
 withdrawal/restoration on the public canonical fixture: even a restored goal changes
 its immutable digest and invalidates its authored replay and three highlights.
 Managed-identity activation and the optional Speech extension follow separately. Prepared Foundry

@@ -1245,3 +1245,97 @@ Independent post-cleanup check:
 The temporary app, data containers, Event Hub and dedicated identity/roles are
 gone. The published immutable image remains in the existing registry for
 reproducibility. No production rollout or model-quality rerun is claimed here.
+
+## Production career activation — 26 October 2026
+
+Deployment [40266453253](https://github.com/Haydnlee31/CounterPress/actions/runs/40266453253)
+published source `86d8c29` after exact-main CI. Only the career bridge flag was
+changed alongside the image/revision; all reviewed model, tracing, identity,
+storage, quota and scaling invariants were preserved. Independent control-plane
+reads confirmed the expected revision ready and its pinned registry digest.
+
+The before/after Event Hubs checkpoint was **12/12**, one partition; the career
+journal remained **generation 0, zero actions**. All four featured match digests
+and nine highlight versions were unchanged. No production events were delivered.
+The receive-only Web PubSub client connected, disconnected, reconnected and read
+authoritative revision state. This proves production connectivity, not delivery;
+the isolated lifecycle section above supplies actual correction-delivery proof.
+
+The bounded API check returned:
+
+```text
+.venv/bin/python var/check_footie_production_rollout.py --deployment-confirmed --output /private/tmp/footie-production-rollout-postcheck.json
+{"status":"passed","featured_matches":4,"highlights":9,"contexts":3,"audiences":2,"websocket_reconnected":true,"model_calls":0,"event_deliveries":0}
+```
+
+The helper is an ignored operator script, not a portable repository test command.
+Its sanitized results are retained in
+[production activation evidence](production-career-activation-2026-10-26.json).
+Checks included three original/current goal contexts, context `no-store`, successful
+replay reads, byte-equivalent casual/analyst cards and the exact expiry boundary.
+Replay reads currently carry no explicit `Cache-Control`; the report records that
+fact rather than claiming a new cache contract. The first helper attempt rejected
+Azure's exact single-group string representation. Accepting that exact string or
+an exact singleton array fixed the checker; wrong/multiple groups still fail.
+
+Browser checks confirmed a 2–2 equalizer, Luca's one-pass buildup involvement,
+15.71 seconds/four players in analyst mode, and Ask Footie's pinned goal/time
+context without an automatic model call. At 390px, document width was 390px;
+highlight and assistant dialog scroll widths equalled their client widths. No
+horizontal overflow was found. A minor existing copy issue (`1 shots`) remains
+for a later editorial pass; no interface changes were made for this rollout.
+
+One initial production AI question, “How did Luca Bennett contribute to Mateo
+Cross's equalizer?”, returned clarification rather than a supported answer.
+The request used one provider call, 1,130 input and 69 output tokens, and zero
+football tools. Azure returned a complete HTTP 200 response; Foundry recorded two
+correlated content-free spans with no privacy/parentage violations. The failure
+occurred after provider completion in plan validation. Hosted logs deliberately
+do not preserve the proposed plan, so its exact rejected fields are unknown.
+Offline reproduction exposed relational-intent ambiguity and prompted the focused
+fix recorded below. This failed smoke result is retained, not counted as a pass.
+
+The preflight also encountered a diagnostic Cosmos transport timeout. Repeating
+the read through the actual configured runtime client succeeded without changing
+RBAC. Initial cold public reads required health warm-up. These operational checks
+are point-in-time evidence, not a claim of zero cold-start latency or a fresh blind
+reasoning benchmark. Last cost audit was US$5.83 pre-tax month-to-date at 03:33 UTC;
+billing lag applies, and subsequent deployment/model usage is not included there.
+
+### Follow-up: contribution questions resolve both football roles
+
+The fix treats contribution/role questions about one goal, finish, equalizer or
+winner as buildup analysis. It keeps the typed query's player subset empty,
+verifies contributor and scorer separately against the observed sequence, and
+prioritizes the explicitly requested contributor over unrelated favorites.
+Unknown/absent participants and mismatched scorers clarify. User wording such as
+“winner” is not promoted into an unsupported score-impact claim. Career totals,
+tracking and intentions retain their existing boundaries. The contributor's
+verified sentence is required during narrative selection; a requested unavailable
+regain interval also remains required. Chinese output retains its complete,
+deterministically localized explanation.
+
+```text
+.venv/bin/python -m pytest -q tests/test_assistant_goal_contribution.py tests/test_assistant_intelligence.py tests/test_assistant_explanations.py tests/test_assistant_multiagent.py tests/test_assistant_narrative.py
+163 passed in 35.48s
+
+# After adding the Chinese output assertion:
+.venv/bin/python -m pytest -q tests/test_assistant_goal_contribution.py
+25 passed in 3.26s
+
+Independent authored checks (no model): 17/17 relational + 7/7 boundary cases.
+
+.venv/bin/python scripts/evaluate_footie_intelligence.py --azure --warm-app --max-attempts 8 --label regression --corpus var/production-goal-contribution-regression.json --output var/production-goal-contribution-azure-regression.json
+PASS equalizer_contribution_release
+PASS wrong_scorer_release
+status: passed; model_attempts: 5; input_tokens: 3700; output_tokens: 147
+```
+
+The overlapping pytest counts are not additive. The two paid cases are targeted
+regression evidence after fixing a known failure, not a new blind accuracy score.
+The original question returned `azure_agent`, no fallback, in 6.869 seconds:
+Luca contributed one completed pass and one reception, within four completed
+passes/four players/15.71 seconds. A question incorrectly naming Luca as scorer
+returned clarification with no facts in 3.289 seconds. Source fingerprints did
+not change during either request. The isolated evaluation allowance remained
+600 calls per rolling day; production limits were not changed.
