@@ -226,7 +226,7 @@ def ensure_production(state):
 def preview(args,state,bundle):
     result=az('deployment','group','what-if','-g',GROUP,'--template-file',str(ROOT/'infra/phase4.bicep'),
         '--parameters','imageDigest='+state['image_digest'],'expiresOn='+state['expires_on'],'location='+state['location'],
-        '--result-format','FullResourcePayloads')
+        '--result-format','FullResourcePayloads','--no-pretty-print')
     counts=check_what_if(result,bundle)
     changes=result.get('changes',result.get('properties',{}).get('changes',[]))
     require({c['resourceId'] for c in changes if c['changeType']=='Create'}==set(cleanup_manifest(bundle)),

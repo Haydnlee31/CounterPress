@@ -258,3 +258,15 @@ def test_resource_absence_uses_exact_observed_azure_code_not_message_substrings(
         assert not phase4.missing_resource_error(stderr)
         monkeypatch.setattr(phase4.subprocess,'run',lambda *a,**k:SimpleNamespace(returncode=3,stdout='',stderr=stderr))
         with pytest.raises(phase4.DeploymentError):phase4.az('resource','show',missing=True)
+
+
+def test_preview_requests_machine_readable_what_if(monkeypatch):
+    b=bundle();calls=[]
+    state={'image_digest':IMAGE,'expires_on':'future','location':'region'}
+    def fake(*args,**kwargs):
+        calls.append(args)
+        return {'changes':[{'resourceId':resource,'changeType':'Create'} for resource in phase4.cleanup_manifest(b)]}
+    monkeypatch.setattr(phase4,'az',fake)
+    monkeypatch.setattr(phase4,'ensure_production',lambda s:None)
+    assert phase4.preview(None,state,b)=={'Create':12}
+    assert '--no-pretty-print' in calls[0]

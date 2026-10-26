@@ -1125,3 +1125,12 @@ Observed service-specific `EntityNotFound` and `ContainerNotFound` responses wer
 also added to the strict top-level missing-code classifier. Conflicting wrapper
 codes, permission failures and message substrings remain errors. Final guard
 regression: `37 passed in 0.03s`. No Azure resources were created by this preflight.
+
+A preliminary ARM structural preview then passed: twelve exact creates and twenty
+ignored references, with production unchanged. This used a placeholder existing
+image only to check resource structure, not an approved plan or deployable test
+image. Azure CLI required `--no-pretty-print` for machine-readable what-if output;
+that flag and a regression were added (`38 passed in 0.06s`). The restricted
+backend also loaded Clubhouse and the equalizer highlight in the browser: 2–2 at
+62:30 and four completed buildup passes. This preview used isolated local SQLite
+and no Azure clients; screenshot: `var/phase4-restricted-preview.png`.
