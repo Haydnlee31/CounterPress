@@ -100,9 +100,51 @@ def asks_regain_interval(question):
         r'夺回|抢回|取得控制|获得球权|进攻.*(?:起点|开始|完整|末段)|(?:完整|整段).*进攻', question, re.I))
 
 
+SCORING_MOMENT = r'(?:goal|finish|equalizer|equaliser|winner)'
+RELATION_HISTORY = re.compile(r'\b(?:career|season|historical|history|total|totals|rate|percentage)\b|\b(?:how many|last five|last 5|recent form|per\s*90)\b|/90|生涯|赛季|总共|成功率', re.I)
+
+
+def scoring_contributor(question):
+    """Resolve grammatical roles separately from the scorer named in the question.
+
+    The return value is an untrusted name phrase, never a player ID. Historical
+    aggregates deliberately stay outside this single-moment interpretation.
+    """
+    if not re.search(r'\b'+SCORING_MOMENT+r'\b', question, re.I):return None
+    patterns = (
+        r'\bhow (?:did|does|has)\s+(.+?)\s+(?:contribut\w*|help(?:ed)?)\b',
+        r'\bwhat role (?:did|does|has)\s+(.+?)\s+(?:play|played)\b',
+        r'\b(?:explain|describe|show(?: me)?|what (?:was|is))\s+(.+?)[’\']s\s+(?:role|contribution|involvement)\b',
+        r'\b(?:role|contribution|involvement)\s+of\s+(.+?)\s+(?:in|to|for|during)\b',
+    )
+    for pattern in patterns:
+        match = re.search(pattern, question, re.I)
+        if match:return match.group(1).strip()
+    return None
+
+
+def scoring_possessors(question):
+    """Names owning a scoring moment; keep data-plane name matching strict."""
+    phrases = re.finditer(r"([a-z]+(?:[ -][a-z]+){0,3})[’']s\s+"+SCORING_MOMENT+r'\b', question, re.I)
+    fillers = {'to','in','of','for','the','this','that','before','behind','during','explain','describe','show','me',
+               'contribute','contributed','help','with','create','created','make','made','what','how','did','does','has',
+               'was','is','role','play','played','contribution','involvement','lead','led','buildup'}
+    result=[]
+    for match in phrases:
+        words=match.group(1).split()
+        boundaries=[i for i,word in enumerate(words) if word.lower() in {'to','in','of','for','before','behind','during','with'}]
+        if boundaries:words=words[boundaries[-1]+1:]
+        while words and words[0].lower() in fillers:words.pop(0)
+        phrase=' '.join(words)
+        if phrase:result.append(phrase)
+    return result
+
+
 def requested_analysis(request):
     """Recognize the three investigation intents without replacing career questions."""
     q=request.question
+    if scoring_contributor(q):
+        return None if RELATION_HISTORY.search(q) else 'buildup'
     if re.search(r'what (?:made|led to|created|set up) (?:that|this|the) goal|how (?:was|did).*(?:goal|buildup)|build[ -]?up|before (?:the |that |this )?(?:goal|finish)|进球.*(?:过程|形成)|如何.*进球',q,re.I):
         return 'buildup'
     if re.search(r'what(?: has|’s|\'s)? changed|how.*(?:game|match).*(?:changed|changing)|changes? in (?:the |this )?(?:game|match)|比赛.*变化',q,re.I):
@@ -200,6 +242,13 @@ class AssistantService:
     def unresolved_analysis_subject(self,question,analysis):
         """An explicit unknown name must never inherit the open profile's subject."""
         if analysis=='buildup':
+            contributor=scoring_contributor(question)
+            if contributor and not RELATION_HISTORY.search(question):
+                if not self.exact_player_subject(contributor):return True
+            for subject in scoring_possessors(question) if contributor else []:
+                if re.search(r'\b(?:goal|finish|move|play|sequence|attack)\s*$',subject,re.I):continue
+                if re.search(r'\b(?:player|team|club)\b',subject,re.I) or self.names(subject,self.store.clubs,'club_id'):continue
+                if not self.exact_player_subject(subject):return True
             match=re.search(r"([a-z]+(?: [a-z]+){0,3})[’']s (?:goal|finish|buildup)\b",question,re.I)
             if not match:return False
             subject=match.group(1)
@@ -223,6 +272,13 @@ class AssistantService:
                 subject=match.group(1).strip()
                 if subject.lower() not in pronouns and not self.names(subject,registry,id_attr):return True
         return False
+
+    def exact_player_subject(self,phrase):
+        """A multiword unknown name cannot inherit a known player's surname."""
+        normalized=phrase.strip().casefold()
+        exact=[getattr(p,'player_id',pid) for pid,p in self.store.players.items() if p.name.casefold()==normalized]
+        if exact:return exact
+        return self.names(phrase,self.store.players,'player_id') if len(phrase.split())==1 else []
 
     def operation_constraint(self,request):
         """Bind explicit user intent, while leaving unrecognized phrasing to the model."""
@@ -595,6 +651,16 @@ class AssistantService:
             if result['status']!='available':
                 return unavailable('Choose a completed goal scored by the attacking team to explore its buildup.','请选择进攻方已完成的进球来查看进球过程。')
             goal=result['goal'];metrics=result['metrics'];name=self.store.players[goal['player_id']].name
+            contributor_phrase=scoring_contributor(request.question)
+            explicit_contributors=self.exact_player_subject(contributor_phrase) if contributor_phrase else []
+            if contributor_phrase and not explicit_contributors:
+                return unavailable('I could not identify the contributing player. Name one player from this match.','无法识别所指的参与球员，请指定本场的一位球员。')
+            for phrase in scoring_possessors(request.question) if contributor_phrase else []:
+                if re.search(r'\b(?:goal|finish|move|play|sequence|attack)\s*$',phrase,re.I):continue
+                if re.search(r'\b(?:player|team|club)\b',phrase,re.I) or self.names(phrase,self.store.clubs,'club_id'):continue
+                scorers=self.exact_player_subject(phrase)
+                if scorers != [goal['player_id']]:
+                    return unavailable('That player did not score the selected goal, or the name is unresolved. Open the goal you mean.','该球员并非所选进球的射手，或姓名无法识别，请打开您想了解的进球。')
             named=self.names(request.question,self.store.players,'player_id')
             named_clubs=self.names(request.question,self.store.clubs,'club_id')
             if named_clubs and goal['club_id'] not in named_clubs:
@@ -602,7 +668,7 @@ class AssistantService:
             if named and not set(named)<={c['player_id'] for c in result['contributions']}:
                 return unavailable('The selected goal does not include that player in its recorded buildup. Open the goal you mean.','所选进球的进攻记录没有该球员，请打开您想了解的进球。')
             for pid in named:
-                if re.search(re.escape(self.store.players[pid].name)+r"[’']s (?:goal|finish)",request.question,re.I) and pid!=goal['player_id']:
+                if re.search(re.escape(self.store.players[pid].name)+r"[’']s "+SCORING_MOMENT+r'\b',request.question,re.I) and pid!=goal['player_id']:
                     return unavailable('That player did not score the selected goal. Open their goal to explore it.','该球员并非所选进球的射手，请打开其进球片段。')
 
             definitions=[('completed_passes','Completed passes','成功传球','count'),('carry_count','Carry segments','带球片段','count'),
@@ -644,18 +710,21 @@ class AssistantService:
                     '记录无法确定球队最初取得球权的时间；时间线仅展示已记录的进攻末段，不能视为完整控球过程，也不能计算夺回球权至射门的时长。'))
             # Prefer the fan's player when they contributed, without changing sporting credit.
             favorites=set(request.preferences.favorite_player_ids)
-            contributors=sorted(result['contributions'],key=lambda c:(c['player_id'] not in favorites,
+            contributors=sorted(result['contributions'],key=lambda c:(c['player_id'] not in explicit_contributors,c['player_id'] not in favorites,
                 -(c['completed_passes']+c['receptions']+c['carries']+c['recoveries']),c['player_id']))
-            contributor=next((c for c in contributors if c['player_id']!=goal['player_id']),None)
+            contributor=next((c for c in contributors if c['player_id'] in explicit_contributors or not explicit_contributors and c['player_id']!=goal['player_id']),None)
             if contributor:
                 pid=contributor['player_id'];pname=self.store.players[pid].name
                 details=[]
-                for key,en,cn in [('completed_passes','completed passes','次成功传球'),('receptions','received passes','次接球'),('carries','carry segments','段带球'),('recoveries','regains','次夺回球权')]:
+                measures=[('completed_passes','completed passes','次成功传球'),('receptions','received passes','次接球'),('carries','carry segments','段带球'),('recoveries','regains','次夺回球权')]
+                if explicit_contributors:measures.append(('shots','shots','次射门'))
+                for key,en,cn in measures:
                     if contributor[key]:
-                        singular={'completed passes':'completed pass','received passes':'received pass','carry segments':'carry segment','regains':'regain'}
+                        singular={'completed passes':'completed pass','received passes':'received pass','carry segments':'carry segment','regains':'regain','shots':'shot'}
                         details.append(t(f'{contributor[key]} '+(singular[en] if contributor[key]==1 else en),f'{contributor[key]}{cn}'))
                         facts.append(fact(result,pid,'buildup_'+key,t(en.title(),cn),contributor[key],subject_kind='player'))
-                if details:text.insert(1,t(f'{pname} contributed '+', '.join(details)+' in the buildup.',f'{pname}在进攻过程中贡献了'+ '、'.join(details)+'。'))
+                if details:text.insert(0 if explicit_contributors and not asks_regain_interval(request.question) else 1,
+                    t(f'{pname} contributed '+', '.join(details)+' in the buildup.',f'{pname}在进攻过程中贡献了'+ '、'.join(details)+'。'))
             if goal_event.situation in ('free_kick','penalty','corner'):
                 visible_goals=[e for e in selected if e.goal_for]
                 if visible_goals and visible_goals[-1].event_id==goal_id:

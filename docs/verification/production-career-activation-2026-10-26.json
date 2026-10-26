@@ -1,0 +1,300 @@
+{
+  "schema": "footie_production_career_activation_v1",
+  "date": "2026-10-26",
+  "source_commit": "86d8c29201a58ca5f6bd5c2894911b8b98f750a9",
+  "deployment_run": 40266453253,
+  "control_plane": {
+    "checked_at_utc": "2026-10-26T03:58:36.953134+00:00",
+    "expected_revision_ready": true,
+    "reviewed_invariants_match": true,
+    "registry_commit_digest_matches": true,
+    "image_digest": "sha256:3f8cfdb30a3ab9ac19f5bb0a0e296668248d26d7f2ca1d2881334483ef2cb482",
+    "revision_mode": "Single",
+    "active_revision_count": 1,
+    "active_revision_is_expected": true,
+    "career_bridge": "on",
+    "replica_ceiling": 1,
+    "actual_reported_replicas": [
+      1
+    ],
+    "configuration_guard_passed": true,
+    "passed": true
+  },
+  "durable_data": {
+    "checked_at_utc": "2026-10-26T03:59:17.033917+00:00",
+    "baseline": {
+      "checkpoint_sequence": 12,
+      "last_enqueued_sequence": 12,
+      "partition_count": 1,
+      "caught_up": true,
+      "journal_generation": 0,
+      "journal_action_count": 0
+    },
+    "observed": {
+      "checkpoint_sequence": 12,
+      "last_enqueued_sequence": 12,
+      "partition_count": 1,
+      "caught_up": true,
+      "journal_head_status": 404,
+      "journal_head_substatus": null,
+      "journal_generation": 0,
+      "journal_action_count": 0,
+      "read_only_preflight": true
+    },
+    "unchanged": true
+  },
+  "public_api": {
+    "status": "passed",
+    "generation": 0,
+    "featured_matches": 4,
+    "highlights": 9,
+    "contexts": [
+      {
+        "highlight_id": "career-showcase-southbank-redhaven-e00711",
+        "context_sha256": "8ae6d8b724628fedb1abdb5a7f73e1aaa89f0aa2d7d471feb2cdd95d9713091e",
+        "context_no_store": true,
+        "replay_http_status": 200,
+        "replay_cache_control": ""
+      },
+      {
+        "highlight_id": "career-showcase-southbank-redhaven-e01019",
+        "context_sha256": "26574b531c32ec39fd3113f9fc35175697eb50251cf3e3c62e6187e5864b63fc",
+        "context_no_store": true,
+        "replay_http_status": 200,
+        "replay_cache_control": ""
+      },
+      {
+        "highlight_id": "career-showcase-southbank-redhaven-e01178",
+        "context_sha256": "8630204e21ec1b38980992ce778515cc11f8f14e9b7b0271db77c7695ffb9b06",
+        "context_no_store": true,
+        "replay_http_status": 200,
+        "replay_cache_control": ""
+      }
+    ],
+    "audiences": {
+      "casual": {
+        "card_hash": "e28800d8cdc60091cf55120800d5416f85deb703c609bd14812aa006e3fb3eca",
+        "content_version": "c56326a42ffc72a642a33ae591787b208b3d2e85d870b4a3959799acf4005705",
+        "evidence_fingerprint": "f6dc82d6054bb8f3b38e2ac89c0c66adb82fde18868a04de0ab6d552bac7268c",
+        "event_revision": 1,
+        "expiry_boundary_verified": true,
+        "score": {
+          "southbank": 2,
+          "redhaven": 2
+        }
+      },
+      "analyst": {
+        "card_hash": "897247df11a5b30fb510dc3cad03c7b6b8a1f1078de751b74f0341e64290bb1c",
+        "content_version": "4c3408c2eabb3d01c30b23bcc891560cb7e7be28ea35bdc12cc8a9bf9bf48637",
+        "evidence_fingerprint": "f6dc82d6054bb8f3b38e2ac89c0c66adb82fde18868a04de0ab6d552bac7268c",
+        "event_revision": 1,
+        "expiry_boundary_verified": true,
+        "score": {
+          "southbank": 2,
+          "redhaven": 2
+        }
+      }
+    },
+    "websocket": {
+      "connected": true,
+      "reconnected": true,
+      "receive_only_roles": true,
+      "dataset_group_verified": true,
+      "notification_delivery_checked": false,
+      "application_messages_sent": 0
+    },
+    "model_calls": 0,
+    "event_deliveries": 0
+  },
+  "browser": {
+    "desktop_context_opened_without_send": true,
+    "casual_luca_buildup_passes": 1,
+    "analyst_duration_seconds": 15.71,
+    "analyst_players": 4,
+    "score": [
+      2,
+      2
+    ],
+    "mobile_viewport_width": 390,
+    "document_scroll_width": 390,
+    "highlight_dialog_client_width": 374,
+    "highlight_dialog_scroll_width": 374,
+    "footie_dialog_client_width": 350,
+    "footie_dialog_scroll_width": 350
+  },
+  "assistant_initial_smoke": {
+    "question": "How did Luca Bennett contribute to Mateo Cross's equalizer?",
+    "http_status": 200,
+    "status": "clarify",
+    "mode": "lookup_fallback",
+    "fallback_reason": "all_specialists_failed",
+    "provider_requests": 1,
+    "tool_calls": 0,
+    "prompt_tokens": 1130,
+    "completion_tokens": 69,
+    "provider_connectivity_verified": true,
+    "exact_proposed_plan_retained": false,
+    "result": "failed_intent_validation; corrected code passed local and bounded Azure regression"
+  },
+  "limits": [
+    "No production events sent; production notification delivery not claimed.",
+    "Public websocket handshakes verify connectivity, not delivery.",
+    "Prior isolated lifecycle tests supply actual correction-delivery evidence.",
+    "This is operational verification, not a new blind AI benchmark."
+  ],
+  "assistant_fix_regression": {
+    "evaluation_status": "passed",
+    "label": "regression",
+    "sources_changed_during_run": [],
+    "corpus_sha256": "a6731d8aae5f2738fc0439a8e95442ea232c4846bd2f2b903ac3ad5bea613e1b",
+    "requested_cases": 2,
+    "model_attempts": 5,
+    "tokens": {
+      "prompt_tokens": 3700,
+      "completion_tokens": 147,
+      "total_tokens": 3847
+    },
+    "cases": [
+      {
+        "id": "equalizer_contribution_release",
+        "passed": true,
+        "checks": {
+          "status": true,
+          "analysis": true,
+          "subject": true,
+          "anchor_0": true,
+          "anchor_1": true,
+          "anchor_2": true,
+          "anchor_3": true,
+          "anchor_4": true,
+          "required_evidence": true,
+          "no_future_evidence": true,
+          "no_future_availability": true,
+          "facts_for_supported": true,
+          "model_completed": true
+        },
+        "duration_ms": 6869,
+        "status": "answered",
+        "mode": "azure_agent",
+        "fallback": null,
+        "text": [
+          "Luca Bennett contributed 1 completed pass, 1 received pass in the buildup.",
+          "This buildup accounts for 1 of Luca Bennett\u2019s 18 completed passes by this goal (5.6%).",
+          "The recorded buildup ends with Mateo Cross scoring: 4 completed passes involving 4 players across about 15.7 seconds."
+        ],
+        "narrative": {
+          "mode": "agent_selected",
+          "blocks": [
+            {
+              "id": "c0",
+              "kind": "moment",
+              "text": "Luca Bennett contributed 1 completed pass, 1 received pass in the buildup.",
+              "fact_indices": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              "evidence_id": "001caacf57a0c99a769356c18538fb188b0f56708eaf09d836421b63f46e73bb",
+              "required": true,
+              "source_role": "match"
+            },
+            {
+              "id": "c1",
+              "kind": "moment",
+              "text": "This buildup accounts for 1 of Luca Bennett\u2019s 18 completed passes by this goal (5.6%).",
+              "fact_indices": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              "evidence_id": "14408c94f02e1b45d25b432ef0b045479efddf1161093c97e0b08567c51949ce",
+              "source_role": "match"
+            },
+            {
+              "id": "c2",
+              "kind": "moment",
+              "text": "The recorded buildup ends with Mateo Cross scoring: 4 completed passes involving 4 players across about 15.7 seconds.",
+              "fact_indices": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              "evidence_id": "5ab5e6c79c3ec13b6ed9678ea59167ec7cb109cef8b4b05f6743d32b99e1ee6f",
+              "source_role": "match"
+            }
+          ],
+          "fallback_reason": null
+        }
+      },
+      {
+        "id": "wrong_scorer_release",
+        "passed": true,
+        "checks": {
+          "status": true,
+          "no_facts": true,
+          "no_replay": true,
+          "facts_for_supported": true
+        },
+        "duration_ms": 3289,
+        "status": "clarify",
+        "mode": "azure_agent",
+        "fallback": null,
+        "text": [
+          "That player did not score the selected goal, or the name is unresolved. Open the goal you mean."
+        ],
+        "narrative": {
+          "mode": "calculated",
+          "blocks": [],
+          "fallback_reason": null
+        }
+      }
+    ],
+    "independent_checks": {
+      "relational": {
+        "passed": 17,
+        "total": 17
+      },
+      "boundaries": {
+        "passed": 7,
+        "total": 7
+      },
+      "model_calls": 0
+    },
+    "local_tests": {
+      "regression_suite_before_chinese_addition": 163,
+      "final_focused_goal_contribution_suite": 25,
+      "counts_overlap": true
+    }
+  },
+  "ci_source_lock_review": {
+    "initial_run": 40267386759,
+    "passed_tests": 1549,
+    "failed_tests": 3,
+    "failure": "reviewed assistant source hashes had changed; offline evaluation guard refused execution",
+    "changed_paths": [
+      "backend/counterpress/assistant/narrative.py",
+      "backend/counterpress/assistant/planner.py",
+      "backend/counterpress/assistant/service.py"
+    ],
+    "replacement_lock_version": "footie-intelligence-controls-v7-goal-contribution",
+    "fixture_and_dependency_hashes_unchanged": true
+  }
+}

@@ -2,7 +2,7 @@
 from math import isfinite
 from pydantic import Field
 from counterpress.fan.contracts import FanContract
-from .service import fingerprint, asks_regain_interval
+from .service import fingerprint, asks_regain_interval, scoring_contributor
 from .planner import structured_request
 from counterpress.adaptation.azure import ProviderFailure
 
@@ -45,9 +45,11 @@ def build_claims(answer,plan,request):
         # The match reducer already checks goal revision, score impact and milestone cutoff.
         required_regain=bool(plan.analysis=='buildup' and asks_regain_interval(request.question) and any(f['metric']=='regain_to_shot_seconds' and f['value'] is None for f in facts))
         required_keeper=bool(plan.analysis=='player_performance' and any(f['metric']=='goals_conceded' for f in facts))
+        required_contributor=bool(plan.analysis=='buildup' and scoring_contributor(request.question))
         for index,text in enumerate(answer['text'][0 if plan.analysis or answer['title']=='About this moment' else 1:]):
             add('moment',text,list(range(len(facts))))
             if (required_regain or required_keeper) and index==0:claims[-1]['required']=True
+            if required_contributor and ' contributed ' in text:claims[-1]['required']=True
         return claims
     for i,f in enumerate(facts):
         v=f['value'];coverage=f.get('coverage')

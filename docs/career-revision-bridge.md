@@ -1,8 +1,9 @@
 # Live career corrections
 
-The local implementation connects Event Hubs career deliveries to the same
-validated statistics used by Clubhouse, personalized insights and Footie. It is
-opt-in and has not been enabled in the hosted app.
+Event Hubs career deliveries connect to the same validated statistics used by
+Clubhouse, personalized insights and Footie. The opt-in bridge was enabled in the
+hosted app on 26 October 2026 after isolated Azure lifecycle verification. The
+public correction journal remains empty; activation did not alter the fixtures.
 
 ## Data path
 
@@ -113,12 +114,19 @@ will reject divergence rather than silently discard the old revisions. Keep the
 journal when restarting: deleting it is not an undo mechanism. Restore an event
 with a higher revision and later availability instead.
 
-## Cloud activation, still pending
+## Cloud activation and producer controls
 
-Deploy and validate the code before setting `COUNTERPRESS_CAREER_STREAMING=on`
-on the existing Cosmos/Event Hubs app. All consumers must support the contract
-before sending career events. Keep the existing managed-identity configuration;
-no keys or service endpoints belong in a delivery file.
+Production activation used the existing Cosmos/Event Hubs app with
+`COUNTERPRESS_CAREER_STREAMING=on`. Independent checks verified the pinned image,
+configuration invariants, one active revision, checkpoint 12/12 and an empty
+generation-0 journal. Four featured match digests and nine highlight versions
+remained unchanged. Actual receive-only Web PubSub connection and reconnection
+passed. No events were sent to production during verification.
+
+All consumers must support the contract before sending career events. Keep the
+existing managed-identity configuration; no keys or service endpoints belong in
+a delivery file. Preserve the durable journal across rollback; reverting code
+is not an undo operation for committed events.
 
 An authorized producer can preflight a locally prepared envelope:
 
@@ -128,7 +136,11 @@ An authorized producer can preflight a locally prepared envelope:
 
 It makes no cloud calls unless `--send` is explicitly supplied. Preflight checks
 the immutable local dataset; the consumer also validates against already
-committed revisions. Before a production rollout, verify one isolated correction
-and restoration through actual Event Hubs, Cosmos, Web PubSub and the browser.
-Local transactional doubles verify conflict semantics, not Azure availability or
-live RBAC. Hosted activation and this end-to-end cloud check remain pending.
+committed revisions. Correction, withdrawal, duplicate suppression, restoration
+and expiry were verified through isolated Event Hubs, Cosmos, Web PubSub and two
+browser viewers. Those temporary resources were removed after verification.
+Public notification delivery was deliberately not exercised: a correction would
+invalidate the authored canonical replays even if later restored. See
+[release evidence](verification/footie-intelligence.md) and the
+[isolated runbook](phase4-verification.md). Local transactional doubles verify
+conflict semantics; they do not replace the separate hosted checks.

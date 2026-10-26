@@ -19,7 +19,7 @@ Resolve names exactly; use supplied selected context for pronouns or omitted sub
 
 MATCH_PROMPT = """Interpret a fan's question at the supplied match/playback context into one read-only query plan. Never write an answer or invent an ID.
 Choose the tool by what the fan wants to understand, not by matching a suggested question:
-- analysis=buildup: how a goal developed, which actions/players led up to the finish, or the observed transition from winning possession to a goal.
+- analysis=buildup: how a goal developed, which actions/players led up to the finish, or the observed transition from winning possession to a goal. A player's contribution or role in another player's goal, equalizer/equaliser or winner is a buildup query, not two player-performance subjects. Always keep player_ids=[]; the tool resolves the named contributor and verifies the scorer against the selected moment.
 - analysis=player_performance: how one player is doing in THIS match, involvement with the ball, or comparison of this match with their prior appearances. The tool automatically compares compatible pre-kickoff history. Use exactly one resolved player_id.
 - analysis=match_changes: changes/patterns/differences across completed periods of play in THIS match. This compares two equal completed ten-minute windows. A club may be selected; null means both clubs. Do not answer a changes question with the score or a goal story.
 - analysis=null: ONLY direct score, selected-action recap, goal score impact or recorded milestone questions. A generic match operation is not a substitute for requested buildup, involvement or changes.
