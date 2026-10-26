@@ -110,9 +110,10 @@ class Reader:
     def post(self,path,body):return self.request('POST',path,body=body)
 
 
-def revision(reader):
+def revision(reader, *, require_enabled=True):
     state = reader.get('/api/data/revisions')
-    require(state.get('dataset') == EXPECTED['dataset'] and state.get('enabled') is True,
+    require(state.get('dataset') == EXPECTED['dataset'] and type(state.get('enabled')) is bool
+            and (not require_enabled or state['enabled'] is True),
             'revision_dataset_or_storage_invalid')
     require(type(state.get('generation')) is int and state['generation'] >= 0, 'revision_generation_invalid')
     return state
@@ -135,7 +136,9 @@ def isolation(reader):
 
 
 def production_snapshot(reader):
-    before = revision(reader)
+    # Production may intentionally keep its career ingestion bridge disabled.
+    # Its explicit mode is still retained and compared in the snapshot.
+    before = revision(reader, require_enabled=False)
     matches = reader.get('/api/data/matches', {'featured':'true','limit':20})
     require(len(matches['items']) == matches['total'] and 1 <= matches['total'] <= 12,
             'production_match_inventory_unbounded')
@@ -148,7 +151,7 @@ def production_snapshot(reader):
             'preferences':{}, 'card_budget':0})
         fingerprints[mid] = response['evidence']['event_digest']
     home = reader.post('/api/fan/home', {'as_of':'2026-10-20T00:00:00Z','preferences':{},'limit':12})
-    after = revision(reader)
+    after = revision(reader, require_enabled=False)
     require(before == after, 'production_changed_during_read')
     return {'revision':before, 'event_digests_at_end':fingerprints,
             'highlights':sorted((h['highlight_id'],h['content_version']) for h in home['highlights']),

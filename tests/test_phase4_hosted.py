@@ -208,3 +208,43 @@ def test_valid_isolation_proof_cannot_authorize_another_origin():
     from types import SimpleNamespace
     with pytest.raises(harness.VerificationError,match='isolated_origin_mismatch'):
         harness.bound_proof(SimpleNamespace(origin='https://different.example.test'),proof())
+
+
+class ProductionModeReader:
+    """Independent minimal public read responses, with no ingestion bridge."""
+    def __init__(self, enabled=False):self.enabled=enabled
+    def get(self,path,params=None):
+        if path=='/api/data/revisions':
+            return {'dataset':harness.EXPECTED['dataset'],'enabled':self.enabled,
+                    'generation':0,'matches':{}}
+        assert path=='/api/data/matches'
+        return {'items':[{'match_id':'public-match','period_lengths_ms':[2700000,2700000]}],'total':1}
+    def post(self,path,body):
+        if path=='/api/fan/home':return {'highlights':[],'highlight_total':0}
+        assert path=='/api/fan/matches/public-match'
+        return {'evidence':{'event_digest':'a'*64}}
+
+
+def test_disabled_production_is_accepted_and_unchanged():
+    reader=ProductionModeReader()
+    snapshot=harness.production_snapshot(reader)
+    assert snapshot['revision']['enabled'] is False
+    state={'production_hash':harness.hashed(snapshot)}
+    assert harness.unchanged_production(reader,state)==state['production_hash']
+    with pytest.raises(harness.VerificationError,match='revision_dataset_or_storage_invalid'):
+        harness.revision(reader)
+
+
+def test_production_mode_change_changes_fingerprint_and_blocks_progress():
+    reader=ProductionModeReader()
+    original=harness.hashed(harness.production_snapshot(reader))
+    reader.enabled=True
+    assert harness.hashed(harness.production_snapshot(reader))!=original
+    with pytest.raises(harness.VerificationError,match='production_state_changed'):
+        harness.unchanged_production(reader,{'production_hash':original})
+
+
+@pytest.mark.parametrize('enabled',[None,0,1,'false','true'])
+def test_production_requires_an_explicit_boolean_mode(enabled):
+    with pytest.raises(harness.VerificationError,match='revision_dataset_or_storage_invalid'):
+        harness.production_snapshot(ProductionModeReader(enabled))

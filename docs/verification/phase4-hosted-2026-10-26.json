@@ -1,0 +1,192 @@
+{
+  "schema": "footie-phase4-hosted-v1",
+  "date": "2026-10-26",
+  "source_commit": "1078229fedfe6eec4de8c8aa4e58ce9b47375691",
+  "ci_run": 40261470533,
+  "image_build_run": 40262380014,
+  "image_digest": "sha256:c52372b4f473cc63d9fa3eb01e8e5dc5e8a22cd00953df0a35a1a0928db4495b",
+  "dataset": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef",
+  "isolation_checks": {
+    "journal": true,
+    "stream": true,
+    "checkpoint": true,
+    "quarantine": true,
+    "pubsub": true,
+    "identities": true,
+    "roles": true
+  },
+  "baseline_passed": true,
+  "steps": [
+    {
+      "status": "passed",
+      "step": "correction",
+      "generation": 1,
+      "processed": 1,
+      "processed_delta": 1,
+      "cards": {
+        "casual": {
+          "card_hash": "7c6d84a58cb93988742899c0856c24ab4146a799650feb8b2811ba4f1f0146fa",
+          "content_version": "a21b6a0dd72d87d12cd4c67b19b3b775a82bcbd10d22660f59b56d3de1a3a854",
+          "evidence_fingerprint": "7b0dc8bb10657bd6b1860b244234019c5f918ee0de208ee2f02c8f4bbe3240a4",
+          "event_revision": 1
+        },
+        "analyst": {
+          "card_hash": "a61885ce9b9afa1dc3ff802257743dd17f2d85460ac009a7631457bc96ede943",
+          "content_version": "2ba2a3386d130f8d51c6fbab9eae173cb6f743f16670dac1b0c29047f24cf7d7",
+          "evidence_fingerprint": "7b0dc8bb10657bd6b1860b244234019c5f918ee0de208ee2f02c8f4bbe3240a4",
+          "event_revision": 1
+        }
+      },
+      "original_cards_preserved": true,
+      "production_unchanged": true,
+      "replay_withdrawn": true,
+      "delivery_evidence": "processed_counter_delta_in_isolated_stream",
+      "socket_transport_checked": true,
+      "physical_checkpoint_checked": false,
+      "model_calls": 0,
+      "websocket_reconnected": true
+    },
+    {
+      "status": "passed",
+      "step": "retraction",
+      "generation": 2,
+      "processed": 2,
+      "processed_delta": 1,
+      "cards": {},
+      "original_cards_preserved": true,
+      "production_unchanged": true,
+      "replay_withdrawn": true,
+      "delivery_evidence": "processed_counter_delta_in_isolated_stream",
+      "socket_transport_checked": true,
+      "physical_checkpoint_checked": false,
+      "model_calls": 0,
+      "websocket_reconnected": true
+    },
+    {
+      "status": "passed",
+      "step": "duplicate",
+      "generation": 2,
+      "processed": 3,
+      "processed_delta": 1,
+      "cards": {},
+      "original_cards_preserved": true,
+      "production_unchanged": true,
+      "replay_withdrawn": true,
+      "delivery_evidence": "processed_counter_delta_in_isolated_stream",
+      "socket_transport_checked": true,
+      "physical_checkpoint_checked": true,
+      "model_calls": 0,
+      "websocket_reconnected": true
+    },
+    {
+      "status": "passed",
+      "step": "restoration",
+      "generation": 3,
+      "processed": 4,
+      "processed_delta": 1,
+      "cards": {
+        "casual": {
+          "card_hash": "bb2ade93b6cfb92a7504181feab6c4010cec9b99017e5ee93be33328ec0f3d04",
+          "content_version": "3024b89e66d4faf675ba2a7995f1640930d2284b9269d07487e87d8c7f42728c",
+          "evidence_fingerprint": "eb83315700c52c956d219da6f30adf67eb08b6ed5742c27bef5796c8ac2e3e8d",
+          "event_revision": 3
+        },
+        "analyst": {
+          "card_hash": "28f67d86fd843d75d9664017b9b8cb746fc951587d900dbfabef60fbf44a08d4",
+          "content_version": "a9bc8d20516a5ebf33abe74c01cc568473c1db3e2a80174673ebfc7efd263d90",
+          "evidence_fingerprint": "eb83315700c52c956d219da6f30adf67eb08b6ed5742c27bef5796c8ac2e3e8d",
+          "event_revision": 3
+        }
+      },
+      "original_cards_preserved": true,
+      "production_unchanged": true,
+      "replay_withdrawn": true,
+      "delivery_evidence": "processed_counter_delta_in_isolated_stream",
+      "socket_transport_checked": true,
+      "physical_checkpoint_checked": false,
+      "model_calls": 0,
+      "websocket_reconnected": true
+    },
+    {
+      "status": "passed",
+      "step": "late",
+      "generation": 4,
+      "processed": 5,
+      "processed_delta": 1,
+      "cards": {},
+      "original_cards_preserved": true,
+      "production_unchanged": true,
+      "replay_withdrawn": true,
+      "delivery_evidence": "processed_counter_delta_in_isolated_stream",
+      "socket_transport_checked": true,
+      "physical_checkpoint_checked": true,
+      "model_calls": 0,
+      "websocket_reconnected": true
+    }
+  ],
+  "checkpoint_after_duplicate": {
+    "checkpoint_sequence": 2,
+    "last_enqueued_sequence": 2,
+    "partition_count": 1,
+    "caught_up": true
+  },
+  "final_checkpoint": {
+    "checkpoint_sequence": 4,
+    "last_enqueued_sequence": 4,
+    "partition_count": 1,
+    "caught_up": true
+  },
+  "final_counters": {
+    "schema": "phase4_counters_v1",
+    "processed": 5,
+    "rejected": 0,
+    "retries": 0,
+    "publish_failures": 0,
+    "checkpoint_failures": 0,
+    "consumer_failures": 0,
+    "export_failures": 0,
+    "observed_backlog": 0,
+    "pending": false
+  },
+  "browser_checks": {
+    "audiences": [
+      "casual",
+      "analyst"
+    ],
+    "separate_https_origins_same_revision": true,
+    "original_retained_until_review": true,
+    "corrected_cards_match": true,
+    "withdrawal_2_1": true,
+    "duplicate_no_prompt": true,
+    "restoration_2_2": true,
+    "late_card_absent": true,
+    "return_to_original_2_2": true,
+    "superseded_animation_hidden": true,
+    "player_focus_preserved": true,
+    "mobile_viewport_width": 390,
+    "mobile_document_scroll_width": 390,
+    "mobile_dialog_width": 374,
+    "mobile_dialog_scroll_width": 374
+  },
+  "model_calls": 0,
+  "production_unchanged": true,
+  "production_career_ingestion_enabled": false,
+  "cleanup_verified": true,
+  "limitations": [
+    "Operational streaming evidence, not a new AI-quality benchmark.",
+    "WebSocket reconnect verified with independent client; browser network-disconnection was not forced.",
+    "Web PubSub IAM is service-scoped; hub isolation is server-enforced.",
+    "Corrections do not regenerate immutable animation.",
+    "One initial baseline transport timeout; retry after health checks.",
+    "ARM cleanup-output evaluation failed after successful resource creation; original receipt and independent control-plane verification used for recovery."
+  ],
+  "cleanup": {
+    "status": "passed",
+    "absent_test_resources": 12,
+    "production_unchanged": true,
+    "production_healthy": true,
+    "cleanup_pending": [],
+    "model_calls": 0
+  },
+  "physical_checkpoint_checked": true
+}

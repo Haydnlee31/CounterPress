@@ -128,6 +128,13 @@ def test_identity_proof_rejects_extra_permissions_and_wrong_cosmos_scope(monkeyp
         return definition
     monkeypatch.setattr(phase4,'az',fake)
     assert len(phase4.verify_access(b,i))==6
+    for role in roles:
+        role['scope']=role['scope'].upper();role['roleDefinitionId']=role['roleDefinitionId'].upper()
+    assignment['properties']['scope']=b['cosmos'].upper()+'/dbs/counterpress/colls/histories-phase4'
+    assert len(phase4.verify_access(b,i))==6
+    assignment['properties']['scope']=b['cosmos_scope'].upper()
+    with pytest.raises(phase4.DeploymentError):phase4.verify_access(b,i)
+    assignment['properties']['scope']=b['cosmos_scope']
     roles.append({'id':'broad','principalId':'principal','scope':BASE,'roleDefinitionId':'/roles/owner'})
     with pytest.raises(phase4.DeploymentError):phase4.verify_access(b,i)
     roles.pop();assignment['properties']['scope']=b['cosmos']+'/dbs/counterpress/colls/histories'
@@ -270,3 +277,53 @@ def test_preview_requests_machine_readable_what_if(monkeypatch):
     monkeypatch.setattr(phase4,'ensure_production',lambda s:None)
     assert phase4.preview(None,state,b)=={'Create':12}
     assert '--no-pretty-print' in calls[0]
+
+
+def test_arm_id_casing_is_accepted_but_different_resources_are_rejected():
+    app,b,i=fixture()
+    app['id']=app['id'].upper();i['id']=i['id'].upper()
+    p=app['properties'];p['environmentId']=p['environmentId'].upper()
+    p['configuration']['registries'][0]['identity']=b['pull'].upper()
+    app['identity']['userAssignedIdentities']={key.upper():value for key,value in app['identity']['userAssignedIdentities'].items()}
+    p['template']['scale']['rules'][1]['custom']['identity']=b['identity'].upper()
+    assert phase4.validate_test_app(app,b,i,IMAGE)
+    for key in ('app','identity','hub','journal','checkpoint','quarantine'):
+        assert phase4.allowed_target(b[key].upper(),b)
+        assert phase4.resource_version(b[key].upper(),b)==phase4.resource_version(b[key],b)
+        assert not phase4.allowed_target(b[key].upper()+'-OTHER',b)
+    p['environmentId']+='-OTHER'
+    with pytest.raises(phase4.DeploymentError):phase4.validate_test_app(app,b,i,IMAGE)
+    p['environmentId']=b['environment'];i['id']+='-OTHER'
+    with pytest.raises(phase4.DeploymentError):phase4.validate_test_app(app,b,i,IMAGE)
+
+
+def test_preview_role_and_cosmos_checks_cannot_be_bypassed_by_arm_id_casing():
+    b=bundle();ids=phase4.cleanup_manifest(b)
+    def preview(rid,props):return {'changes':[{'resourceId':rid.upper(),'changeType':'Create','after':{'properties':props}}]}
+    assert phase4.check_what_if(preview(ids[2],{'roleDefinitionId':'/roles/'+phase4.ROLE_IDS['receiver'].upper()}),b)=={'Create':1}
+    with pytest.raises(phase4.DeploymentError):phase4.check_what_if(preview(ids[2],{'roleDefinitionId':'/roles/owner'}),b)
+    scope=b['cosmos'].upper()+'/dbs/counterpress/colls/histories-phase4'
+    assert phase4.check_what_if(preview(ids[1],{'scope':scope}),b)=={'Create':1}
+    for bad in (scope.upper(),scope.replace('histories-phase4','histories'),scope.replace('CP-TEST','OTHER')):
+        with pytest.raises(phase4.DeploymentError):phase4.check_what_if(preview(ids[1],{'scope':bad}),b)
+
+
+def test_compiled_cleanup_outputs_do_not_reference_resource_copy_indices(tmp_path):
+    """Reproduce the ARM output-evaluation bug after actual Bicep lowering."""
+    import os
+    import shutil
+    import subprocess
+    binary=shutil.which('bicep') or str(Path.home()/'.azure/bin/bicep')
+    if not Path(binary).is_file():pytest.skip('Bicep compiler not installed')
+    output=tmp_path/'phase4.json'
+    env={**os.environ,'DOTNET_BUNDLE_EXTRACT_BASE_DIR':str(tmp_path/'dotnet')}
+    subprocess.run([binary,'build',str(ROOT/'infra/phase4.bicep'),'--outfile',str(output)],check=True,capture_output=True,env=env)
+    template=json.loads(output.read_text());ids=template['outputs']['cleanupIds']['value']
+    assert len(ids)==12
+    assert 'copyindex(' not in json.dumps(template['outputs']).lower()
+    assert ids[8]=="[variables('checkpointId')]" and ids[9]=="[variables('quarantineId')]"
+    for name,destination in (('checkpointId','eventhub-checkpoints-phase4'),('quarantineId','rejected-deliveries-phase4')):
+        assert destination in template['variables'][name]
+        assert 'copyindex(' not in template['variables'][name].lower()
+    # Role resources must retain their resource copy loop; only output lowering changes.
+    assert any(resource.get('copy',{}).get('name')=='blobRoles' for resource in template['resources'])

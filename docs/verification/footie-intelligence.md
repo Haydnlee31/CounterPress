@@ -1134,3 +1134,114 @@ that flag and a regression were added (`38 passed in 0.06s`). The restricted
 backend also loaded Clubhouse and the equalizer highlight in the browser: 2–2 at
 62:30 and four completed buildup passes. This preview used isolated local SQLite
 and no Azure clients; screenshot: `var/phase4-restricted-preview.png`.
+
+### Isolated hosted lifecycle — 26 October 2026
+
+PR [62](https://github.com/Haydnlee31/CounterPress/pull/62) merged as
+`1078229fedfe6eec4de8c8aa4e58ce9b47375691`. Exact-main
+[CI 40261470533](https://github.com/Haydnlee31/CounterPress/actions/runs/40261470533)
+passed **1,517 backend tests**, **225 frontend tests**, the 14-case adapter check,
+career ledger audit, container smoke and template compilation. Build-only
+[run 40262380014](https://github.com/Haydnlee31/CounterPress/actions/runs/40262380014)
+published the immutable test image; neither workflow deployed the public app.
+
+The real isolated test used Event Hubs, a separate Cosmos journal, Blob
+checkpoint storage and Web PubSub, with the dedicated managed identity. Actual
+control-plane verification confirmed the exact runtime configuration, image,
+identity attachments and scoped permissions before any event was sent. There
+were **zero model calls**. This is operational delivery evidence, not another
+agent-quality benchmark. Full sanitized observations are in
+[phase4-hosted-2026-10-26.json](phase4-hosted-2026-10-26.json).
+
+| Delivery | Generation | Processed messages | Observed outcome |
+| --- | ---: | ---: | --- |
+| Baseline | 0 | 0 | Canonical source digest and both expected audience cards match |
+| Pass correction | 1 | 1 | Two completed passes; analyst adds 4.754 seconds / two players |
+| Goal withdrawal | 2 | 2 | Reviewed score 2–1; buildup card absent |
+| Identical duplicate | 2 | 3 | No extra count, card or browser review prompt |
+| Goal/pass restoration | 3 | 4 | Reviewed score 2–2; Luca's one pass and original chain return with new evidence |
+| Late revision | 4 | 5 | Score 2–2; expired card remains absent |
+
+Each delivery produced the expected receive-only WebSocket hint, followed by a
+new connection and an authoritative revision read. The duplicate republished
+generation 2 without advancing it. Actual Blob checkpoints matched the Event
+Hub's final sequence: **2/2 after the duplicate**, **4/4 after all five messages**.
+Final processed count was five; rejected, retries, publish failures, checkpoint
+failures, consumer failures, export failures and observed backlog were all zero;
+no delivery remained pending.
+
+Two hosted browser viewers used independent HTTPS origins for the same active
+revision, one casual and one analyst, both focused on Luca Bennett. Before each
+explicit review, the chosen score/card snapshot remained unchanged. Withdrawal
+removed the buildup card and stale Ask Footie action without closing the dialog
+or losing focus. Restoration returned the personalized card while keeping the
+superseded animation hidden. Return to original moment restored the original
+2–2 score and historical card. Both browsers removed the expired card after
+reviewing the late cutoff. The API also verified the exact expiry boundary;
+millisecond expiry was not inferred from screenshots. Mobile verification used
+a 390-pixel viewport: document width/scroll width 390/390 and dialog 374/374.
+Screenshots are retained locally under `var/phase4-hosted-*`.
+
+The harness compared production's generation, ingestion mode, all four featured
+match event digests and the highlight catalog throughout. Production remained
+unchanged, with career ingestion disabled. Reconnect was exercised by the
+independent WebSocket client; the browser network was not forcibly disconnected.
+Web PubSub IAM remains service-scoped, with hub separation enforced by server
+configuration. The correction journal does not regenerate authored animation.
+
+The hosted run found three verification defects, fixed without changing the
+football fixture, expected cards, deployed app image or resource scopes:
+
+- ARM created all resources but failed evaluating `cleanupIds`: indexed Bicep
+  role-loop references leaked `copyIndex()` into outputs. Explicit scope IDs fix
+  the output; compiled resource definitions remain unchanged. CI now checks the
+  compiled output as well as compiling it.
+- Azure returned resource IDs with different casing. ARM-only comparisons now
+  normalize casing; runtime settings and the Cosmos database/container suffix
+  remain exact. Wrong resources, broad permissions and production destinations
+  still fail verification.
+- The harness initially required production ingestion to be enabled. It now
+  fingerprints either explicit production mode while still requiring the
+  isolated consumer to be enabled. A mode change during testing still fails.
+
+The original prewritten receipt, terminal failed ARM deployment and independent
+verification allowed safe recovery without recreating resources or resetting
+the journal. One initial baseline request timed out; subsequent bounded reads
+passed after health checks. An oversized terminal command was rejected before
+execution; the operator used a short command with bounded stdin delivery.
+
+Final focused verification after the fixes:
+
+```text
+.venv/bin/python -m pytest tests/test_phase4_guard.py tests/test_deployment_guard.py tests/test_staging_guard.py -q
+125 passed in 1.18s
+
+.venv/bin/pytest -q tests/test_phase4_guard.py tests/test_phase4_hosted.py tests/test_phase4_checkpoint.py
+77 passed in 33.82s
+
+Compiled cleanup-output check:
+Isolated cleanup output: 12 IDs, no resource-loop index references
+```
+
+Hosted commands follow [the runbook](../phase4-verification.md): `baseline`, then
+`prepare` → `watch` → explicit isolated sender → `check` for each named step.
+Each check returned `status: passed`; expected generations were `[1,2,2,3,4]`.
+Private origins were supplied through environment variables; no endpoint, token
+or credential is included in this report.
+
+Cleanup completed using the original receipt. The first attempt deleted the app
+but stopped while checking deletion; the resumable second attempt removed the
+remaining owned resources. An independent final check confirmed all twelve exact
+targets absent, the public health endpoint healthy and production data unchanged:
+
+```text
+.venv/bin/python scripts/phase4_azure.py cleanup --apply --discard-test-data --state /private/tmp/footie-phase4-receipt.json
+{"status":"CLEANED","production_unchanged":true,"deleted_test_resources":12}
+
+Independent post-cleanup check:
+{"status":"passed","absent_test_resources":12,"production_unchanged":true,"production_healthy":true,"cleanup_pending":[],"model_calls":0}
+```
+
+The temporary app, data containers, Event Hub and dedicated identity/roles are
+gone. The published immutable image remains in the existing registry for
+reproducibility. No production rollout or model-quality rerun is claimed here.
