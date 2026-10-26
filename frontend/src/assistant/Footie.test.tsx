@@ -2,6 +2,7 @@ import {cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {afterEach,beforeEach,expect,it,vi} from 'vitest'
 import Footie,{AnswerVisual} from './Footie'
+import {defaults} from '../../../integrations/personalization/client'
 const requests:any[]=[]
 let fail=false,pending:((value:Response)=>void)|null=null,delay=false
 const plan={operation:'stats',player_ids:['rh09'],club_id:null,match_id:null,metric:'goals',per90:false,season:null,comparison_season:null}
@@ -24,6 +25,22 @@ beforeEach(()=>{
  }))
 })
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.restoreAllMocks()})
+it('submits the exact observation, source ceiling and frozen audience only after the fan asks',async()=>{
+ const preferences={...defaults(),depth:'analyst' as const,favorite_player_ids:['rh09']}
+ const user=userEvent.setup()
+ render(<Footie context={{label:'More shots from Redhaven',question:'What changed in this passage of play?',
+  matchId:'showcase',clubId:'redhaven',cutoff:{period:1,elapsed_ms:423000},throughSequence:1448,
+  observationId:'showcase:1:redhaven:shots_increase',observationFingerprint:'a'.repeat(64),preferences}}/>)
+ await screen.findByRole('textbox',{name:'Ask a football question'})
+ expect(requests).toHaveLength(0)
+ await user.click(screen.getByRole('button',{name:'Send question'}))
+ await waitFor(()=>expect(requests).toHaveLength(1))
+ expect(requests[0]).toMatchObject({question:'What changed in this passage of play?',match_id:'showcase',
+  cutoff:{period:1,elapsed_ms:423000},through_sequence:1448,
+  observation_id:'showcase:1:redhaven:shots_increase',observation_fingerprint:'a'.repeat(64),preferences})
+ expect(requests[0].event_id).toBeNull()
+ expect(requests[0].event_revision).toBeNull()
+})
 it('keeps incomplete investigation disclosure visible with the direct answer',async()=>{
  const user=userEvent.setup();delay=true;render(<Footie/>);
  await user.click(await screen.findByRole('button',{name:/01.*How many goals does Mateo Cross/}))

@@ -130,7 +130,8 @@ def specialist_request(service, request, task):
         if re.search(r'\b(?:this|the selected)\s+(?:match|play|moment|goal)\b|本场|这次|这一刻|这个进球',question,re.I):
             raise ValueError('Current-match statistics cannot become pre-match history')
         body = body.model_copy(update={'question':question,'as_of':cutoff,'match_id':None,
-            'playback':None, 'event_id':None, 'event_revision':None})
+            'playback':None, 'event_id':None, 'event_revision':None, 'through_sequence':None,
+            'observation_id':None, 'observation_fingerprint':None})
     return body
 
 

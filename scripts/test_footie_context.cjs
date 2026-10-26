@@ -46,6 +46,10 @@ const assert=require('node:assert/strict')
   // Match Centre freezes the currently animated action and preserves the paused sequence.
   await page.goto(base+'/?match=wyscout-2058017#gi')
   await page.getByRole('button',{name:'Moments',exact:true}).click()
+  // Exercise the original moment entry point in the opening passage, before
+  // rolling comparisons are eligible to replace it with an insight question.
+  const matchTimeline=page.getByRole('slider',{name:'Match timeline'})
+  await matchTimeline.focus();await matchTimeline.press('Home')
   const progress=page.getByRole('slider',{name:'Play sequence progress'})
   await progress.focus();await progress.press('End')
   await page.getByRole('button',{name:'Ask Footie'}).click()

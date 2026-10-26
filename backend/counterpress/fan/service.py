@@ -24,6 +24,32 @@ class FanService:
         self.store = career.store
         self.snapshots = snapshots
 
+    def observations(self, mid, request):
+        """Replaceable trailing observations at one exact, revision-aware cutoff."""
+        from .observations import RULE_VERSION, rolling_observations
+        envelope = self.envelope(request)
+        fixture = Fixture.model_validate_json(self.store.row(mid)['fixture'])
+        cutoff = (request.cutoff.period, request.cutoff.elapsed_ms)
+        if cutoff[1] > fixture.period_lengths_ms[cutoff[0] - 1]:
+            raise PreferenceError('Playback cutoff outside match')
+        events = self.store.events(mid)
+        latest_sequence = max((e.delivery_sequence for e in events), default=0)
+        sequence = request.through_sequence if request.through_sequence is not None else latest_sequence
+        if sequence > latest_sequence:
+            raise PreferenceError('Source boundary is ahead of received events')
+        visible_deliveries = [e for e in events if e.delivery_sequence <= sequence]
+        observations = rolling_observations(fixture, visible_deliveries, cutoff=cutoff,
+            preferences=request.preferences,
+            club_names={cid: self.store.clubs[cid].name for cid in (fixture.home_id, fixture.away_id)},
+            player_names={a.player_id: self.store.players[a.player_id].name for a in fixture.appearances})
+        from .interpretation import interpret_candidates
+        observations = interpret_candidates(fixture, select_events(visible_deliveries, cutoff), observations,
+            request.preferences, {cid: self.store.clubs[cid].name for cid in (fixture.home_id, fixture.away_id)},
+            {a.player_id: self.store.players[a.player_id].name for a in fixture.appearances})
+        return {**envelope, 'match_id': mid, 'cutoff': request.cutoff.model_dump(),
+                'through_sequence': sequence, 'rule_version': RULE_VERSION,
+                'observations': observations[:request.card_budget]}
+
     def validate(self, preferences):
         clubs = {*preferences.favorite_club_ids}
         players = {*preferences.favorite_player_ids}

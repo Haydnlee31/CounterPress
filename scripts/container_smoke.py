@@ -119,6 +119,16 @@ analytics = data('/api/data/players/rh09/analytics')
 assert analytics
 assistant = json.loads(get('/api/fan/assistant/config')[0])
 assert assistant['available'] is True
+native = json.loads(get('/api/analyst/config')[0])
+assert native['mode'] in ('metrics', 'foundry') and len(native['roles']) == 4
+# Snapshot-only verification cannot invoke native models, even in production.
+request = Request(base+'/api/analyst/matches/wyscout-2058017/snapshot',
+    data=json.dumps({'cutoff': {'period': 1, 'elapsed_ms': 0}}).encode(),
+    headers={'Content-Type': 'application/json'})
+with urlopen(request, timeout=20) as response:
+    first_frame = json.load(response)
+assert first_frame['score'] == {'eastbridge': 0, 'northport': 0}
+assert not first_frame['evidence'] and first_frame['metrics']
 # Hosted smoke never spends model calls; the restricted image tests direct lookup.
 if not assistant['natural_language']:
     request = Request(base+'/api/fan/assistant/ask',

@@ -38,7 +38,9 @@ LOCK = ROOT / 'fixtures/evaluation/editorial_controls_lock.json'
 def locked_files():
     return [MANIFEST, *(ROOT/'fixtures'/name for name, _ in SCENARIOS.values()),
             ROOT/'fixtures/faults/recovery_corrections.json',
-            ROOT/'uv.lock', *(ROOT/'backend/counterpress').rglob('*.py')]
+            ROOT/'uv.lock', *(ROOT/'backend/counterpress').rglob('*.py'),
+            *(ROOT/'integrations/analyst_foundry').rglob('*.py'),
+            ROOT/'integrations/analyst_foundry/requirements.txt']
 
 
 def source_hashes():

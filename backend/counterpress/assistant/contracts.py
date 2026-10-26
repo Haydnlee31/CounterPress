@@ -47,9 +47,16 @@ class AskRequest(HistoryRequest):
     event_id: Identifier | None = None
     event_revision: int | None = Field(default=None,ge=1)
     through_sequence: int | None = Field(default=None,ge=0)
+    observation_id: str | None = Field(default=None, pattern=r'^[a-zA-Z0-9][a-zA-Z0-9_:\-]{0,239}$')
+    observation_fingerprint: str | None = Field(default=None, pattern=r'^[0-9a-f]{64}$')
 
     @model_validator(mode='after')
     def moment_scope(self):
+        if self.observation_id is not None or self.observation_fingerprint is not None:
+            if (not self.observation_id or not self.observation_fingerprint or not self.match_id
+                    or not self.playback or self.through_sequence is None or self.event_id is not None
+                    or self.event_revision is not None):
+                raise ValueError('An observation requires its fingerprint, match, playback time and source boundary')
         if self.through_sequence is not None and (not self.match_id or not self.playback):
             raise ValueError('A source boundary requires a match and playback time')
         if self.event_id is not None or self.event_revision is not None:

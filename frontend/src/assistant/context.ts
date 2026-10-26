@@ -1,9 +1,11 @@
 import type {MatchTime,Event} from '../types'
+import type {FanPreferences} from '../../../integrations/personalization/client'
 import {replayTime} from '../matchday/replayGallery'
 
 export type FootieContext={
   label:string;question:string;playerId?:string;clubId?:string;season?:string;asOf?:string;
   matchId?:string;cutoff?:MatchTime;eventId?:string;eventRevision?:number;throughSequence?:number;resolveSource?:boolean;resolved?:boolean
+  observationId?:string;observationFingerprint?:string;preferences?:FanPreferences
 }
 
 export function matchdayContext(matchId:string,event:Event,resolved:boolean,label:string):FootieContext{

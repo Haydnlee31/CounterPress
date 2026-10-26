@@ -51,6 +51,7 @@ def build_claims(answer,plan,request):
         count_sentence=f'The recorded buildup contains {pass_count} completed '+('pass.' if pass_count==1 else 'passes.')
         for index,text in enumerate(answer['text'][0 if plan.analysis or answer['title']=='About this moment' else 1:]):
             add('moment',text,list(range(len(facts))))
+            if answer.get('observation_interpretation') and index==0:claims[-1]['required']=True
             if (required_regain or required_keeper) and index==0:claims[-1]['required']=True
             if required_contributor and ' contributed ' in text:claims[-1]['required']=True
             if required_pass_count and pass_count is not None and text==count_sentence:claims[-1]['required']=True

@@ -8,7 +8,9 @@ import {PitchIdentity,PitchFaceToggle,usePitchFaces} from '../football/PitchIden
 import {discipline} from './discipline'
 import {AskFootie} from '../assistant/AskFootie'
 import {momentContext} from '../assistant/context'
-export function PlaySequence({events,event,names,players,matchId,fullMatch=false,autoAdvance=false,onAutoAdvanceChange,onComplete,visible=true,sequenceFloor=0}:{events:GIEvent[];event:GIEvent;names:Map<string,string>;players:GIPlayer[];matchId?:string;fullMatch?:boolean;autoAdvance?:boolean;onAutoAdvanceChange?:(value:boolean)=>void;onComplete?:()=>void;visible?:boolean;sequenceFloor?:number}) {
+import {LiveObservation,completedObservationCutoff} from './LiveObservation'
+export type ReplayPlayback = {cutoff:{period:1|2;elapsed_ms:number};playing:boolean}
+export function PlaySequence({events,event,names,players,matchId,fullMatch=false,autoAdvance=false,onAutoAdvanceChange,onComplete,visible=true,sequenceFloor=0,onPlaybackChange,hideObservation=false}:{events:GIEvent[];event:GIEvent;names:Map<string,string>;players:GIPlayer[];matchId?:string;fullMatch?:boolean;autoAdvance?:boolean;onAutoAdvanceChange?:(value:boolean)=>void;onComplete?:()=>void;visible?:boolean;sequenceFloor?:number;onPlaybackChange?:(value:ReplayPlayback)=>void;hideObservation?:boolean}) {
   const sequence=useMemo(()=>sequenceEvents(events,event).filter(e=>events.findIndex(x=>x.event_id===e.event_id)>=sequenceFloor),[events,event,sequenceFloor])
   const actions=useMemo(()=>positionedActions(fullMatch?events:sequence,fullMatch?4418:event.team_id),[events,event,fullMatch,sequence])
 
@@ -32,7 +34,12 @@ export function PlaySequence({events,event,names,players,matchId,fullMatch=false
   },[playing,duration,speed,visible])
   useEffect(()=>{if(progress>=1&&playing){setPlaying(false);if(autoAdvance&&!fullMatch)complete.current?.()}},[progress,playing,autoAdvance,fullMatch])
   const clock=progress*duration
+  const observationCutoff=completedObservationCutoff(timeline.actions,clock)
   const activeAction=timeline.actions.filter(a=>a.at<=clock).at(-1)
+  const playbackCallback=useRef(onPlaybackChange);playbackCallback.current=onPlaybackChange
+  const completedPeriod=observationCutoff?.period??activeAction?.event.period??1
+  const completedMs=observationCutoff?.elapsed_ms??0
+  useEffect(()=>{playbackCallback.current?.({cutoff:{period:completedPeriod,elapsed_ms:completedMs},playing:playing&&visible})},[completedPeriod,completedMs,playing,visible])
   const phaseAt=activeAction?Math.min(1,(clock-activeAction.at)/activeAction.duration):0
   const cutoff=activeAction?{period:activeAction.event.period,elapsed_ms:activeAction.event.elapsed_ms+(phaseAt>=activeAction.resolved?0:-1)}:undefined
   const cards=discipline(events,cutoff)
@@ -40,6 +47,8 @@ export function PlaySequence({events,event,names,players,matchId,fullMatch=false
   const roster=sceneRoster(players,events,activeAction?.event??event).filter(p=>!dismissed.has(p.player_id))
   const {active,ball,ballHeight,opacity,transition,phase,players:scene}=replayFrame(timeline,clock,roster,fullMatch?4418:event.team_id)
   const score=[4418,9598].map(team=>timeline.actions.filter(a=>a.event.goal_for===team&&a.at+a.duration*a.resolved<=clock).length)
+  const replayFooter=<div className="gi-replay-footer"><p className="gi-replay-caption" aria-live="off">{transition?'Play resumes':active?`${names.get(active.event.player_id)} · ${outcomeText(active.event)}`:'Following the play'}{progress>=1?' · Full sequence':''}</p>
+    {matchId&&active&&<AskFootie variant="pitch" context={momentContext(matchId,{event_id:active.event.event_id,revision:active.event.revision,occurred_at:{period:active.event.period,elapsed_ms:active.event.elapsed_ms},available_at:{period:active.event.available_period??active.event.period,elapsed_ms:active.event.available_ms??active.event.elapsed_ms}},phase>=active.resolved,`${names.get(active.event.player_id)??'Player'} · ${outcomeText(active.event)}`)} onOpen={()=>setPlaying(false)}/>}</div>
   return <div className="gi-replay">
     {fullMatch&&<div className="gi-replay-prelude"><span className="gi-watch-score">Eastbridge <strong>{score[0]} – {score[1]}</strong> Northport · {active?matchClock(active.event):'0:00'}</span><p className="gi-watch-note">Continuous replay · breaks between actions skipped</p></div>}
     <svg className="gi-pitch" viewBox={portrait?"-5 -5 78 115":"-5 -5 115 78"} role="img" aria-label={fullMatch?"Full match replay, Eastbridge attacking right":"Match replay, selected team attacking right"}>
@@ -72,8 +81,7 @@ export function PlaySequence({events,event,names,players,matchId,fullMatch=false
       {!fullMatch&&onAutoAdvanceChange&&<label className="gi-auto-toggle"><input aria-label="Auto-play next sequence" type="checkbox" checked={autoAdvance} onChange={e=>onAutoAdvanceChange(e.target.checked)}/><span className="gi-switch-track" aria-hidden="true"/><span>Auto-play</span></label>}
     </div>
     {cards.players.length>0&&<details className="gi-card-disclosure"><summary><span className="gi-card-summary"><i className="card-yellow"/>{cards.players.filter(p=>p.yellows>0).length} booked{dismissed.size>0&&<> · <i className="card-red"/>{dismissed.size} sent off</>}</span><span aria-hidden="true">⌄</span></summary><div className="gi-live-cards" aria-label="Cards at this point in the match">{cards.players.map(p=><span key={p.player_id}><i className={p.sentOff?'card-red':'card-yellow'}/>{names.get(p.player_id)} · {p.sentOff?'Sent off':'On a yellow'}</span>)}</div></details>}
-    <div className="gi-replay-footer"><p className="gi-replay-caption" aria-live="off">{transition?'Play resumes':active?`${names.get(active.event.player_id)} · ${outcomeText(active.event)}`:'Following the play'}{progress>=1?' · Full sequence':''}</p>
-    {matchId&&active&&<AskFootie variant="pitch" context={momentContext(matchId,{event_id:active.event.event_id,revision:active.event.revision,occurred_at:{period:active.event.period,elapsed_ms:active.event.elapsed_ms},available_at:{period:active.event.available_period??active.event.period,elapsed_ms:active.event.available_ms??active.event.elapsed_ms}},phase>=active.resolved,`${names.get(active.event.player_id)??'Player'} · ${outcomeText(active.event)}`)} onOpen={()=>setPlaying(false)}/>}</div></div>
+    {hideObservation?replayFooter:<LiveObservation matchId={matchId} cutoff={observationCutoff} visible={visible} onOpen={()=>setPlaying(false)}>{replayFooter}</LiveObservation>}</div>
     {peek.card}
   </div>
 }

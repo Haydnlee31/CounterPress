@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+"""Plan or provision isolated native agents; never modifies existing Footie agents.
+
+Default is a pure local plan. --apply creates immutable versions and a hosted
+coordinator, but does not invoke models, create sessions or grant Azure roles.
+"""
+from __future__ import annotations
+
+import argparse
+from datetime import timedelta
+import json
+import hashlib
+import io
+import zipfile
+import stat
+import os
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from integrations.analyst_foundry.definitions import DIRECTOR_NAME, NAMES, definition, definition_hash
+
+
+def build_plan(model: str, image: str) -> dict:
+    return {"coordinator": DIRECTOR_NAME, "specialists": [
+        {"role": role, "name": name, "hash": definition_hash(definition(role, model))}
+        for role, name in NAMES.items()], "image_pinned": "@sha256:" in image,
+        "cpu": "1", "memory": "2Gi", "idle_timeout_seconds": 120,
+        "max_calls_per_run": 5, "max_parallel_calls": 2, "max_runs_per_session": 1}
+
+
+def ensure_version(project, name: str, value: dict):
+    digest = definition_hash(value)
+    # Content-addressed idempotence avoids unnecessary versions on repeated runs.
+    from azure.core.exceptions import ResourceNotFoundError
+    try:
+        existing_versions = list(project.agents.list_versions(name))
+    except ResourceNotFoundError:
+        existing_versions = []
+    for existing in existing_versions:
+        if (existing.metadata or {}).get("footie_definition_hash") == digest:
+            return existing
+    return project.agents.create_version(name, body={"definition": value,
+        "metadata": {"footie_definition_hash": digest, "footie_component": "analyst-mode"}})
+
+
+def source_bundle() -> bytes:
+    stream = io.BytesIO()
+    source = ROOT / "integrations" / "analyst_foundry"
+    with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(source.glob("*.py")):
+            info = zipfile.ZipInfo("integrations/analyst_foundry/" + path.name, (2026, 1, 1, 0, 0, 0))
+            info.external_attr = (stat.S_IFREG | 0o644) << 16
+            archive.writestr(info, path.read_bytes())
+        info = zipfile.ZipInfo("requirements.txt", (2026, 1, 1, 0, 0, 0))
+        info.external_attr = (stat.S_IFREG | 0o644) << 16
+        archive.writestr(info, (source / "requirements.txt").read_bytes())
+    return stream.getvalue()
+
+
+def provision(project, model: str, image: str, endpoint: str, *, code: bool = False) -> dict:
+    from azure.ai.projects.models import HostedAgentDefinition, ContainerConfiguration, SessionConfiguration, ProtocolVersionRecord, AgentEndpointProtocol
+    if not code and "@sha256:" not in image:
+        raise ValueError("coordinator image must be pinned by digest")
+    manifest = {}
+    for role, name in NAMES.items():
+        agent = ensure_version(project, name, definition(role, model))
+        manifest[role] = {"name": agent.name, "version": agent.version}
+    hosted = HostedAgentDefinition(cpu="1", memory="2Gi",
+        protocol_versions=[ProtocolVersionRecord(protocol=AgentEndpointProtocol.RESPONSES, version="2.0.0")],
+        session_configuration=SessionConfiguration(idle_timeout_seconds=timedelta(seconds=120)),
+        environment_variables={"FOUNDRY_PROJECT_ENDPOINT": endpoint, "FOOTIE_SPECIALIST_MANIFEST": json.dumps(manifest, separators=(",", ":")),
+            "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT": "false"})
+    if code:
+        from azure.ai.projects.models import CodeConfiguration
+        from azure.core.exceptions import ResourceNotFoundError
+        bundle = source_bundle()
+        bundle_hash = hashlib.sha256(bundle).hexdigest()
+        hosted.code_configuration = CodeConfiguration(runtime="python_3_13",
+            entry_point=["python", "-m", "integrations.analyst_foundry.server"], dependency_resolution="remote_build")
+        fingerprint = definition_hash({"definition": hosted.as_dict(), "bundle": bundle_hash})
+        try:
+            existing = list(project.agents.list_versions(DIRECTOR_NAME))
+        except ResourceNotFoundError:
+            existing = []
+        agent = next((a for a in existing if (a.metadata or {}).get("footie_definition_hash") == fingerprint), None)
+        if agent is None:
+            upload = io.BytesIO(bundle)
+            upload.name = "footie-analyst.zip"
+            agent = project.agents.create_version_from_code(DIRECTOR_NAME, definition=hosted,
+                code=upload, code_zip_sha256=bundle_hash,
+                metadata={"footie_definition_hash": fingerprint, "footie_component": "analyst-mode"})
+    else:
+        hosted.container_configuration = ContainerConfiguration(image=image)
+        agent = ensure_version(project, DIRECTOR_NAME, hosted.as_dict())
+    return {"manifest_id": definition_hash({"agents": manifest, "coordinator": hosted.as_dict()}),
+            "coordinator": {"name": agent.name, "version": agent.version}, "agents": manifest,
+            "limits": build_plan(model, image)}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--model", default="gpt-4.1-mini")
+    parser.add_argument("--image", default="")
+    parser.add_argument("--manifest", type=Path)
+    parser.add_argument("--code", action="store_true", help="Use native ZIP remote build instead of ACR image")
+    args = parser.parse_args()
+    if not args.apply:
+        print(json.dumps(build_plan(args.model, args.image), indent=2))
+        return
+    endpoint = os.environ.get("FOUNDRY_PROJECT_ENDPOINT", "")
+    if not endpoint.startswith("https://") or not args.manifest:
+        parser.error("--apply requires HTTPS FOUNDRY_PROJECT_ENDPOINT and --manifest")
+    from azure.ai.projects import AIProjectClient
+    from azure.identity import DefaultAzureCredential
+    try:
+        with DefaultAzureCredential() as credential, AIProjectClient(endpoint=endpoint, credential=credential) as project:
+            result = provision(project, args.model, args.image, endpoint, code=args.code)
+        args.manifest.parent.mkdir(parents=True, exist_ok=True)
+        args.manifest.write_text(json.dumps(result, indent=2) + "\n")
+        print("Native Analyst Mode agent versions registered; no model calls or sessions started.")
+    except Exception as exc:
+        # SDK exception text may contain private endpoints/resource identifiers.
+        code = getattr(getattr(exc, "error", None), "code", None)
+        status = getattr(exc, "status_code", None)
+        safe_code = str(code) if code and str(code).replace("_", "").isalnum() else "unknown"
+        print(f"Provisioning failed ({type(exc).__name__}, status={status}, code={safe_code}); inspect locally with secured diagnostics.", file=sys.stderr)
+        raise SystemExit(1) from None
+
+
+if __name__ == "__main__":
+    main()

@@ -5,6 +5,7 @@ import { Matchday } from './matchday/Matchday'
 import './shell/theme.css'
 import {watchCareerRevisions} from './football/revisions'
 
+const AnalystMode = lazy(() => import('./analyst/AnalystMode'))
 const FullMatch = lazy(() => import('./live/FullMatch'))
 const Tools = lazy(() => import('./tools/Tools'))
 const GI = lazy(() => import('./gi/GI'))
@@ -23,6 +24,7 @@ export default function App() {
     window.addEventListener('hashchange', update)
     return () => window.removeEventListener('hashchange', update)
   }, [])
+  if (route === '#analyst') return <Suspense fallback={<p className="cp-loading">Opening Analyst Mode…</p>}><AnalystMode /></Suspense>
   if (route === '#assistant') return <Suspense fallback={<p className="cp-loading">Opening Footie…</p>}><Footie /></Suspense>
   if (route.startsWith('#football')) return <Suspense fallback={<p className="cp-loading">Opening Clubhouse…</p>}><FootballHub /></Suspense>
   if (route === '#live') return <Suspense fallback={<p>Opening the match…</p>}><FullMatch /></Suspense>

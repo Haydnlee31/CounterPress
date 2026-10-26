@@ -1,0 +1,92 @@
+// Local-only browser review. No automatic assistant submissions or Azure calls.
+const {chromium}=require('playwright')
+const assert=require('node:assert/strict')
+const fs=require('node:fs')
+;(async()=>{
+ const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_EXECUTABLE||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'})
+ try{
+  const page=await browser.newPage({viewport:{width:1440,height:1100},reducedMotion:'reduce'})
+  const base=process.argv[2]||'http://127.0.0.1:5173'
+  const errors=[],asks=[],requests=[]
+  page.on('pageerror',e=>errors.push(e.message))
+  page.on('request',r=>{
+   if(r.url().endsWith('/api/fan/assistant/ask'))asks.push(r.postDataJSON())
+   if(r.url().endsWith('/observations'))requests.push(r.postDataJSON())
+  })
+  assert.equal((await (await page.request.get(base+'/api/fan/assistant/config')).json()).natural_language,false,'Use a local preview without Azure')
+  const match=await (await page.request.get(base+'/api/gi/matches/wyscout-2058017')).json()
+  const index=match.events.findIndex(e=>e.period===1&&e.elapsed_ms>=840000)
+  assert(index>0)
+  await page.goto(base+'/?match=wyscout-2058017#gi')
+  await page.getByRole('button',{name:'Moments',exact:true}).click()
+  const timeline=page.getByRole('slider',{name:'Match timeline'})
+  // Use the range control's native setter and input event, as with a drag.
+  await timeline.evaluate((el,value)=>{
+   Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(value))
+   el.dispatchEvent(new Event('input',{bubbles:true}))
+   el.dispatchEvent(new Event('change',{bubbles:true}))
+  },index)
+  const sequence=page.getByRole('slider',{name:'Play sequence progress'})
+  await sequence.focus();await sequence.press('End')
+  const insight=page.getByRole('complementary',{name:'Match insight'})
+  await insight.waitFor()
+  assert.match(await insight.innerText(),/Errors are giving Eastbridge territory/)
+  assert.match(await insight.innerText(),/Eastbridge made the next completed pass/)
+  assert.equal(await page.getByRole('button',{name:'Ask Footie',exact:true}).count(),0,'Only one contextual assistant entry')
+  const atPause=requests.length
+  await page.waitForTimeout(700)
+  assert.equal(requests.length,atPause,'Paused playback must not poll')
+  assert.equal(asks.length,0,'Observations never automatically ask the model')
+  fs.mkdirSync('var',{recursive:true})
+  await page.locator('.gi-detail').screenshot({path:'var/live-observation-desktop.png'})
+  for(const width of [760,390,360]){
+   await page.setViewportSize({width,height:844})
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`Page overflow at ${width}`)
+   assert(await insight.evaluate(el=>el.scrollWidth<=el.clientWidth),`Card overflow at ${width}`)
+   const [box,button]=await Promise.all([insight.boundingBox(),insight.getByRole('button',{name:'Ask Footie why'}).boundingBox()])
+   assert(button.x>=box.x+12&&button.x+button.width<=box.x+box.width-12,`Button needs an inset at ${width}`)
+  }
+  await page.locator('.gi-detail').screenshot({path:'var/live-observation-mobile.png'})
+  await insight.getByRole('button',{name:'Ask Footie why'}).click()
+  const dialog=page.getByRole('dialog',{name:'Ask Footie',exact:true})
+  await dialog.getByRole('textbox',{name:'Ask a football question'}).waitFor()
+  assert.equal(asks.length,0,'Opening the drawer is not consent to submit')
+  await page.evaluate(()=>window.dispatchEvent(new CustomEvent('footie:records-changed',{
+   detail:{matches:['wyscout-2058017'],datasetChanged:false},
+  })))
+  assert(await dialog.isVisible(),'Refreshing the observation must not close the frozen conversation')
+  const responsePromise=page.waitForResponse(r=>r.url().endsWith('/api/fan/assistant/ask'))
+  await dialog.getByRole('button',{name:'Send question'}).click()
+  const response=await responsePromise
+  assert.equal(response.status(),200,'Pinned observation question should succeed')
+  const answer=await response.json()
+  await dialog.locator('.ft-answer').waitFor()
+  assert.equal(asks.length,1)
+  assert(asks[0].observation_id&&asks[0].observation_fingerprint)
+  assert.equal(asks[0].match_id,'wyscout-2058017')
+  assert.equal(asks[0].cutoff.period,1)
+  assert(Number.isSafeInteger(asks[0].through_sequence))
+  const windows=answer.facts.map(f=>f.scope.observation_window).filter(Boolean)
+  assert(windows.length>0,'Answer must carry exact observation windows')
+  assert(windows.every(w=>w.period===asks[0].cutoff.period&&w.end_ms-w.start_ms===180000))
+  assert.equal(Math.max(...windows.map(w=>w.end_ms)),asks[0].cutoff.elapsed_ms)
+  assert.match(await dialog.locator('.ft-answer').innerText(),/Northport|passes/i)
+  assert(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth),'Drawer overflow')
+  await page.keyboard.press('Escape')
+  await timeline.evaluate(el=>{
+   Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,'0')
+   el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))
+  })
+  await insight.waitFor({state:'hidden'})
+  const beforeEarly=requests.length
+  await page.waitForTimeout(300)
+  assert.equal(requests.length,beforeEarly,'Do not compare incomplete opening windows')
+  await page.getByRole('button',{name:'Watch full match',exact:true}).click()
+  await page.getByRole('button',{name:'Play match',exact:true}).click()
+  await page.getByRole('combobox',{name:'Sequence playback speed'}).selectOption('2')
+  await page.waitForTimeout(1200)
+  assert.equal(asks.length,1,'2x playback does not trigger model calls')
+  assert.deepEqual(errors,[])
+  console.log('PASS rolling insights browser: real fixture, one contextual card, paused/no-frame requests, exact observation handoff, rewind clearing, 2x full match, 1440/760/390/360px, no browser errors or Azure calls.')
+ }finally{await browser.close()}
+})().catch(e=>{console.error(e);process.exit(1)})

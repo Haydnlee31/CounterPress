@@ -57,6 +57,17 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
                 application.state.revision_publisher = runtime.publisher
             yield
         finally:
+            # Native Analyst work is isolated from Footie and must not keep
+            # hosted sessions alive while this Container App revision shuts down.
+            import asyncio
+            tasks = list(getattr(application.state, 'analyst_tasks', ()))
+            for task in tasks:
+                task.cancel()
+            if tasks:
+                try:
+                    await asyncio.wait_for(asyncio.gather(*tasks, return_exceptions=True), 12)
+                except asyncio.TimeoutError:
+                    pass
             if runtime:
                 await runtime.close()
             await to_thread(shutdown_agent_tracing)
@@ -81,6 +92,8 @@ def create_app(fixture_dir: Path | None = None, db_path: str | Path = ":memory:"
     install_fan(application, career_service, service)
     from counterpress.assistant.api import install_assistant
     install_assistant(application, career_service, history_store=service.store)
+    from counterpress.analyst.api import install_analyst
+    install_analyst(application, career_service, history_store=service.store)
     from counterpress.gi.api import install_gi
     install_gi(application, root)
     from counterpress.live.api import install_live
