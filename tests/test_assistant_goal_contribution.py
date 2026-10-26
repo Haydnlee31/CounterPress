@@ -222,4 +222,54 @@ def test_observed_regression_pass_count_on_direct_free_kick_is_zero_not_invented
     assert facts['observed_duration_seconds']['value']==1.2
     assert facts['regain_to_shot_seconds']['value'] is None
     assert 'e01176' not in {ref['event_id'] for ref in facts['completed_passes']['evidence']['events']}
-    assert 'free kick' in answer['text'][0]
+    assert answer['text'][0]=='The recorded buildup contains 0 completed passes.'
+    assert any('free kick' in sentence for sentence in answer['text'])
+
+
+@pytest.mark.parametrize('event_id,elapsed_ms,expected_count',[
+    ('e01178',1632996,0),
+    ('e01019',1050489,4),
+])
+@pytest.mark.parametrize('depth',['casual','analyst'])
+def test_direct_pass_count_survives_adversarial_goal_only_selection(service,event_id,elapsed_ms,expected_count,depth):
+    from counterpress.assistant.multiagent import story_candidates,validate_bundle_story
+    body=request('How many passes led up to that goal?',event_id=event_id,
+        cutoff={'period':2,'elapsed_ms':elapsed_ms},preferences={'depth':depth})
+    plan=service.local_plan(body);answer=service.answer(plan,body)
+    sentence=f'The recorded buildup contains {expected_count} completed passes.'
+    assert answer['text'][0]==sentence
+    claims=[{**c,'source_role':'match'} for c in build_claims(answer,plan,body)]
+    required=next(c for c in claims if c['text']==sentence)
+    assert required['required']
+    assert any(answer['facts'][i]['metric']=='completed_passes' and
+        answer['facts'][i]['value']==expected_count for i in required['fact_indices'])
+    goal_only=next(c for c in claims if not c.get('required'))
+    with pytest.raises(ValueError,match='required'):
+        render_story({'lead':goal_only['id'],'supporting':[]},claims,depth)
+    # Every offered model bundle must answer the numerical question, even when
+    # its lead emphasizes the scorer or the free kick instead.
+    candidates=story_candidates(claims,depth)
+    assert candidates
+    for selection in candidates.values():
+        assert sentence in [c['text'] for c in validate_bundle_story(selection,claims,depth)]
+
+
+def test_direct_pass_count_keeps_unknown_regain_scope_required(service):
+    body=request('How many passes led up to that goal after the team won the ball?')
+    plan=service.local_plan(body);answer=service.answer(plan,body)
+    claims=build_claims(answer,plan,body)
+    required=[c for c in claims if c.get('required')]
+    assert len(required)==2
+    assert any('does not establish' in c['text'] for c in required)
+    assert any(c['text']=='The recorded buildup contains 4 completed passes.' for c in required)
+    for omitted in required:
+        kept=next(c for c in required if c['id']!=omitted['id'])
+        with pytest.raises(ValueError,match='required'):
+            render_story({'lead':kept['id'],'supporting':[]},claims,'analyst')
+
+
+def test_chinese_pass_count_is_visible_without_narrative_selection(service):
+    body=request('How many passes led up to that goal?',preferences={'language':'zh-Hans'})
+    plan=service.local_plan(body);answer=service.answer(plan,body)
+    assert answer['text'][0]=='已记录的进攻过程包含4次成功传球。'
+    assert build_claims(answer,plan,body)==[]

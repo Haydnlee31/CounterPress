@@ -237,3 +237,59 @@ def test_real_foundry_sdk_serializes_only_python_graders_and_inline_precomputed_
             result=m.publish(plan,rows,'a'*64,client,receipt_directory=exported.root/'receipts',poll_seconds=0)
     assert result['status']=='verified' and len(seen)==4
     assert all('/evals' in path for _,path,_ in seen)
+
+
+def test_actual_flattened_output_envelope_preserves_exact_rows(exported):
+    def wrap(output):
+        row=output['datasource_item']
+        output['datasource_item']={'item':row,**{'item.'+k:v for k,v in row.items()},
+            'item.local_checks.anchor':row['local_checks']['anchor'],
+            'item.local_checks.absent_other_case_check':None}
+    summary,rows=planned(exported)
+    result=m.publish(summary,rows,'a'*64,FakeClient(rows,mutate=wrap),receipt_directory=exported.root/'receipts',poll_seconds=0)
+    assert result['status']=='verified' and result['scores']['local_contract_pass']['passed']==1
+
+
+@pytest.mark.parametrize('alias',[
+    {'item.query':'wrong'}, {'unknown':'wrong'}, {'item.unknown':None},
+    {'item.local_checks.anchor':1}, {'item.local_checks.absent':True},
+    {'item.local_checks.deep.key':None}, {'item.local_checks.':None},
+])
+def test_flattened_aliases_must_be_known_and_consistent(exported,alias):
+    _,rows=planned(exported)
+    with pytest.raises(m.PublicationError,match='remote_output_alias'):
+        m.echoed_item({'item':rows[0],**alias})
+
+
+def test_explicit_resume_never_creates_missing_run(exported):
+    summary,rows=planned(exported);client=FakeClient(rows);directory=exported.root/'receipts'
+    with pytest.raises(m.PublicationError,match='resume_requires_existing_run'):
+        m.publish(summary,rows,'a'*64,client,receipt_directory=directory,poll_seconds=0,resume_existing=True)
+    assert client.calls==[] and not list(directory.glob('*.json'))
+
+
+def test_explicit_resume_allows_checkout_drift_but_keeps_original_plan(exported):
+    summary,rows=planned(exported);client=FakeClient(rows,pending=True);directory=exported.root/'receipts'
+    m.publish(summary,rows,'a'*64,client,receipt_directory=directory,poll_seconds=0)
+    exported.source.write_text('changed = True\n')
+    with pytest.raises(m.PublicationError,match='current_source_hash_mismatch'):planned(exported)
+    resumed,rows=planned(exported,'historical');resumed['source_status']='current'
+    client.calls.clear();client.pending=False
+    assert m.publish(resumed,rows,'a'*64,client,receipt_directory=directory,poll_seconds=0,resume_existing=True)['status']=='verified'
+    assert [kind for kind,_ in client.calls]==['read','outputs']
+    receipt=json.loads(next(directory.glob('*.json')).read_text())
+    assert receipt['plan']==summary
+    resumed['release_label']='changed-label';client.calls.clear()
+    with pytest.raises(m.PublicationError,match='receipt_plan_mismatch'):
+        m.publish(resumed,rows,'a'*64,client,receipt_directory=directory,poll_seconds=0,resume_existing=True)
+    assert client.calls==[]
+
+
+def test_explicit_resume_rejects_eval_without_run(exported):
+    summary,rows=planned(exported);client=FakeClient(rows,pending=True);directory=exported.root/'receipts'
+    m.publish(summary,rows,'a'*64,client,receipt_directory=directory,poll_seconds=0)
+    path=next(directory.glob('*.json'));receipt=json.loads(path.read_text());receipt['stage']='eval_created';receipt.pop('run_id')
+    path.write_text(json.dumps(receipt));client.calls.clear()
+    with pytest.raises(m.PublicationError,match='resume_requires_existing_run'):
+        m.publish(summary,rows,'a'*64,client,receipt_directory=directory,poll_seconds=0,resume_existing=True)
+    assert client.calls==[]

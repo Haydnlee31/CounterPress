@@ -1,5 +1,5 @@
 {
-  "version": "footie-intelligence-controls-v8-sequence-pass-count",
+  "version": "footie-intelligence-controls-v9-direct-sequence-pass-count",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -20,11 +20,11 @@
     "backend/counterpress/assistant/moment.py": "5af66d00062e2bb739528ffd23b635056a9615942515b34389e26939b2192a93",
     "backend/counterpress/assistant/multiagent.py": "397f36e835bca8f79be232446e0f38a51004dc4264c4b4578ecde8f19dcfd69e",
     "backend/counterpress/assistant/multiagent_evaluation.py": "85ee686feea112f9c5399ca98ba1d4df9fd73a150fddd41960b3b5ff76fc5880",
-    "backend/counterpress/assistant/narrative.py": "84b3d17ff9b61da4b8089f91eb64ae6f5c09335f6fd006d2b651c9b856e06eb1",
+    "backend/counterpress/assistant/narrative.py": "08f28ec271e9d791f3e18da77703bd8542fc23b844cd215f950e8d79899c2822",
     "backend/counterpress/assistant/observability.py": "99857c17cacfb171545fb9a30377010df57c45dd4474853db81dedfc7c471dcb",
     "backend/counterpress/assistant/planner.py": "091bf1bf2d16de1e60b4046c896f0be6cdfa3df47619f3439c97cf5d1ecd01b0",
     "backend/counterpress/assistant/research.py": "54b335c63b0d34c89d6fa5209dc92ce045a6ea70d83f8ac794bd61ac2ae92e0c",
-    "backend/counterpress/assistant/service.py": "6379b90587ad94fddaef2e66e9938853d3bbae359d329195191a1e2073db08c7",
+    "backend/counterpress/assistant/service.py": "3728065c4945f68b151a8d15309a071ed6282b53c634c1f044477214538eb789",
     "backend/counterpress/audience.py": "08e8d5d0977040fc47e0b701cbb0d5b0014565ae19c601ab5d7600f9bb387d79",
     "backend/counterpress/clock.py": "dc56c2b6f04ef1ec2eeb8998b96150f7dbb938b95a7b59c5e54869c9620ba8b1",
     "backend/counterpress/contribution_publications.py": "5c530f1d7625966ca62091f33f820a54925bf09ccc787f71733ea5ebf07341d9",

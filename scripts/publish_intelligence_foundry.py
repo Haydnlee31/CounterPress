@@ -255,7 +255,27 @@ def read_retry(call):
             time.sleep(1)
 
 
-def publish(summary,rows,project_hash,client,*,receipt_directory=None,poll_seconds=30):
+def echoed_item(value):
+    """Accept the service's nested item plus consistent flattened-column aliases."""
+    if not isinstance(value,dict) or 'item' not in value:return value
+    item=value['item']
+    require(isinstance(item,dict),'remote_output_identity_mismatch')
+    for key,alias in value.items():
+        if key=='item':continue
+        require(isinstance(key,str) and key.startswith('item.'),'remote_output_alias_invalid')
+        parts=key[5:].split('.')
+        # Foundry unions local-check columns across rows; absent checks echo null.
+        require(parts[0] in item and (len(parts)==1 or
+            (len(parts)==2 and parts[0]=='local_checks' and bool(parts[1]))),'remote_output_alias_invalid')
+        expected=item[parts[0]]
+        if len(parts)==2:
+            require(isinstance(expected,dict),'remote_output_alias_invalid')
+            expected=expected.get(parts[1])
+        require(digest(alias)==digest(expected),'remote_output_alias_mismatch')
+    return item
+
+
+def publish(summary,rows,project_hash,client,*,receipt_directory=None,poll_seconds=30,resume_existing=False):
     require(type(poll_seconds) is int and 0<=poll_seconds<=55,'poll_duration_invalid')
     key=digest({'project':project_hash,'manifest':summary['manifest_sha256'],'grader':summary['grader_sha256']})
     directory=receipt_directory or ROOT/'var/foundry-publication-receipts'
@@ -264,12 +284,17 @@ def publish(summary,rows,project_hash,client,*,receipt_directory=None,poll_secon
             require(receipt_path.stat().st_mode & 0o077==0,'receipt_not_private')
             receipt=json.loads(receipt_path.read_text())
             stable=lambda value:{k:v for k,v in value.items() if k!='historical_changed_source_count'}
-            require(receipt['publication_key']==key and stable(receipt['plan'])==stable(summary),'receipt_plan_mismatch')
+            require(receipt['publication_key']==key and receipt.get('project_binding_sha256')==project_hash
+                    and stable(receipt['plan'])==stable(summary),'receipt_plan_mismatch')
             require(receipt['stage'] not in ('eval_submission_pending','run_submission_pending'),
                     'uncertain_submission_manual_reconciliation_required')
+            if resume_existing:
+                require(receipt['stage'] in ('run_created','verified'),'resume_requires_existing_run')
+                require(valid_id(receipt.get('eval_id')) and valid_id(receipt.get('run_id')),'receipt_remote_ids_invalid')
             if receipt['stage']=='verified':return receipt['result']
             require(receipt['stage'] in ('eval_created','run_created'),'receipt_stage_invalid')
         else:
+            require(not resume_existing,'resume_requires_existing_run')
             receipt={'schema':VERSION,'publication_key':key,'project_binding_sha256':project_hash,
                      'created_at':now(),'stage':'eval_submission_pending','plan':summary}
             private_json(receipt_path,receipt)
@@ -305,8 +330,7 @@ def publish(summary,rows,project_hash,client,*,receipt_directory=None,poll_secon
         # Match the echoed input item and exact hash, never response text or assumed row ordering.
         expected={row['case_id']:row for row in rows};seen=set();scores=[]
         for output in items:
-            echoed=output.get('datasource_item',{})
-            if isinstance(echoed,dict) and set(echoed)=={'item'}:echoed=echoed['item']
+            echoed=echoed_item(output.get('datasource_item',{}))
             index=echoed.get('case_id') if isinstance(echoed,dict) else None
             require(index in expected and index not in seen and digest(echoed)==digest(expected[index]),
                     'remote_output_identity_mismatch');seen.add(index)
@@ -345,14 +369,21 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--export-dir',type=Path,required=True);parser.add_argument('--report',type=Path,required=True)
     parser.add_argument('--manifest-sha256',required=True);parser.add_argument('--source-status',choices=('historical','current'),required=True)
-    parser.add_argument('--release-label',required=True);parser.add_argument('--apply',action='store_true')
+    parser.add_argument('--release-label',required=True)
+    action=parser.add_mutually_exclusive_group()
+    action.add_argument('--apply',action='store_true')
+    action.add_argument('--resume',action='store_true',help='GET-only verification of an already-created, receipt-bound run; source status means at submission.')
     parser.add_argument('--project-config',type=Path);parser.add_argument('--project-binding-sha256')
     parser.add_argument('--poll-seconds',type=int,default=30)
     args=parser.parse_args()
     try:
-        summary,rows=plan(args.export_dir,args.report,args.manifest_sha256,args.source_status,args.release_label)
+        # A read-only resume verifies original artifacts, not the now-changed checkout.
+        # publish requires an existing run and exact original plan before any GET.
+        summary,rows=plan(args.export_dir,args.report,args.manifest_sha256,
+                          'historical' if args.resume else args.source_status,args.release_label)
+        if args.resume:summary['source_status']=args.source_status
         config=project_binding(args.project_config,args.project_binding_sha256) if args.project_config is not None else None
-        if not args.apply:
+        if not (args.apply or args.resume):
             print(json.dumps({'status':'dry_run','plan':summary,'project_binding_sha256':args.project_binding_sha256 if config else None,'network_calls':0},indent=2));return 0
         require(config is not None,'private_project_config_required')
         require(os.environ.get('AZURE_AI_PROJECTS_CONSOLE_LOGGING','false').lower()!='true','sdk_console_logging_forbidden')
@@ -362,7 +393,7 @@ def main():
         from azure.identity import AzureCliCredential
         with AzureCliCredential() as credential, AIProjectClient(endpoint=config['project_endpoint'],credential=credential,retry_total=0) as project:
             with project.get_openai_client(max_retries=0,timeout=30) as client:
-                result=publish(summary,rows,args.project_binding_sha256,client,poll_seconds=args.poll_seconds)
+                result=publish(summary,rows,args.project_binding_sha256,client,poll_seconds=args.poll_seconds,resume_existing=args.resume)
         print(json.dumps(result));return 0 if result['status']=='verified' else 3
     except PublicationError as e:
         print(json.dumps({'status':'blocked','diagnostic':str(e)}));return 2

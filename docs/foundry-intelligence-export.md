@@ -184,12 +184,18 @@ files 0600). A publication key binds project, reviewed manifest and grader.
 Receipts are written **before** each cloud mutation. A lost mutation response
 blocks further submission and requires an operator to reconcile the existing
 remote object; do not delete the receipt or blindly rerun under another identity.
-A known pending run can be resumed with the same command: only bounded reads are
-retried, and no second run is submitted. Completed receipts return their prior
+For a known submitted run, replace `--apply` with `--resume`. This explicit
+read-only mode requires an existing `run_created` or `verified` receipt; it cannot
+create an evaluation or run. It revalidates the original report, export, graders
+and project binding. Checkout drift is allowed only for this receipt-bound read;
+the preserved source status means **at submission**, not the current release.
+New submissions still require strict current-source validation when labelled
+current. Only bounded GET reads are retried. Completed receipts return their prior
 verification result. No automatic delete or reset operation exists.
 
 The final check reads every remote row, matches its exact submitted case data,
-compares both scores against local execution of the same grader programs, and
+accepts consistent service-generated flattened aliases alongside the exact
+nested input item, compares both scores against local execution of the same grader programs, and
 rejects errors or unexpected model usage. Preserve failure receipts and compare
 runs using the Foundry evaluation view and original case IDs. The publication
 job's duration/tokens are not the original application's latency/token measures.
