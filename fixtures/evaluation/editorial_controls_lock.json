@@ -12,7 +12,7 @@
     "backend/counterpress/analyst/api.py": "32f896282fc35e60808c82239ee8f377baa5477c05fd2cf01e817ed92a0c2aa6",
     "backend/counterpress/analyst/contracts.py": "71427dc3d3624aec70ff6521a68acda1e170b27de5130a81f93436ac584d9370",
     "backend/counterpress/analyst/metrics.py": "c4028a9fcc6a56ba14bcc1b946400f3dcb53de3072467542b923b9dfa4658633",
-    "backend/counterpress/analyst/provider.py": "802025d8606fa0f2c86ec5ce191970938f31fdfaf649a6999e4af6fe9edf45b8",
+    "backend/counterpress/analyst/provider.py": "2e69eead57a86b0c1fc5285faf33ec6b27a69c3073ab85c7627fe1998bd30060",
     "backend/counterpress/analyst/service.py": "3a17ef14faf088fc75a09265e9a86556be104e3f70bd71c94ef35ce141901349",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
     "backend/counterpress/api/main.py": "db16b1f8c7aa2854685500d4d29afe7678a2646841808686d8c4fb452a31b9d5",
@@ -148,10 +148,10 @@
     "fixtures/showcases/one_touch.json": "51ac8149002c424e2a48caffdc4def870e1f27696748de4bd7bd6150dd87a9be",
     "fixtures/showcases/take-lead.json": "686b1b93e4d153d0b68ea343977996b6c892ed003fc692b7ea24157478cc6d69",
     "integrations/analyst_foundry/__init__.py": "a6782be05af26402d360bed5f873c402654814cd4a6aa825bce8eeeabe105231",
-    "integrations/analyst_foundry/contracts.py": "8c6080facd79b9be2c30f6c5d27960dea702603da8a53f231f4e7120e8551f85",
-    "integrations/analyst_foundry/definitions.py": "fdb5c6c89171822a24617f3450582cc690c781137e917e762df6fb072dc0654e",
+    "integrations/analyst_foundry/contracts.py": "f6a23b4ecd96eb2232d9e6b9001ba60fd75b5c445a5afddd2ed639ec246b8696",
+    "integrations/analyst_foundry/definitions.py": "4f9f33b58919dc20be5a673229fa11825599502fb758bdeacf4fcd12944420de",
     "integrations/analyst_foundry/requirements.txt": "2072ee115430e68b8d7e84c00b0876ab1b4bcdd5e3d6bf1a5baf496f8035e277",
-    "integrations/analyst_foundry/runtime.py": "f2bff4391c1e1b1bd8d0c26a8fdd1e76afc80c091a8e96b9b2781e75dd5cc506",
+    "integrations/analyst_foundry/runtime.py": "8abbc3bec8ed5e19d1d6ae1d93e6c432dc3c0c7f24a51cdaf982f05026cf6df6",
     "integrations/analyst_foundry/server.py": "aa6dca120740798fb61f24c5985051c2373992f13029c00df3bb4fd916216537",
     "uv.lock": "54d7e1909f284f985431b64d18663023bd674162c440c8c98a1890a4734e302c"
   }

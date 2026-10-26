@@ -5,7 +5,7 @@ import asyncio
 import json
 from dataclasses import dataclass
 from typing import Awaitable, Callable
-from .contracts import ROLES, SpecialistOutput, Selection, parse_packet, role_packet, validate_reading
+from .contracts import ROLES, SpecialistOutput, Selection, parse_packet, role_packet, validate_reading, clock_context
 
 
 @dataclass(frozen=True)
@@ -27,6 +27,7 @@ class AnalystRuntime:
 
     async def run(self, raw: str, cancellation: asyncio.Event | None = None) -> dict:
         packet = parse_packet(raw)
+        packet["clock"] = clock_context(packet)
         async with self.lock:
             if self.runs >= self.max_runs:
                 raise ValueError("session_run_limit")
@@ -52,7 +53,7 @@ class AnalystRuntime:
                 if cancelled.is_set():
                     raise asyncio.CancelledError
                 serialized = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-                if len(serialized) > 24_000:
+                if len(serialized) > 24_000 or len(serialized.encode("utf-8")) > 32_000:
                     raise ValueError("agent_input_size")
                 calls += 1
                 result = await asyncio.wait_for(self.complete(role, serialized, max_tokens), 32)
@@ -86,7 +87,7 @@ class AnalystRuntime:
                     supporting_signals = [s for s in packet["signals"] if s.get("role") in roles]
                     cited_evidence.update(i for signal in supporting_signals for i in signal.get("evidence_ids", []))
                     cited_metrics.update(i for signal in supporting_signals for i in signal.get("metric_ids", []))
-                    proof = {k: packet[k] for k in ("snapshot_id", "match_id", "cutoff", "clubs", "score", "players") if k in packet}
+                    proof = {k: packet[k] for k in ("snapshot_id", "match_id", "cutoff", "clock", "clubs", "score", "players") if k in packet}
                     proof["evidence"] = [e for e in packet["evidence"] if e["id"] in cited_evidence]
                     proof["metrics"] = [m for m in packet["metrics"] if m["id"] in cited_metrics]
                     proof["signals"] = supporting_signals
@@ -94,7 +95,7 @@ class AnalystRuntime:
                     proof["windows"] = packet.get("windows", {})
                     response = await invoke("synthesis", {"readings": [r.model_dump() for r in readings],
                         "packet": proof, "focus_player_id": packet.get("focus_player_id"),
-                        "depth": packet.get("depth")}, 700)
+                        "depth": packet.get("depth")}, 1500)
                     selection = Selection.model_validate_json(response.text)
                     available = {r.role for r in readings}
                     accepted = set(selection.accepted_roles)

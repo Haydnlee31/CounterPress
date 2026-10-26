@@ -116,6 +116,7 @@ export default function AnalystMode(){
       </section>
       {metricsFailed?<div className="an-notice" role="status">The statistics couldn’t refresh. <button onClick={refresh}>Try again</button></div>:<MetricBoard key={matchId} snapshot={snapshot} lens={lens} focusPlayerId={preferences.focus_player_id}/>}
       <footer className="an-footer"><span>{snapshot?`Statistics through ${clockLabel(snapshot.cutoff)}`:'Statistics update with completed play'}</span><a href={`?match=${encodeURIComponent(matchId)}#gi`}>Open Match Centre ↗</a></footer>
+      {match?.source&&<details className="an-sources"><summary>Data sources</summary><p>{match.source.provider} · {match.source_label}. {match.source.changes} <a href={match.source.license_url} target="_blank" rel="noreferrer">{match.source.license}</a></p></details>}
     </main>
   </div>
 }

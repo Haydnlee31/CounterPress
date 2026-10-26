@@ -15,7 +15,9 @@ validation, cancellation and token caps execute in the hosted director.
 ## Runtime boundaries
 
 - At most five model calls, two concurrently, no retries.
-- Specialist output600tokens; editor700tokens. Input24000characters maximum.
+- Specialist output600tokens; verifier1500tokens (including reasoning). Input24000characters
+  and32000UTF-8bytes maximum. Four specialists use GPT4.1mini; the verifier uses
+  the existing GPT5mini deployment with minimal reasoning.
 - Native director deadline110seconds; each specialist request32seconds maximum.
 - One paid run per hosted session, enforced with a persistent SQLite permit.
   Process restart or idle resumption does not reset that permit.
@@ -25,8 +27,11 @@ validation, cancellation and token caps execute in the hosted director.
   allowance. The runtime's local permit is an additional session bound, not a
   substitute for global admission.
 - Missing/invalid evidence, unavailable metrics, invented references, unsupported
-  numerical prose, certainty and coaching orders are rejected. Numbers are shown
-  from deterministic metric cards. This syntax/evidence gate cannot prove every
+  numerical prose, certainty and coaching orders are rejected. Numeric prose must
+  match explicitly cited scalar metrics (with legitimate rounding and matching
+  units) or the supplied window duration. An uncited roster number cannot justify
+  an invented percentage. The independent verifier also checks attribution, units,
+  windows and heuristic-versus-measured distinctions. This syntax/evidence gate cannot prove every
   natural-language inference is true; human benchmark review is still required.
 - The editor only selects a validated specialist role; summary strings are copied
   exactly from that reading. Failed specialists yield partial/insufficient status.
@@ -100,7 +105,8 @@ versions/runs remain visible in Foundry; this is not raw reasoning-log capture.
 East US public retail rates checked26October2026: hostedCPU$0.0994/vCPU-hour,
 memory$0.0118/GiB-hour. 1vCPU/2GiB is$0.123/hour while active. Idle timeout and
 explicit teardown are required; one continuously active sandbox can cost$88.56
-in720hours. Native prompt calls use the existing GPT4.1mini deployment. Azure
+in720hours. Four native specialists use the existing GPT4.1mini deployment; the verifier uses
+the existing GPT5mini deployment. Both are explicitly pinned in the manifest. Azure
 budget alerts alone do not stop spend; global admission remains fail-closed.
 
 ```sh
@@ -121,3 +127,9 @@ allowlisted deterministic ZIP contains only runtime Python files and requirement
 Foundry remotely builds dependencies using `python_3_13`. This avoids ACR Tasks,
 which the current trial subscription rejects. Multipart upload must include a
 filename ending `.zip`. The coordinator source hash/version is pinned in the manifest.
+
+The runtime derives human-readable clock/window labels. It rejects premature
+halftime/fulltime/closing-minute claims and incomplete sentences before verification.
+Counterpoints must explain the observed pattern, not invent a future tactical event.
+[Reasoning effort support](https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning)
+supports minimal effort for GPT5mini.

@@ -44,7 +44,7 @@ def test_native_runtime_bounds_fanout_and_synthesis_only_selects_verified_readin
         result = await AnalystRuntime(complete).run(json.dumps(packet()))
         assert result["status"] == "complete"
         assert len(seen) == 5 and peak == 2
-        assert seen[-1] == ("synthesis", 700)
+        assert seen[-1] == ("synthesis", 1500)
         assert all(limit == 600 for _, limit in seen[:-1])
         assert result["summary"]["metric_ids"] == ["control:metric"]
         assert result["usage"] == {"input_tokens": 400, "output_tokens": 150, "model_calls": 5}
@@ -211,11 +211,44 @@ def test_unavailable_revision_cannot_enter_agent_packet(key, value):
 def test_code_bundle_is_deterministic_and_allowlisted():
     import io
     import zipfile
+    import stat
     from scripts.configure_analyst_foundry import source_bundle
     first = source_bundle()
     assert first == source_bundle()
     with zipfile.ZipFile(io.BytesIO(first)) as archive:
         names = archive.namelist()
         assert "requirements.txt" in names
+        assert all(stat.S_ISREG(info.external_attr >> 16) for info in archive.infolist())
         assert all(n == "requirements.txt" or n.startswith("integrations/analyst_foundry/") and n.endswith(".py") for n in names)
         assert not any("var/" in n or ".env" in n for n in names)
+
+
+def test_numeric_claims_use_cited_values_units_and_legitimate_precision():
+    from integrations.analyst_foundry.contracts import Reading, validate_reading
+    value = packet()
+    value["metrics"][0].update(value=.026413, unit="expected_goals")
+    value["metrics"].append({"id": "uncited", "role": "chance", "value": 80, "unit": "percent", "status": "available"})
+    value["windows"] = {"current": {"start_ms": 0, "end_ms": 300000}}
+    item = reading("chance")
+    item["explanation"] = "The geometric xG estimate is about 0.026 in the 5-minute window."
+    assert validate_reading(Reading.model_validate(item), value, "chance")
+    for prose in ["The estimated xG is 0.5.", "Pass accuracy is 80%.", "The player ran 0.026 metres.", "The estimated xG is 0."]:
+        item["explanation"] = prose
+        with pytest.raises(ValueError, match="unsupported_prose"):
+            validate_reading(Reading.model_validate(item), value, "chance")
+    item["metric_ids"].append("uncited")
+    item["explanation"] = "There is an 80% chance of scoring."
+    with pytest.raises(ValueError, match="unsupported_prose"):
+        validate_reading(Reading.model_validate(item), value, "chance")
+
+
+@pytest.mark.parametrize("prose", ["The final 5 minutes before halftime show fewer recoveries.", "Watch the changes after halftime.", "The second half is becoming open.", "This is near full time.", "The explanation is incomplete, or if,"])
+def test_early_temporal_hallucination_and_incomplete_prose_fail_without_verifier(prose):
+    from integrations.analyst_foundry.contracts import Reading, validate_reading, clock_context
+    data = packet()
+    data["cutoff"]["elapsed_ms"] = 1200000
+    assert clock_context(data)["elapsed_in_period"] == "20:00"
+    item = reading("chance")
+    item["alternative"] = prose
+    with pytest.raises(ValueError, match="temporal_claim|incomplete_sentence"):
+        validate_reading(Reading.model_validate(item), data, "chance")

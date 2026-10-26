@@ -63,9 +63,14 @@ def validate_result(result, packet):
     usage = result.get('usage', {})
     if not isinstance(usage, dict) or type(usage.get('model_calls', 0)) is not int or not 0 <= usage.get('model_calls', 0) <= 5:
         raise ValueError('Invalid native execution receipt')
+    for field in ('input_tokens', 'output_tokens'):
+        if type(usage.get(field, 0)) is not int or not 0 <= usage.get(field, 0) <= 250000:
+            raise ValueError('Invalid native usage receipt')
     return {k: result[k] for k in ('snapshot_id', 'match_id', 'cutoff', 'through_sequence', 'status')} | {
         'readings': readings, 'summary': summary,
-        'execution': {'runtime': 'foundry_hosted', 'model_calls': usage.get('model_calls', 0)}}
+        'execution': {'runtime': 'foundry_hosted', 'model_calls': usage.get('model_calls', 0),
+                      'reported_input_tokens': usage.get('input_tokens', 0),
+                      'reported_output_tokens': usage.get('output_tokens', 0)}}
 
 
 class FoundryAnalyst:

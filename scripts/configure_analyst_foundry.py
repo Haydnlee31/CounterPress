@@ -22,12 +22,12 @@ sys.path.insert(0, str(ROOT))
 from integrations.analyst_foundry.definitions import DIRECTOR_NAME, NAMES, definition, definition_hash
 
 
-def build_plan(model: str, image: str) -> dict:
+def build_plan(model: str, image: str, verifier_model: str = "gpt-5-mini") -> dict:
     return {"coordinator": DIRECTOR_NAME, "specialists": [
-        {"role": role, "name": name, "hash": definition_hash(definition(role, model))}
+        {"role": role, "name": name, "model": verifier_model if role == "synthesis" else model, "hash": definition_hash(definition(role, verifier_model if role == "synthesis" else model))}
         for role, name in NAMES.items()], "image_pinned": "@sha256:" in image,
         "cpu": "1", "memory": "2Gi", "idle_timeout_seconds": 120,
-        "max_calls_per_run": 5, "max_parallel_calls": 2, "max_runs_per_session": 1}
+        "max_calls_per_run": 5, "specialist_output_tokens": 600, "verifier_output_tokens": 1500, "max_parallel_calls": 2, "max_runs_per_session": 1}
 
 
 def ensure_version(project, name: str, value: dict):
@@ -59,13 +59,13 @@ def source_bundle() -> bytes:
     return stream.getvalue()
 
 
-def provision(project, model: str, image: str, endpoint: str, *, code: bool = False) -> dict:
+def provision(project, model: str, image: str, endpoint: str, *, code: bool = False, verifier_model: str = "gpt-5-mini") -> dict:
     from azure.ai.projects.models import HostedAgentDefinition, ContainerConfiguration, SessionConfiguration, ProtocolVersionRecord, AgentEndpointProtocol
     if not code and "@sha256:" not in image:
         raise ValueError("coordinator image must be pinned by digest")
     manifest = {}
     for role, name in NAMES.items():
-        agent = ensure_version(project, name, definition(role, model))
+        agent = ensure_version(project, name, definition(role, verifier_model if role == "synthesis" else model))
         manifest[role] = {"name": agent.name, "version": agent.version}
     hosted = HostedAgentDefinition(cpu="1", memory="2Gi",
         protocol_versions=[ProtocolVersionRecord(protocol=AgentEndpointProtocol.RESPONSES, version="2.0.0")],
@@ -96,19 +96,21 @@ def provision(project, model: str, image: str, endpoint: str, *, code: bool = Fa
         agent = ensure_version(project, DIRECTOR_NAME, hosted.as_dict())
     return {"manifest_id": definition_hash({"agents": manifest, "coordinator": hosted.as_dict()}),
             "coordinator": {"name": agent.name, "version": agent.version}, "agents": manifest,
-            "limits": build_plan(model, image)}
+            "models": {role: verifier_model if role == "synthesis" else model for role in NAMES},
+            "limits": build_plan(model, image, verifier_model)}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--model", default="gpt-4.1-mini")
+    parser.add_argument("--verifier-model", default="gpt-5-mini")
     parser.add_argument("--image", default="")
     parser.add_argument("--manifest", type=Path)
     parser.add_argument("--code", action="store_true", help="Use native ZIP remote build instead of ACR image")
     args = parser.parse_args()
     if not args.apply:
-        print(json.dumps(build_plan(args.model, args.image), indent=2))
+        print(json.dumps(build_plan(args.model, args.image, args.verifier_model), indent=2))
         return
     endpoint = os.environ.get("FOUNDRY_PROJECT_ENDPOINT", "")
     if not endpoint.startswith("https://") or not args.manifest:
@@ -117,7 +119,7 @@ def main():
     from azure.identity import DefaultAzureCredential
     try:
         with DefaultAzureCredential() as credential, AIProjectClient(endpoint=endpoint, credential=credential) as project:
-            result = provision(project, args.model, args.image, endpoint, code=args.code)
+            result = provision(project, args.model, args.image, endpoint, code=args.code, verifier_model=args.verifier_model)
         args.manifest.parent.mkdir(parents=True, exist_ok=True)
         args.manifest.write_text(json.dumps(result, indent=2) + "\n")
         print("Native Analyst Mode agent versions registered; no model calls or sessions started.")

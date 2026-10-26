@@ -13,8 +13,7 @@ cd frontend
 npm ci
 npm run build
 cd ..
-COUNTERPRESS_CAREER_STREAMING=off COUNTERPRESS_AGENT_TRACING=off \
-  .venv/bin/python scripts/run_footie_local.py --port 8018
+.venv/bin/python scripts/run_analyst_local.py --port 8018
 ```
 
 Open `http://127.0.0.1:8018/#analyst`. With no native configuration this is a
@@ -22,6 +21,17 @@ Open `http://127.0.0.1:8018/#analyst`. With no native configuration this is a
 model calls are simulated. Native setup is documented in
 [analyst-foundry.md](analyst-foundry.md). Native configuration belongs in private
 server settings, never a browser build or source-controlled file.
+
+After a verified native deployment and Azure CLI sign-in, the same local UI can
+use it explicitly:
+
+```sh
+.venv/bin/python scripts/run_analyst_local.py --foundry-config var/analyst-activation-private.json
+```
+
+This opt-in uses the shared local allowance ledger and incurs bounded model and
+hosted-session usage. Do not mark an activation file verified until the live
+protocol, permission, cleanup and quality checks have passed.
 
 ## Execution boundary
 
