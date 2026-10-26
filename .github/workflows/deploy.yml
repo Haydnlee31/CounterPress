@@ -39,6 +39,12 @@ on:
         default: preserve
         type: choice
         options: [preserve, enable, disable]
+      career_streaming:
+        description: 'Career correction bridge; enable after compatible release verification; stop producer and drain before disable'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, enable, disable]
 
 permissions:
   contents: read
@@ -89,5 +95,6 @@ jobs:
           CP_ASSISTANT_WORKFLOW: ${{ inputs.assistant_workflow }}
           CP_ASSISTANT_ALLOWANCE: ${{ inputs.assistant_allowance }}
           CP_ASSISTANT_TRACING: ${{ inputs.assistant_tracing }}
+          CP_CAREER_STREAMING: ${{ inputs.career_streaming }}
           CP_AZURE_TARGET: ${{ secrets.CP_AZURE_TARGET }}
         run: python3 scripts/deploy_azure.py deploy

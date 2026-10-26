@@ -20,13 +20,22 @@ IMAGE = 'privatecanary.azurecr.io/counterpress@sha256:'+'b'*64
 
 
 def fixture():
+    history_client = '11111111-1111-4111-8111-111111111111'
+    stream_client = '22222222-2222-4222-8222-222222222222'
     env = [dict(name=k,value=v) for k,v in {
         'COUNTERPRESS_STORAGE':'cosmos','COUNTERPRESS_STREAMING':'azure',
         'COUNTERPRESS_CAREER_STREAMING':'on','COUNTERPRESS_TELEMETRY':'on',
         'COUNTERPRESS_ASSISTANT_MODEL':'off','COUNTERPRESS_ASSISTANT_WORKFLOW':'multiagent',
         'COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR':'120','COUNTERPRESS_ASSISTANT_CALLS_PER_DAY':'400',
-        'COUNTERPRESS_COSMOS_ENDPOINT':'https://privatecanary.documents.azure.com',
+        'COUNTERPRESS_COSMOS_ENDPOINT':'https://privatecanary.documents.azure.com:443/',
+        'COUNTERPRESS_COSMOS_DATABASE':'counterpress',
         'COUNTERPRESS_COSMOS_CONTAINER':'histories',
+        'COUNTERPRESS_COSMOS_CLIENT_ID':history_client,
+        'COUNTERPRESS_STREAM_CLIENT_ID':stream_client,
+        'COUNTERPRESS_EVENTHUB_NAMESPACE':'privatecanary.servicebus.windows.net',
+        'COUNTERPRESS_EVENTHUB_NAME':'deliveries',
+        'COUNTERPRESS_CHECKPOINT_ENDPOINT':'https://privatecanary.blob.core.windows.net/',
+        'COUNTERPRESS_PUBSUB_ENDPOINT':'https://privatecanary.webpubsub.azure.com',
     }.items()] + [{'name':'PRIVATE_REFERENCE','secretRef':'private-secret'}]
     template = {'revisionSuffix':'gh-123-1','containers':[{'name':'counterpress',
         'image':'privatecanary.azurecr.io/counterpress@sha256:'+'a'*64,
@@ -34,7 +43,9 @@ def fixture():
         'scale':{'minReplicas':0,'maxReplicas':1,'rules':[
             {'name':'http','http':{'metadata':{'concurrentRequests':'10'}}},
             {'name':'eventhub','custom':{'type':'azure-eventhub','metadata':{'consumerGroup':'$Default'}}}]}}
-    return {'id':'/privatecanary/resource','identity':{'type':'UserAssigned','userAssignedIdentities':{'private-identity':{}}},
+    return {'id':'/privatecanary/resource','identity':{'type':'UserAssigned','userAssignedIdentities':{
+        'private-history-identity':{'clientId':history_client},
+        'private-stream-identity':{'clientId':stream_client}}},
         'properties':{'environmentId':'private-environment','workloadProfileName':'Consumption',
             'latestRevisionName':PRODUCTION,'latestReadyRevisionName':PRODUCTION,'provisioningState':'Succeeded',
             'template':template,'configuration':{'activeRevisionsMode':'Single','maxInactiveRevisions':1,

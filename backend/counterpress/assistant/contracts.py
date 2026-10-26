@@ -46,9 +46,12 @@ class AskRequest(HistoryRequest):
     previous_plan: Plan | None = None
     event_id: Identifier | None = None
     event_revision: int | None = Field(default=None,ge=1)
+    through_sequence: int | None = Field(default=None,ge=0)
 
     @model_validator(mode='after')
     def moment_scope(self):
+        if self.through_sequence is not None and (not self.match_id or not self.playback):
+            raise ValueError('A source boundary requires a match and playback time')
         if self.event_id is not None or self.event_revision is not None:
             if not self.event_id or self.event_revision is None or not self.match_id or not self.playback:
                 raise ValueError('A moment requires its event, revision, match and playback time')

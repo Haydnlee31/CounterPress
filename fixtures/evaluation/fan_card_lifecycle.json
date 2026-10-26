@@ -1,0 +1,51 @@
+{
+  "description": "Independently read action anchors; expected numbers are not copied from FanService output. e01014 is a continuity barrier. The baseline suffix e01015–e01019 has four completed passes, four participants and 15.710 seconds. Changing e01016's recipient breaks continuity before e01017; the remaining suffix has two passes, two participants and 4.754 seconds.",
+  "match_id": "career-showcase-southbank-redhaven",
+  "highlight_id": "career-showcase-southbank-redhaven-e01019",
+  "goal_event_id": "e01019",
+  "pass_event_id": "e01016",
+  "favorite_player_id": "rh04",
+  "original_cutoff": {
+    "period": 2,
+    "elapsed_ms": 1050489
+  },
+  "updated_cutoff": {
+    "period": 2,
+    "elapsed_ms": 1053000
+  },
+  "occurred_at": {
+    "period": 2,
+    "elapsed_ms": 1050020
+  },
+  "expires_at": {
+    "period": 2,
+    "elapsed_ms": 1080020
+  },
+  "baseline": {
+    "events": [
+      "e01015",
+      "e01016",
+      "e01017",
+      "e01018",
+      "e01019"
+    ],
+    "favorite_passes": 1,
+    "observed_seconds": 15.71,
+    "participants": 4,
+    "casual": "Luca Bennett completed 1 pass in the buildup to Mateo Cross’s goal.",
+    "analyst": "Luca Bennett completed 1 pass in the buildup to Mateo Cross’s goal. The recorded sequence spans 15.71 seconds and involves 4 players."
+  },
+  "corrected": {
+    "events": [
+      "e01017",
+      "e01018",
+      "e01019"
+    ],
+    "completed_passes": 2,
+    "observed_seconds": 4.754,
+    "participants": 2,
+    "casual": "The buildup to Mateo Cross’s goal includes 2 completed passes.",
+    "analyst": "The buildup to Mateo Cross’s goal includes 2 completed passes. The recorded sequence spans 4.754 seconds and involves 2 players."
+  },
+  "dataset": "ec4dcac50bd170b4e82f9c39fa05a39b3d48df6b8ee20f8ad395261a687fe6ef"
+}

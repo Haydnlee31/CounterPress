@@ -3,7 +3,7 @@ import {replayTime} from '../matchday/replayGallery'
 
 export type FootieContext={
   label:string;question:string;playerId?:string;clubId?:string;season?:string;asOf?:string;
-  matchId?:string;cutoff?:MatchTime;eventId?:string;eventRevision?:number;resolveSource?:boolean;resolved?:boolean
+  matchId?:string;cutoff?:MatchTime;eventId?:string;eventRevision?:number;throughSequence?:number;resolveSource?:boolean;resolved?:boolean
 }
 
 export function matchdayContext(matchId:string,event:Event,resolved:boolean,label:string):FootieContext{

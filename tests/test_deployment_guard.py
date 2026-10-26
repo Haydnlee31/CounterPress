@@ -267,3 +267,87 @@ def test_tracing_keeps_connection_private_and_preserves_other_runtime_settings()
                 settings | {'APPLICATIONINSIGHTS_CONNECTION_STRING': settings['APPLICATIONINSIGHTS_CONNECTION_STRING'].replace('eastus.in.applicationinsights.azure.com', 'untrusted.example')},
                 settings | {'COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO': '0.5'}):
         with pytest.raises(deploy.DeploymentError): deploy.agent_monitoring_settings(app, 'enable', bad)
+
+
+def career_bridge_app():
+    history='11111111-1111-4111-8111-111111111111'
+    stream='22222222-2222-4222-8222-222222222222'
+    values={'COUNTERPRESS_STORAGE':'cosmos','COUNTERPRESS_STREAMING':'azure','COUNTERPRESS_TELEMETRY':'on',
+        'COUNTERPRESS_COSMOS_DATABASE':'counterpress','COUNTERPRESS_COSMOS_CONTAINER':'histories',
+        'COUNTERPRESS_COSMOS_ENDPOINT':'https://fixture.documents.azure.com:443/',
+        'COUNTERPRESS_COSMOS_CLIENT_ID':history,'COUNTERPRESS_STREAM_CLIENT_ID':stream,
+        'COUNTERPRESS_EVENTHUB_NAMESPACE':'fixture.servicebus.windows.net','COUNTERPRESS_EVENTHUB_NAME':'deliveries',
+        'COUNTERPRESS_CHECKPOINT_ENDPOINT':'https://fixture.blob.core.windows.net/',
+        'COUNTERPRESS_PUBSUB_ENDPOINT':'https://fixture.webpubsub.azure.com',
+        'COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR':'120','COUNTERPRESS_ASSISTANT_CALLS_PER_DAY':'400'}
+    return {'identity':{'userAssignedIdentities':{'history':{'clientId':history},'stream':{'clientId':stream}}},
+        'properties':{'environmentId':'unchanged','configuration':{'secrets':[],
+            'activeRevisionsMode':'Single','ingress':{'allowInsecure':False}},
+            'template':{'containers':[{'image':'unchanged','env':[{'name':k,'value':v} for k,v in values.items()]}],
+                'scale':{'minReplicas':0,'maxReplicas':1,'rules':[{'name':'existing-checkpoint-rule'}]}}}}
+
+
+def test_career_bridge_only_toggles_activation_and_preserves_existing_resources():
+    app=career_bridge_app();original=copy.deepcopy(app)
+    assert deploy.career_streaming_settings(app,'preserve')==original
+    enabled=deploy.career_streaming_settings(app,'enable')
+    assert app==original
+    deploy.validate_app(enabled)
+    env=enabled['properties']['template']['containers'][0]['env']
+    assert env[-1]=={'name':'COUNTERPRESS_CAREER_STREAMING','value':'on'}
+    comparable=copy.deepcopy(enabled);comparable['properties']['template']['containers'][0]['env'].pop()
+    assert comparable==original  # Includes identities, limits, checkpoint rules and secrets.
+    assert deploy.career_streaming_settings(enabled,'enable')==enabled
+    disabled=deploy.career_streaming_settings(enabled,'disable')
+    assert disabled['properties']['template']['containers'][0]['env'][-1]['value']=='off'
+    assert disabled['properties']['configuration']==original['properties']['configuration']
+
+
+def test_career_bridge_rejects_missing_changed_or_secret_reference_prerequisites():
+    import pytest
+    original=career_bridge_app()
+    for key,bad_value in (
+        ('COUNTERPRESS_STORAGE','sqlite'),('COUNTERPRESS_STREAMING','off'),
+        ('COUNTERPRESS_COSMOS_DATABASE','other'),('COUNTERPRESS_COSMOS_CONTAINER','other'),
+        ('COUNTERPRESS_COSMOS_ENDPOINT','https://untrusted.example'),
+        ('COUNTERPRESS_COSMOS_ENDPOINT','https://fixture.documents.azure.com/?private=secret'),
+        ('COUNTERPRESS_COSMOS_ENDPOINT','https://fixture.documents.azure.com:8443/'),
+        ('COUNTERPRESS_CHECKPOINT_ENDPOINT','http://fixture.blob.core.windows.net'),
+        ('COUNTERPRESS_PUBSUB_ENDPOINT','https://fixture.webpubsub.azure.com/unreviewed'),
+        ('COUNTERPRESS_EVENTHUB_NAME','other'),('COUNTERPRESS_EVENTHUB_NAMESPACE','unreviewed'),
+        ('COUNTERPRESS_COSMOS_CLIENT_ID','33333333-3333-4333-8333-333333333333'),
+        ('COUNTERPRESS_STREAM_CLIENT_ID','invalid'),
+    ):
+        app=copy.deepcopy(original)
+        next(e for e in app['properties']['template']['containers'][0]['env'] if e['name']==key)['value']=bad_value
+        with pytest.raises(deploy.DeploymentError,match='existing reviewed'):
+            deploy.career_streaming_settings(app,'enable')
+    for key in ('COUNTERPRESS_COSMOS_CLIENT_ID','COUNTERPRESS_STREAM_CLIENT_ID','COUNTERPRESS_PUBSUB_ENDPOINT'):
+        app=copy.deepcopy(original)
+        entry=next(e for e in app['properties']['template']['containers'][0]['env'] if e['name']==key)
+        entry.pop('value');entry['secretRef']='not-reviewed'
+        with pytest.raises(deploy.DeploymentError):deploy.career_streaming_settings(app,'enable')
+
+
+def test_career_bridge_rejects_shared_index_duplicate_env_and_changed_runtime_bounds():
+    import pytest
+    for issue in ('disk-index','duplicate-env','missing-identity','multiple-containers','multiple-revisions','scaling'):
+        app=career_bridge_app();template=app['properties']['template'];env=template['containers'][0]['env']
+        if issue=='disk-index':env.append({'name':'COUNTERPRESS_PROFILE_DB_PATH','value':'/shared/profile.sqlite3'})
+        elif issue=='duplicate-env':env.append(copy.deepcopy(env[0]))
+        elif issue=='missing-identity':app['identity']['userAssignedIdentities']={}
+        elif issue=='multiple-containers':template['containers'].append(copy.deepcopy(template['containers'][0]))
+        elif issue=='multiple-revisions':app['properties']['configuration']['activeRevisionsMode']='Multiple'
+        elif issue=='scaling':template['scale']['maxReplicas']=2
+        with pytest.raises(deploy.DeploymentError):deploy.career_streaming_settings(app,'enable')
+    with pytest.raises(deploy.DeploymentError):deploy.career_streaming_settings(career_bridge_app(),'unknown')
+
+
+def test_career_bridge_enabled_configuration_is_revalidated_on_later_releases():
+    import pytest
+    app=deploy.career_streaming_settings(career_bridge_app(),'enable')
+    app['identity']['userAssignedIdentities']={}
+    with pytest.raises(deploy.DeploymentError):deploy.validate_app(app)
+    app=career_bridge_app()
+    app['properties']['template']['containers'][0]['env'].append({'name':'COUNTERPRESS_CAREER_STREAMING','value':'unexpected'})
+    with pytest.raises(AssertionError):deploy.validate_app(app)

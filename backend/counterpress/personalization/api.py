@@ -152,6 +152,17 @@ def install_personalization(app,root:Path,journal=None):
     def highlights():
         return call(lambda s:json.loads((s.store.root/'highlights.json').read_text()))
 
+    @app.get('/api/data/highlights/{highlight_id}/context',tags=['Career data'])
+    def highlight_context_read(highlight_id:str,response:Response):
+        from .highlight_context import highlight_context
+        response.headers['Cache-Control']='no-store'
+        def read(s):
+            clips=json.loads((s.store.root/'highlights.json').read_text())
+            clip=next((c for c in clips if c['highlight_id']==highlight_id),None)
+            if clip is None:raise KeyError(highlight_id)
+            return highlight_context(s.store,clip)
+        return call(read)
+
     @app.get('/api/data/highlights/{highlight_id}/replay',response_model=PossessionFixture,tags=['Career data'])
     def highlight(highlight_id:str):
         def read(s):

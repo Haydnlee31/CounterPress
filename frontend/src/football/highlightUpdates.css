@@ -1,0 +1,12 @@
+.fh-replay-withdrawn{min-height:300px;padding:clamp(24px,5vw,64px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;border:1px solid #d5ddcc;border-radius:14px;background:#e9eddf;color:#193e33}
+.fh-replay-withdrawn>span{font-size:38px;line-height:1;color:#71835c}
+.fh-replay-withdrawn h3{max-width:32ch;font-size:24px;line-height:1.25}
+.fh-replay-withdrawn p{max-width:38ch;font-size:13px;line-height:1.65;color:#63745e}
+.fh-observation{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding-bottom:18px;border-bottom:1px solid #d5ddcc;margin-bottom:18px}
+.fh-observation>.fh-eyebrow{flex:1;min-width:120px;margin:0!important}
+.fh-observation>span{font-size:12px;font-variant-numeric:tabular-nums;color:#63745e}
+.fh-update-notice{display:flex;flex-direction:column;align-items:flex-start;gap:12px;flex-basis:100%;padding:16px;background:#e8edda;border-radius:10px}
+.fh-update-notice p{font-size:13px;line-height:1.5}
+.fh-update-notice .fh-button{min-height:44px;white-space:normal;text-align:left}
+.fh-observation>.fh-link{flex-basis:100%;min-height:32px}
+@media(max-width:700px){.fh-replay-withdrawn{min-height:200px;padding:28px 22px}.fh-replay-withdrawn h3{font-size:21px}.fh-observation{gap:12px}.fh-update-notice{padding:16px}}
