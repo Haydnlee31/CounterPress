@@ -4,6 +4,11 @@
 
 **Using or judging the demo? Start with the [demo user guide](docs/demo-guide.md)**
 
+**Full-match intelligence:** [Analyst Mode](docs/analyst-mode.md) adds a Matchday
+**Watch full match** entry, four football perspectives, playback-scoped metrics
+and spatial maps. Its optional native Foundry execution path is isolated from
+the existing Footie assistant; an unconfigured local preview makes no model calls.
+
 **Building player and club profiles?** The [personalization data foundation](docs/personalization-data.md)
 provides 44 featured players, four clubs, 840 historical fixtures and four featured
 matches through read-only `/api/data/` endpoints. The guide includes local startup,
@@ -107,6 +112,10 @@ Health reports process liveness only.
 
 ## Open the interface
 
+For playback-synchronised Match Centre insights and their pinned **Ask Footie
+why** handoff, see [live observations](docs/live-observations.md), including the
+same-origin local preview and validation commands.
+
 With the backend running, use another terminal:
 
 ```sh
@@ -115,12 +124,12 @@ npm ci --cache ../.npm-cache --no-audit --no-fund
 npm run dev
 ```
 
-Open <http://127.0.0.1:5173/>. Click **Catch me up**, then **Show the moments**.
-Use **Tools → Evidence desk** for the original analysis view and negative controls.
-For highlight analysis, use **Matchday → Breakdown**.
-Play, pause, reset, speed and seek controls work across the 48:00–58:00 segment.
-The control scenario shows no increase card. See the [interface guide](docs/interface.md)
-for API contracts and verification details. The [history guide](docs/history.md)
+Open <http://127.0.0.1:5173/> for frontend development. **Matchday** contains
+highlights and their **Breakdown**; **Match Centre** contains full-match playback
+and individual moments; **Clubhouse** contains player and club profiles. Use the
+[same-origin preview](docs/live-observations.md#local-verification) when testing
+contextual **Ask Footie** conversations. See the [interface guide](docs/interface.md)
+for the original scenario contracts and verification details. The [history guide](docs/history.md)
 explains persistence, correction ingestion and historical replay.
 
 ## Evaluate the editorial workflow

@@ -1,0 +1,7 @@
+# Dedicated runtime; do not install agentserver's web stack into the FastAPI app.
+azure-ai-agentserver-responses==2.3.0
+azure-ai-agentserver-core==2.2.0
+azure-ai-projects==2.9.0
+azure-identity==1.26.0
+openai==3.31.0
+pydantic==2.12.5

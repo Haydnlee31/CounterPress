@@ -21,6 +21,12 @@ on:
         default: preserve
         type: choice
         options: [preserve, enable, disable]
+      analyst_mode:
+        description: 'Native Foundry Analyst; enable only after pinned cloud execution and permission checks'
+        required: true
+        default: preserve
+        type: choice
+        options: [preserve, enable, disable]
       assistant_workflow:
         description: 'Footie workflow; agent requires completed live validation and shared Cosmos admission'
         required: true
@@ -98,6 +104,8 @@ jobs:
           CP_EDITORIAL_MODE: ${{ inputs.editorial_mode }}
           CP_EDITORIAL_MODEL: ${{ secrets.CP_EDITORIAL_MODEL }}
           CP_ASSISTANT_MODE: ${{ inputs.assistant_mode }}
+          CP_ANALYST_MODE: ${{ inputs.analyst_mode }}
+          CP_ANALYST_FOUNDRY: ${{ secrets.CP_ANALYST_FOUNDRY }}
           CP_ASSISTANT_WORKFLOW: ${{ inputs.assistant_workflow }}
           CP_MODEL_AUTHENTICATION: ${{ inputs.model_authentication }}
           CP_ASSISTANT_ALLOWANCE: ${{ inputs.assistant_allowance }}

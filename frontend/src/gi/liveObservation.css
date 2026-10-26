@@ -1,0 +1,14 @@
+.gi-observation{margin-top:20px;padding:20px 22px;border:1px solid #d8e3c52e;border-left:3px solid #e3ce86;border-radius:12px;background:#ffffff06;color:#f7f1dc;min-width:0}
+.gi-observation[hidden]{display:none}
+.gi-observation-heading{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#d2ddc9;font:500 10px/1.5 Arial,sans-serif}
+.gi-observation-heading>span:first-child{letter-spacing:.14em}
+.gi-observation-heading>span:last-child{font-variant-numeric:tabular-nums}
+.gi-observation-body{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:10px;min-width:0}
+.gi-observation-body>div{min-width:0}
+.gi .gi-observation h3{font:600 17px/1.4 Arial,sans-serif;margin:0;color:#f7f1dc}
+.gi .gi-observation p{font:400 13px/1.65 Arial,sans-serif;margin:6px 0 0;color:#d0dfd2;overflow-wrap:anywhere}
+.gi-observation .ask-footie-pitch{flex-shrink:0;min-height:44px}
+.gi-observation-error{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;color:#c6d6ca;font-size:12px}
+.gi-observation-error button{background:transparent;color:#e9dba1;border:0;text-decoration:underline;padding:8px;min-height:40px;cursor:pointer}
+@media(max-width:800px){.gi-observation-body{align-items:flex-start;flex-direction:column;gap:14px}}
+@media(max-width:640px){.gi-observation{padding:16px;margin-top:18px}.gi .gi-observation h3{font-size:16px}.gi-observation-heading{gap:6px}.gi-observation-body .ask-footie-pitch{white-space:normal;text-align:left}}

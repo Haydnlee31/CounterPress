@@ -1,0 +1,204 @@
+{
+  "verified_date": "2026-10-26",
+  "architecture": "Native hosted director; four native candidate selectors; native editor; factual prose rendered deterministically from canonical evidence before model invocation.",
+  "native_agents": {
+    "coordinator": {
+      "name": "FootieAnalystDirector",
+      "version": "8"
+    },
+    "agents": {
+      "chance": {
+        "name": "FootieAnalystChance",
+        "version": "4"
+      },
+      "defence": {
+        "name": "FootieAnalystDefence",
+        "version": "4"
+      },
+      "control": {
+        "name": "FootieAnalystControl",
+        "version": "4"
+      },
+      "players": {
+        "name": "FootieAnalystPlayers",
+        "version": "4"
+      },
+      "synthesis": {
+        "name": "FootieAnalystEditor",
+        "version": "5"
+      }
+    },
+    "models": {
+      "chance": "gpt-4.1-mini",
+      "defence": "gpt-4.1-mini",
+      "control": "gpt-4.1-mini",
+      "players": "gpt-4.1-mini",
+      "synthesis": "gpt-5-mini"
+    },
+    "manifest_id": "a824ebdfd4fd457a6c86dd8b3c9b625bb2d4c37854854454c2ce1f0ded0c6fd4",
+    "code_sha256": "809482ff3f23565381bc3a1023a2410d08664f089b0d526a1df9c9c35f21f24c"
+  },
+  "endpoint_version_selectors": "All six explicitly pinned to the listed version at 100%, read back after deployment.",
+  "production_provider_smoke": {
+    "principal": "signed-in operator via production FoundryAnalyst adapter",
+    "version": "8",
+    "manifest_id": "a824ebdfd4fd457a6c86dd8b3c9b625bb2d4c37854854454c2ce1f0ded0c6fd4",
+    "case": "focused_player_link",
+    "language": "zh-Hans",
+    "result": {
+      "snapshot_id": "e394a3b15097c220593339ffd92cfb4b30b68a10c4039cb9bf7bb1ae37a66b23",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 2,
+        "elapsed_ms": 2314000
+      },
+      "through_sequence": 1168,
+      "status": "complete",
+      "readings": [
+        {
+          "role": "chance",
+          "headline": "Northport最近的射门来自禁区外。",
+          "explanation": "Northport过去5分钟的1次射门都来自禁区外，上个窗口则有2次禁区内射门。最近的尝试来自禁区外。",
+          "alternative": "这个比较只涉及短时间内已经发生的射门。",
+          "watch_next": "接下来留意能否重新获得禁区内的射门机会。",
+          "evidence_ids": [
+            "a01168:r1",
+            "a01047:r1",
+            "a01092:r1"
+          ],
+          "metric_ids": [
+            "current:northport:shots",
+            "previous:northport:shots",
+            "current:northport:shots_inside_box",
+            "previous:northport:shots_inside_box"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "role": "defence",
+          "headline": "Northport利用失误传球制造了机会。",
+          "explanation": "Eastbridge传球失败后，Isaac Lane夺回球权，衔接的进攻在13.860秒后形成射门，但未能进球。这次机会紧接着对手丢球出现。",
+          "alternative": "进攻虽然形成射门，但最后的处理没有把机会变成进球。",
+          "watch_next": "接下来留意夺回球权后，能否在进攻中断前再次形成射门。",
+          "evidence_ids": [
+            "a01164:r1",
+            "a01165:r1",
+            "a01166:r1",
+            "a01167:r1",
+            "a01168:r1"
+          ],
+          "metric_ids": [
+            "current:northport:transition_seconds_a01168",
+            "current:northport:transition_goal_a01168",
+            "current:northport:shots"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "role": "players",
+          "headline": "Isaac Lane把夺回球权衔接成了射门机会。",
+          "explanation": "Isaac Lane夺回球权并完成最后的射门。从夺回球权到射门用了13.860秒，Isaac Lane射门偏出。这说明该球员的参与确实衔接到了射门机会。",
+          "alternative": "参与和终结是两回事：形成了射门，也不代表机会已经变成进球。",
+          "watch_next": "接下来留意再次夺回球权发动进攻时，Isaac Lane是否继续参与衔接。",
+          "evidence_ids": [
+            "a01164:r1",
+            "a01165:r1",
+            "a01166:r1",
+            "a01167:r1",
+            "a01168:r1"
+          ],
+          "metric_ids": [
+            "current:northport:transition_seconds_a01168",
+            "current:northport:transition_involved_np10_a01168",
+            "current:northport:transition_goal_a01168"
+          ],
+          "confidence": "medium"
+        }
+      ],
+      "summary": {
+        "headline": "Isaac Lane把夺回球权衔接成了射门机会。",
+        "explanation": "Isaac Lane夺回球权并完成最后的射门。从夺回球权到射门用了13.860秒，Isaac Lane射门偏出。这说明该球员的参与确实衔接到了射门机会。",
+        "evidence_ids": [
+          "a01164:r1",
+          "a01165:r1",
+          "a01166:r1",
+          "a01167:r1",
+          "a01168:r1"
+        ],
+        "metric_ids": [
+          "current:northport:transition_seconds_a01168",
+          "current:northport:transition_involved_np10_a01168",
+          "current:northport:transition_goal_a01168"
+        ]
+      },
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 4,
+        "reported_input_tokens": 8209,
+        "reported_output_tokens": 111
+      }
+    },
+    "status": "pass",
+    "latency_seconds": 21.6,
+    "transport": [
+      {
+        "operation": "invoke",
+        "status": 200
+      },
+      {
+        "operation": "stop",
+        "status": 204
+      },
+      {
+        "operation": "delete",
+        "status": 204
+      }
+    ]
+  },
+  "container_app_identity_smoke": {
+    "principal": "counterpress-history managed identity",
+    "version": "8",
+    "cleanup": [
+      {
+        "method": "POST",
+        "status": 204
+      },
+      {
+        "method": "DELETE",
+        "status": 204
+      }
+    ],
+    "http_status": 200,
+    "server_agent_reference": {
+      "type": "agent_reference",
+      "name": "FootieAnalystDirector",
+      "version": "8"
+    },
+    "result_status": "insufficient_evidence",
+    "model_calls": 0,
+    "latency_seconds": 13.86
+  },
+  "local_validation": {
+    "actual_sdk_runtime_tests": "42 passed",
+    "semantic_counterexample_tests": "12 passed",
+    "compatibility_matrix_cases": 24,
+    "max_packet_chars": 8934,
+    "max_packet_utf8_bytes": 8940,
+    "languages": [
+      "en",
+      "zh-Hans"
+    ],
+    "depths": [
+      "casual",
+      "analyst"
+    ],
+    "source_windows": 6,
+    "quiet_abstentions": 4
+  },
+  "model_budget": "Provider smoke reserved five model attempts and US$0.10 before invocation; four actual calls. Identity smoke used no model calls and retained its conservative run reservation.",
+  "limitations": [
+    "This is a bounded compatibility and transport proof, not a statistical accuracy claim.",
+    "Full paid regression plus independently selected held-out windows are a separate activation gate.",
+    "AI ranks supported interpretations and relevance; it cannot freely invent new tactical claims or unavailable tracking measurements."
+  ]
+}

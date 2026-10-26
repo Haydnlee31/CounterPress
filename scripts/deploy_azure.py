@@ -286,6 +286,42 @@ def assistant_settings(app, mode):
     return result
 
 
+def analyst_settings(app, mode, configuration=None):
+    """Separate, pinned Foundry pilot. Preserve existing Footie configuration."""
+    result = copy.deepcopy(app)
+    if mode == 'preserve':
+        return result
+    if mode not in ('enable', 'disable'):
+        raise DeploymentError('Unknown Analyst deployment mode')
+    container = result['properties']['template']['containers'][0]
+    entries = container.get('env', [])
+    values = {'COUNTERPRESS_ANALYST_MODE': 'off'}
+    if mode == 'enable':
+        from urllib.parse import urlsplit
+        env = {e['name']: e.get('value') for e in entries}
+        if env.get('COUNTERPRESS_STORAGE') != 'cosmos':
+            raise DeploymentError('Native Analyst requires shared Cosmos admission')
+        config = configuration or {}
+        required = {'project_endpoint', 'agent_name', 'agent_version', 'manifest_id', 'verified'}
+        if set(config) != required or config.get('verified') is not True:
+            raise DeploymentError('Native Analyst requires a verified pinned manifest')
+        url = urlsplit(config['project_endpoint'])
+        if (url.scheme != 'https' or not url.hostname or not url.hostname.endswith('.services.ai.azure.com')
+                or url.username or url.password or url.query or url.fragment or url.port not in (None, 443)
+                or not re.fullmatch(r'/api/projects/[A-Za-z0-9_-]+/?', url.path)):
+            raise DeploymentError('Invalid native project configuration')
+        if (not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', config['agent_name'])
+                or not re.fullmatch(r'[A-Za-z0-9_.-]{1,80}', config['agent_version'])
+                or not re.fullmatch(r'[a-f0-9]{64}', config['manifest_id'])):
+            raise DeploymentError('Invalid native agent pin')
+        values = {'COUNTERPRESS_ANALYST_MODE': 'foundry', **{
+            'COUNTERPRESS_ANALYST_' + key.upper(): config[key]
+            for key in ('project_endpoint', 'agent_name', 'agent_version', 'manifest_id')}}
+    container['env'] = [e for e in entries if e['name'] not in values] + [
+        {'name': key, 'value': value} for key, value in values.items()]
+    return result
+
+
 def assistant_workflow_settings(app, mode):
     """Explicit agent activation/rollback; preserve the current workflow by default."""
     result = copy.deepcopy(app)
@@ -538,6 +574,12 @@ def deploy():
     expected=assistant_settings(expected, os.environ.get('CP_ASSISTANT_MODE', 'preserve'))
     expected=assistant_workflow_settings(expected, os.environ.get('CP_ASSISTANT_WORKFLOW', 'preserve'))
     expected=assistant_allowance_settings(expected, os.environ.get('CP_ASSISTANT_ALLOWANCE', 'preserve'))
+    analyst_mode = os.environ.get('CP_ANALYST_MODE', 'preserve')
+    analyst_config = json.loads(os.environ.get('CP_ANALYST_FOUNDRY') or '{}') if analyst_mode == 'enable' else None
+    if analyst_config:
+        for value in analyst_config.values():
+            if isinstance(value, str): print('::add-mask::' + value, flush=True)
+    expected=analyst_settings(expected, analyst_mode, analyst_config)
     career_mode = os.environ.get('CP_CAREER_STREAMING', 'preserve')
     expected=career_streaming_settings(expected, career_mode)
     has_monitoring = any(s['name'] == MONITOR_SECRET for s in expected['properties']['configuration'].get('secrets') or [])
@@ -588,6 +630,10 @@ def deploy():
     current_env={v['name']:v.get('value') for v in p['template']['containers'][0].get('env', [])}
     enabled=current_env.get('COUNTERPRESS_STUDIO')=='entra'
     run([sys.executable,'scripts/container_smoke.py',url,*(['--studio-enabled'] if enabled else [])],timeout=240)
+    with urlopen(url+'/api/analyst/config',timeout=30) as response:
+        analyst_status=json.load(response)
+    if current_env.get('COUNTERPRESS_ANALYST_MODE') == 'foundry':
+        assert analyst_status['available'] and analyst_status['mode']=='foundry', 'Native Analyst configuration unavailable'
     for at,count in [(780000,4),(785000,3),(790000,None),(795000,2)]:
         with urlopen(url+f'/api/scenarios/stream-recovery/snapshot?at_ms={at}',timeout=30) as r:
             snapshot=json.load(r)

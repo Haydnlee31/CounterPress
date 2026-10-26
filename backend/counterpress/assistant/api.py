@@ -13,6 +13,7 @@ from .planner import AzurePlanner
 from .service import AssistantService,UNSUPPORTED,blank,fingerprint
 from .narrative import AzureNarrator,build_claims,default_story,render_story
 from .observability import agent_span
+from .observation import pinned_observation
 
 log=logging.getLogger('uvicorn.error.footie')
 
@@ -63,6 +64,10 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
                and (e.event_id in past_ids or (e.period,e.elapsed_ms)<=cutoff)
                for e in events):
             raise HTTPException(409,'This moment has changed. Review its update before asking Footie.')
+        if body.observation_id:
+            try:pinned_observation(s,body)
+            except (ValueError,KeyError):
+                raise HTTPException(409,'This observation has changed. Return to the replay and review the update before asking Footie.') from None
 
     @router.get('/config')
     def config():

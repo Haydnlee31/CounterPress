@@ -108,3 +108,24 @@ jobs:
           assert 'copyindex(' not in json.dumps({key: template.get(key, {}) for key in ('outputs', 'variables')}).lower()
           print('Isolated cleanup output: 12 IDs, no resource-loop index references')
           PY
+
+  analyst-runtime:
+    name: Native Analyst runtime protocol
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.11.29"
+      - name: Install isolated native runtime
+        run: |
+          uv python install 3.13
+          uv venv --python 3.13 "$RUNNER_TEMP/analyst-runtime"
+          uv pip install --python "$RUNNER_TEMP/analyst-runtime/bin/python" -r integrations/analyst_foundry/requirements.txt pytest==9.0.2 httpx==0.28.1
+      - name: Exercise official Responses HTTP host without Azure calls
+        run: "$RUNNER_TEMP/analyst-runtime/bin/python -m pytest tests/test_analyst_foundry_runtime.py -q"

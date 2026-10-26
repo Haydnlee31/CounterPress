@@ -38,13 +38,13 @@ export default function Footie({context,compact=false}:{context?:FootieContext;c
   const world=useResource('footie-world',loadWorld,false)
   const matches=useResource('footie-matches',signal=>getData<{items:Match[]}>('/api/data/matches?featured=true',signal))
   const config=useResource('footie-config',signal=>getData<{natural_language:boolean}>('/api/fan/assistant/config',signal))
-  const [prefs,setPrefs]=useState<FanPreferences>(initialPreferences),[question,setQuestion]=useState(context?.question??''),[turns,setTurns]=useState<Turn[]>([])
+  const [prefs,setPrefs]=useState<FanPreferences>(()=>context?.preferences??initialPreferences()),[question,setQuestion]=useState(context?.question??''),[turns,setTurns]=useState<Turn[]>([])
   const [player,setPlayer]=useState(context?.playerId??''),[club,setClub]=useState(context?.clubId??''),[match,setMatch]=useState(context?.matchId??''),[season,setSeason]=useState(context?.season??'')
   const [typing,setTyping]=useState(false)
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[lastQuestion,setLastQuestion]=useState(''),[highlight,setHighlight]=useState<Highlight|null>(null)
   const controller=useRef<AbortController|null>(null),serial=useRef(0),answerRef=useRef<HTMLDivElement>(null),input=useRef<HTMLTextAreaElement>(null)
   useEffect(()=>()=>{controller.current?.abort();serial.current++},[])
-  useEffect(()=>{if(!world.data)return;try{const checked=readPreferences(window.localStorage,{playerIds:new Set(world.data.players.map(p=>p.player_id)),clubIds:new Set(world.data.catalog.clubs.map(c=>c.club_id))}).preferences;setPrefs(checked);if(!context&&checked.favorite_player_ids.length===1)setPlayer(checked.favorite_player_ids[0])}catch{setPrefs(defaults())}},[world.data])
+  useEffect(()=>{if(!world.data||context?.preferences)return;try{const checked=readPreferences(window.localStorage,{playerIds:new Set(world.data.players.map(p=>p.player_id)),clubIds:new Set(world.data.catalog.clubs.map(c=>c.club_id))}).preferences;setPrefs(checked);if(!context&&checked.favorite_player_ids.length===1)setPlayer(checked.favorite_player_ids[0])}catch{setPrefs(defaults())}},[world.data])
   const [recordsChanged,setRecordsChanged]=useState(false)
   useEffect(()=>onCareerChange(()=>{
     // The open highlight owns its historical cutoff and explicit update review.
@@ -61,7 +61,7 @@ export default function Footie({context,compact=false}:{context?:FootieContext;c
     controller.current?.abort();const token=++serial.current,abort=new AbortController();controller.current=abort
     setBusy(true);setRecordsChanged(false);setError('');setLastQuestion(text);setQuestion('')
     const payload={question:text,preferences:prefs,as_of:context?.asOf??world.data.asOf,player_id:player||null,club_id:club||null,match_id:match||null,
-      season:season||null,cutoff:context?.cutoff??(match?{period:2,elapsed_ms:completedPeriod!}:null),event_id:context?.eventId??null,event_revision:context?.eventRevision??null,through_sequence:context?.throughSequence,previous_plan:turns.at(-1)?.answer.plan??null}
+      season:season||null,cutoff:context?.cutoff??(match?{period:2,elapsed_ms:completedPeriod!}:null),event_id:context?.eventId??null,event_revision:context?.eventRevision??null,through_sequence:context?.throughSequence,observation_id:context?.observationId,observation_fingerprint:context?.observationFingerprint,previous_plan:turns.at(-1)?.answer.plan??null}
     try{
       const response=await fetch('/api/fan/assistant/ask',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'omit',cache:'no-store',body:JSON.stringify(payload),signal:abort.signal})
       if(!response.ok)throw new Error(response.status===409?'The match records changed. Return to the moment and review the update before asking again.':response.status===429?'Please wait a moment before asking again.':'Footie couldn’t reach the match records. Please try again.')

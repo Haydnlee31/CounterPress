@@ -2,7 +2,7 @@
 from functools import lru_cache
 import sqlite3
 from fastapi import APIRouter, HTTPException
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 from counterpress.history import HistoryStorageError
 from .contracts import FanRequest, HomeRequest, HistoryRequest, CompareRequest, MatchRequest
 from .presentation import VERSION
@@ -21,7 +21,10 @@ class FanBodyLimit:
         while True:
             message = await receive()
             if message['type'] == 'http.disconnect':
-                return
+                # Replay seeks legitimately abort requests while their body is
+                # arriving. Complete the inner ASGI response so outer header
+                # middleware does not turn cancellation into a server error.
+                return await Response(status_code=499)(scope, receive, send)
             data.extend(message.get('body', b''))
             if len(data) > self.limit:
                 return await JSONResponse({'detail': 'Preference request is too large'}, status_code=413,
@@ -99,6 +102,10 @@ def install_fan(app, career_service, snapshots=None):
     @router.post('/matches/{match_id}')
     def match(match_id: str, request: MatchRequest):
         return call(lambda s: s.match(match_id, request))
+
+    @router.post('/matches/{match_id}/observations')
+    def observations(match_id: str, request: MatchRequest):
+        return call(lambda s: s.observations(match_id, request))
 
     app.add_middleware(FanBodyLimit)
     app.include_router(router)

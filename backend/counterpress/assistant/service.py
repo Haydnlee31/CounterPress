@@ -8,6 +8,7 @@ from counterpress.personalization.contracts import Fixture
 from counterpress.personalization.metrics import select_events
 from counterpress.fan.presentation import LABELS as FAN_LABELS
 from .contracts import Plan
+from .observation import observation_question, observation_answer
 
 METRICS={d[0]:d for d in DEFINITIONS}
 
@@ -156,6 +157,7 @@ def sequence_pass_count_intent(q):
 def requested_analysis(request):
     """Recognize the three investigation intents without replacing career questions."""
     q=request.question
+    if observation_question(request):return 'match_changes'
     count_intent=sequence_pass_count_intent(q)
     if count_intent is not None:return 'buildup' if count_intent else None
     if scoring_contributor(q):
@@ -232,6 +234,10 @@ class AssistantService:
             'selected':{'player_id':request.player_id,'club_id':request.club_id,'match_id':request.match_id,'season':request.season,'cutoff':request.playback.model_dump() if request.playback else None,'event_id':request.event_id},
             'favorites':{'players':request.preferences.favorite_player_ids,'club':request.preferences.primary_club_id},
             'previous_plan':request.previous_plan.model_dump() if request.previous_plan else None}
+        if observation_question(request):
+            context['selected']['observation'] = {'id':request.observation_id,
+                'comparison':'two adjacent three-minute windows ending at the selected cutoff',
+                'question_scope':'the selected observation only; the tool resolves its metric and subject'}
         if request.playback:
             # Intent is resolved against server-validated IDs; the model does not
             # need the entire career catalogue to query one selected match.
@@ -879,6 +885,8 @@ class AssistantService:
                     'actions':[{'label':t('Open player profile','查看球员资料'),'href':f'#football/player/{pid}'}],
                     'visual':{'kind':'groups','label':t('A like-for-like comparison','同口径对比'),'groups':groups} if groups else None}
         if plan.analysis=='match_changes':
+            if observation_question(request):
+                return observation_answer(self,request)
             window_ms=600000;end_ms=min(at[1],fixture.period_lengths_ms[at[0]-1])//window_ms*window_ms
             if end_ms<2*window_ms:return unavailable('Let two ten-minute stretches finish in this half so I can compare them fairly.','请等待本半场完成两个十分钟时段，以进行同口径对比。')
             start_ms=end_ms-2*window_ms;split_ms=end_ms-window_ms

@@ -12,6 +12,7 @@ import { HighlightExperience } from '../explore/HighlightExperience'
 import { scoreAtPlayhead } from './pitchScene'
 import { replayGallery, highlightTag, replayTime, replayClock } from './replayGallery'
 import './matchday.css'
+import '../analyst/entry.css'
 
 const showcases: Record<string, [string, string]> = {
   ...Object.fromEntries(Object.entries(replayGallery).map(([id,story])=>[id,story.title])),
@@ -288,6 +289,7 @@ export function Matchday({breakdown=false}:{breakdown?:boolean}) {
           <a href="#matchday" aria-current={!breakdown?'page':undefined}>{t('Watch','观看')}</a>
           <a href="#matchday/breakdown" aria-current={breakdown?'page':undefined}>{t('Breakdown','深入解读')}</a>
         </nav>}
+        <div className="fan-analyst-entry"><a href="#analyst">{t('Watch full match','观看全场比赛')} <span>{t('Analyst Mode','分析模式')} ↗</span></a></div>
         {snapshot && !m.error && (isReplayStory ? <HighlightExperience key={m.request.scenario} events={pitchEvents} storyId={m.request.scenario} language={p.language} breakdown={breakdown} onPlayhead={setPitchHead}/> : <MatchPitch companion key={m.request.scenario} events={snapshot.pitch_events ?? snapshot.audience?.sequence ?? []} language={p.language}/>)}
         {replayOpen && !isReplayStory && (
           <section
