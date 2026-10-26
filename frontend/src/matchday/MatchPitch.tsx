@@ -1,3 +1,5 @@
+import {PitchInk} from '../highlights/PitchInk'
+import {usePitchNotes} from '../highlights/usePitchNotes'
 import {usePlayerPeek} from '../football/PlayerPeek'
 import {useReplaySpeed} from '../football/useReplaySpeed'
 import { useEffect, useId, useState } from 'react'
@@ -24,7 +26,10 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   const [portrait,setPortrait]=useState(false)
   const [speed,setSpeed]=useReplaySpeed()
   const [faces,setFaces]=usePitchFaces()
-  const peek=usePlayerPeek()
+  const [drawing,setDrawing]=useState(false)
+  const notes=usePitchNotes(events)
+  const annotationAt=(index+progress)/Math.max(1,events.length)
+  const peek=usePlayerPeek(undefined,!drawing)
   const [speechEpoch,setSpeechEpoch]=useState(0)
   const voice=useHighlightTrack(events,language,fromStart,companion&&!playback,()=>{
     setPlaying(false);setIndex(0);setProgress(0);setSpeechEpoch(v=>v+1)
@@ -94,6 +99,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   const target=recipient(event)
   const narration=(record:Event,at:number)=>cue(record,at!==index || resolved,zh)
   const startPlayback=()=>{
+    setDrawing(false)
     void voice.resume()?.catch(()=>setPlaying(false))
     if(reduced&&!voice.track){setProgress(p=>p===0?1:0);return}
     if(!playing && (index===events.length-1 && (progress>=1 || (!fromStart && progress===0)))){setSpeechEpoch(v=>v+1);setIndex(0);setProgress(0);setSelected(null)}
@@ -101,7 +107,7 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
   }
   const select=(next:number)=>{setSpeechEpoch(v=>v+1);setPlaying(false);setIndex(next);setProgress(0);setSelected(null)}
   return <section className={`fan-pitch ${compact?'is-compact':''}`} aria-label={t('Match pitch','比赛球场')}>
-    <div className="fan-pitch-heading"><div><p className="fan-kicker">{t('ON THE PITCH','球场上')}</p><h2>{playback?t('On the pitch','球场上'):t('Watch the play','观看回放')}</h2></div>
+    <div className="fan-pitch-heading"><div className="fan-pitch-identity"><div><p className="fan-kicker">{t('ON THE PITCH','球场上')}</p><h2>{playback?t('On the pitch','球场上'):t('Watch the play','观看回放')}</h2></div>{assistantMatchId&&event&&<AskFootie drawer context={matchdayContext(assistantMatchId,event,resolved,`Eastbridge × Northport · ${replayClock(event)}`)} onOpen={()=>{setPlaying(false);onAssistantOpen?.()}}/>}</div>
       <div className="fan-tracker-clock"><span>{t(playing?'Playing':'Replay',playing?'播放中':'回放')}</span><span className="fan-pitch-time">{event ? replayClock(event) : '—'}</span></div></div>
     {!playback && <div className="fan-pitch-controls">
       <button className="fan-primary" disabled={!events.length || voice.preparing} onClick={startPlayback}>{voice.preparing?t('Preparing commentary…','准备解说…'):reduced&&!voice.track?t('Show ball movement','查看传球落点'):playing?t('Pause play','暂停'):fromStart?t('Play highlight','播放集锦'):t('Play sequence','播放片段')} <span aria-hidden="true">{playing?'Ⅱ':'▶'}</span></button>
@@ -113,7 +119,6 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
       <label className="fan-speed">{t('Speed','速度')} <select aria-label={t('Pitch replay speed','球场回放速度')} value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
       <label className="fan-pitch-scrubber"><span className="sr-only">{t('Replay position','回放位置')}</span><input type="range" aria-label={t('Replay position','回放位置')} min="0" max={Math.max(1,events.length*100)} step="1" value={index*100+progress*100} disabled={!events.length} aria-valuetext={t(`Play ${index+1} of ${events.length}`,`第${index+1}次，共${events.length}次`)} onChange={e=>{const value=Number(e.target.value)/100;setSpeechEpoch(v=>v+1);setPlaying(false);setIndex(Math.min(events.length-1,Math.floor(value)));setProgress(value>=events.length?1:value%1);setSelected(null)}}/></label>
     </div>}
-    {assistantMatchId&&event&&<AskFootie context={matchdayContext(assistantMatchId,event,resolved,`Eastbridge × Northport · ${replayClock(event)}`)} onOpen={()=>{setPlaying(false);onAssistantOpen?.()}}/>}
     <div className="fan-tracker-grid">
       {!compact && <aside className="fan-play-board" aria-label={t('Current play','当前进攻')}>
         <p className="fan-kicker">{t('IN THE ACTION','焦点球员')}</p>
@@ -163,8 +168,16 @@ export function MatchPitch({events,language='en',compact=false,fromStart=false,o
         <g className="fan-ball" transform={`translate(${scene.ball.x} ${scene.ball.y})`} pointerEvents="none">
           <circle cy=".7" r="1.15" fill="#051d16" opacity=".45"/><circle r="1.05" fill="#fffdf0" stroke="#172d25" strokeWidth=".25"/><path d="m0-.5.5.4-.2.6h-.6l-.2-.6Z" fill="#21362d"/>
         </g>
+        {fromStart&&!playback&&<PitchInk strokes={notes.strokes} at={annotationAt} enabled={drawing} playing={playing} onStroke={stroke=>notes.change([...notes.strokes,stroke])}/>}
         </g>
       </svg>
+      {fromStart&&!playback&&<div className="fan-annotation-tools" role="group" aria-label="Pitch drawing tools">
+        {notes.strokes.length>0&&<select aria-label="Saved drawing frame" value={notes.strokes.find(s=>Math.abs(s.at-annotationAt)<.002)?.at??''} onChange={e=>{if(e.target.value!==''){const value=Number(e.target.value)*events.length;setPlaying(false);setIndex(Math.min(events.length-1,Math.floor(value)));setProgress(value>=events.length?1:value%1)}}}><option value="">Saved frames</option>{[...new Set(notes.strokes.map(s=>s.at))].map((at,i)=><option key={at} value={at}>Frame {i+1}</option>)}</select>}
+        <button aria-pressed={drawing} onClick={()=>{setPlaying(false);setDrawing(!drawing)}}>✎ {drawing?'Done':'Pen'}</button>
+        <button disabled={!notes.strokes.some(s=>Math.abs(s.at-annotationAt)<.002)} onClick={()=>notes.change(notes.strokes.filter(s=>Math.abs(s.at-annotationAt)>=.002))}>Clear</button>
+        {drawing&&<small>{notes.strokes.length>=30?'30-stroke limit. Clear a frame to continue.':'Replay paused · draw on the pitch'}</small>}
+        {notes.error&&<small role="status">{notes.error}</small>}
+      </div>}
       </div>
       {!compact && <aside className="fan-commentary" aria-label={t('Match commentary','比赛解说')}>
         <div className="fan-commentary-heading"><h3>{t('Match commentary','比赛解说')}</h3><span>{t('Play by play','逐次回放')}</span></div>

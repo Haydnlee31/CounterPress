@@ -199,7 +199,7 @@ beforeEach(() => {
       clear: () => entries.clear(),
     },
   })
-  window.history.replaceState(null, '', '/?story=increase')
+  window.history.replaceState(null, '', '/?story=increase#highlights/preloaded')
   vi.mocked(api.fetchScenarios).mockResolvedValue([
     {
       scenario_id: 'increase',
@@ -453,7 +453,7 @@ test('analysis deep link keeps the existing presenter tools accessible', async (
   render(<App />)
   expect(screen.getByLabelText('Local viewer')).toBeTruthy()
   expect(
-    screen.getByRole('link', { name: 'Matchday' }),
+    screen.getByRole('link', { name: 'Highlights' }),
   ).toBeTruthy()
   window.location.hash = '#matchday'
   fireEvent(window, new HashChangeEvent('hashchange'))
@@ -498,8 +498,8 @@ test('slow replay requests finish while the clock advances; accepted facts remai
   fireEvent.click(screen.getByRole('button', { name: 'Pause replay' }))
 })
 
-test('home leads with the featured highlight and keeps only related highlights below the action', async () => {
-  window.history.replaceState(null, '', '/')
+test('preloaded highlights lead with the featured highlight and keeps only related highlights below the action', async () => {
+  window.history.replaceState(null, '', '/#highlights/preloaded')
   render(<App />)
   const title = await screen.findByRole('heading', {level:1,name:'Last-second turnaround'})
   expect(screen.getByText('Highlight of the day')).toBeTruthy()

@@ -1,0 +1,146 @@
+{
+  "provenance": "Real gpt-5-mini-2025-08-07 output from the second bounded cloud call, 2026-10-26. Rejected, not an accepted reading. Synthetic match only; no request headers or credentials. Source packet reduced to cited/referenced facts and events.",
+  "response": {
+    "facts": [
+      {
+        "metric_id": "previous:northport:event_share",
+        "compare_to": "current:northport:event_share"
+      },
+      {
+        "metric_id": "current:northport:tempo",
+        "compare_to": null
+      }
+    ],
+    "text": "Northport has increased control of on-ball actions compared with the previous window [[fact:0]] and are combining that with a higher action tempo in the current window [[fact:1]], which suggests their possession is pressing into danger; confirmation would be more entries into the box. ",
+    "reply_to": null,
+    "relation": "observation",
+    "metric_ids": [
+      "previous:northport:event_share",
+      "current:northport:tempo"
+    ],
+    "evidence_ids": [
+      "a00344:r1",
+      "a00347:r1"
+    ]
+  },
+  "packet": {
+    "snapshot_id": "a3bf2bb9accc9e699ea28b9eb26110701fd9e781c5efecb71cf6b3e5174a5f7a",
+    "match_id": "synthetic-32fe41c5d304ce68d7d9",
+    "cutoff": {
+      "period": 1,
+      "elapsed_ms": 1440000
+    },
+    "windows": {
+      "prefix": {
+        "period": null,
+        "start_ms": 0,
+        "end_ms": 1440000,
+        "boundary": "through_cutoff"
+      },
+      "current": {
+        "period": 1,
+        "start_ms": 1140000,
+        "end_ms": 1440000,
+        "boundary": "(start,end]"
+      },
+      "previous": {
+        "period": 1,
+        "start_ms": 840000,
+        "end_ms": 1140000,
+        "boundary": "(start,end]"
+      }
+    },
+    "clubs": [
+      {
+        "club_id": "eastbridge",
+        "name": "Eastbridge"
+      },
+      {
+        "club_id": "northport",
+        "name": "Northport"
+      }
+    ],
+    "players": [],
+    "metrics": [
+      {
+        "id": "current:northport:event_share",
+        "key": "event_share",
+        "window": "current",
+        "club_id": "northport",
+        "unit": "percent",
+        "basis": "event_share_proxy",
+        "label": "Share of on-ball actions",
+        "value": 70.689655,
+        "subject": "Northport"
+      },
+      {
+        "id": "current:northport:tempo",
+        "key": "tempo",
+        "window": "current",
+        "club_id": "northport",
+        "unit": "actions_per_minute",
+        "basis": "recorded_events",
+        "label": "On-ball actions per minute",
+        "value": 8.2,
+        "subject": "Northport"
+      },
+      {
+        "id": "previous:northport:event_share",
+        "key": "event_share",
+        "window": "previous",
+        "club_id": "northport",
+        "unit": "percent",
+        "basis": "event_share_proxy",
+        "label": "Share of on-ball actions",
+        "value": 67.924528,
+        "subject": "Northport"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "a00344:r1",
+        "event_id": "a00344",
+        "revision": 1,
+        "delivery_sequence": 344,
+        "period": 1,
+        "elapsed_ms": 1425635,
+        "available_period": 1,
+        "available_ms": 1425735,
+        "club_id": "northport",
+        "player_id": "np03",
+        "kind": "pass",
+        "outcome": "completed",
+        "start": {
+          "x": 25.402,
+          "y": 60.343
+        },
+        "end": {
+          "x": 37.216,
+          "y": 29.694
+        }
+      },
+      {
+        "id": "a00347:r1",
+        "event_id": "a00347",
+        "revision": 1,
+        "delivery_sequence": 347,
+        "period": 1,
+        "elapsed_ms": 1435127,
+        "available_period": 1,
+        "available_ms": 1435227,
+        "club_id": "northport",
+        "player_id": "np02",
+        "kind": "pass",
+        "outcome": "completed",
+        "start": {
+          "x": 45.668,
+          "y": 28.053
+        },
+        "end": {
+          "x": 59.73,
+          "y": 32.978
+        }
+      }
+    ]
+  }
+}

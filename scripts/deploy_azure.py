@@ -287,23 +287,27 @@ def assistant_settings(app, mode):
 
 
 def analyst_settings(app, mode, configuration=None):
-    """Separate, pinned Foundry pilot. Preserve existing Footie configuration."""
+    """Explicit Analyst activation; preserve existing model auth and native pins."""
     result = copy.deepcopy(app)
     if mode == 'preserve':
         return result
-    if mode not in ('enable', 'disable'):
+    if mode not in ('enable', 'azure_discussion', 'disable'):
         raise DeploymentError('Unknown Analyst deployment mode')
     container = result['properties']['template']['containers'][0]
     entries = container.get('env', [])
-    values = {'COUNTERPRESS_ANALYST_MODE': 'off'}
-    if mode == 'enable':
-        from urllib.parse import urlsplit
+    values = {'COUNTERPRESS_ANALYST_MODE': 'off', 'COUNTERPRESS_ANALYST_DISCUSSION': 'off'}
+    if mode in ('enable', 'azure_discussion'):
         env = {e['name']: e.get('value') for e in entries}
         if env.get('COUNTERPRESS_STORAGE') != 'cosmos':
-            raise DeploymentError('Native Analyst requires shared Cosmos admission')
+            raise DeploymentError('Analyst requires shared Cosmos admission')
+    if mode == 'azure_discussion':
+        validate_model_authentication(result, check_secrets=True)
+        values['COUNTERPRESS_ANALYST_DISCUSSION'] = 'azure'
+    if mode == 'enable':
+        from urllib.parse import urlsplit
         config = configuration or {}
         required = {'project_endpoint', 'agent_name', 'agent_version', 'manifest_id', 'verified'}
-        if set(config) != required or config.get('verified') is not True:
+        if set(config) - {'protocol'} != required or config.get('verified') is not True or config.get('protocol','candidate-v1') not in ('candidate-v1','roundtable-v2'):
             raise DeploymentError('Native Analyst requires a verified pinned manifest')
         url = urlsplit(config['project_endpoint'])
         if (url.scheme != 'https' or not url.hostname or not url.hostname.endswith('.services.ai.azure.com')
@@ -314,7 +318,8 @@ def analyst_settings(app, mode, configuration=None):
                 or not re.fullmatch(r'[A-Za-z0-9_.-]{1,80}', config['agent_version'])
                 or not re.fullmatch(r'[a-f0-9]{64}', config['manifest_id'])):
             raise DeploymentError('Invalid native agent pin')
-        values = {'COUNTERPRESS_ANALYST_MODE': 'foundry', **{
+        values = {'COUNTERPRESS_ANALYST_MODE': 'off' if config.get('protocol')=='roundtable-v2' else 'foundry',
+            'COUNTERPRESS_ANALYST_DISCUSSION': 'foundry' if config.get('protocol')=='roundtable-v2' else 'off', **{
             'COUNTERPRESS_ANALYST_' + key.upper(): config[key]
             for key in ('project_endpoint', 'agent_name', 'agent_version', 'manifest_id')}}
     container['env'] = [e for e in entries if e['name'] not in values] + [
@@ -458,12 +463,17 @@ def validate_app(app):
     assert env.get('COUNTERPRESS_EDITORIAL', 'off') in ('off', 'entra')
     try:
         validate_model_authentication(app, required=env.get('COUNTERPRESS_EDITORIAL') == 'entra'
-            or env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure', check_secrets=True)
+            or env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure'
+            or env.get('COUNTERPRESS_ANALYST_DISCUSSION') == 'azure', check_secrets=True)
     except DeploymentError:
         raise AssertionError('Invalid model authentication configuration') from None
     if env.get('COUNTERPRESS_EDITORIAL', 'off') == 'entra':
         assert env.get('COUNTERPRESS_STUDIO') == 'entra'
         assert env.get('COUNTERPRESS_ENTRA_CLIENT_IDS') == env['COUNTERPRESS_STUDIO_CLIENT_ID']
+    assert env.get('COUNTERPRESS_ANALYST_MODE', 'off') in ('off', 'foundry')
+    assert env.get('COUNTERPRESS_ANALYST_DISCUSSION', 'off') in ('off', 'azure', 'foundry')
+    assert not (env.get('COUNTERPRESS_ANALYST_MODE') == 'foundry'
+                and env.get('COUNTERPRESS_ANALYST_DISCUSSION', 'off') != 'off')
     assert env.get('COUNTERPRESS_ASSISTANT_MODEL', 'off') in ('off', 'azure')
     assert env.get('COUNTERPRESS_ASSISTANT_WORKFLOW', 'structured_lookup') in ('structured_lookup', 'agent', 'multiagent')
     if env.get('COUNTERPRESS_ASSISTANT_MODEL') == 'azure':
@@ -530,6 +540,20 @@ def read_monitoring_settings(group):
             'APPLICATIONINSIGHTS_CONNECTION_STRING': insights['properties']['ConnectionString'],
             'COUNTERPRESS_AGENT_TRACING_CLIENT_ID': identity['clientId'],
             'COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO': '1.0'}
+
+
+
+def verify_analyst_status(env, status):
+    """Read-only post-deploy probe: never dispatch a paid discussion."""
+    if env.get('COUNTERPRESS_ANALYST_DISCUSSION') in ('azure', 'foundry'):
+        if (status.get('discussion_available') is not True
+                or status.get('discussion_runtime') != 'microsoft_agent_framework'):
+            raise DeploymentError('Analyst discussion unavailable; check model configuration and durable admission')
+    elif status.get('discussion_available') is True:
+        raise DeploymentError('Unexpected Analyst discussion activation')
+    if env.get('COUNTERPRESS_ANALYST_MODE') == 'foundry':
+        if status.get('available') is not True or status.get('mode') != 'foundry':
+            raise DeploymentError('Native Analyst configuration unavailable')
 
 
 def require_ci():
@@ -632,8 +656,7 @@ def deploy():
     run([sys.executable,'scripts/container_smoke.py',url,*(['--studio-enabled'] if enabled else [])],timeout=240)
     with urlopen(url+'/api/analyst/config',timeout=30) as response:
         analyst_status=json.load(response)
-    if current_env.get('COUNTERPRESS_ANALYST_MODE') == 'foundry':
-        assert analyst_status['available'] and analyst_status['mode']=='foundry', 'Native Analyst configuration unavailable'
+    verify_analyst_status(current_env, analyst_status)
     for at,count in [(780000,4),(785000,3),(790000,None),(795000,2)]:
         with urlopen(url+f'/api/scenarios/stream-recovery/snapshot?at_ms={at}',timeout=30) as r:
             snapshot=json.load(r)

@@ -4,8 +4,18 @@ from pathlib import Path
 
 
 def local_model_settings(path):
+    # Secure proxy bindings may use a non-reserved name. Preserve an explicit
+    # application binding; never persist or print the injected value.
+    if os.environ.get('COUNTERPRESS_MODEL_API_KEY'):
+        os.environ.setdefault('AZURE_OPENAI_API_KEY', os.environ['COUNTERPRESS_MODEL_API_KEY'])
+    try:
+        content = path.read_text()
+    except FileNotFoundError:
+        return  # Complete injected configuration needs no local .env file.
+    except OSError:
+        raise SystemExit('Local model settings could not be read.') from None
     allowed={'AZURE_OPENAI_ENDPOINT','AZURE_OPENAI_DEPLOYMENT','AZURE_OPENAI_API_KEY'}
-    for line in path.read_text().splitlines():
+    for line in content.splitlines():
         key,separator,value=line.strip().removeprefix('export ').partition('=')
         if not separator or key not in allowed:continue
         value=value.strip()

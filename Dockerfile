@@ -15,15 +15,19 @@ ENV UV_PYTHON_DOWNLOADS=never UV_LINK_MODE=copy
 COPY pyproject.toml uv.lock ./
 COPY backend/counterpress ./backend/counterpress
 RUN uv sync --locked --no-dev --no-editable --python /usr/local/bin/python --no-cache
+ENV TIKTOKEN_CACHE_DIR=/app/tokenizer-cache
+RUN .venv/bin/python -c "import tiktoken; tiktoken.get_encoding('o200k_base')"
 
 FROM python:3.13-slim-bookworm@sha256:a1165e272e578941b84abc79e4ab38a0305cd12803a5c4247979ac7655f4d641 AS runtime
 WORKDIR /app
 RUN groupadd --gid 10001 counterpress && useradd --uid 10001 --gid 10001 --no-create-home counterpress \
     && mkdir /data && chown 10001:10001 /data
 COPY --from=backend /app/.venv /app/.venv
+COPY --from=backend /app/tokenizer-cache /app/tokenizer-cache
 COPY --from=frontend /build/dist /app/static
 COPY fixtures /app/fixtures
 ENV PATH="/app/.venv/bin:$PATH" \
+    TIKTOKEN_CACHE_DIR=/app/tokenizer-cache \
     PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
     COUNTERPRESS_DB_PATH=/data/counterpress.sqlite3 \
     COUNTERPRESS_FIXTURE_DIR=/app/fixtures COUNTERPRESS_STATIC_DIR=/app/static

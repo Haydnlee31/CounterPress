@@ -1,0 +1,1580 @@
+{
+  "one-touch": {
+    "text": [
+      "Eastbridge showcased precise and rapid interplay starting with Rory Ellis controlling the ball near the edge of the box before quickly laying it off to Alex Rowan. Rowan then threaded a clever pass to Jamie Vale, who returned it promptly, setting Ellis up for a sharp finish inside the penalty area.",
+      "Ellis capitalized on the swift combination, firing a shot into the net past Northport's goalkeeper, securing Eastbridge's third goal and extending their lead to 3-0."
+    ],
+    "paragraphs": [
+      {
+        "text": "Eastbridge showcased precise and rapid interplay starting with Rory Ellis controlling the ball near the edge of the box before quickly laying it off to Alex Rowan. Rowan then threaded a clever pass to Jamie Vale, who returned it promptly, setting Ellis up for a sharp finish inside the penalty area.",
+        "evidence_ids": [
+          "ot-control",
+          "ot-layoff",
+          "ot-link",
+          "ot-return"
+        ]
+      },
+      {
+        "text": "Ellis capitalized on the swift combination, firing a shot into the net past Northport's goalkeeper, securing Eastbridge's third goal and extending their lead to 3-0.",
+        "evidence_ids": [
+          "ot-finish"
+        ]
+      }
+    ],
+    "mode": "azure_generated_verified",
+    "review": {
+      "supported": true,
+      "issues": []
+    },
+    "usage": {
+      "prompt_tokens": 2889,
+      "completion_tokens": 139,
+      "total_tokens": 3028
+    },
+    "fixture_sha256": "51ac8149002c424e2a48caffdc4def870e1f27696748de4bd7bd6150dd87a9be",
+    "source": [
+      [
+        "showcase-one-touch-v1",
+        "ot-control",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 770000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 770000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        },
+        {
+          "x": 79.0,
+          "y": 43.0
+        },
+        "carry",
+        null,
+        null,
+        {
+          "x": 80.0,
+          "y": 42.0
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "showcase-one-touch-v1",
+        "ot-layoff",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 772000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 772000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        },
+        {
+          "x": 80.0,
+          "y": 42.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        },
+        {
+          "x": 88.0,
+          "y": 46.0
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-one-touch-v1",
+        "ot-link",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 774000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 774000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        },
+        {
+          "x": 88.0,
+          "y": 46.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb06"
+        },
+        {
+          "x": 82.0,
+          "y": 29.0
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-one-touch-v1",
+        "ot-return",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 776000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 776000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb06"
+        },
+        {
+          "x": 82.0,
+          "y": 29.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        },
+        {
+          "x": 94.0,
+          "y": 34.0
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-one-touch-v1",
+        "ot-finish",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        },
+        {
+          "x": 94.0,
+          "y": 34.0
+        },
+        "shot",
+        "goal",
+        null,
+        {
+          "x": 105.0,
+          "y": 36.0
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np01"
+        },
+        "open_play",
+        null,
+        null,
+        null
+      ]
+    ],
+    "score": {
+      "eastbridge": 3,
+      "northport": 0
+    }
+  },
+  "breakaway": {
+    "text": [
+      "Eastbridge launched a swift attacking move starting with Milo West passing to Rory Ellis, who immediately found Kai Mercer with a through ball. Mercer then carried the ball further upfield before delivering a square pass to Lucas Hart in a dangerous position inside the box.",
+      "Lucas Hart capitalized on the opportunity by shooting and scoring past Northport's goalkeeper, increasing Eastbridge's lead to 2-0. This sequence showcased Eastbridge's effective teamwork and sharp passing to break down the defense."
+    ],
+    "paragraphs": [
+      {
+        "text": "Eastbridge launched a swift attacking move starting with Milo West passing to Rory Ellis, who immediately found Kai Mercer with a through ball. Mercer then carried the ball further upfield before delivering a square pass to Lucas Hart in a dangerous position inside the box.",
+        "evidence_ids": [
+          "ba-release",
+          "ba-through",
+          "ba-run",
+          "ba-square"
+        ]
+      },
+      {
+        "text": "Lucas Hart capitalized on the opportunity by shooting and scoring past Northport's goalkeeper, increasing Eastbridge's lead to 2-0. This sequence showcased Eastbridge's effective teamwork and sharp passing to break down the defense.",
+        "evidence_ids": [
+          "ba-finish"
+        ]
+      }
+    ],
+    "mode": "azure_generated_verified",
+    "review": {
+      "supported": true,
+      "issues": []
+    },
+    "usage": {
+      "prompt_tokens": 3273,
+      "completion_tokens": 139,
+      "total_tokens": 3412
+    },
+    "fixture_sha256": "e31265c166a11f7911a5029840ab632a776a40b8a1686e484706d4e08433f445",
+    "source": [
+      [
+        "showcase-breakaway-v1",
+        "ba-release",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 768000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 768000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb10"
+        },
+        {
+          "x": 40.0,
+          "y": 48.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        },
+        {
+          "x": 49.0,
+          "y": 53.0
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-breakaway-v1",
+        "ba-through",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 770000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 770000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        },
+        {
+          "x": 49.0,
+          "y": 53.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        },
+        {
+          "x": 72.0,
+          "y": 43.0
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-breakaway-v1",
+        "ba-run",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 773000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 773000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        },
+        {
+          "x": 72.0,
+          "y": 43.0
+        },
+        "carry",
+        null,
+        null,
+        {
+          "x": 89.0,
+          "y": 42.0
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "showcase-breakaway-v1",
+        "ba-square",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 777000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 777000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        },
+        {
+          "x": 89.0,
+          "y": 42.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb07"
+        },
+        {
+          "x": 94.0,
+          "y": 23.0
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-breakaway-v1",
+        "ba-finish",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb07"
+        },
+        {
+          "x": 94.0,
+          "y": 23.0
+        },
+        "shot",
+        "goal",
+        null,
+        {
+          "x": 105.0,
+          "y": 36.0
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np01"
+        },
+        "open_play",
+        null,
+        null,
+        null
+      ]
+    ],
+    "score": {
+      "eastbridge": 2,
+      "northport": 0
+    }
+  },
+  "level-first": {
+    "text": [
+      "Henry Blake of Northport initiated an encouraging sequence, advancing the ball steadily out of their own third with a pair of good carries before finding Leo Marlow with a neat, short ground pass. However, Marlow's subsequent attempt to redistribute possession failed as his ground pass over a longer distance went astray, losing control for Northport.",
+      "Seizing the chance high in the attacking third, Eastbridge's Owen Cole swiftly recovered possession around 20 meters from goal. Without hesitation, Cole took a direct shot in open play, successfully scoring and bringing his team level at 1-1."
+    ],
+    "paragraphs": [
+      {
+        "text": "Henry Blake of Northport initiated an encouraging sequence, advancing the ball steadily out of their own third with a pair of good carries before finding Leo Marlow with a neat, short ground pass. However, Marlow's subsequent attempt to redistribute possession failed as his ground pass over a longer distance went astray, losing control for Northport.",
+        "evidence_ids": [
+          "a00495",
+          "a00496",
+          "a00497",
+          "a00498"
+        ]
+      },
+      {
+        "text": "Seizing the chance high in the attacking third, Eastbridge's Owen Cole swiftly recovered possession around 20 meters from goal. Without hesitation, Cole took a direct shot in open play, successfully scoring and bringing his team level at 1-1.",
+        "evidence_ids": [
+          "a00499",
+          "a00500"
+        ]
+      }
+    ],
+    "mode": "azure_generated_verified",
+    "review": {
+      "supported": true,
+      "issues": []
+    },
+    "usage": {
+      "prompt_tokens": 4326,
+      "completion_tokens": 169,
+      "total_tokens": 4495
+    },
+    "fixture_sha256": "4bb2d5b17e9d1ac0170127bae0a42d9fcf61f05a2d58e3ad97b71a9d6be3eb22",
+    "source": [
+      [
+        "showcase-level-first-v1",
+        "a00495",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 759616
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 759616
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np09"
+        },
+        {
+          "x": 21.445,
+          "y": 56.654
+        },
+        "carry",
+        null,
+        null,
+        {
+          "x": 27.643,
+          "y": 54.755
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "showcase-level-first-v1",
+        "a00496",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 764123
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 764123
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np09"
+        },
+        {
+          "x": 27.643,
+          "y": 54.755
+        },
+        "carry",
+        null,
+        null,
+        {
+          "x": 31.103,
+          "y": 51.23
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "showcase-level-first-v1",
+        "a00497",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 766361
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 766361
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np09"
+        },
+        {
+          "x": 31.103,
+          "y": 51.23
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "northport",
+          "player_id": "np08"
+        },
+        {
+          "x": 31.661,
+          "y": 62.742
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-level-first-v1",
+        "a00498",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 770814
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 770814
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np08"
+        },
+        {
+          "x": 31.661,
+          "y": 62.742
+        },
+        "pass",
+        "incomplete",
+        null,
+        {
+          "x": 19.82,
+          "y": 34.894
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-level-first-v1",
+        "a00499",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 772025
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 772025
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb11"
+        },
+        {
+          "x": 85.18,
+          "y": 33.106
+        },
+        "recovery",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "northport",
+        "established"
+      ],
+      [
+        "showcase-level-first-v1",
+        "a00500",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb11"
+        },
+        {
+          "x": 85.18,
+          "y": 33.106
+        },
+        "shot",
+        "goal",
+        null,
+        {
+          "x": 105.0,
+          "y": 31.927
+        },
+        null,
+        "open_play",
+        null,
+        null,
+        null
+      ]
+    ],
+    "score": {
+      "eastbridge": 1,
+      "northport": 1
+    }
+  },
+  "take-lead": {
+    "text": [
+      "Eastbridge launched a composed attack starting with Owen Cole's precise pass to Lucas Hart well into the middle third. Hart then delivered a solid ground pass to Oliver Hayes who advanced into the attacking third with a brief carry.",
+      "Hayes found Kai Mercer with a short pass, before receiving the ball back near the edge of the box, setting up an ideal chance. From around 14 meters, Hayes shot accurately to score, giving Eastbridge a 2-1 lead."
+    ],
+    "paragraphs": [
+      {
+        "text": "Eastbridge launched a composed attack starting with Owen Cole's precise pass to Lucas Hart well into the middle third. Hart then delivered a solid ground pass to Oliver Hayes who advanced into the attacking third with a brief carry.",
+        "evidence_ids": [
+          "a00999",
+          "a01000",
+          "a01001"
+        ]
+      },
+      {
+        "text": "Hayes found Kai Mercer with a short pass, before receiving the ball back near the edge of the box, setting up an ideal chance. From around 14 meters, Hayes shot accurately to score, giving Eastbridge a 2-1 lead.",
+        "evidence_ids": [
+          "a01002",
+          "a01003",
+          "a01004"
+        ]
+      }
+    ],
+    "mode": "azure_generated_verified",
+    "review": {
+      "supported": true,
+      "issues": []
+    },
+    "usage": {
+      "prompt_tokens": 4646,
+      "completion_tokens": 145,
+      "total_tokens": 4791
+    },
+    "fixture_sha256": "686b1b93e4d153d0b68ea343977996b6c892ed003fc692b7ea24157478cc6d69",
+    "source": [
+      [
+        "showcase-take-lead-v1",
+        "a00999",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 753527
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 753527
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb11"
+        },
+        {
+          "x": 35.368,
+          "y": 9.909
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb07"
+        },
+        {
+          "x": 57.619,
+          "y": 22.037
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-take-lead-v1",
+        "a01000",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 755997
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 755997
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb07"
+        },
+        {
+          "x": 57.619,
+          "y": 22.037
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb03"
+        },
+        {
+          "x": 72.338,
+          "y": 19.933
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-take-lead-v1",
+        "a01001",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 759295
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 759295
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb03"
+        },
+        {
+          "x": 72.338,
+          "y": 19.933
+        },
+        "carry",
+        null,
+        null,
+        {
+          "x": 71.921,
+          "y": 19.958
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "showcase-take-lead-v1",
+        "a01002",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 766820
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 766820
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb03"
+        },
+        {
+          "x": 71.921,
+          "y": 19.958
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        },
+        {
+          "x": 76.941,
+          "y": 23.305
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-take-lead-v1",
+        "a01003",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 774451
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 774451
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        },
+        {
+          "x": 76.941,
+          "y": 23.305
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb03"
+        },
+        {
+          "x": 90.988,
+          "y": 35.673
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-take-lead-v1",
+        "a01004",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb03"
+        },
+        {
+          "x": 90.988,
+          "y": 35.673
+        },
+        "shot",
+        "goal",
+        null,
+        {
+          "x": 105.0,
+          "y": 31.205
+        },
+        null,
+        "open_play",
+        null,
+        null,
+        null
+      ]
+    ],
+    "score": {
+      "eastbridge": 2,
+      "northport": 1
+    }
+  },
+  "level-late": {
+    "text": [
+      "Northport launched a well-constructed attack starting deep in their own half. Ben Fletcher's steady ground pass to Noah Arden initiated a series of smooth link-ups through midfield involving Leo Marlow and Callum Stone, progressively advancing the ball closer to Eastbridge’s defensive area.",
+      "The drive continued as Callum Stone found Isaac Lane, who quickly switched the play back to Ben Fletcher positioned around the attacking third. Fletcher made no mistake, firing a precise shot from about 15 meters out to equalize the score at 2-2."
+    ],
+    "paragraphs": [
+      {
+        "text": "Northport launched a well-constructed attack starting deep in their own half. Ben Fletcher's steady ground pass to Noah Arden initiated a series of smooth link-ups through midfield involving Leo Marlow and Callum Stone, progressively advancing the ball closer to Eastbridge’s defensive area.",
+        "evidence_ids": [
+          "a01042",
+          "a01043",
+          "a01044",
+          "a01045"
+        ]
+      },
+      {
+        "text": "The drive continued as Callum Stone found Isaac Lane, who quickly switched the play back to Ben Fletcher positioned around the attacking third. Fletcher made no mistake, firing a precise shot from about 15 meters out to equalize the score at 2-2.",
+        "evidence_ids": [
+          "a01045",
+          "a01046",
+          "a01047"
+        ]
+      }
+    ],
+    "mode": "azure_generated_verified",
+    "review": {
+      "supported": true,
+      "issues": []
+    },
+    "usage": {
+      "prompt_tokens": 4618,
+      "completion_tokens": 162,
+      "total_tokens": 4780
+    },
+    "fixture_sha256": "cd5ffd86ce1b366f2b933d71ee685aa7d520efa4afd2d33f807d7a5a723aa84f",
+    "source": [
+      [
+        "showcase-level-late-v1",
+        "a01042",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 752505
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 752505
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np02"
+        },
+        {
+          "x": 22.567,
+          "y": 50.381
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "northport",
+          "player_id": "np04"
+        },
+        {
+          "x": 41.495,
+          "y": 35.825
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-level-late-v1",
+        "a01043",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 756308
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 756308
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np04"
+        },
+        {
+          "x": 41.495,
+          "y": 35.825
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "northport",
+          "player_id": "np08"
+        },
+        {
+          "x": 45.863,
+          "y": 54.509
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-level-late-v1",
+        "a01044",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 760680
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 760680
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np08"
+        },
+        {
+          "x": 45.863,
+          "y": 54.509
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "northport",
+          "player_id": "np03"
+        },
+        {
+          "x": 54.373,
+          "y": 47.502
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-level-late-v1",
+        "a01045",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 767054
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 767054
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np03"
+        },
+        {
+          "x": 54.373,
+          "y": 47.502
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "northport",
+          "player_id": "np10"
+        },
+        {
+          "x": 66.113,
+          "y": 26.269
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-level-late-v1",
+        "a01046",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 769642
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 769642
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np10"
+        },
+        {
+          "x": 66.113,
+          "y": 26.269
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "northport",
+          "player_id": "np02"
+        },
+        {
+          "x": 90.228,
+          "y": 38.048
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-level-late-v1",
+        "a01047",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np02"
+        },
+        {
+          "x": 90.228,
+          "y": 38.048
+        },
+        "shot",
+        "goal",
+        null,
+        {
+          "x": 105.0,
+          "y": 32.891
+        },
+        null,
+        "open_play",
+        null,
+        null,
+        null
+      ]
+    ],
+    "score": {
+      "eastbridge": 2,
+      "northport": 2
+    }
+  },
+  "last-gasp": {
+    "text": [
+      "Northport's Leo Marlow was denied twice in quick succession as Eastbridge's goalkeeper Theo Ashford saved both his penalty attempt and the immediate rebound, keeping Eastbridge's lead intact.",
+      "Eastbridge's Alex Rowan then sparked a fast counterattack by recovering possession deep in his own half and passing to Kai Mercer. Mercer advanced the ball before finding Lucas Hart, who made a strong run to deliver a precise cross into the attacking third.",
+      "Jamie Vale met Hart's cross with a header that set up Rory Ellis, who finished confidently from close range to extend Eastbridge's lead to 3-1 in the attacking third."
+    ],
+    "paragraphs": [
+      {
+        "text": "Northport's Leo Marlow was denied twice in quick succession as Eastbridge's goalkeeper Theo Ashford saved both his penalty attempt and the immediate rebound, keeping Eastbridge's lead intact.",
+        "evidence_ids": [
+          "lg-penalty",
+          "lg-rebound"
+        ]
+      },
+      {
+        "text": "Eastbridge's Alex Rowan then sparked a fast counterattack by recovering possession deep in his own half and passing to Kai Mercer. Mercer advanced the ball before finding Lucas Hart, who made a strong run to deliver a precise cross into the attacking third.",
+        "evidence_ids": [
+          "lg-recovery",
+          "lg-outlet",
+          "lg-break",
+          "lg-wide-pass",
+          "lg-wing-run",
+          "lg-cross"
+        ]
+      },
+      {
+        "text": "Jamie Vale met Hart's cross with a header that set up Rory Ellis, who finished confidently from close range to extend Eastbridge's lead to 3-1 in the attacking third.",
+        "evidence_ids": [
+          "lg-knockdown",
+          "lg-winner"
+        ]
+      }
+    ],
+    "mode": "azure_generated_verified",
+    "review": {
+      "supported": true,
+      "issues": []
+    },
+    "usage": {
+      "prompt_tokens": 6625,
+      "completion_tokens": 198,
+      "total_tokens": 6823
+    },
+    "fixture_sha256": "651a89f17d9ecf0e0b32567a3bf19a4f51c72501031cf544feb3ab729249c0f4",
+    "source": [
+      [
+        "showcase-last-gasp-v1",
+        "lg-penalty",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 760000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 760000
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np08"
+        },
+        {
+          "x": 94.0,
+          "y": 34.0
+        },
+        "shot",
+        "saved",
+        null,
+        {
+          "x": 103.0,
+          "y": 32.0
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb01"
+        },
+        "penalty",
+        null,
+        null,
+        null
+      ],
+      [
+        "showcase-last-gasp-v1",
+        "lg-rebound",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 762000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 762000
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np08"
+        },
+        {
+          "x": 99.0,
+          "y": 33.0
+        },
+        "shot",
+        "saved",
+        null,
+        {
+          "x": 103.0,
+          "y": 35.0
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb01"
+        },
+        "open_play",
+        null,
+        null,
+        null
+      ],
+      [
+        "showcase-last-gasp-v1",
+        "lg-recovery",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 764000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 764000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        },
+        {
+          "x": 12.0,
+          "y": 26.0
+        },
+        "recovery",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "northport",
+        "established"
+      ],
+      [
+        "showcase-last-gasp-v1",
+        "lg-outlet",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 765000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 765000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb04"
+        },
+        {
+          "x": 12.0,
+          "y": 26.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        },
+        {
+          "x": 39.0,
+          "y": 10.0
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-last-gasp-v1",
+        "lg-break",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 768000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 768000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        },
+        {
+          "x": 39.0,
+          "y": 10.0
+        },
+        "carry",
+        null,
+        null,
+        {
+          "x": 58.0,
+          "y": 10.0
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "showcase-last-gasp-v1",
+        "lg-wide-pass",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 771000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 771000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb08"
+        },
+        {
+          "x": 58.0,
+          "y": 10.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb07"
+        },
+        {
+          "x": 69.0,
+          "y": 11.0
+        },
+        null,
+        null,
+        "ground",
+        null,
+        null
+      ],
+      [
+        "showcase-last-gasp-v1",
+        "lg-wing-run",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 773000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 773000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb07"
+        },
+        {
+          "x": 69.0,
+          "y": 11.0
+        },
+        "carry",
+        null,
+        null,
+        {
+          "x": 85.0,
+          "y": 10.0
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "showcase-last-gasp-v1",
+        "lg-cross",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 776000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 776000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb07"
+        },
+        {
+          "x": 85.0,
+          "y": 10.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb06"
+        },
+        {
+          "x": 96.0,
+          "y": 43.0
+        },
+        null,
+        null,
+        "cross",
+        null,
+        null
+      ],
+      [
+        "showcase-last-gasp-v1",
+        "lg-knockdown",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 778000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 778000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb06"
+        },
+        {
+          "x": 96.0,
+          "y": 43.0
+        },
+        "pass",
+        "completed",
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        },
+        {
+          "x": 92.0,
+          "y": 34.0
+        },
+        null,
+        null,
+        "header",
+        null,
+        null
+      ],
+      [
+        "showcase-last-gasp-v1",
+        "lg-winner",
+        1,
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "period": 2,
+          "elapsed_ms": 780000
+        },
+        {
+          "team_id": "eastbridge",
+          "player_id": "eb09"
+        },
+        {
+          "x": 92.0,
+          "y": 34.0
+        },
+        "shot",
+        "goal",
+        null,
+        {
+          "x": 105.0,
+          "y": 33.0
+        },
+        {
+          "team_id": "northport",
+          "player_id": "np01"
+        },
+        "open_play",
+        null,
+        null,
+        null
+      ]
+    ],
+    "score": {
+      "eastbridge": 3,
+      "northport": 1
+    }
+  }
+}

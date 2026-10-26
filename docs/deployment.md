@@ -353,3 +353,36 @@ gh workflow run deploy.yml --repo Haydnlee31/CounterPress --ref main \
 available. `preserve` retains the deployed setting. Keep editorial/model secret
 references available while Footie is enabled; validation rejects an inconsistent
 configuration. Hosted smoke checks do not automatically send paid questions.
+
+## Azure discussion activation on the existing app
+
+After reviewing the current app, rollback image and exact-main CI, select
+`analyst_mode=azure_discussion` to run the tested five-role Microsoft Agent
+Framework discussion inside the existing container. This changes only
+`COUNTERPRESS_ANALYST_MODE=off` and `COUNTERPRESS_ANALYST_DISCUSSION=azure`.
+It requires existing valid server-side model secret references or the already
+attached managed identity, and Cosmos storage for shared durable admission.
+It neither changes authentication nor provisions native hosted agents. Keep
+all other workflow choices at `preserve` for this image/Analyst update.
+
+```sh
+gh workflow run deploy.yml --repo Haydnlee31/CounterPress --ref main \
+  -f analyst_mode=azure_discussion
+```
+
+The workflow's non-generating `/api/analyst/config` check must report discussion
+availability after deployment. A separate deliberate, bounded live acceptance
+round is still required; configuration availability alone does not prove model
+access. Public discussion retains the existing same-origin/request-size guards,
+two concurrent jobs and durable Analyst allowance ($0.10 reserved/run, $30
+lifetime, 120/hour, 200/day). These are shared application safeguards, not user
+authentication or an Azure monetary spending cap. Never reset the ledger to
+reactivate an exhausted allowance.
+
+`analyst_mode=disable` disables discussion without changing model credentials,
+Footie, native pins or stored history. `enable` retains its existing meaning:
+activate the verified pinned native Foundry protocol. Do not relabel an old
+native manifest to activate the new discussion protocol. Code rollback uses the
+captured previous image/template and preserves Cosmos history; capture a durable
+rollback record before deployment because the current workflow's temporary
+runner record does not survive runner disposal.

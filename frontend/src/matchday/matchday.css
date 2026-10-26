@@ -1178,3 +1178,11 @@
 .fan-commentary li button{width:calc(100% - 24px);margin:8px 12px;border-radius:8px}
 .fan-commentary .fan-latest-play{margin:10px 12px 14px;border:1px solid #d5dfd2;border-radius:8px}
 .fan-pitch-controls>.pitch-display-settings{align-self:flex-start}
+
+/* Keep the assistant with the pitch title, not on a separate strip. */
+.fan-pitch-identity{display:flex;align-items:center;gap:22px;min-width:0}.fan-pitch-identity h2{margin:0}.fan-pitch-identity .ask-footie{flex-shrink:0}
+@media(max-width:640px){.fan-pitch-heading{flex-wrap:wrap;row-gap:12px}.fan-pitch-identity{flex:1;gap:12px;flex-wrap:wrap}.fan-pitch-identity h2{font-size:19px}.fan-pitch-identity .ask-footie{font-size:12px!important;padding:6px 10px!important}.fan-pitch-identity .ask-footie .footie-mascot{width:24px!important;height:24px!important}.fan-tracker-clock{margin-left:auto}}
+
+.fan-pitch-canvas{position:relative}.fan-annotation-tools{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px 4px;color:#f8f4df}.fan-annotation-tools button,.fan-annotation-tools select{font:600 13px Arial,sans-serif;padding:10px 16px;min-height:40px;border:1px solid #b7c9b66b;border-radius:20px;background:#153e35;color:#f8f4df}.fan-annotation-tools button[aria-pressed=true]{background:#fff9e5;color:#a32929}.fan-annotation-tools button:disabled{opacity:.45}.fan-annotation-tools small{flex-basis:100%;text-align:right;color:#d2deca;font-size:12px}.fan-annotation-tools select{max-width:140px}.fan-annotation-tools option{color:#f8f4df;background:#153e35}
+
+.fan-tracker-grid .fan-pitch-canvas:has(.fan-annotation-tools){flex-direction:column;justify-content:center}.fan-annotation-tools{align-self:stretch;box-sizing:border-box}
