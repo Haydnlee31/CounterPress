@@ -143,6 +143,14 @@ def scoring_possessors(question):
 def requested_analysis(request):
     """Recognize the three investigation intents without replacing career questions."""
     q=request.question
+    # A count of the passes leading into one finish belongs to that observed
+    # sequence, not the career pass-total tool or a generic match score query.
+    sequence_pass_count = (
+        re.search(r'\b(?:how many|number of|count(?: the)?)\s+(?:(?:completed|successful)\s+)?passes\b',q,re.I)
+        and re.search(r'\bpasses\s+(?:that\s+)?(?:(?:led|leading)\s+(?:up\s+)?to|preceded)\s+.{0,80}\b'+SCORING_MOMENT+r'\b',q,re.I))
+    if sequence_pass_count:
+        history_or_rate=re.search(r'\b(?:career|season|seasons|matches|games|fixtures|history|historical|recent|average|percentage|accuracy|rate)\b|\b(?:last five|last 5|per\s*90|whole match|entire match)\b|/90',q,re.I)
+        return None if history_or_rate else 'buildup'
     if scoring_contributor(q):
         return None if RELATION_HISTORY.search(q) else 'buildup'
     if re.search(r'what (?:made|led to|created|set up) (?:that|this|the) goal|how (?:was|did).*(?:goal|buildup)|build[ -]?up|before (?:the |that |this )?(?:goal|finish)|进球.*(?:过程|形成)|如何.*进球',q,re.I):

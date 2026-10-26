@@ -9,7 +9,7 @@ import subprocess
 import tempfile
 import time
 
-from deploy_azure import DeploymentError, require_ci, run, validate_app
+from deploy_azure import DeploymentError, require_ci, run, validate_app, model_authentication_settings
 
 API = '2025-07-01'
 APP = 'counterpress'
@@ -110,6 +110,30 @@ def staging_template(original, image, suffix):
     require(len(scale['rules']) == 1, 'One HTTP scaler is required')
     template['revisionSuffix'] = suffix
     return template
+
+
+def reviewed_candidate_template(app, image, suffix, model_authentication='preserve'):
+    """Only the reviewed keyless switch may accompany a staging image change."""
+    require(model_authentication in ('preserve', 'managed_identity'),
+            'Unsupported staging model authentication mode')
+    configured = model_authentication_settings(app, model_authentication)
+    return staging_template(configured['properties']['template'], image, suffix)
+
+
+def reviewed_candidate_matches(app, candidate, suffix):
+    """Cleanup reconstructs either authorized template, never trusts a mode flag.
+
+    The immutable original revision supplies the settings. A candidate with any
+    additional environment, identity, scaler or resource change is rejected.
+    """
+    image = candidate['containers'][0]['image']
+    for mode in ('preserve', 'managed_identity'):
+        try:
+            expected = reviewed_candidate_template(app, image, suffix, mode)
+        except (DeploymentError, AssertionError, KeyError, ValueError):
+            continue
+        if template_value(candidate) == template_value(expected):return True
+    return False
 
 
 def validate_production(app):
@@ -243,7 +267,7 @@ class Azure:
         return host+'/counterpress@'+digest
 
 
-def stage(azure, image, suffix):
+def stage(azure, image, suffix, *, model_authentication='preserve'):
     require(re.fullmatch(r'stage-[0-9]+-[0-9]+', suffix), 'Invalid staging suffix')
     before = azure.app(); production = validate_production(before); candidate = APP+'--'+suffix
     revisions = azure.revisions()  # Permission/readiness preflight before any app mutation.
@@ -254,7 +278,9 @@ def stage(azure, image, suffix):
     require(revision_ready(original), 'Production revision is not healthy')
     require(template_value(original['properties']['template']) == template_value(before['properties']['template']),
             'Production template changed; staging stopped')
-    template = staging_template(original['properties']['template'], image, suffix)
+    source = copy.deepcopy(before)
+    source['properties']['template'] = original['properties']['template']
+    template = reviewed_candidate_template(source, image, suffix, model_authentication)
     baseline = application_value(before)
     # Print recoverable, non-secret identities BEFORE the first app mutation.
     print('Production revision: '+production, flush=True)
@@ -285,6 +311,7 @@ def stage(azure, image, suffix):
     print('PASS: original production stays at 100%; candidate is 0% with public label '+LABEL, flush=True)
     print('Open Container Apps > Revisions and replicas > candidate > label URL. The label is public, not an access control.', flush=True)
     print('No live AI check was run. Complete the bounded candidate review, then cleanup before normal deployment.', flush=True)
+    print('Candidate model authentication: '+model_authentication, flush=True)
     return production, candidate
 
 
@@ -307,8 +334,8 @@ def cleanup(azure, production, candidate):
     baseline = application_value(current)
     if candidate in revisions:
         c = azure.revision(candidate)['properties']['template']
-        expected = staging_template(original,c['containers'][0]['image'],candidate.split('--',1)[1])
-        require(template_value(c) == template_value(expected), 'Candidate is not the reviewed isolated template')
+        require(reviewed_candidate_matches(check,c,candidate.split('--',1)[1]),
+                'Candidate is not the reviewed isolated template')
     # Idempotent after a completed cleanup, while the old immutable revision still exists.
     restore_template = copy.deepcopy(original);restore_template['revisionSuffix'] = restored.split('--',1)[1]
     if restored in revisions:
@@ -384,8 +411,12 @@ def main():
         require_ci()
         suffix = 'stage-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT']
         # Validate current production before uploading; stage rechecks after the push.
-        validate_production(azure.app())
-        stage(azure,azure.push(),suffix)
+        before = azure.app()
+        validate_production(before)
+        mode = os.environ.get('CP_MODEL_AUTHENTICATION', 'preserve')
+        # Resolve/authenticate the template before spending on an image upload.
+        reviewed_candidate_template(before, before['properties']['template']['containers'][0]['image'], suffix, mode)
+        stage(azure,azure.push(),suffix,model_authentication=mode)
     else:cleanup(azure,args.production,args.candidate)
 
 
