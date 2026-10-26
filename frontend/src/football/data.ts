@@ -20,6 +20,7 @@ export type HomeView=FanResponse & {following:{players:{player:Player;tiles:Tile
 export type CompareView=FanResponse & {players:Player[];metrics:{metric:string;label:string;values:Record<string,Tile>}[];same_role:boolean;rate_comparison_available:boolean;minimum_minutes_for_rate_comparison:number}
 export type LiveView=FanResponse & {facts:{score:Record<string,number>;players:Record<string,{career_at_cutoff:Totals}>};cards:Card[];focus:{active_player_ids:string[];status:string;player_id:string|null};view_id:string}
 export type Replay={match_id:string;teams:{team_id:string;name:string;player_ids:string[]}[];events:Event[];initial_state:{at:MatchTime;score:Record<string,number>}}
+export type HighlightContext={highlight_id:string;match_id:string;teams:Replay['teams'];active_player_ids:string[];period_lengths_ms:number[];initial_cutoff:MatchTime;original_cutoff:MatchTime;latest_cutoff:MatchTime;original_sequence:number;latest_sequence:number;replay_available:boolean;review_available:boolean;goal:{event_id:string;player_id?:string;revision:number;retracted:boolean;occurred_at:MatchTime;available_at:MatchTime};content_version:string}
 export type History={items:Match[];total:number}
 export type World={catalog:Catalog;players:Player[];asOf:string;throughDate:string}
 

@@ -966,3 +966,171 @@ of separate metadata reads. Normal production workflow
 [40071500453](https://github.com/Haydnlee31/CounterPress/actions/runs/40071500453)
 was dispatched for the already-tested application commit; its final outcome is
 authoritative in that workflow, not implied by successful candidate validation.
+
+
+### Core production outcome and Phase 4 local increment — 26 October 2026
+
+The 24 October production workflow 40071500453 passed and deployed
+`counterpress--gh-40071500453-1`; the subsequent 20 control checks passed. The
+operational conflict-recovery fix merged as PR 61 (main `cea2e4e`). This closes
+the pending core-release status above, not the Phase 4 hosted gate.
+
+The new highlight context endpoint separates authoritative observation boundaries
+from immutable animation availability. A paused viewer keeps their playback time
+and source delivery ceiling. Corrections offer an explicit **Review update**;
+reviewed snapshots stay fixed until the next explicit review. Duplicate delivery
+has no additional effect. A withdrawn replay stays hidden even after statistically
+identical restoration. Both audience modes use the same facts; analyst cards add
+recorded sequence duration, participants and denominators.
+
+Ask Footie now receives the selected delivery ceiling. Its API rejects relevant
+newer known records before inference and again inside the final read snapshot.
+This is a fail-closed precondition, not historical sequence filtering added to
+every research tool. Older callers without a ceiling retain their existing path.
+The interface handles HTTP 409 without an automatic paid retry, and career updates
+no longer close an open highlight dialog. A browser-discovered negative initial
+animation delta was clamped and covered by a regression test.
+
+The deployment workflow has a reviewed preserve/enable/disable switch for the
+career bridge. Enabling requires the existing managed-identity wiring, Cosmos
+journal, Event Hubs, notification configuration and single-replica safeguards.
+The current settings passed a read-only dry run. No cloud configuration, event
+journal or inference allowance was changed during this increment.
+
+#### Browser and independent lifecycle checks
+
+Two separate browser origins used the same isolated SQLite journal, one casual
+and one analyst viewer. At the equalizer both showed 2–2 and four completed
+buildup passes; the analyst also showed 15.71 seconds and four involved players.
+A goal withdrawal removed the animation without closing either dialog. The
+original 2–2 remained until review; then both showed 2–1 and removed the buildup
+card. A duplicate kept generation 1. Restoration advanced generation to 2;
+viewers retained 2–1 until another explicit review, then showed 2–2 and restored
+the card. The obsolete animation remained unavailable. No AI was invoked.
+
+Desktop review used 1470×782; mobile review used 390×844. The mobile document
+width equaled the viewport, with vertically stacked, scrollable cards and visible
+review/close controls. Local screenshots: `var/phase4-revision-desktop.png` and
+`var/phase4-revision-mobile.png`. Browser checks used the polling fallback, not
+Azure Web PubSub; they do not establish hosted reconnect success.
+
+The independently authored lifecycle oracle additionally verifies pass correction,
+goal withdrawal, duplication, restoration, expiry, fact parity and delivery
+checkpoint ordering. Its generation trace is [0, 1, 2, 2, 3, 4], with five
+checkpointed deliveries. Publishers/checkpoints are local doubles, not Azure.
+A first ad-hoc browser restoration script stopped at its pre-write assertion
+because it read a new store before entering its snapshot. Rerunning with the
+required snapshot performed the intended duplicate/restoration checks; no extra
+revision was written by the failed attempt.
+
+#### Verification and limits
+
+The first full backend run returned 1,392 passed / 3 failed: all three failures
+were the frozen editorial source guard. Independent review confirmed exactly
+three changed backend files and the new context helper; no benchmark cases,
+expected answers, prompts or source fixtures changed. The previous lock was
+preserved under `var/`, then versioned to
+`footie-intelligence-controls-v5-live-highlight-observations`. The focused
+editorial/context/assistant/lifecycle rerun passed 37 tests. An earlier targeted
+deployment run also exposed a staging test fixture missing now-required wiring;
+the fixture was corrected without weakening the production guard (82 passed).
+
+Very late revisions beyond the supported match observation clock link to
+Clubhouse rather than silently clamping time. Historical animations are not
+regenerated. Crucially, production correction tests must use isolated data:
+a restoration cannot restore the original source digest. The remaining hosted
+exit gate is real Event Hubs → Cosmos → Web PubSub correction, reconnect and
+paused-viewer recovery with two browsers and trace evidence. The career bridge
+remains off in production until that gate is met. No new hosted AI accuracy,
+latency or human usability claim is made by these local checks.
+
+
+Final commands and observed output for this increment:
+
+```text
+.venv/bin/python -m pytest -q
+1395 passed, 1 warning in 257.20s (0:04:17)
+
+npm --prefix frontend test
+Test Files  36 passed (36)
+Tests       225 passed (225)
+
+npm --prefix frontend run build
+✓ built in 1.32s
+
+node --test integrations/personalization/client.test.mjs
+tests 14 / pass 14 / fail 0
+
+.venv/bin/python scripts/check_fan_card_lifecycle.py
+status: passed; generations: [0, 1, 2, 2, 3, 4]
+checkpointed_deliveries: 5; azure_calls: 0; model_calls: 0
+```
+
+The lifecycle line above is an abbreviated extraction of its JSON output. The
+single backend warning is the existing experimental agent-framework evaluator
+notice. Full local outputs are retained under `var/phase4-*`. Staged whitespace
+and credential-pattern checks passed; unrelated `reports/` and `research_notes/`
+were excluded. These results apply to local code, not a newly deployed release.
+
+### Isolated Azure verification tooling — 26 October 2026
+
+PR 62's first increment passed GitHub CI 40258999104 (backend, frontend,
+container smoke, templates and career audit). The subsequent local increment
+adds a separate, inference-free app factory and guarded test infrastructure;
+[the runbook](../phase4-verification.md) describes the exact isolation and cleanup
+procedure. Provisioning and hosted evidence are not implied by these local results.
+
+Only the new `api/phase4.py` and server-side streaming destination configuration
+changed the frozen backend source set. The reviewed lock is now
+`footie-intelligence-controls-v6-isolated-stream-verification`; the preceding lock
+is retained locally. Questions, expected answers and source fixtures did not change.
+Production deployment rejects isolated PubSub/Blob destinations, including ambiguous
+or secret-reference overrides. Both publishing and receive-only negotiation bind
+to the same server-selected hub. A dedicated app factory exposes career/card reads,
+revision negotiation and numeric diagnostic counters, with no assistant, Studio,
+editorial or voice routes. Static serving is limited to compiled entry/assets.
+
+Independent infrastructure review found and corrected existing-resource adoption,
+missing partial-deployment recovery receipts, and cleanup racing an active ARM
+deployment. Image/tag, template, private receipt, identity ownership and production
+fingerprints are checked. The GitHub workflow only builds/publishes using existing
+registry permissions; its identity was not granted new deployment privileges.
+The hosted reader binds its origin to the control-plane proof and never sends
+an event automatically. The checkpoint helper only reads partition/checkpoint
+metadata, with a 30-second bound; it never claims ownership or writes checkpoints.
+
+Observed local verification:
+
+```text
+.venv/bin/python -m pytest -q
+1502 passed, 1 warning in 321.51s (0:05:21)
+
+.venv/bin/python -m pytest -q tests/test_phase4_guard.py tests/test_phase4_hosted.py tests/test_phase4_checkpoint.py
+65 passed in 40.49s
+
+.venv/bin/python -m pytest -q tests/test_editorial_evaluation.py tests/test_phase4_app.py tests/test_pubsub_scope.py
+77 passed, 1 warning in 5.78s
+```
+
+The final focused run covers the origin binding and checkpoint additions made
+while the full suite was running. The warning is the existing experimental
+agent-framework evaluator notice. Bicep compilation passed. No model calls were
+made. The first actual read-only Azure preflight passed the production guard but
+stopped on ARM's `RoleAssignmentNotFound` response for an absent test assignment;
+this requires narrow missing-resource classification, never treating arbitrary
+permission/network errors as absence. It created no resources.
+
+The read-only preflight subsequently passed all twelve exact absence checks.
+Observed service-specific `EntityNotFound` and `ContainerNotFound` responses were
+also added to the strict top-level missing-code classifier. Conflicting wrapper
+codes, permission failures and message substrings remain errors. Final guard
+regression: `37 passed in 0.03s`. No Azure resources were created by this preflight.
+
+A preliminary ARM structural preview then passed: twelve exact creates and twenty
+ignored references, with production unchanged. This used a placeholder existing
+image only to check resource structure, not an approved plan or deployable test
+image. Azure CLI required `--no-pretty-print` for machine-readable what-if output;
+that flag and a regression were added (`38 passed in 0.06s`). The restricted
+backend also loaded Clubhouse and the equalizer highlight in the browser: 2–2 at
+62:30 and four completed buildup passes. This preview used isolated local SQLite
+and no Azure clients; screenshot: `var/phase4-restricted-preview.png`.

@@ -230,12 +230,99 @@ def assistant_allowance_settings(app, mode):
     return result
 
 
+def validate_production_stream_scopes(entries):
+    """The production release path must never adopt verifier destinations."""
+    defaults = {
+        'COUNTERPRESS_PUBSUB_HUB': 'counterpress',
+        'COUNTERPRESS_CHECKPOINT_CONTAINER': 'eventhub-checkpoints',
+        'COUNTERPRESS_QUARANTINE_CONTAINER': 'rejected-deliveries',
+    }
+    for name, expected in defaults.items():
+        matching = [entry for entry in entries if entry.get('name') == name]
+        if (len(matching) > 1 or any(
+                entry.get('value') != expected or 'secretRef' in entry
+                for entry in matching)):
+            raise DeploymentError('Production streaming destinations must retain reviewed defaults')
+
+
+def validate_career_streaming_prerequisites(app):
+    """Validate existing wiring only; never create identities, stores or credentials."""
+    try:
+        properties = app['properties']
+        containers = properties['template']['containers']
+        if len(containers) != 1:
+            raise ValueError
+        entries = containers[0].get('env', [])
+        validate_production_stream_scopes(entries)
+        env = {entry['name']: entry.get('value') for entry in entries}
+        if len(env) != len(entries):
+            raise ValueError
+        if (env.get('COUNTERPRESS_STORAGE') != 'cosmos'
+                or env.get('COUNTERPRESS_STREAMING') != 'azure'
+                or env.get('COUNTERPRESS_COSMOS_DATABASE') != 'counterpress'
+                or env.get('COUNTERPRESS_COSMOS_CONTAINER') != 'histories'
+                or env.get('COUNTERPRESS_PROFILE_DB_PATH', ':memory:') != ':memory:'):
+            raise ValueError
+        for key, suffix, ports in (
+            ('COUNTERPRESS_COSMOS_ENDPOINT', '.documents.azure.com', (None, 443)),
+            ('COUNTERPRESS_CHECKPOINT_ENDPOINT', '.blob.core.windows.net', (None,)),
+            ('COUNTERPRESS_PUBSUB_ENDPOINT', '.webpubsub.azure.com', (None,)),
+        ):
+            value = env[key]
+            if not isinstance(value, str) or any(c.isspace() for c in value):
+                raise ValueError
+            parsed = urlsplit(value)
+            if (parsed.scheme != 'https' or not parsed.hostname or not parsed.hostname.endswith(suffix)
+                    or parsed.port not in ports or parsed.username or parsed.password
+                    or parsed.query or parsed.fragment or parsed.path not in ('', '/')):
+                raise ValueError
+        if (not re.fullmatch(r'[a-zA-Z0-9-]+\.servicebus\.windows\.net', env['COUNTERPRESS_EVENTHUB_NAMESPACE'])
+                or env.get('COUNTERPRESS_EVENTHUB_NAME') != 'deliveries'):
+            raise ValueError
+        attached = app['identity']['userAssignedIdentities']
+        client_ids = {value.get('clientId') for value in attached.values()}
+        for key in ('COUNTERPRESS_COSMOS_CLIENT_ID', 'COUNTERPRESS_STREAM_CLIENT_ID'):
+            client = env[key]
+            if str(UUID(client)) != client or client not in client_ids:
+                raise ValueError
+        scale = properties['template']['scale']
+        if (properties['configuration']['activeRevisionsMode'] != 'Single'
+                or scale.get('minReplicas') != 0 or scale.get('maxReplicas') != 1):
+            raise ValueError
+    except (KeyError, TypeError, ValueError, AttributeError):
+        raise DeploymentError('Career streaming requires existing reviewed Cosmos, streaming and attached identities') from None
+
+
+def career_streaming_settings(app, mode):
+    """Only toggle bridge activation; preserve journal, secrets and every other setting.
+
+    Operators must stop producers and drain pending career deliveries before
+    disabling. A configuration guard cannot establish partition-drain state.
+    """
+    result = copy.deepcopy(app)
+    if mode == 'preserve':
+        return result
+    if mode not in ('enable', 'disable'):
+        raise DeploymentError('Unknown career streaming mode')
+    if mode == 'enable':
+        validate_career_streaming_prerequisites(result)
+    container = result['properties']['template']['containers'][0]
+    container['env'] = [entry for entry in container.get('env', [])
+                        if entry['name'] != 'COUNTERPRESS_CAREER_STREAMING'] + [
+        {'name': 'COUNTERPRESS_CAREER_STREAMING', 'value': 'on' if mode == 'enable' else 'off'}]
+    return result
+
+
 def validate_app(app):
     p=app['properties'];container=p['template']['containers'][0]
+    validate_production_stream_scopes(container.get('env', []))
     env={v['name']:v.get('value') for v in container.get('env',[])}
     assert env.get('COUNTERPRESS_STORAGE')=='cosmos'
     assert env.get('COUNTERPRESS_STREAMING')=='azure'
     assert env.get('COUNTERPRESS_TELEMETRY')=='on'
+    assert env.get('COUNTERPRESS_CAREER_STREAMING', 'off') in ('off', 'on')
+    if env.get('COUNTERPRESS_CAREER_STREAMING') == 'on':
+        validate_career_streaming_prerequisites(app)
     secrets = {s['name'] for s in (p['configuration'].get('secrets') or [])}
     assert secrets <= set(MODEL_SECRETS.values()) | {MONITOR_SECRET}
     assert env.get('COUNTERPRESS_EDITORIAL', 'off') in ('off', 'entra')
@@ -356,6 +443,8 @@ def deploy():
     expected=assistant_settings(expected, os.environ.get('CP_ASSISTANT_MODE', 'preserve'))
     expected=assistant_workflow_settings(expected, os.environ.get('CP_ASSISTANT_WORKFLOW', 'preserve'))
     expected=assistant_allowance_settings(expected, os.environ.get('CP_ASSISTANT_ALLOWANCE', 'preserve'))
+    career_mode = os.environ.get('CP_CAREER_STREAMING', 'preserve')
+    expected=career_streaming_settings(expected, career_mode)
     has_monitoring = any(s['name'] == MONITOR_SECRET for s in expected['properties']['configuration'].get('secrets') or [])
     monitoring = read_monitoring_settings(group) if tracing_mode == 'enable' or configuration_update and has_monitoring else None
     if monitoring:
@@ -414,7 +503,7 @@ def deploy():
     if summary:
         with open(summary,'a') as f:
             f.write(f'## Verified CounterPress deployment\n\nCommit: `{sha}`\n\nImage digest: `{digest}`\n\n'
-                    f'Public HTTPS smoke and historical correction checks passed. Studio mode: {mode}. Editorial mode: {editorial_mode}. Cosmos, streaming, telemetry, identities and scale limits preserved.\n')
+                    f'Public HTTPS smoke and historical correction checks passed. Studio mode: {mode}. Editorial mode: {editorial_mode}. Career streaming mode: {career_mode}. Cosmos, streaming, telemetry, identities and scale limits preserved.\n')
 
 
 if __name__=='__main__':

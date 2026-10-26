@@ -48,6 +48,22 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
     @lru_cache(maxsize=1)
     def service():return AssistantService(career_service())
 
+    def require_current_observation(s, body):
+        # A card's source ceiling is a precondition, not a claim that every
+        # research tool can reconstruct an arbitrary historical delivery stream.
+        # Refuse before inference (and again before returning) when newer known
+        # actions could change the selected moment, including same-time revisions.
+        if body.through_sequence is None:return
+        cutoff=(body.playback.period,body.playback.elapsed_ms)
+        events=s.store.events(body.match_id)
+        past_ids={e.event_id for e in events if e.delivery_sequence<=body.through_sequence
+                  and (e.period,e.elapsed_ms)<=cutoff}
+        if any(e.delivery_sequence>body.through_sequence
+               and (e.available_period,e.available_ms)<=cutoff
+               and (e.event_id in past_ids or (e.period,e.elapsed_ms)<=cutoff)
+               for e in events):
+            raise HTTPException(409,'This moment has changed. Review its update before asking Footie.')
+
     @router.get('/config')
     def config():
         return {'available':True,'natural_language':planner is not None or researcher is not None,'narrative_selection':narrator is not None or researcher is not None,'workflow':'multiagent' if researcher and getattr(researcher,'max_requests',2)==4 else 'agent' if researcher else 'structured_lookup','name':'Footie','storage':'session',
@@ -89,6 +105,8 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
                 'footie.workflow':'multiagent' if getattr(researcher,'max_requests',2)==4 else 'agent' if researcher else 'structured_lookup'}) as span:
             try:
                 s=service();FanService(s.career).validate(body.preferences)
+                if body.through_sequence is not None:
+                    with s.store.snapshot():require_current_observation(s,body)
                 local=s.local_plan(body);plan=local
                 if researcher and not UNSUPPORTED.search(body.question):
                     def reserve_research_call():
@@ -128,6 +146,7 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
                 def execute():
                     # Keep compound reads in one revision snapshot; never hold during a model call.
                     with s.store.snapshot():
+                        require_current_observation(s,body)
                         if research and research.tasks:
                             from .multiagent import read_bundle
                             with agent_span('footie.validate',role='orchestrator'):

@@ -1,10 +1,11 @@
 # Footie intelligence improvement plan
 
-Status: implementation in progress, 24 October 2026. The source audit, deterministic
-analysis tools, assistant integration and local interface are implemented. Independent
-live evaluation and regression work are recorded in
-[the verification report](verification/footie-intelligence.md). Hosted activation
-remains gated; this document does not claim the full sequence has shipped.
+Status: implementation in progress, 26 October 2026. The core intelligence release
+shipped on 24 October. Phase 4 now has locally verified revision-aware highlight
+cards and assistant observation boundaries; career ingestion remains disabled in
+production pending isolated hosted validation. Independent evaluation and release
+evidence are recorded in [the verification report](verification/footie-intelligence.md).
+This document does not claim the full sequence has shipped.
 
 Managed-identity support and a curated Foundry export are prepared locally. Existing
 production model authentication and ingestion configuration remain unchanged. Builds
@@ -164,6 +165,17 @@ For the showcase, use a supported canonical match and verified replay binding.
 If a correction invalidates the replay, suppress its action until a valid version
 exists; never leave the old animation presented as corrected evidence.
 
+Next hosted verification design (reviewed, not provisioned): a temporary
+`counterpress-phase4` app, `histories-phase4` Cosmos container,
+`deliveries-phase4` Event Hub and `counterpress_phase4` Web PubSub hub, reusing
+existing service tiers. Keep the production guard exact; introduce a separate
+guard that rejects mixed production/test settings. The server-side hub/container configuration and isolated runtime are now prepared;
+see [the isolated verification runbook](phase4-verification.md). Verify distinct checkpoint/quarantine
+prefixes and scoped identity access before sending. Use the same byte-identical
+fixture snapshot and genuine dataset digest with a separate journal/index; never
+rewrite checksums to manufacture a new dataset. Disable inference in this test app.
+Stop/drain the sender and remove temporary resources after collecting evidence.
+
 Exit: demonstrate duplicate delivery, correction, restoration, reconnect and
 paused-viewer recovery through the real hosted path. No API-only claim of success:
 inspect two browser viewers and the resulting trace.
@@ -201,7 +213,7 @@ replay → demonstrate an event correction updating affected insights → reveal
 Foundry execution trace and measured baseline comparison. Use actual supported
 statistics; do not invent a milestone just to make the script more dramatic.
 
-The first core increment is implemented locally: evidence-backed buildup,
+The first core increment shipped on 24 October: evidence-backed buildup,
 role-aware involvement/history, equal-window comparisons, bounded investigation,
 and the existing Ask Footie panel with supporting timelines and actions. The
 independent fresh-wording result is 28/30 supported requests (93.3%); the subsequent
@@ -235,11 +247,13 @@ and keeps rollback readable. Tests use an independently frozen legacy decoder.
 Intentional calculated answers no longer appear as monitoring failures.
 
 The complete run includes the compatibility and telemetry fixes, superseding the
-earlier twenty-case sample for release regression evidence. Next: complete full
-application checks and isolated hosted staging. The current Single-revision deploy
-workflow cuts over public traffic automatically, so staging needs a separate
-reviewed path with production traffic pinned and the candidate's background Event
-Hubs consumer disabled. Hosted correction/reconnect validation, managed-identity
-activation and the optional Speech extension follow separately. Prepared Foundry
+earlier twenty-case sample for release regression evidence. Full application checks,
+isolated staging and the core production release subsequently passed. Phase 4 adds
+explicit revision review without advancing a paused viewer or replaying withdrawn
+source material. Next: create an isolated hosted career journal, ingestion stream,
+checkpoint and notification scope for correction/reconnect validation. Do not run
+withdrawal/restoration on the public canonical fixture: even a restored goal changes
+its immutable digest and invalidates its authored replay and three highlights.
+Managed-identity activation and the optional Speech extension follow separately. Prepared Foundry
 exports are local artifacts, not uploaded evaluations. Human fan testing remains
 pending recruitment.

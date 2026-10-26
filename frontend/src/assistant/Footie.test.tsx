@@ -116,12 +116,12 @@ it('does not send on open and keeps the embedded player season despite a differe
 })
 it('sends the frozen moment time and source revision instead of full-time career context',async()=>{
  const user=userEvent.setup()
- render(<Footie context={{label:'Match moment',question:'What happened in this moment?',matchId:'showcase',cutoff:{period:1,elapsed_ms:1234},eventId:'e9',eventRevision:2}}/>)
+ render(<Footie context={{label:'Match moment',question:'What happened in this moment?',matchId:'showcase',cutoff:{period:1,elapsed_ms:1234},eventId:'e9',eventRevision:2,throughSequence:1449}}/>)
  await screen.findByRole('textbox',{name:'Ask a football question'})
  expect(requests).toHaveLength(0)
  await user.click(screen.getByRole('button',{name:'Send question'}))
  await waitFor(()=>expect(requests).toHaveLength(1))
- expect(requests[0]).toMatchObject({match_id:'showcase',cutoff:{period:1,elapsed_ms:1234},event_id:'e9',event_revision:2,player_id:null,season:null})
+ expect(requests[0]).toMatchObject({match_id:'showcase',cutoff:{period:1,elapsed_ms:1234},event_id:'e9',event_revision:2,player_id:null,season:null,through_sequence:1449})
 })
 it('clears outdated answers and cancels late replies after a career correction without asking again',async()=>{
  const user=userEvent.setup();render(<Footie/>);
@@ -136,6 +136,52 @@ it('clears outdated answers and cancels late replies after a career correction w
  await waitFor(()=>expect(screen.queryByText('Mateo Cross · career: 75 goals.')).toBeNull())
  expect(requests).toHaveLength(2)
  expect(screen.queryByRole('button',{name:'Cancel'})).toBeNull()
+})
+
+it('keeps an opened highlight mounted when its originating assistant answer is invalidated',async()=>{
+ Object.defineProperty(HTMLDialogElement.prototype,'showModal',{configurable:true,value:vi.fn(function(this:HTMLDialogElement){this.open=true})})
+ Object.defineProperty(HTMLDialogElement.prototype,'close',{configurable:true,value:vi.fn(function(this:HTMLDialogElement){this.open=false})})
+ const original=vi.mocked(fetch).getMockImplementation()!
+ vi.mocked(fetch).mockImplementation(async(url,options)=>{
+  const path=String(url),body=options?.body?JSON.parse(String(options.body)):null
+  if(path==='/api/fan/assistant/ask'){
+   requests.push(body)
+   return reply({...answer,actions:[{label:'Watch goal',href:'',highlight:{highlight_id:'goal-clip',match_id:'showcase',title:'A goal',scorer_id:'rh09',date:'2026-10-19'}}]})
+  }
+  if(path==='/api/data/highlights/goal-clip/context')return reply({highlight_id:'goal-clip',match_id:'showcase',teams:[{team_id:'redhaven',name:'Redhaven',player_ids:['rh09']},{team_id:'redhaven',name:'Redhaven',player_ids:['rh09']}],active_player_ids:['rh09'],period_lengths_ms:[2700000,2700000],initial_cutoff:{period:2,elapsed_ms:999},original_cutoff:{period:2,elapsed_ms:1500},latest_cutoff:{period:2,elapsed_ms:2000},original_sequence:1,latest_sequence:2,replay_available:false,review_available:true,goal:{event_id:'goal',revision:2,retracted:true,occurred_at:{period:2,elapsed_ms:1000},available_at:{period:2,elapsed_ms:2000}},content_version:'changed'})
+  if(path.endsWith('/goal-clip/replay'))return reply({},409)
+  if(path==='/api/fan/matches/showcase')return reply({version:'fan-personalization-v1',request_id:body.request_id,preferences:body.preferences,preference_id:'view',dataset_id:'dataset',facts:{score:{redhaven:1},players:{}},cards:[],focus:{active_player_ids:['rh09'],status:'active',player_id:'rh09'},view_id:'view'})
+  return original(url,options)
+ })
+ const user=userEvent.setup();render(<Footie/>)
+ await user.click(await screen.findByRole('button',{name:/01.*How many goals does Mateo Cross/}))
+ await user.click(await screen.findByRole('button',{name:/Watch goal/}))
+ const dialog=await screen.findByRole('dialog',{name:'Redhaven × Redhaven'})
+ await screen.findByRole('button',{name:/Review update/})
+ fireEvent(window,new CustomEvent('footie:records-changed',{detail:{matches:['showcase'],datasetChanged:false}}))
+ await screen.findByText('The match records have changed. Ask again for the latest figures.')
+ expect(screen.queryByText('Mateo Cross · career: 75 goals.')).toBeNull()
+ expect(screen.getByRole('dialog',{name:'Redhaven × Redhaven'})).toBe(dialog)
+ expect(requests).toHaveLength(1)
+})
+
+it('explains a superseded observation without retrying or silently advancing its sequence',async()=>{
+ const original=vi.mocked(fetch).getMockImplementation()!
+ vi.mocked(fetch).mockImplementation(async(url,options)=>{
+  if(String(url)==='/api/fan/assistant/ask'){
+   requests.push(JSON.parse(String(options?.body)))
+   return reply({detail:'The observation has changed'},409)
+  }
+  return original(url,options)
+ })
+ const user=userEvent.setup()
+ render(<Footie context={{label:'Selected goal',question:'What made that goal happen?',matchId:'showcase',cutoff:{period:2,elapsed_ms:9500},eventId:'goal',eventRevision:1,throughSequence:1448}}/>)
+ await screen.findByRole('textbox',{name:'Ask a football question'})
+ await user.click(screen.getByRole('button',{name:'Send question'}))
+ await screen.findByText('The match records changed. Return to the moment and review the update before asking again.')
+ expect(requests).toHaveLength(1)
+ expect(requests[0]).toMatchObject({through_sequence:1448,cutoff:{period:2,elapsed_ms:9500}})
+ expect(screen.queryByText('Mateo Cross · career: 75 goals.')).toBeNull()
 })
 
 it('renders separate scales for compound answers without turning missing figures into zero',()=>{
