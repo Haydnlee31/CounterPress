@@ -177,5 +177,22 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
   }
   dependsOn: [journalRole, receiver, sender, blobRoles, publisher]
 }
+// Explicit scope IDs avoid Bicep loop-resource .id expansion leaking copyIndex()
+// into outputs, where ARM cannot evaluate a resource copy-loop index.
+var checkpointId = resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', storage.name, 'default', 'eventhub-checkpoints-phase4')
+var quarantineId = resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', storage.name, 'default', 'rejected-deliveries-phase4')
 // IDs are consumed privately by the guarded CLI; never print deployment output.
-output cleanupIds array = [app.id, journalRole.id, receiver.id, sender.id, blobRoles[0].id, blobRoles[1].id, publisher.id, feed.id, containers[0].id, containers[1].id, journal.id, identity.id]
+output cleanupIds array = [
+  app.id
+  journalRole.id
+  receiver.id
+  sender.id
+  extensionResourceId(checkpointId, 'Microsoft.Authorization/roleAssignments', guid(checkpointId, identity.id, 'phase4-blob'))
+  extensionResourceId(quarantineId, 'Microsoft.Authorization/roleAssignments', guid(quarantineId, identity.id, 'phase4-blob'))
+  publisher.id
+  feed.id
+  checkpointId
+  quarantineId
+  journal.id
+  identity.id
+]

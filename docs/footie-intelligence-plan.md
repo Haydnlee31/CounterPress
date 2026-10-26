@@ -1,9 +1,10 @@
 # Footie intelligence improvement plan
 
 Status: implementation in progress, 26 October 2026. The core intelligence release
-shipped on 24 October. Phase 4 now has locally verified revision-aware highlight
-cards and assistant observation boundaries; career ingestion remains disabled in
-production pending isolated hosted validation. Independent evaluation and release
+shipped on 24 October. Phase 4's isolated Azure lifecycle verification now passes,
+including two audience views, correction, withdrawal, duplicate, restoration,
+expiry and durable checkpoints. Career ingestion remains disabled in production
+pending a controlled rollout. Independent evaluation and release
 evidence are recorded in [the verification report](verification/footie-intelligence.md).
 This document does not claim the full sequence has shipped.
 
@@ -165,20 +166,26 @@ For the showcase, use a supported canonical match and verified replay binding.
 If a correction invalidates the replay, suppress its action until a valid version
 exists; never leave the old animation presented as corrected evidence.
 
-Next hosted verification design (reviewed, not provisioned): a temporary
+Completed isolated hosted verification used a temporary
 `counterpress-phase4` app, `histories-phase4` Cosmos container,
 `deliveries-phase4` Event Hub and `counterpress_phase4` Web PubSub hub, reusing
 existing service tiers. Keep the production guard exact; introduce a separate
-guard that rejects mixed production/test settings. The server-side hub/container configuration and isolated runtime are now prepared;
-see [the isolated verification runbook](phase4-verification.md). Verify distinct checkpoint/quarantine
-prefixes and scoped identity access before sending. Use the same byte-identical
-fixture snapshot and genuine dataset digest with a separate journal/index; never
-rewrite checksums to manufacture a new dataset. Disable inference in this test app.
-Stop/drain the sender and remove temporary resources after collecting evidence.
+guard that rejects mixed production/test settings. Distinct checkpoint/quarantine
+containers and scoped identity access were verified before sending. The test used
+the same byte-identical fixture snapshot and genuine dataset digest with a separate
+journal/index; no inference was enabled. See the
+[runbook and results](phase4-verification.md). Generation transitions were
+`0 → 1 → 2 → 2 → 3 → 4`; all five messages reached the durable checkpoint, with
+zero consumer/publish/checkpoint errors. The public app and library were unchanged.
+All twelve temporary resources/assignments were removed and independently checked
+absent; the public health and data checks still passed after cleanup.
 
-Exit: demonstrate duplicate delivery, correction, restoration, reconnect and
-paused-viewer recovery through the real hosted path. No API-only claim of success:
-inspect two browser viewers and the resulting trace.
+Verified exit: duplicate delivery, correction, restoration, expiry and explicit
+review were inspected in two hosted browser viewers; an independent WebSocket
+client verified reconnect, and Blob metadata proved durable checkpointing. These
+operational results are not AI reasoning traces. Next: deploy the reviewed code
+through the production guard, then explicitly activate the career bridge only
+with all consumers compatible and a bounded producer/rollback plan.
 
 ## Phase 5 — purposeful Microsoft integration and release
 

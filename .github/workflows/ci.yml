@@ -98,3 +98,13 @@ jobs:
           "$RUNNER_TEMP/bicep" build infra/monitoring.bicep --outfile "$RUNNER_TEMP/monitoring.json"
           "$RUNNER_TEMP/bicep" build infra/telemetry-ingestion.bicep --outfile "$RUNNER_TEMP/telemetry-ingestion.json"
           "$RUNNER_TEMP/bicep" build infra/agent-monitoring.bicep --outfile "$RUNNER_TEMP/agent-monitoring.json"
+      - name: Check compiled isolated cleanup manifest
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          template = json.loads((Path(os.environ['RUNNER_TEMP']) / 'phase4.json').read_text())
+          assert len(template['outputs']['cleanupIds']['value']) == 12
+          assert 'copyindex(' not in json.dumps({key: template.get(key, {}) for key in ('outputs', 'variables')}).lower()
+          print('Isolated cleanup output: 12 IDs, no resource-loop index references')
+          PY

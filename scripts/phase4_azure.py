@@ -117,14 +117,25 @@ def cleanup_manifest(bundle):
         assignment(bundle['pubsub'],'phase4-pubsub'),bundle['hub'],bundle['checkpoint'],bundle['quarantine'],bundle['journal'],identity]
 
 
+def arm_id_equal(left,right):
+    # ARM identifiers are case-insensitive; do not apply this to environment
+    # values, dataset IDs, fixture names or Cosmos data-plane db/coll suffixes.
+    return isinstance(left,str) and isinstance(right,str) and left.casefold()==right.casefold()
+
+
+def cosmos_scope_equal(scope,bundle):
+    suffix='/dbs/counterpress/colls/histories-phase4'
+    return isinstance(scope,str) and scope.endswith(suffix) and arm_id_equal(scope.removesuffix(suffix),bundle['cosmos'])
+
+
 def allowed_target(resource_id, bundle):
-    return resource_id in cleanup_manifest(bundle)
+    return any(arm_id_equal(resource_id,expected) for expected in cleanup_manifest(bundle))
 
 
 def resource_version(resource_id,bundle):
-    return ('2025-07-01' if resource_id==bundle['app'] else '2023-01-31' if resource_id==bundle['identity']
-        else '2024-11-15' if '/Microsoft.DocumentDB/' in resource_id else '2022-04-01' if '/roleAssignments/' in resource_id
-        else '2024-01-01' if '/Microsoft.EventHub/' in resource_id else '2023-05-01')
+    return ('2025-07-01' if arm_id_equal(resource_id,bundle['app']) else '2023-01-31' if arm_id_equal(resource_id,bundle['identity'])
+        else '2024-11-15' if '/microsoft.documentdb/' in resource_id.casefold() else '2022-04-01' if '/roleassignments/' in resource_id.casefold()
+        else '2024-01-01' if '/microsoft.eventhub/' in resource_id.casefold() else '2023-05-01')
 
 
 def read_target(resource_id,bundle):
@@ -150,30 +161,31 @@ def check_what_if(result,bundle):
         if kind in ('Ignore','NoChange'):continue
         require(kind=='Create' and allowed_target(change['resourceId'],bundle),
                 'Deployment preview changes an unapproved resource')
-        if '/roleAssignments/' in change['resourceId'] or '/sqlRoleAssignments/' in change['resourceId']:
+        if '/roleassignments/' in change['resourceId'].casefold() or '/sqlroleassignments/' in change['resourceId'].casefold():
             require(kind=='Create', 'Existing access assignment would change; review manually')
             properties=(change.get('after') or {}).get('properties',{})
             definition=properties.get('roleDefinitionId')
             ids=cleanup_manifest(bundle)
             expected={ids[2]:ROLE_IDS['receiver'],ids[3]:ROLE_IDS['sender'],ids[4]:ROLE_IDS['blob'],ids[5]:ROLE_IDS['blob'],ids[6]:ROLE_IDS['pubsub']}
-            if definition and change['resourceId'] in expected:
-                require(definition.split('/')[-1]==expected[change['resourceId']], 'Unexpected role definition in preview')
-            if change['resourceId']==ids[1] and properties.get('scope'):
-                require(properties['scope']==bundle['cosmos_scope'], 'Unexpected Cosmos scope in preview')
+            expected={key.casefold():value for key,value in expected.items()}
+            if definition and change['resourceId'].casefold() in expected:
+                require(definition.split('/')[-1].casefold()==expected[change['resourceId'].casefold()].casefold(), 'Unexpected role definition in preview')
+            if arm_id_equal(change['resourceId'],ids[1]) and properties.get('scope'):
+                require(cosmos_scope_equal(properties['scope'],bundle), 'Unexpected Cosmos scope in preview')
     return counts
 
 
 def validate_test_app(app,bundle,identity,image):
-    require(app['id']==bundle['app'] and app.get('tags',{}).get('purpose')=='footie-phase4', 'Not the owned verification app')
+    require(arm_id_equal(app['id'],bundle['app']) and app.get('tags',{}).get('purpose')=='footie-phase4', 'Not the owned verification app')
     p=app['properties'];config=p['configuration'];template=p['template']
-    require(p['environmentId']==bundle['environment'] and p.get('workloadProfileName')=='Consumption', 'Shared environment drift')
+    require(arm_id_equal(p['environmentId'],bundle['environment']) and p.get('workloadProfileName')=='Consumption', 'Shared environment drift')
     require(config['activeRevisionsMode']=='Single' and not config.get('secrets'), 'Verification must be secret-free and Single revision')
     require(config['ingress']['external'] is True and config['ingress']['allowInsecure'] is False and config['ingress']['targetPort']==8000, 'Unexpected ingress')
     registries=config.get('registries',[])
-    require(len(registries)==1 and registries[0].get('server')==bundle['registry'] and registries[0].get('identity')==bundle['pull']
+    require(len(registries)==1 and registries[0].get('server')==bundle['registry'] and arm_id_equal(registries[0].get('identity'),bundle['pull'])
         and all(k in ('server','identity') or (k in ('username','passwordSecretRef') and v in (None,'')) for k,v in registries[0].items()), 'Unexpected registry authentication')
-    require(set(app['identity']['userAssignedIdentities'])=={bundle['identity'],bundle['pull']}, 'Unexpected attached identity')
-    require(identity['id']==bundle['identity'] and identity.get('tags',{}).get('purpose')=='footie-phase4', 'Wrong test identity')
+    require({key.casefold() for key in app['identity']['userAssignedIdentities']}=={bundle['identity'].casefold(),bundle['pull'].casefold()}, 'Unexpected attached identity')
+    require(arm_id_equal(identity['id'],bundle['identity']) and identity.get('tags',{}).get('purpose')=='footie-phase4', 'Wrong test identity')
     require(len(template['containers'])==1 and not template.get('initContainers'), 'Unexpected containers')
     c=template['containers'][0]
     require(c['name']==APP and c['image']==bundle['registry']+'/counterpress@'+image, 'Unexpected verification image')
@@ -186,7 +198,7 @@ def validate_test_app(app,bundle,identity,image):
     scale=template['scale'];require(scale['minReplicas']==0 and scale['maxReplicas']==1, 'Unexpected scale')
     rules=scale.get('rules',[]);require(len(rules)==2 and {r['name'] for r in rules}=={'http','eventhub-phase4'}, 'Unexpected scale rules')
     event=next(r['custom'] for r in rules if r['name']=='eventhub-phase4')
-    require(event['type']=='azure-eventhub' and event['identity']==bundle['identity'] and event['metadata']=={
+    require(event['type']=='azure-eventhub' and arm_id_equal(event['identity'],bundle['identity']) and event['metadata']=={
         'eventHubNamespace':bundle['endpoints']['COUNTERPRESS_EVENTHUB_NAMESPACE'].split('.')[0],
         'eventHubName':'deliveries-phase4','consumerGroup':'$Default',
         'storageAccountName':urlsplit(bundle['endpoints']['COUNTERPRESS_CHECKPOINT_ENDPOINT']).hostname.split('.')[0],
@@ -202,11 +214,12 @@ def verify_access(bundle,identity):
     wanted={(bundle['hub'],ROLE_IDS['receiver']),(bundle['hub'],ROLE_IDS['sender']),
         (bundle['checkpoint'],ROLE_IDS['blob']),(bundle['quarantine'],ROLE_IDS['blob']),
         (bundle['pubsub'],ROLE_IDS['pubsub'])}
-    actual={(r['scope'],r['roleDefinitionId'].split('/')[-1]) for r in own}
+    actual={(r['scope'].casefold(),r['roleDefinitionId'].split('/')[-1].casefold()) for r in own}
+    wanted={(scope.casefold(),role.casefold()) for scope,role in wanted}
     require(actual==wanted and not any(r.get('condition') for r in own), 'Test identity access differs from reviewed scopes')
     assignments=az('rest','--method','get','--url',bundle['cosmos']+'/sqlRoleAssignments?api-version=2024-11-15')['value']
     assigned=[r for r in assignments if r['properties']['principalId']==principal]
-    require(len(assigned)==1 and assigned[0]['properties']['scope']==bundle['cosmos_scope'], 'Test journal identity has unexpected scope')
+    require(len(assigned)==1 and cosmos_scope_equal(assigned[0]['properties']['scope'],bundle), 'Test journal identity has unexpected scope')
     role=az('rest','--method','get','--url',assigned[0]['properties']['roleDefinitionId']+'?api-version=2024-11-15')
     actions={a for p in role['properties']['permissions'] for a in p['dataActions']}
     require(actions=={'Microsoft.DocumentDB/databaseAccounts/readMetadata',*[f'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/{x}' for x in ('read','create','replace')]}, 'Unexpected Cosmos data permissions')
@@ -229,7 +242,7 @@ def preview(args,state,bundle):
         '--result-format','FullResourcePayloads','--no-pretty-print')
     counts=check_what_if(result,bundle)
     changes=result.get('changes',result.get('properties',{}).get('changes',[]))
-    require({c['resourceId'] for c in changes if c['changeType']=='Create'}==set(cleanup_manifest(bundle)),
+    require({c['resourceId'].casefold() for c in changes if c['changeType']=='Create'}=={i.casefold() for i in cleanup_manifest(bundle)},
             'Preview must create exactly the twelve isolated resources/assignments')
     ensure_production(state)
     return counts
@@ -340,8 +353,9 @@ def main(args):
             '--template-file',str(ROOT/'infra/phase4.bicep'),'--parameters',
             'imageDigest='+state['image_digest'],'expiresOn='+state['expires_on'],'location='+state['location'])
         ids=result['properties']['outputs']['cleanupIds']['value']
-        require(ids==cleanup_manifest(bundle), 'Unexpected cleanup manifest')
-        state['cleanup_ids']=ids;private_file(args.state,state);ensure_production(state)
+        expected_ids=cleanup_manifest(bundle)
+        require(len(ids)==len(expected_ids) and all(arm_id_equal(a,b) for a,b in zip(ids,expected_ids)), 'Unexpected cleanup manifest')
+        state['cleanup_ids']=expected_ids;private_file(args.state,state);ensure_production(state)
         print(json.dumps({'status':'DEPLOYED','production_unchanged':True,'inference':False}))
         return
     if args.operation=='cleanup':return cleanup(state,bundle,args)

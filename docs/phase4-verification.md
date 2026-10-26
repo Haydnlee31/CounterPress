@@ -1,7 +1,9 @@
 # Isolated personalized revision verification
 
-Status: implementation prepared locally on 26 October 2026. Hosted outcomes are
-recorded separately; code and local doubles do not establish Azure delivery.
+Status: isolated hosted lifecycle verified on 26 October 2026. See the
+[observed results](verification/footie-intelligence.md#isolated-hosted-lifecycle--26-october-2026)
+and [sanitized evidence](verification/phase4-hosted-2026-10-26.json). The public
+application was not deployed or enabled for career ingestion by this test.
 
 The public career fixture has immutable replay digests. Restoring a withdrawn
 goal restores statistics, not its authored animation. Do not send these test
@@ -65,7 +67,10 @@ The verifier binds the test origin to the control-plane proof using a hash.
 ```
 
 Open the equalizer highlight in two browsers with casual and analyst preferences
-before applying any correction. Pause both at the same completed moment. For
+before applying any correction. Use separate profiles or the app and actual active
+revision HTTPS origins: ordinary same-origin tabs synchronize preferences. The
+hosted run used the two Azure-reported origins of the same ready revision. Pause
+both at the same completed moment. For
 `correction`, `retraction`, `duplicate`, `restoration`, then `late`, run `prepare`
 with the same state/proof and a distinct output file. This only writes a locally
 validated event envelope. Review it, start the bounded `watch` command, and send
