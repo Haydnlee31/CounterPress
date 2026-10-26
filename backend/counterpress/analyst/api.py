@@ -146,7 +146,9 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
                     'mode': 'foundry' if enabled else 'metrics', 'readings': [], 'summary': None}
         if not enabled:
             return {**envelope, 'status': 'disabled'}
-        if not snap['evidence']:
+        if not snap['evidence'] or not snap.get('candidates'):
+            # Quiet/unsupported spells need no model ranking. Do not consume a
+            # paid reservation or start hosted compute just to return abstention.
             return {**envelope, 'status': 'insufficient_evidence'}
         if pinned_body.through_sequence is not None:
             latest = await run_in_threadpool(snapshot, match_id, pinned_body.model_copy(update={'through_sequence': None}))

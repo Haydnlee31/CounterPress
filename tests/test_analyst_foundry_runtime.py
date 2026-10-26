@@ -19,7 +19,7 @@ def packet():
             "through_sequence": 9, "clubs": [], "score": {}, "players": [], "language": "en", "depth": "analyst",
             "metrics": [{"id": role + ":metric", "role": role, "status": "available", "value": 2} for role in ROLES],
             "evidence": [{"id": "e1:r1", "event_id": "e1", "revision": 1, "period": 1, "elapsed_ms": 40000, "available_period": 1, "available_ms": 40000, "delivery_sequence": 1}],
-            "signals": []}
+            "signals": [], "candidates": [{"id": role + "-candidate", "role": role, "reading": reading(role)} for role in ROLES]}
 
 
 def reading(role):
@@ -40,7 +40,7 @@ def test_native_runtime_bounds_fanout_and_synthesis_only_selects_verified_readin
             seen.append((role, limit))
             await asyncio.sleep(.002)
             active -= 1
-            return Completion(json.dumps({"accepted_roles": list(ROLES), "selected_role": "control"} if role == "synthesis" else {"reading": reading(role)}), 80, 30)
+            return Completion(json.dumps({"accepted_roles": list(ROLES), "selected_role": "control"} if role == "synthesis" else {"candidate_id": role + "-candidate"}), 80, 30)
         result = await AnalystRuntime(complete).run(json.dumps(packet()))
         assert result["status"] == "complete"
         assert len(seen) == 5 and peak == 2
@@ -51,18 +51,16 @@ def test_native_runtime_bounds_fanout_and_synthesis_only_selects_verified_readin
     asyncio.run(scenario())
 
 
-@pytest.mark.parametrize("mutation", ["unknown_evidence", "unknown_metric", "numeric", "coaching", "wrong_role", "extra"])
-def test_unverified_specialist_claims_are_not_published(mutation):
+@pytest.mark.parametrize("mutation", ["unknown_candidate", "wrong_role", "prose_override", "old_prose_contract"])
+def test_specialists_cannot_publish_unprovided_claims(mutation):
     async def scenario():
         async def complete(role, payload, limit):
-            item = reading(role)
-            if mutation == "unknown_evidence": item["evidence_ids"] = ["future:r99"]
-            if mutation == "unknown_metric": item["metric_ids"] = ["fabricated"]
-            if mutation == "numeric": item["explanation"] = "There is an 80% chance they score."
-            if mutation == "coaching": item["watch_next"] = "The coach must change formation."
-            if mutation == "wrong_role": item["role"] = "players" if role != "players" else "control"
-            if mutation == "extra": item["new_metric"] = 123
-            return Completion(json.dumps({"reading": item}))
+            answer = {"candidate_id": role + "-candidate"}
+            if mutation == "unknown_candidate": answer["candidate_id"] = "fabricated"
+            if mutation == "wrong_role": answer["candidate_id"] = "players-candidate" if role != "players" else "control-candidate"
+            if mutation == "prose_override": answer["explanation"] = "The opposing keeper is injured."
+            if mutation == "old_prose_contract": answer = {"reading": reading(role)}
+            return Completion(json.dumps(answer))
         result = await AnalystRuntime(complete).run(json.dumps(packet()))
         assert result["readings"] == [] and result["summary"] is None
         assert result["status"] == "insufficient_evidence"
@@ -77,7 +75,7 @@ def test_no_retry_partial_failure_and_editor_cannot_add_prose():
             calls.append(role)
             if role == "chance": raise RuntimeError("provider unavailable")
             if role == "synthesis": return Completion('{"selected_role":"control","explanation":"invented"}')
-            return Completion(json.dumps({"reading": reading(role)}))
+            return Completion(json.dumps({"candidate_id": role + "-candidate"}))
         result = await AnalystRuntime(complete).run(json.dumps(packet()))
         assert len(calls) == len(set(calls)) == 5
         assert result["status"] == "insufficient_evidence"
@@ -92,7 +90,7 @@ def test_session_limit_and_persistent_permit(tmp_path):
     with pytest.raises(ValueError, match="session_run_limit"):
         SessionPermit(path).acquire()
     async def scenario():
-        async def complete(*args): return Completion('{"reading":null}')
+        async def complete(*args): return Completion('{"candidate_id":null}')
         runtime = AnalystRuntime(complete)
         await runtime.run(json.dumps(packet()))
         with pytest.raises(ValueError, match="session_run_limit"):
@@ -108,7 +106,7 @@ def test_cancellation_stops_pending_specialists():
             calls.append(role)
             cancellation.set()
             await asyncio.sleep(5)
-            return Completion('{"reading":null}')
+            return Completion('{"candidate_id":null}')
         with pytest.raises(asyncio.CancelledError):
             await AnalystRuntime(complete).run(json.dumps(packet()), cancellation)
         assert len(calls) <= 2
@@ -142,7 +140,7 @@ def test_real_foundry_server_protocol_with_mocked_models():
     from integrations.analyst_foundry.server import create_app
     async def scenario():
         async def complete(role, *args):
-            return Completion(json.dumps({"accepted_roles": list(ROLES), "selected_role": "players"} if role == "synthesis" else {"reading": reading(role)}))
+            return Completion(json.dumps({"accepted_roles": list(ROLES), "selected_role": "players"} if role == "synthesis" else {"candidate_id": role + "-candidate"}))
         app = create_app(AnalystRuntime(complete))
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
             health = await client.get("/readiness")
@@ -164,9 +162,7 @@ def test_verifier_rejects_an_id_valid_but_unsupported_reading():
                 proof = json.loads(payload)
                 assert proof["packet"]["evidence"][0]["id"] == "e1:r1"
                 return Completion('{"accepted_roles":["control"],"selected_role":"control"}')
-            item = reading(role)
-            if role == "chance": item["explanation"] = "The opposing keeper is injured and cannot react."
-            return Completion(json.dumps({"reading": item}))
+            return Completion(json.dumps({"candidate_id": role + "-candidate"}))
         result = await AnalystRuntime(complete).run(json.dumps(packet()))
         assert [r["role"] for r in result["readings"]] == ["control"]
         assert result["status"] == "partial"
@@ -182,7 +178,7 @@ def test_verifier_rejects_an_id_valid_but_unsupported_reading():
 def test_invalid_verifier_selection_fails_closed(selection):
     async def scenario():
         async def complete(role, *args):
-            return Completion(json.dumps(selection if role == "synthesis" else {"reading": reading(role)}))
+            return Completion(json.dumps(selection if role == "synthesis" else {"candidate_id": role + "-candidate"}))
         result = await AnalystRuntime(complete).run(json.dumps(packet()))
         assert not result["readings"] and result["summary"] is None
     asyncio.run(scenario())
@@ -252,3 +248,110 @@ def test_early_temporal_hallucination_and_incomplete_prose_fail_without_verifier
     item["alternative"] = prose
     with pytest.raises(ValueError, match="temporal_claim|incomplete_sentence"):
         validate_reading(Reading.model_validate(item), data, "chance")
+
+
+@pytest.mark.parametrize('mutation', ['duplicate', 'wrong_role', 'unknown_evidence', 'unsupported_number', 'future_phase'])
+def test_invalid_candidate_payload_fails_before_any_paid_call(mutation):
+    data = packet()
+    if mutation == 'duplicate': data['candidates'].append(copy.deepcopy(data['candidates'][0]))
+    if mutation == 'wrong_role': data['candidates'][0]['role'] = 'control'
+    if mutation == 'unknown_evidence': data['candidates'][0]['reading']['evidence_ids'] = ['not-supplied']
+    if mutation == 'unsupported_number': data['candidates'][0]['reading']['explanation'] = 'Pass accuracy reached 99%.'
+    if mutation == 'future_phase': data['candidates'][0]['reading']['explanation'] = 'The second half is changing.'
+    async def scenario():
+        async def complete(*args): raise AssertionError('Invalid candidates must not invoke models')
+        with pytest.raises(ValueError): await AnalystRuntime(complete).run(json.dumps(data))
+    asyncio.run(scenario())
+
+
+def test_selected_candidate_is_copied_exactly_and_scope_excludes_other_roles():
+    data = packet()
+    second = copy.deepcopy(data['candidates'][2])
+    second['id'] = 'control-alternative'
+    second['reading']['headline'] = 'A quieter route'
+    data['candidates'].append(second)
+    async def scenario():
+        async def complete(role, payload, limit):
+            scoped = json.loads(payload)
+            if role == 'synthesis': return Completion('{"accepted_roles":["control"],"selected_role":"control"}')
+            assert all(c['role'] == role for c in scoped['candidates'])
+            return Completion(json.dumps({'candidate_id': 'control-alternative' if role == 'control' else None}))
+        result = await AnalystRuntime(complete).run(json.dumps(data))
+        assert result['readings'] == [second['reading']]
+        assert result['summary']['headline'] == second['reading']['headline']
+    asyncio.run(scenario())
+
+
+def test_native_completion_rejects_response_served_by_different_version():
+    from types import SimpleNamespace
+    from integrations.analyst_foundry.server import NativeCompletions
+    refs = {r: {'name': 'agent-' + r, 'version': '3'} for r in (*ROLES, 'synthesis')}
+    class Responses:
+        async def create(self, **kwargs):
+            return SimpleNamespace(status='completed', agent_reference={'name': 'agent-chance', 'version': '2'},
+                                   usage=None, output_text='{"candidate_id":null}')
+    class Project:
+        def get_openai_client(self, **kwargs): return SimpleNamespace(responses=Responses())
+    async def scenario():
+        with pytest.raises(ValueError, match='agent_version_mismatch'):
+            await NativeCompletions(Project(), refs)('chance', '{}', 600)
+    asyncio.run(scenario())
+
+
+def test_endpoint_version_pin_is_explicit_and_read_back():
+    from types import SimpleNamespace
+    from scripts.configure_analyst_foundry import pin_versions
+    class Agents:
+        rules = None
+        def update_details(self, name, body): self.rules = body['agent_endpoint']['version_selector']['version_selection_rules']
+        def get(self, agent_name):
+            return SimpleNamespace(as_dict=lambda: {'agent_endpoint': {'version_selector': {'version_selection_rules': self.rules}}})
+    agents = Agents()
+    pin_versions(SimpleNamespace(agents=agents), [{'name': 'FootieAnalystDirector', 'version': '8'}])
+    assert agents.rules == [{'type': 'FixedRatio', 'agent_version': '8', 'traffic_percentage': 100}]
+
+
+def test_manifest_changes_when_only_coordinator_code_or_version_changes():
+    from scripts.configure_analyst_foundry import manifest_fingerprint
+    first = manifest_fingerprint({}, {"name": "director", "version": "7"}, {}, "code-a")
+    assert first != manifest_fingerprint({}, {"name": "director", "version": "8"}, {}, "code-a")
+    assert first != manifest_fingerprint({}, {"name": "director", "version": "7"}, {}, "code-b")
+
+
+def test_no_candidates_make_zero_model_calls():
+    value = packet()
+    value["candidates"] = []
+    async def scenario():
+        async def complete(*args): raise AssertionError("No candidates means no model calls")
+        result = await AnalystRuntime(complete).run(json.dumps(value))
+        assert result["usage"]["model_calls"] == 0
+        assert result["status"] == "insufficient_evidence"
+    asyncio.run(scenario())
+
+
+def test_phase_boundaries_require_explicit_fixture_lengths_not_conventional_45_minutes():
+    from integrations.analyst_foundry.contracts import clock_context
+    value = packet()
+    value['cutoff']['elapsed_ms'] = 2_700_000
+    assert not clock_context(value)['half_time_boundary']
+    assert not clock_context(value)['closing_period']
+    value['period_lengths_ms'] = {'1': 3_000_000, '2': 2_880_000}
+    assert not clock_context(value)['half_time_boundary']
+    value['cutoff']['elapsed_ms'] = 3_000_000
+    assert clock_context(value)['half_time_boundary']
+    value['cutoff'] = {'period': 2, 'elapsed_ms': 2_880_000}
+    assert clock_context(value)['full_time_boundary']
+    value['cutoff']['elapsed_ms'] += 1
+    with pytest.raises(ValueError, match='period_lengths'):
+        parse_packet(json.dumps(value))
+
+
+def test_chinese_digits_are_checked_without_whitespace_before_number():
+    from integrations.analyst_foundry.contracts import Reading,validate_reading
+    value = packet()
+    item = reading('chance')
+    item['explanation'] = '这段时间完成了2次射门。'
+    assert validate_reading(Reading.model_validate(item),value,'chance')
+    item['explanation'] = '这段时间完成了9次射门。'
+    with pytest.raises(ValueError,match='unsupported_prose'):
+        validate_reading(Reading.model_validate(item),value,'chance')

@@ -5,6 +5,7 @@ import json
 from counterpress.personalization.contracts import Fixture, MatchRecord
 from counterpress.personalization.metrics import select_events, reduce_record
 from .contracts import AnalystRequest, MATCH_IDS, ROLES, TRIGGER_TYPES
+from .candidates import build_candidates
 from .metrics import VERSION, METHODS, COMPLETE, CONTROLLED, geometric_xg, metric_rows, threat, turns
 
 
@@ -33,8 +34,8 @@ def _signals(events, current, previous, rows, fixture, names, request):
         before=[e for e in previous if e.club_id==club and e.kind=='shot' and e.outcome!='own_goal']
         inside=[e for e in shots if e.start and e.start.x>=88.5 and 13.84<=e.start.y<=54.16]
         if complete_windows and len(shots)>=3 and len(shots)>=len(before)+2 and len(inside)>=2:
-            add('closer_chances',club,f'{names[club]} are getting closer',
-                f'{len(shots)} shots in the last five minutes versus {len(before)} before; {len(inside)} came from inside the box. The higher volume includes closer shooting positions. Watch whether the next attacks keep reaching the box.',
+            add('closer_chances',club,f'{names[club]} are creating more shooting opportunities',
+                f'{len(shots)} shots in the last five minutes versus {len(before)} before; {len(inside)} came from inside the box. The higher shot count includes attempts from inside the box. Watch whether the next attacks keep reaching the box.',
                 'chance',shots+before,[('current','shots'),('previous','shots'),('current','shot_map')],.85)
         if len(shots)>=3 and len([e for e in shots if e.start])==len(shots) and not inside:
             add('outside_shots',club,f'{names[club]} are shooting from distance',
@@ -135,11 +136,16 @@ def build_snapshot(career, match_id: str, request: AnalystRequest) -> dict:
         a=threat([e for e in selected if e.club_id==fixture.home_id]);b=threat([e for e in selected if e.club_id==fixture.away_id])
         rows.append({'id':f'{w}:match:momentum','key':'momentum','window':w,'label':'Threat balance','unit':'index','basis':'uncalibrated_heuristic','status':'available' if selected else 'unavailable','value':round((a-b)/(a+b+1),6) if selected else None,'role':'control','method':'momentum'})
     score={c:sum(e.goal_for==c for e in events) for c in (fixture.home_id,fixture.away_id)}
-    signals=_signals(events,scopes['current'],scopes['previous'],rows,fixture,{c['club_id']:c['name'] for c in clubs},request)
+    candidates=build_candidates(fixture=fixture,events=events,request=request,rows=rows,players=players,clubs=clubs,score=score,windows=windows)
+    original_signals=_signals(events,scopes['current'],scopes['previous'],rows,fixture,{c['club_id']:c['name'] for c in clubs},request)
+    signals=[{'id':'support:'+c['id'],'role':c['role'],'title':c['reading']['headline'],'detail':c['reading']['explanation'],'evidence_ids':c['reading']['evidence_ids'],'metric_ids':c['reading']['metric_ids'],'salience':.95}for c in candidates]
+    candidate_refs={ref for c in candidates for ref in c['reading']['evidence_ids']}
+    for sig in original_signals:
+        if len(candidate_refs|set(sig['evidence_ids']))<=64:
+            signals.append(sig);candidate_refs.update(sig['evidence_ids'])
     wanted={ref for s in signals for ref in s['evidence_ids']}
     selected_evidence=[e for e in events if _eid(e) in wanted]
-    if len(selected_evidence)>64:
-        signals=signals[:4];wanted={ref for s in signals for ref in s['evidence_ids']};selected_evidence=[e for e in events if _eid(e) in wanted]
+    if len(selected_evidence)>64:raise ValueError('Candidate evidence exceeds bounded snapshot')
     for e in reversed(events):
         if len(selected_evidence)>=64:break
         if _eid(e) not in wanted:selected_evidence.append(e);wanted.add(_eid(e))
@@ -148,7 +154,7 @@ def build_snapshot(career, match_id: str, request: AnalystRequest) -> dict:
     triggers=_triggers(scopes,rows,fixture,request)
     result={'match_id':match_id,'cutoff':request.cutoff.model_dump(),'through_sequence':through,
         'language':request.language,'depth':request.depth,'focus_player_id':request.focus_player_id,
-        'clubs':clubs,'score':score,'players':players,'metrics':rows,'evidence':evidence,'signals':signals,
+        'clubs':clubs,'score':score,'players':players,'candidates':candidates,'period_lengths_ms':{str(i+1):v for i,v in enumerate(fixture.period_lengths_ms)},'metrics':rows,'evidence':evidence,'signals':signals,
         'windows':windows,'methods':dict(METHODS),'triggers':triggers,
         'coverage':{'visible_events':len(events),'evidence_events':len(evidence),'tracking':'unavailable','source_kind':fixture.source_kind},'metric_version':VERSION}
     result['snapshot_id']=_hash({'version':VERSION,'request':request.model_dump()|{'through_sequence':through},'fixture':fixture.model_dump(mode='json'),'events':[e.model_dump(mode='json') for e in events],'through_sequence':through})
@@ -212,53 +218,27 @@ def _triggers(scopes,rows,fixture,request):
 
 
 def build_dispatch_packet(snapshot:dict) -> dict:
-    """All-role Foundry packet, <=24k JSON characters with resolvable citations.
-
-    Prefer one strong signal per specialist, then scalar metrics distributed across
-    all four roles. No summaries rewrite a metric's numeric value. Hard overflow
-    fails closed so callers can display deterministic results without model work.
-    """
-    signals=[]
-    for role in ROLES:
-        candidates=[s for s in snapshot['signals'] if s['role']==role]
-        if candidates:signals.append(max(candidates,key=lambda s:s['salience']))
-    required={mid for s in signals for mid in s['metric_ids']}
-    chosen=[m for m in snapshot['metrics'] if m['id'] in required]
-    selected={m['id'] for m in chosen}
-    index={m['id']:m for m in snapshot['metrics']}
-    clubs=[c['club_id'] for c in snapshot['clubs']]
-    def take(mid):
-        if mid in index and mid not in selected:
-            chosen.append(index[mid]);selected.add(mid)
-    # Comparable windows are paired deliberately, rather than lost to a score sort.
-    for club in clubs:
-        xg='xg_authored' if all(index[f'{w}:{club}:xg_authored']['value'] is not None for w in ('current','previous')) else 'xg_geometry'
-        for key in ('shots',xg,'pass_accuracy','final_third_entries','recoveries','verified_turnovers'):
-            for window in ('current','previous'):take(f'{window}:{club}:{key}')
-        for window,key in [('prefix','goals'),('prefix','shots'),('current','event_share'),('current','tempo'),('current','duels_won'),('current','ppda')]:take(f'{window}:{club}:{key}')
-    # Selection is recent involvement, not a synthetic cross-position rating.
-    recent={p['player_id']: (index.get(f'current:{p["player_id"]}:on_ball_actions',{}).get('value') or 0) + 2*(index.get(f'current:{p["player_id"]}:shots',{}).get('value') or 0) for p in snapshot['players']}
-    active=[p for p in sorted(recent,key=lambda p:(-recent[p],p)) if recent[p]>0][:3]
-    focused=snapshot.get('focus_player_id')
-    if focused and focused not in active:active=([focused]+active)[:3]
-    for pid in active:
-        for key in ('shots','goals','assists','passes_completed'):take(f'prefix:{pid}:{key}')
-    needed={eid for s in signals for eid in s['evidence_ids']}
-    evidence=[e for e in snapshot['evidence'] if e['id'] in needed]
-    for e in reversed(snapshot['evidence']):
-        if len(evidence)>=max(32,len(needed)):break
-        if e['id'] not in needed:evidence.append(e);needed.add(e['id'])
-    fields=('id','key','window','club_id','player_id','unit','basis','status','value','role','coverage')
-    result={k:snapshot[k] for k in ('snapshot_id','match_id','cutoff','through_sequence','language','depth','focus_player_id','clubs','score','players','windows')}
-    result.update(methods={k:snapshot['methods'][k] for k in ('event_share','xg_geometry','difficulty_geometry','speed','tempo','turnover','tracking','ppda')},metrics=[{k:m[k]for k in fields if k in m}for m in chosen],evidence=evidence,signals=signals)
-    metric_ids={m['id']for m in result['metrics']};evidence_ids={e['id']for e in evidence}
-    if any(not set(s['metric_ids'])<=metric_ids or not set(s['evidence_ids'])<=evidence_ids for s in signals):
-        raise ValueError('Incomplete analyst citations')
-    # Trim only optional newest event context, never signal citations or values.
-    def size():return len(json.dumps(result,ensure_ascii=False,separators=(',',':'),allow_nan=False))
-    cited={r for s in signals for r in s['evidence_ids']}
-    while size()>24000 and any(e['id']not in cited for e in result['evidence']):
-        optional=next(e for e in result['evidence'] if e['id']not in cited)
-        result['evidence'].remove(optional)
-    if size()>24000:raise ValueError('Analyst dispatch packet exceeds bounded context')
+    """Bounded candidate-selection context; exact facts and prose never truncated."""
+    candidates=snapshot.get('candidates',[])
+    if len(candidates)>8:raise ValueError('Too many grounded candidates')
+    required={mid for c in candidates for mid in c['reading']['metric_ids']}
+    references={eid for c in candidates for eid in c['reading']['evidence_ids']}
+    metrics=[m for m in snapshot['metrics'] if m['id'] in required]
+    evidence=[e for e in snapshot['evidence'] if e['id'] in references]
+    if len(evidence)>64 or len(required)!=len(metrics) or len(references)!=len(evidence):raise ValueError('Incomplete candidate support')
+    # No candidates is an honest abstention; expose compact numeric context for
+    # diagnostics, but native runtime must not request model work for it.
+    if not candidates:
+        metrics=[m for m in snapshot['metrics'] if m['window']=='current'and not m.get('player_id')and m['key']in {'shots','on_ball_actions','final_third_entries'}]
+        evidence=snapshot['evidence'][-4:]
+    people={e['player_id']for e in evidence}|{m['player_id']for m in metrics if m.get('player_id')}
+    if snapshot.get('focus_player_id'):people.add(snapshot['focus_player_id'])
+    fields=('id','key','window','club_id','player_id','label','unit','basis','status','value','role','coverage','subject','method','event_id')
+    result={k:snapshot[k]for k in ('snapshot_id','match_id','cutoff','through_sequence','language','depth','focus_player_id','clubs','score','windows','period_lengths_ms')}
+    result.update(candidates=candidates,players=[p for p in snapshot['players']if p['player_id']in people],
+        metrics=[{k:m[k]for k in fields if k in m}for m in metrics],evidence=evidence,
+        signals=[{'id':'support:'+c['id'],'role':c['role'],'metric_ids':c['reading']['metric_ids'],'evidence_ids':c['reading']['evidence_ids']}for c in candidates],
+        methods={k:v for k,v in snapshot['methods'].items()if k in {m.get('method')for m in metrics}|{'turnover','tracking','compound_event_facts'}})
+    raw=json.dumps(result,ensure_ascii=False,separators=(',',':'),allow_nan=False)
+    if len(raw)>24000 or len(raw.encode())>32000:raise ValueError('Analyst dispatch packet exceeds bounded context')
     return result

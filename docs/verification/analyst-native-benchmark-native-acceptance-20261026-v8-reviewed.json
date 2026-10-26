@@ -1,0 +1,454 @@
+{
+  "benchmark": "analyst-native-candidate-grounding-v2",
+  "prepared_at": "2026-10-26T09:28:56.932549+00:00",
+  "mode": "azure",
+  "source_manifest_sha256": "7b599f56d8755f614834138d891c7cd3dbd154565086fcc7a6f0843e2cd77249",
+  "cases_preselected_before_this_run": true,
+  "fresh_heldout_case_count": 2,
+  "previously_seen_regression_case_count": 6,
+  "not_random_or_statistically_representative": true,
+  "maximum_model_calls_reserved": 40,
+  "maximum_admission_cents_reserved": 80,
+  "existing_evaluation_remaining": {
+    "hourly_remaining": 187,
+    "daily_remaining": 355
+  },
+  "prepared_cases": [
+    {
+      "case_id": "archive_box_growth",
+      "purpose": "regression",
+      "match_id": "wyscout-2058017",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 2581000
+      },
+      "expected": {
+        "club_id": "northport",
+        "current_shots": 3,
+        "previous_shots": 0,
+        "box_shots": 3,
+        "score": [
+          2,
+          1
+        ]
+      },
+      "expectation": "Northport are creating more close-range opportunities while trailing. Distinguish recent threat from the actual score; do not infer defensive shape.",
+      "packet_chars": 5116
+    },
+    {
+      "case_id": "activity_without_shots",
+      "purpose": "regression",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 630000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "on_ball_actions": 35,
+        "all_on_ball_actions": 49,
+        "current_shots": 0,
+        "final_third_entries": 1,
+        "score": [
+          0,
+          0
+        ]
+      },
+      "expectation": "Eastbridge dominate recorded action share but have little penetration and no shot. They DO have a final-third entry; saying zero entries or measured time-possession is wrong.",
+      "packet_chars": 5798
+    },
+    {
+      "case_id": "turnover_into_equalizer",
+      "purpose": "regression",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 2096000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 2,
+        "previous_shots": 0,
+        "score": [
+          1,
+          1
+        ],
+        "chain_ids": [
+          "a00498",
+          "a00499",
+          "a00500"
+        ],
+        "regain_to_shot_ms": 7975
+      },
+      "expectation": "An incomplete Northport pass, Eastbridge recovery and shot created an equalizer. Explain the transition and restored score parity; do not claim a coordinated press.",
+      "packet_chars": 6651
+    },
+    {
+      "case_id": "focused_player_link",
+      "purpose": "regression",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 2,
+        "elapsed_ms": 2314000
+      },
+      "expected": {
+        "club_id": "northport",
+        "current_shots": 1,
+        "previous_shots": 2,
+        "score": [
+          2,
+          2
+        ],
+        "focus_player_id": "np10",
+        "focus_passes": 6,
+        "focus_shots": 1,
+        "chain_ids": [
+          "a01164",
+          "a01165",
+          "a01166",
+          "a01167",
+          "a01168"
+        ],
+        "regain_to_shot_ms": 13860
+      },
+      "expectation": "In Simplified Chinese, relate Isaac Lane’s involvement to a linked transition ending in his off-target shot. Do not claim he scored, or confuse prefix totals with the current window.",
+      "packet_chars": 8155
+    },
+    {
+      "case_id": "early_quiet_window",
+      "purpose": "regression",
+      "match_id": "wyscout-2058007",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 91000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 0,
+        "previous_shots": 0,
+        "score": [
+          0,
+          0
+        ]
+      },
+      "expectation": "Abstention or restrained early observations are acceptable. No complete five-minute comparison exists; do not claim sustained dominance, a tactical turning point or a completed trend.",
+      "packet_chars": 4346
+    },
+    {
+      "case_id": "other_archive_chances",
+      "purpose": "regression",
+      "match_id": "wyscout-2058007",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 1081000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 3,
+        "previous_shots": 0,
+        "box_shots": 2,
+        "score": [
+          0,
+          0
+        ]
+      },
+      "expectation": "Eastbridge’s increase in shots includes closer opportunities but has not produced a goal. Do not label the geometric estimate calibrated xG or attribute unavailable player speeds.",
+      "packet_chars": 5084
+    },
+    {
+      "case_id": "heldout_outside_box_shift",
+      "purpose": "fresh_heldout",
+      "match_id": "wyscout-2058017",
+      "cutoff": {
+        "period": 2,
+        "elapsed_ms": 1380000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 1,
+        "previous_shots": 3,
+        "box_shots": 0,
+        "previous_box_shots": 2,
+        "score": [
+          4,
+          1
+        ]
+      },
+      "expectation": "At H2 23:00, Eastbridge have one recent shot outside the box versus three prior shots including two inside. Describe the location-category change without claiming Euclidean distance increased, a defensive tactical cause, or a falling calibrated xG.",
+      "packet_chars": 4608
+    },
+    {
+      "case_id": "heldout_passing_progression",
+      "purpose": "fresh_heldout",
+      "match_id": "wyscout-2058017",
+      "cutoff": {
+        "period": 2,
+        "elapsed_ms": 1860000
+      },
+      "expected": {
+        "club_id": "northport",
+        "current_shots": 1,
+        "previous_shots": 1,
+        "current_passes": 18,
+        "current_completed_passes": 11,
+        "previous_passes": 28,
+        "previous_completed_passes": 24,
+        "final_third_entries": 2,
+        "previous_final_third_entries": 5,
+        "score": [
+          4,
+          2
+        ]
+      },
+      "expectation": "At H2 31:00, Northport passing completion drops 24/28 to 11/18 while final-third pass entries fall five to two. Connect diminished reliability and penetration, but do not assert pressure or explain individual errors without evidence.",
+      "packet_chars": 6086
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "archive_box_growth",
+      "status": "complete",
+      "seconds": 17.719,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 2,
+        "reported_input_tokens": 3572,
+        "reported_output_tokens": 59
+      },
+      "reading_count": 1,
+      "roles": [
+        "chance"
+      ]
+    },
+    {
+      "case_id": "activity_without_shots",
+      "status": "complete",
+      "seconds": 16.675,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 2,
+        "reported_input_tokens": 3998,
+        "reported_output_tokens": 61
+      },
+      "reading_count": 1,
+      "roles": [
+        "control"
+      ]
+    },
+    {
+      "case_id": "turnover_into_equalizer",
+      "status": "complete",
+      "seconds": 15.938,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 3,
+        "reported_input_tokens": 5626,
+        "reported_output_tokens": 88
+      },
+      "reading_count": 2,
+      "roles": [
+        "defence",
+        "players"
+      ]
+    },
+    {
+      "case_id": "focused_player_link",
+      "status": "complete",
+      "seconds": 16.202,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 4,
+        "reported_input_tokens": 8209,
+        "reported_output_tokens": 111
+      },
+      "reading_count": 3,
+      "roles": [
+        "chance",
+        "defence",
+        "players"
+      ]
+    },
+    {
+      "case_id": "early_quiet_window",
+      "status": "insufficient_evidence",
+      "seconds": 11.652,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 0,
+        "reported_input_tokens": 0,
+        "reported_output_tokens": 0
+      },
+      "reading_count": 0,
+      "roles": []
+    },
+    {
+      "case_id": "other_archive_chances",
+      "status": "complete",
+      "seconds": 14.794,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 2,
+        "reported_input_tokens": 3534,
+        "reported_output_tokens": 59
+      },
+      "reading_count": 1,
+      "roles": [
+        "chance"
+      ]
+    },
+    {
+      "case_id": "heldout_outside_box_shift",
+      "status": "complete",
+      "seconds": 15.452,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 2,
+        "reported_input_tokens": 3263,
+        "reported_output_tokens": 59
+      },
+      "reading_count": 1,
+      "roles": [
+        "chance"
+      ]
+    },
+    {
+      "case_id": "heldout_passing_progression",
+      "status": "complete",
+      "seconds": 16.125,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 2,
+        "reported_input_tokens": 4170,
+        "reported_output_tokens": 62
+      },
+      "reading_count": 1,
+      "roles": [
+        "control"
+      ]
+    }
+  ],
+  "adversarial": [
+    {
+      "case_id": "fabricated_candidate_id",
+      "status": "complete",
+      "rejected": true,
+      "cloud_calls": 0,
+      "boundary": "native selector"
+    },
+    {
+      "case_id": "unsupported_prose_valid_ids",
+      "status": "complete",
+      "rejected": true,
+      "cloud_calls": 0,
+      "boundary": "product exact-candidate equality"
+    }
+  ],
+  "evaluation_calls_reserved": 40,
+  "admission_cents_reserved": 80,
+  "manifest_id": "a824ebdfd4fd457a6c86dd8b3c9b625bb2d4c37854854454c2ce1f0ded0c6fd4",
+  "quality_review": {
+    "status": "manual_review_recorded",
+    "reviewer_kind": "assistant",
+    "cases": [
+      {
+        "case_id": "archive_box_growth",
+        "scores": {
+          "grounded": 1,
+          "pattern": 1,
+          "consequence": 1,
+          "alternative": 1,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "Source has three current Northport shots, all inside the box and all blocked, versus none previously, while Northport trail 1–2. The output connects opportunities to blocked execution and the score; next unblocked shot is observable. The phrase closer positions is slightly ambiguous and should say box positions in later copy polish; no relative-to-previous location claim appears in the headline or explanation."
+      },
+      {
+        "case_id": "activity_without_shots",
+        "scores": {
+          "grounded": 1,
+          "pattern": 1,
+          "consequence": 1,
+          "alternative": 1,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "Correctly preserves 35 versus 14 recorded on-ball actions, zero Eastbridge shots and one final-third pass entry in the trailing window. It ties activity to absent shooting opportunity and contrasts Northport taking one shot; it never converts action share into possession time."
+      },
+      {
+        "case_id": "turnover_into_equalizer",
+        "scores": {
+          "grounded": 1,
+          "pattern": 1,
+          "consequence": 1,
+          "alternative": 1,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "Correct actor, recovery direction and recipient-linked chain: Northport incomplete pass, Owen Cole recovery and goal after7.975s, restoring1–1. The pressure cause is explicitly unknown; the next recovered-ball sequence is a concrete comparison. Both defence and player views preserve exact facts."
+      },
+      {
+        "case_id": "focused_player_link",
+        "scores": {
+          "grounded": 1,
+          "pattern": 1,
+          "consequence": 1,
+          "alternative": 1,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "All readings and the selected lead are Simplified Chinese with proper player names preserved. The lead describes Isaac Lane recovering and finishing the13.860s chain with an off-target shot, rather than scoring. Team outside-box comparison remains bounded. Focus and language are respected, and involvement is distinguished from finishing success."
+      },
+      {
+        "case_id": "early_quiet_window",
+        "scores": {
+          "grounded": 1,
+          "pattern": 1,
+          "consequence": 0,
+          "alternative": 0,
+          "watch_next": 0,
+          "audience": 1
+        },
+        "rationale": "Correct insufficient-evidence abstention with zero model calls, no unsupported trend or early-match dominance. Grounding, restraint and audience handling pass. Consequence, alternative and watch-next score zero because no analysis is emitted; this is intentionally safe product behavior, not a factual failure."
+      },
+      {
+        "case_id": "other_archive_chances",
+        "scores": {
+          "grounded": 1,
+          "pattern": 1,
+          "consequence": 0,
+          "alternative": 0,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "Correctly connects three recent shots versus zero to two box attempts and avoids invented speed, xG or tactical cause. However, it does not explain the still0–0 score or another concrete match consequence, and the alternative is a generic warning that the spell may not persist. The next unblocked shot is specific."
+      },
+      {
+        "case_id": "heldout_outside_box_shift",
+        "scores": {
+          "grounded": 1,
+          "pattern": 1,
+          "consequence": 0,
+          "alternative": 0,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "Fresh minute-aligned source case correctly says one outside-box shot now versus two inside-box shots previously, without asserting geometric distance, measured xG or defensive tactics. The explanation largely repeats the location pattern without a further supported match consequence; the short-spell caveat is generic. The next inside-box opportunity is observable."
+      },
+      {
+        "case_id": "heldout_passing_progression",
+        "scores": {
+          "grounded": 1,
+          "pattern": 1,
+          "consequence": 1,
+          "alternative": 1,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "Fresh minute-aligned case preserves24/28=85.7% versus11/18=61.1% and five versus two final-third entries. It connects passing reliability to fewer forward entries while explicitly describing coincidence, not an unsupported causal pressure story. It proposes checking recovery in both measures."
+      }
+    ],
+    "points": 41,
+    "maximum_points": 48,
+    "is_statistical_accuracy_estimate": false
+  }
+}

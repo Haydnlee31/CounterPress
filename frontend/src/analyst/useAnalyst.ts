@@ -6,6 +6,7 @@ import type {Analysis,AnalystConfig,Cutoff,Preferences,Snapshot} from './data'
 /** One shared packet per source-clock bucket. Rendering frames never call a model. */
 export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferences:Preferences){
   const [config,setConfig]=useState<AnalystConfig|null>(null)
+  const [configFailed,setConfigFailed]=useState(false)
   const [visible,setVisible]=useState(()=>!document.hidden)
   const [revision,setRevision]=useState(0)
   const [retry,setRetry]=useState(0)
@@ -22,11 +23,13 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
   const latestCutoff=useRef(cutoff);latestCutoff.current=cutoff
   useEffect(()=>{
     const controller=new AbortController()
+    setConfigFailed(false)
     fetch('/api/analyst/config',{signal:controller.signal}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(c=>{
-      if(!controller.signal.aborted&&c&&['foundry','metrics'].includes(c.mode)&&Number.isFinite(c.interval_ms)&&Array.isArray(c.roles))setConfig(c)
-    }).catch(()=>{})
+      if(!c||!['foundry','metrics'].includes(c.mode)||typeof c.available!=='boolean'||!Number.isFinite(c.interval_ms)||!Array.isArray(c.roles))throw Error()
+      if(!controller.signal.aborted)setConfig(c)
+    }).catch(()=>{if(!controller.signal.aborted)setConfigFailed(true)})
     return()=>controller.abort()
-  },[])
+  },[retry])
   useEffect(()=>{
     const change=()=>setVisible(!document.hidden)
     const corrected=(event:Event)=>{const d=(event as CustomEvent<{matches:string[];datasetChanged:boolean}>).detail;if(!d||d.datasetChanged||d.matches.includes(matchId))setRevision(n=>n+1)}
@@ -81,5 +84,5 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
   },[matchId,scope,visible,playing,config?.mode,config?.available,interval,retry])
   const snapshot=metrics.scope===scope&&metrics.view&&!before(cutoff,metrics.view.cutoff)?metrics.view:null
   const analysis=intel.scope===scope&&intel.view&&!before(cutoff,intel.view.cutoff)&&cutoff.period===intel.view.cutoff.period&&cutoff.elapsed_ms-intel.view.cutoff.elapsed_ms<=180000?intel.view:null
-  return {config,snapshot,analysis,pending:playing&&visible&&intel.scope===scope&&!!intel.pending,failed:intel.scope===scope&&intel.failed,metricsFailed:metrics.scope===scope&&metrics.failed,refresh:()=>setRetry(n=>n+1)}
+  return {config,configFailed,snapshot,analysis,pending:playing&&visible&&intel.scope===scope&&!!intel.pending,failed:intel.scope===scope&&intel.failed,metricsFailed:metrics.scope===scope&&metrics.failed,refresh:()=>setRetry(n=>n+1)}
 }

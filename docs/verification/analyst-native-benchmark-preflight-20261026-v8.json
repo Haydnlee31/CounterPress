@@ -1,0 +1,268 @@
+{
+  "benchmark": "analyst-native-candidate-grounding-v2",
+  "prepared_at": "2026-10-26T09:28:40.278482+00:00",
+  "mode": "offline_preflight",
+  "source_manifest_sha256": "7b599f56d8755f614834138d891c7cd3dbd154565086fcc7a6f0843e2cd77249",
+  "cases_preselected_before_this_run": true,
+  "fresh_heldout_case_count": 2,
+  "previously_seen_regression_case_count": 6,
+  "not_random_or_statistically_representative": true,
+  "maximum_model_calls_reserved": 40,
+  "maximum_admission_cents_reserved": 80,
+  "existing_evaluation_remaining": {
+    "hourly_remaining": 187,
+    "daily_remaining": 355
+  },
+  "prepared_cases": [
+    {
+      "case_id": "archive_box_growth",
+      "purpose": "regression",
+      "match_id": "wyscout-2058017",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 2581000
+      },
+      "expected": {
+        "club_id": "northport",
+        "current_shots": 3,
+        "previous_shots": 0,
+        "box_shots": 3,
+        "score": [
+          2,
+          1
+        ]
+      },
+      "expectation": "Northport are creating more close-range opportunities while trailing. Distinguish recent threat from the actual score; do not infer defensive shape.",
+      "packet_chars": 5116
+    },
+    {
+      "case_id": "activity_without_shots",
+      "purpose": "regression",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 630000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "on_ball_actions": 35,
+        "all_on_ball_actions": 49,
+        "current_shots": 0,
+        "final_third_entries": 1,
+        "score": [
+          0,
+          0
+        ]
+      },
+      "expectation": "Eastbridge dominate recorded action share but have little penetration and no shot. They DO have a final-third entry; saying zero entries or measured time-possession is wrong.",
+      "packet_chars": 5798
+    },
+    {
+      "case_id": "turnover_into_equalizer",
+      "purpose": "regression",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 2096000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 2,
+        "previous_shots": 0,
+        "score": [
+          1,
+          1
+        ],
+        "chain_ids": [
+          "a00498",
+          "a00499",
+          "a00500"
+        ],
+        "regain_to_shot_ms": 7975
+      },
+      "expectation": "An incomplete Northport pass, Eastbridge recovery and shot created an equalizer. Explain the transition and restored score parity; do not claim a coordinated press.",
+      "packet_chars": 6651
+    },
+    {
+      "case_id": "focused_player_link",
+      "purpose": "regression",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 2,
+        "elapsed_ms": 2314000
+      },
+      "expected": {
+        "club_id": "northport",
+        "current_shots": 1,
+        "previous_shots": 2,
+        "score": [
+          2,
+          2
+        ],
+        "focus_player_id": "np10",
+        "focus_passes": 6,
+        "focus_shots": 1,
+        "chain_ids": [
+          "a01164",
+          "a01165",
+          "a01166",
+          "a01167",
+          "a01168"
+        ],
+        "regain_to_shot_ms": 13860
+      },
+      "expectation": "In Simplified Chinese, relate Isaac Lane’s involvement to a linked transition ending in his off-target shot. Do not claim he scored, or confuse prefix totals with the current window.",
+      "packet_chars": 8155
+    },
+    {
+      "case_id": "early_quiet_window",
+      "purpose": "regression",
+      "match_id": "wyscout-2058007",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 91000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 0,
+        "previous_shots": 0,
+        "score": [
+          0,
+          0
+        ]
+      },
+      "expectation": "Abstention or restrained early observations are acceptable. No complete five-minute comparison exists; do not claim sustained dominance, a tactical turning point or a completed trend.",
+      "packet_chars": 4346
+    },
+    {
+      "case_id": "other_archive_chances",
+      "purpose": "regression",
+      "match_id": "wyscout-2058007",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 1081000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 3,
+        "previous_shots": 0,
+        "box_shots": 2,
+        "score": [
+          0,
+          0
+        ]
+      },
+      "expectation": "Eastbridge’s increase in shots includes closer opportunities but has not produced a goal. Do not label the geometric estimate calibrated xG or attribute unavailable player speeds.",
+      "packet_chars": 5084
+    },
+    {
+      "case_id": "heldout_outside_box_shift",
+      "purpose": "fresh_heldout",
+      "match_id": "wyscout-2058017",
+      "cutoff": {
+        "period": 2,
+        "elapsed_ms": 1380000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 1,
+        "previous_shots": 3,
+        "box_shots": 0,
+        "previous_box_shots": 2,
+        "score": [
+          4,
+          1
+        ]
+      },
+      "expectation": "At H2 23:00, Eastbridge have one recent shot outside the box versus three prior shots including two inside. Describe the location-category change without claiming Euclidean distance increased, a defensive tactical cause, or a falling calibrated xG.",
+      "packet_chars": 4608
+    },
+    {
+      "case_id": "heldout_passing_progression",
+      "purpose": "fresh_heldout",
+      "match_id": "wyscout-2058017",
+      "cutoff": {
+        "period": 2,
+        "elapsed_ms": 1860000
+      },
+      "expected": {
+        "club_id": "northport",
+        "current_shots": 1,
+        "previous_shots": 1,
+        "current_passes": 18,
+        "current_completed_passes": 11,
+        "previous_passes": 28,
+        "previous_completed_passes": 24,
+        "final_third_entries": 2,
+        "previous_final_third_entries": 5,
+        "score": [
+          4,
+          2
+        ]
+      },
+      "expectation": "At H2 31:00, Northport passing completion drops 24/28 to 11/18 while final-third pass entries fall five to two. Connect diminished reliability and penetration, but do not assert pressure or explain individual errors without evidence.",
+      "packet_chars": 6086
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "archive_box_growth",
+      "status": "not_run"
+    },
+    {
+      "case_id": "activity_without_shots",
+      "status": "not_run"
+    },
+    {
+      "case_id": "turnover_into_equalizer",
+      "status": "not_run"
+    },
+    {
+      "case_id": "focused_player_link",
+      "status": "not_run"
+    },
+    {
+      "case_id": "early_quiet_window",
+      "status": "not_run"
+    },
+    {
+      "case_id": "other_archive_chances",
+      "status": "not_run"
+    },
+    {
+      "case_id": "heldout_outside_box_shift",
+      "status": "not_run"
+    },
+    {
+      "case_id": "heldout_passing_progression",
+      "status": "not_run"
+    }
+  ],
+  "adversarial": [
+    {
+      "case_id": "fabricated_candidate_id",
+      "status": "complete",
+      "rejected": true,
+      "cloud_calls": 0,
+      "boundary": "native selector"
+    },
+    {
+      "case_id": "unsupported_prose_valid_ids",
+      "status": "complete",
+      "rejected": true,
+      "cloud_calls": 0,
+      "boundary": "product exact-candidate equality"
+    }
+  ],
+  "quality_review": {
+    "status": "pending_human_review",
+    "rubric": {
+      "grounded": "0=wrong entity/time/fact or unsupported physical/causal claim;1=all claims supported or explicitly qualified.",
+      "pattern": "0=only narrates an event/stat;1=connects evidence into the expected meaningful pattern, or appropriately abstains in the quiet case.",
+      "consequence": "0=no supported significance;1=explains relevance to score, opportunity, progression or player contribution.",
+      "alternative": "0=missing/canned/unsupported counterstory;1=plausible bounded alternative or uncertainty tied to this evidence.",
+      "watch_next": "0=vague/forecast/order;1=specific observable next check linked to the pattern.",
+      "audience": "0=wrong language, unreadable or ignores player focus;1=appropriate language/depth/focus."
+    }
+  }
+}

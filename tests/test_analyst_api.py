@@ -28,7 +28,7 @@ def setup(tmp_path, monkeypatch):
     def snapshot(career, mid, body):
         return {'snapshot_id': 'source-' + str(body.cutoff.elapsed_ms), 'match_id': mid,
                 'cutoff': body.cutoff.model_dump(), 'through_sequence': 4,
-                'evidence': [{'id': 'e1'}], 'metrics': [], 'signals': []}
+                'evidence': [{'id': 'e1'}], 'metrics': [], 'signals': [], 'candidates': [{'id': 'supported'}]}
     monkeypatch.setattr('counterpress.analyst.api.build_snapshot', snapshot)
     career = SimpleNamespace(store=SimpleNamespace(snapshot=nullcontext))
     provider = Provider()
@@ -73,3 +73,21 @@ def test_unconfigured_mode_does_not_claim_native_agents(monkeypatch):
         assert config['mode'] == 'metrics'
         assert config['available'] is False
         assert len(config['roles']) == 4
+
+
+def test_quiet_spell_never_reserves_allowance_or_starts_native_session(monkeypatch):
+    def snapshot(career, mid, body):
+        return {'snapshot_id': 'quiet', 'match_id': mid, 'cutoff': body.cutoff.model_dump(),
+                'through_sequence': 1, 'evidence': [{'id': 'e1'}], 'candidates': []}
+    monkeypatch.setattr('counterpress.analyst.api.build_snapshot', snapshot)
+    class ForbiddenAllowance:
+        def reserve(self, *args):
+            pytest.fail('A quiet spell must not reserve spend')
+    app = FastAPI(); provider = Provider()
+    install_analyst(app, lambda: SimpleNamespace(store=SimpleNamespace(snapshot=nullcontext)),
+                    provider=provider, allowance=ForbiddenAllowance())
+    with TestClient(app) as client:
+        response = client.post(f'/api/analyst/matches/{MID}/analysis', json=BODY)
+        assert response.status_code == 200
+        assert response.json()['status'] == 'insufficient_evidence'
+        assert provider.calls == 0

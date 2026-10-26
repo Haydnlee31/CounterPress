@@ -43,6 +43,11 @@ class NativeCompletions:
         )
         if response.status != "completed":
             raise ValueError("incomplete_agent_response")
+        actual = getattr(response, "agent_reference", None)
+        if hasattr(actual, "model_dump"):
+            actual = actual.model_dump()
+        if not isinstance(actual, dict) or any(str(actual.get(key)) != reference[key] for key in ("name", "version")):
+            raise ValueError("agent_version_mismatch")
         usage = response.usage
         return Completion(response.output_text, usage.input_tokens if usage else 0,
                           usage.output_tokens if usage else 0)

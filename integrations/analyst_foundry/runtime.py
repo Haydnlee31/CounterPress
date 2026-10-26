@@ -5,7 +5,7 @@ import asyncio
 import json
 from dataclasses import dataclass
 from typing import Awaitable, Callable
-from .contracts import ROLES, SpecialistOutput, Selection, parse_packet, role_packet, validate_reading, clock_context
+from .contracts import ROLES, SpecialistOutput, Selection, parse_packet, role_packet, validate_reading, clock_context, Reading
 
 
 @dataclass(frozen=True)
@@ -65,12 +65,17 @@ class AnalystRuntime:
 
         async def specialist(role: str):
             scoped = role_packet(packet, role)
-            if not scoped["metrics"] or not scoped["evidence"]:
+            if not scoped["metrics"] or not scoped["evidence"] or not scoped["candidates"]:
                 return None
             try:
                 result = await invoke(role, scoped, 600)
                 parsed = SpecialistOutput.model_validate_json(result.text)
-                return validate_reading(parsed.reading, scoped, role) if parsed.reading else None
+                if parsed.candidate_id is None:
+                    return None
+                candidate = next((c for c in scoped["candidates"] if c["id"] == parsed.candidate_id), None)
+                if candidate is None:
+                    raise ValueError("unknown_candidate")
+                return validate_reading(Reading.model_validate(candidate["reading"]), scoped, role)
             except (Exception, asyncio.TimeoutError) as exc:
                 failures.append(role)
                 failure_reasons[role] = reason(exc)
@@ -87,7 +92,7 @@ class AnalystRuntime:
                     supporting_signals = [s for s in packet["signals"] if s.get("role") in roles]
                     cited_evidence.update(i for signal in supporting_signals for i in signal.get("evidence_ids", []))
                     cited_metrics.update(i for signal in supporting_signals for i in signal.get("metric_ids", []))
-                    proof = {k: packet[k] for k in ("snapshot_id", "match_id", "cutoff", "clock", "clubs", "score", "players") if k in packet}
+                    proof = {k: packet[k] for k in ("snapshot_id", "match_id", "cutoff", "clock", "clubs", "score", "players", "language", "period_lengths_ms") if k in packet}
                     proof["evidence"] = [e for e in packet["evidence"] if e["id"] in cited_evidence]
                     proof["metrics"] = [m for m in packet["metrics"] if m["id"] in cited_metrics]
                     proof["signals"] = supporting_signals

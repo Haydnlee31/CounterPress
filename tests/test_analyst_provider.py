@@ -14,6 +14,7 @@ PACKET = {'snapshot_id': 'a' * 64, 'match_id': 'm', 'cutoff': {'period': 1, 'ela
 READING = {'role': 'chance', 'headline': 'Closer chances', 'explanation': 'More attacks are reaching shooting positions.',
            'alternative': 'The recent sample is small.', 'watch_next': 'Watch whether the next attacks reach the box.',
            'evidence_ids': ['e1'], 'metric_ids': ['m1'], 'confidence': 'medium'}
+PACKET['candidates'] = [{'id': 'c1', 'role': 'chance', 'reading': READING}]
 
 
 def result():
@@ -48,6 +49,52 @@ def test_wrong_snapshot_and_unverified_summary_rejected():
     with pytest.raises(ValueError): validate_result(wrong, PACKET)
 
 
+@pytest.mark.parametrize('field,value', [
+    ('headline', 'The wrong team dominates'),
+    ('explanation', 'The defenders dropped deeper.'),
+    ('alternative', 'A goal is guaranteed.'),
+    ('watch_next', 'The second quarter starts now.'),
+    ('confidence', 'high'),
+])
+def test_known_references_do_not_authorize_changed_claims(field, value):
+    wrong = result()
+    wrong['readings'] = [{**READING, field: value}]
+    wrong['summary'] = None
+    with pytest.raises(ValueError, match='approved snapshot candidate'):
+        validate_result(wrong, PACKET)
+
+
+def test_missing_candidate_catalog_fails_closed():
+    with pytest.raises(ValueError, match='approved snapshot candidate'):
+        validate_result(result(), {k: v for k, v in PACKET.items() if k != 'candidates'})
+
+
+def test_grounded_candidate_can_link_metric_from_another_specialist():
+    packet = {**PACKET, 'metrics': [{**PACKET['metrics'][0], 'role': 'defence'}]}
+    assert validate_result(result(), packet)['readings'] == [READING]
+    packet['metrics'] = [{**packet['metrics'][0], 'status': 'unavailable', 'value': None}]
+    with pytest.raises(ValueError, match='Unsupported metric'):
+        validate_result(result(), packet)
+
+
+@pytest.mark.parametrize('reference', [None, {}, {'name': 'director', 'version': '8'},
+                                      {'name': 'another-agent', 'version': '7'}])
+def test_server_returned_version_must_match_and_cleanup_still_runs(monkeypatch, reference):
+    calls = []
+    def handler(request):
+        calls.append(request)
+        if request.url.path.endswith('/responses'):
+            return httpx.Response(200, json={'status': 'completed', 'agent_reference': reference,
+                'output': [{'type': 'message', 'content': [{'type': 'output_text', 'text': json.dumps(result())}]}]})
+        return httpx.Response(204)
+    monkeypatch.setattr('counterpress.analyst.service.build_dispatch_packet', lambda s: dict(PACKET))
+    provider = FoundryAnalyst(ENDPOINT, 'director', '7', 'b' * 64, Credential,
+                             lambda **kwargs: httpx.AsyncClient(transport=httpx.MockTransport(handler), **kwargs))
+    with pytest.raises(ValueError, match='agent version'):
+        asyncio.run(provider.analyze(PACKET, SimpleNamespace(language='en', depth='analyst', focus_player_id=None)))
+    assert [r.method for r in calls] == ['POST', 'POST', 'DELETE']
+
+
 @pytest.mark.parametrize('failure', [False, True])
 def test_native_session_is_pinned_and_cleaned_even_on_provider_failure(monkeypatch, failure):
     calls = []
@@ -59,7 +106,7 @@ def test_native_session_is_pinned_and_cleaned_even_on_provider_failure(monkeypat
             assert len(body['agent_session_id']) == 36
             assert 'conversation' not in body
             if failure: return httpx.Response(500)
-            return httpx.Response(200, json={'status': 'completed', 'output': [{'type': 'message', 'content': [
+            return httpx.Response(200, json={'status': 'completed', 'agent_reference': {'name': 'director', 'version': '7'}, 'output': [{'type': 'message', 'content': [
                 {'type': 'output_text', 'text': json.dumps(result())}]}]})
         return httpx.Response(204)
     monkeypatch.setattr('counterpress.analyst.service.build_dispatch_packet', lambda s: dict(PACKET), raising=False)

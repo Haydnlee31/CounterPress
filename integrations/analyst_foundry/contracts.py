@@ -27,7 +27,14 @@ class Reading(StrictModel):
 
 
 class SpecialistOutput(StrictModel):
-    reading: Reading | None
+    """The model selects reviewed prose; it cannot author factual claims."""
+    candidate_id: str | None = Field(max_length=180)
+
+
+class Candidate(StrictModel):
+    id: str = Field(min_length=1, max_length=180)
+    role: Literal["chance", "defence", "control", "players"]
+    reading: Reading
 
 
 class Selection(StrictModel):
@@ -42,7 +49,7 @@ def parse_packet(raw: str) -> dict:
     packet = json.loads(raw, parse_constant=lambda _: (_ for _ in ()).throw(ValueError("nonfinite")))
     allowed = {"snapshot_id", "match_id", "cutoff", "through_sequence", "clubs", "score",
                "metrics", "players", "evidence", "signals", "language", "depth",
-               "focus_player_id", "methods", "triggers", "windows"}
+               "focus_player_id", "methods", "triggers", "windows", "candidates", "period_lengths_ms"}
     if not isinstance(packet, dict) or set(packet) - allowed:
         raise ValueError("packet_fields")
     for name in ("snapshot_id", "match_id"):
@@ -54,6 +61,12 @@ def parse_packet(raw: str) -> dict:
             or type(cutoff["elapsed_ms"]) is not int or not 0 <= cutoff["elapsed_ms"] <= 10_800_000
             or type(packet.get("through_sequence")) is not int or packet["through_sequence"] < 0):
         raise ValueError("packet_cutoff")
+    lengths = packet.get("period_lengths_ms")
+    if lengths is not None:
+        if (not isinstance(lengths, dict) or set(lengths) != {"1", "2"}
+                or any(type(v) is not int or not 1 <= v <= 10_800_000 for v in lengths.values())
+                or cutoff["elapsed_ms"] > lengths[str(cutoff["period"])]):
+            raise ValueError("period_lengths")
     for collection in ("metrics", "evidence", "signals", "players"):
         rows = packet.get(collection, [])
         if not isinstance(rows, list) or len(rows) > 256 or any(not isinstance(x, dict) for x in rows):
@@ -83,13 +96,24 @@ def parse_packet(raw: str) -> dict:
     focus = packet.get("focus_player_id")
     if focus is not None and (not isinstance(focus, str) or len(focus) > 150):
         raise ValueError("focus_player")
+    candidates = packet.get("candidates", [])
+    if not isinstance(candidates, list) or len(candidates) > 8:
+        raise ValueError("packet_candidates")
+    parsed_candidates = [Candidate.model_validate(item) for item in candidates]
+    if len({item.id for item in parsed_candidates}) != len(parsed_candidates):
+        raise ValueError("duplicate_candidate")
+    packet["candidates"] = [item.model_dump() for item in parsed_candidates]
+    for item in parsed_candidates:
+        if item.role != item.reading.role:
+            raise ValueError("candidate_role")
+        validate_reading(item.reading, packet, item.role)
     return packet
 
 
 # Numeric claims must be traceable to cited scalar metrics or the explicit
 # comparison-window duration. The independent verifier checks their meaning,
 # entity and time window; matching a number alone is never semantic proof.
-_NUMBER = re.compile(r"(?<![\w])[-+]?\d+(?:\.\d+)?")
+_NUMBER = re.compile(r"(?<![A-Za-z0-9_])[-+]?\d+(?:\.\d+)?")
 _NUMBER_WORDS = {"zero": 0, "one": 1, "two": 2, "three": 3, "four": 4,
                  "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
 
@@ -109,6 +133,10 @@ def supported_numbers(prose: str, reading: Reading, packet: dict) -> bool:
             for child in value: durations(child)
     durations(packet.get("windows", {}))
     def unit_after(text):
+        if re.match(r"\s*分钟", text): return "minutes"
+        if re.match(r"\s*秒", text): return "seconds"
+        if re.match(r"\s*米", text): return "metres"
+        if re.match(r"\s*(?:次|球|脚|人)", text): return "count"
         if re.match(r"\s*(?:%|percent|percentage)", text, re.I): return "percent"
         if re.match(r"\s*[- ]?(?:minutes?|mins?)\b", text, re.I): return "minutes"
         if re.match(r"\s*(?:seconds?|secs?)\b", text, re.I): return "seconds"
@@ -144,9 +172,11 @@ def clock_context(packet: dict) -> dict:
     period, ms = packet["cutoff"]["period"], packet["cutoff"]["elapsed_ms"]
     def label(value): return f"{value // 60000}:{value // 1000 % 60:02d}"
     name = "First half" if period == 1 else "Second half"
+    length = packet.get("period_lengths_ms", {}).get(str(period))
     result = {"period_label": name, "elapsed_in_period": label(ms),
-              "half_time_boundary": period == 1 and ms >= 2_700_000,
-              "full_time_boundary": period == 2 and ms >= 2_700_000}
+              "half_time_boundary": period == 1 and length is not None and ms == length,
+              "full_time_boundary": period == 2 and length is not None and ms == length,
+              "closing_period": length is not None and 0 <= length-ms <= min(300_000, length//10)}
     for key in ("current", "previous"):
         window = packet.get("windows", {}).get(key, {})
         if type(window.get("start_ms")) is int and type(window.get("end_ms")) is int:
@@ -157,11 +187,11 @@ def clock_context(packet: dict) -> dict:
 def validate_temporal_and_sentence_prose(reading: Reading, packet: dict):
     prose = " ".join((reading.headline, reading.explanation, reading.alternative, reading.watch_next))
     period, ms = packet["cutoff"]["period"], packet["cutoff"]["elapsed_ms"]
-    if (re.search(r"half[ -]?time|半场休息|中场休息", prose, re.I) and period == 1 and ms < 2_700_000
-            or re.search(r"full[ -]?time|final whistle|比赛结束|终场", prose, re.I) and not (period == 2 and ms >= 2_700_000)
-            or re.search(r"second half|下半场", prose, re.I) and period == 1 and ms < 2_700_000
-            or re.search(r"(?:final|closing|dying)\s+(?:\d+[- ]?)?(?:minutes?|moments?)", prose, re.I) and ms < 2_400_000
-            or period == 2 and re.search(r"before half[ -]?time|approaching half[ -]?time", prose, re.I)):
+    clock = clock_context(packet)
+    if (re.search(r"half[ -]?time|半场休息|中场休息", prose, re.I) and not clock["half_time_boundary"]
+            or re.search(r"full[ -]?time|final whistle|比赛结束|终场", prose, re.I) and not clock["full_time_boundary"]
+            or re.search(r"second half|下半场", prose, re.I) and period != 2
+            or re.search(r"(?:final|closing|dying)\s+(?:\d+[- ]?)?(?:minutes?|moments?)", prose, re.I) and not clock["closing_period"]):
         raise ValueError("temporal_claim")
     for text in (reading.explanation, reading.alternative, reading.watch_next):
         if not re.search(r"[.!?。！？]$", text.strip()) or re.search(r"\b(?:and|or|if|because|whether)[,.!?]*$", text.strip(), re.I):
@@ -194,6 +224,7 @@ def validate_reading(reading: Reading, packet: dict, role: str) -> Reading:
 
 def role_packet(packet: dict, role: str) -> dict:
     result = dict(packet)
+    result["candidates"] = [c for c in packet.get("candidates", []) if c["role"] == role]
     available = {x["id"] for x in packet["metrics"] if x.get("status") != "unavailable" and x.get("value") is not None}
     result["signals"] = [x for x in packet["signals"] if x.get("role") == role
                          and set(x.get("metric_ids", [])) <= available]
@@ -201,5 +232,6 @@ def role_packet(packet: dict, role: str) -> dict:
     result["metrics"] = [x for x in packet["metrics"] if x["id"] in available
                          and (x.get("role") == role or x["id"] in linked)]
     used = {i for x in result["signals"] for i in x.get("evidence_ids", [])}
+    used.update(i for c in result["candidates"] for i in c["reading"]["evidence_ids"])
     result["evidence"] = [x for x in packet["evidence"] if not used or x["id"] in used][-64:]
     return result

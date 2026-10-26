@@ -28,20 +28,16 @@ def packet(career,mid=MATCH_IDS[2],ms=600000,**kwargs):
     return build_dispatch_packet(build_snapshot(career,mid,AnalystRequest(cutoff={'period':1,'elapsed_ms':ms},**kwargs)))
 
 
-def reading(role,scoped):
-    metric=next(m for m in scoped['metrics'] if m['status']!='unavailable' and m['value'] is not None)
-    return {'role':role,'headline':'A developing pattern','explanation':'The recorded actions suggest a change in attacking involvement.',
-        'alternative':'The short spell may not persist.','watch_next':'Watch whether the same pattern continues.',
-        'evidence_ids':[scoped['evidence'][-1]['id']],'metric_ids':[metric['id']],'confidence':'low'}
-
-
 @pytest.mark.parametrize('mid',MATCH_IDS)
 def test_real_packets_validate_all_roles_and_exact_temporal_provenance(career,mid):
     p=packet(career,mid)
     assert parse_packet(json.dumps(p,ensure_ascii=False,separators=(',',':')))==p
     for role in ('chance','defence','control','players'):
         scoped=role_packet(p,role)
-        assert scoped['metrics'] and scoped['evidence']
+        for candidate in scoped.get('candidates',[]):
+            assert candidate['role']==role
+            assert set(candidate['reading']['metric_ids'])<={m['id']for m in scoped['metrics']}
+            assert set(candidate['reading']['evidence_ids'])<={e['id']for e in scoped['evidence']}
         assert scoped['windows']==p['windows']
     for event in p['evidence']:
         assert (event['available_period'],event['available_ms'])<=(p['cutoff']['period'],p['cutoff']['elapsed_ms'])
@@ -60,57 +56,62 @@ def test_equivalent_received_ceilings_share_same_paid_snapshot(career):
     assert earlier['snapshot_id']!=s['snapshot_id']
 
 
-def compound_packet(career):
-    p=packet(career)
-    club=p['clubs'][0]['club_id'];ids=[f'current:{club}:verified_turnovers',f'current:{club}:shots']
-    p['signals']=[{'id':'linked-transition','role':'defence','title':'A linked transition','detail':'Recorded loss and shooting evidence.',
-        'metric_ids':ids,'evidence_ids':[p['evidence'][-1]['id']],'salience':.8}]
-    return p,ids
-
-
-def test_cross_discipline_support_survives_native_and_provider_validation(career):
-    p,ids=compound_packet(career)
-    scoped=role_packet(p,'defence')
-    assert scoped['signals'] and set(ids)<={m['id']for m in scoped['metrics']}
-    r=reading('defence',scoped);r['metric_ids']=ids
-    validate_reading(Reading.model_validate(r),scoped,'defence')
+def test_cross_discipline_candidate_support_survives_native_and_provider_validation(career):
+    p=packet(career,ms=2096000)
+    candidate=next(c for c in p['candidates']if c['role']=='players')
+    scoped=role_packet(p,'players');r=candidate['reading']
+    assert any(m['role']=='defence'and m['id']in r['metric_ids']for m in scoped['metrics'])
+    validate_reading(Reading.model_validate(r),scoped,'players')
     result={k:p[k]for k in ('snapshot_id','match_id','cutoff','through_sequence')}
     result.update(status='complete',readings=[r],summary={k:r[k]for k in ('headline','explanation','evidence_ids','metric_ids')},usage={'model_calls':2})
     assert validate_result(result,p)['readings']==[r]
-    # Merely possessing a cross-role metric is not enough without an explicit signal.
+    # Exact candidate support remains legitimate without redundant signal metadata.
     p['signals']=[]
+    assert validate_result(result,p)['readings']==[r]
+    p['candidates']=[]
     with pytest.raises(ValueError):validate_result(result,p)
 
 
-def test_adversarial_semantic_reading_is_dropped_when_independent_verifier_rejects(career):
-    p=packet(career)
-    calls=[]
+@pytest.mark.parametrize('attack',['invented_id','wrong_role_id','extra_prose'])
+def test_adversarial_candidate_selection_cannot_publish_fabricated_readings(career,attack):
+    p=packet(career,ms=2096000);calls=[]
     async def complete(role,payload,limit):
         supplied=json.loads(payload);calls.append(role)
-        if role=='synthesis':
-            # IDs alone do not entail prose. The independent verifier sees the
-            # specific metric/event proof, rejects invented tactical positioning.
-            assert supplied['packet']['metrics'] and supplied['packet']['evidence']
-            assert any(r['role']=='control'for r in supplied['readings'])
-            return Completion(json.dumps({'accepted_roles':['chance'],'selected_role':'chance'}))
-        r=reading(role,supplied)
-        if role=='control':r['explanation']='Away are finding gaps behind Home’s defensive line.'
-        return Completion(json.dumps({'reading':r}))
+        assert role!='synthesis'  # all proposed selectors below are rejected
+        choice=supplied['candidates'][0]['id']
+        if attack=='invented_id':return Completion(json.dumps({'candidate_id':'invented'}))
+        if attack=='wrong_role_id':
+            other=next(c['id']for c in p['candidates']if c['role']!=role)
+            return Completion(json.dumps({'candidate_id':other}))
+        return Completion(json.dumps({'candidate_id':choice,'explanation':'Away find gaps behind the defensive line.'}))
     result=asyncio.run(AnalystRuntime(complete).run(json.dumps(p,separators=(',',':'))))
     checked=validate_result(result,p)
-    assert [r['role']for r in checked['readings']]==['chance']
-    assert 'defensive line'not in json.dumps(checked)
-    assert len(calls)==5
+    assert checked['readings']==[]and checked['summary']is None
+    assert len(calls)==2
 
 
-@pytest.mark.parametrize('bad_verifier',[None,{'accepted_roles':['chance','chance'],'selected_role':'chance'}, {'accepted_roles':[],'selected_role':'chance'}])
+def test_native_selection_returns_exact_localized_candidate(career):
+    p=packet(career,ms=2096000,language='zh-Hans')
+    async def complete(role,payload,limit):
+        supplied=json.loads(payload)
+        if role=='synthesis':return Completion(json.dumps({'accepted_roles':['players'],'selected_role':'players'}))
+        return Completion(json.dumps({'candidate_id':supplied['candidates'][0]['id']}))
+    result=asyncio.run(AnalystRuntime(complete).run(json.dumps(p,ensure_ascii=False,separators=(',',':'))))
+    checked=validate_result(result,p)
+    expected=next(c['reading']for c in p['candidates']if c['role']=='players')
+    assert checked['readings']==[expected]and '夺回球权'in expected['explanation']
+    mutated=copy.deepcopy(result);mutated['readings'][0]['explanation']='Unsupported off-ball movement.'
+    with pytest.raises(ValueError):validate_result(mutated,p)
+
+
+@pytest.mark.parametrize('bad_verifier',[None,{'accepted_roles':['players','players'],'selected_role':'players'}, {'accepted_roles':[],'selected_role':'players'}])
 def test_verifier_failure_never_publishes_unreviewed_prose(career,bad_verifier):
-    p=packet(career)
+    p=packet(career,ms=2096000)
     async def complete(role,payload,limit):
         if role=='synthesis':
             if bad_verifier is None:raise TimeoutError('timeout')
             return Completion(json.dumps(bad_verifier))
-        return Completion(json.dumps({'reading':reading(role,json.loads(payload))}))
+        return Completion(json.dumps({'candidate_id':json.loads(payload)['candidates'][0]['id']}))
     result=asyncio.run(AnalystRuntime(complete).run(json.dumps(p,separators=(',',':'))))
     assert result['readings']==[] and result['summary'] is None
     assert validate_result(result,p)['status']=='insufficient_evidence'
@@ -144,7 +145,7 @@ def test_correction_during_paid_work_discards_old_prose_and_stale_ceiling_is_fre
     version={'n':1};release=threading.Event();started=threading.Event()
     def fake_snapshot(career,mid,request):
         seq=min(version['n'],request.through_sequence) if request.through_sequence is not None else version['n']
-        return {'snapshot_id':f'revision-{seq}','match_id':mid,'cutoff':request.cutoff.model_dump(),'through_sequence':seq,'evidence':[{'id':'event'}]}
+        return {'snapshot_id':f'revision-{seq}','match_id':mid,'cutoff':request.cutoff.model_dump(),'through_sequence':seq,'evidence':[{'id':'event'}],'candidates':[{'id':'test-supported'}]}
     monkeypatch.setattr('counterpress.analyst.api.build_snapshot',fake_snapshot)
     class FakeProvider:
         manifest_id='pinned';calls=0

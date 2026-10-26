@@ -59,11 +59,29 @@ def source_bundle() -> bytes:
     return stream.getvalue()
 
 
+def manifest_fingerprint(agents: dict, coordinator: dict, hosted_definition: dict, code_sha256: str | None) -> str:
+    return definition_hash({"agents": agents, "coordinator": coordinator,
+                            "hosted_definition": hosted_definition, "code_sha256": code_sha256})
+
+
+def pin_versions(project, references: list[dict]) -> None:
+    """Explicit routing is authoritative; body agent_reference is not a pin."""
+    for reference in references:
+        project.agents.update_details(reference["name"], body={"agent_endpoint": {
+            "version_selector": {"version_selection_rules": [{"type": "FixedRatio",
+                "agent_version": reference["version"], "traffic_percentage": 100}]}}})
+        actual = project.agents.get(agent_name=reference["name"]).as_dict()
+        rules = actual.get("agent_endpoint", {}).get("version_selector", {}).get("version_selection_rules")
+        if rules != [{"type": "FixedRatio", "agent_version": reference["version"], "traffic_percentage": 100}]:
+            raise ValueError("endpoint_version_pin_failed")
+
+
 def provision(project, model: str, image: str, endpoint: str, *, code: bool = False, verifier_model: str = "gpt-5-mini") -> dict:
     from azure.ai.projects.models import HostedAgentDefinition, ContainerConfiguration, SessionConfiguration, ProtocolVersionRecord, AgentEndpointProtocol
     if not code and "@sha256:" not in image:
         raise ValueError("coordinator image must be pinned by digest")
     manifest = {}
+    bundle_hash = None
     for role, name in NAMES.items():
         agent = ensure_version(project, name, definition(role, verifier_model if role == "synthesis" else model))
         manifest[role] = {"name": agent.name, "version": agent.version}
@@ -94,10 +112,13 @@ def provision(project, model: str, image: str, endpoint: str, *, code: bool = Fa
     else:
         hosted.container_configuration = ContainerConfiguration(image=image)
         agent = ensure_version(project, DIRECTOR_NAME, hosted.as_dict())
-    return {"manifest_id": definition_hash({"agents": manifest, "coordinator": hosted.as_dict()}),
-            "coordinator": {"name": agent.name, "version": agent.version}, "agents": manifest,
+    coordinator = {"name": agent.name, "version": agent.version}
+    pin_versions(project, [*manifest.values(), coordinator])
+    return {"manifest_id": manifest_fingerprint(manifest, coordinator, hosted.as_dict(), bundle_hash),
+            "coordinator": coordinator, "agents": manifest, "code_sha256": bundle_hash,
             "models": {role: verifier_model if role == "synthesis" else model for role in NAMES},
             "limits": build_plan(model, image, verifier_model)}
+
 
 
 def main():

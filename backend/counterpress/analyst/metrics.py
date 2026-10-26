@@ -6,13 +6,14 @@ Estimates are explicitly separate from authored probabilities and measurements.
 from collections import Counter
 import math
 
-VERSION = 'analyst-event-metrics-v1'
+VERSION = 'analyst-event-metrics-v2-grounded-candidates'
 COMPLETE = {'complete', 'completed'}
 CONTROLLED = {'complete', 'completed', 'controlled', 'established', 'successful'}
 ON_BALL = {'pass', 'shot', 'carry'}
 
 # Human-readable method registry also supplies all reference metric families.
 METHODS = {
+    'compound_event_facts': 'Versioned exact counts/geometry and recipient-linked recovery-to-shot relations from visible canonical events. Event score facts are anchored immediately after the cited shot. No model computes these facts.',
     'counts': 'Counts of visible, latest-revision canonical events; unknown outcomes stay unknown.',
     'pass_accuracy': 'Completed passes / passes with known outcomes; unknown passes excluded from denominator.',
     'event_share': 'Share of pass, shot and controlled-carry events, not time in possession.',
@@ -25,7 +26,7 @@ METHODS = {
     'speed': 'Authored ball-flight endpoint distance / authored duration *3.6; never a player speed or tracked ball speed.',
     'momentum': 'Five-minute signed threat balance (home-away)/(home+away+1); threat=positive completed-pass progression/105 + positive controlled-carry progression/105 + shot geometry estimate. Uncalibrated, recomputed per snapshot.',
     'tempo': 'Distinct visible on-ball actions per minute; current and previous five-minute windows, never duplicate internal contributions.',
-    'turnover': 'Verified immediate incomplete pass followed within 3 seconds by opponent recovery; no gap, restart or cross-half joins.',
+    'turnover': 'Count assigned to the RECOVERING club: opponent incomplete pass followed within3seconds by this club recovery. These are balls WON, not this club losses; no gaps/restarts/cross-half joins.',
     'chaos': 'Uncalibrated verified-turnover index min(1, turnovers per minute / 3).',
     'tracking': 'Unavailable: no continuous player tracking; distance, sprints, player speed and off-ball heatmaps are not estimated from replay animation.',
     'ppda': 'Unavailable: current canonical schema does not consistently distinguish tackles, interceptions and fouls; generic duels are not substitutes.',
@@ -95,6 +96,7 @@ def metric_rows(events, *, club_id, window, duration_ms, all_events, source_kind
         if player_id is not None:
             row['player_id'] = player_id
             row['role'] = 'players'
+        if key=='verified_turnovers':row['subject']='recovering_club_not_losing_club'
         if n is not None and d is not None: row['coverage'] = {'numerator': n, 'denominator': d}
         rows.append(row)
     passes = [e for e in own if e.kind == 'pass']
@@ -127,7 +129,7 @@ def metric_rows(events, *, club_id, window, duration_ms, all_events, source_kind
     for key,label,kind in [('recoveries','Recoveries','recovery'),('pressures','Pressure events','pressure')]:
         add(key,label,sum(e.kind==kind and not e.restart for e in own) if source_kind != 'adapted_archive' else None,role='defence',basis='recorded_events' if source_kind!='adapted_archive' else 'unavailable')
     t = [pair for pair in turns(events) if pair[1].club_id==club_id and (player_id is None or pair[1].player_id==player_id)]
-    add('verified_turnovers','Verified pass-loss recoveries',len(t) if source_kind!='adapted_archive' else None,role='defence',method='turnover')
+    add('verified_turnovers','Recoveries after opponent incomplete passes',len(t) if source_kind!='adapted_archive' else None,role='defence',method='turnover')
     add('chaos','Turnover intensity',min(1,len(turns(events))/(duration_ms/60000)/3) if duration_ms and source_kind!='adapted_archive' else None,unit='index',basis='heuristic',method='chaos')
     xg = [e.expected_goal_probability for e in shots if e.expected_goal_probability is not None]
     gxg = [geometric_xg(e) for e in shots if geometric_xg(e) is not None]

@@ -1,0 +1,347 @@
+{
+  "benchmark": "analyst-native-source-anchored-v1",
+  "prepared_at": "2026-10-26T09:00:34.558273+00:00",
+  "mode": "azure",
+  "source_manifest_sha256": "7b599f56d8755f614834138d891c7cd3dbd154565086fcc7a6f0843e2cd77249",
+  "cases_preselected_before_model_results": true,
+  "not_random_or_statistically_representative": true,
+  "maximum_model_calls_reserved": 32,
+  "maximum_admission_cents_reserved": 80,
+  "existing_evaluation_remaining": {
+    "hourly_remaining": 225,
+    "daily_remaining": 393
+  },
+  "prepared_cases": [
+    {
+      "case_id": "archive_box_growth",
+      "match_id": "wyscout-2058017",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 2581000
+      },
+      "expected": {
+        "club_id": "northport",
+        "current_shots": 3,
+        "previous_shots": 0,
+        "box_shots": 3,
+        "score": [
+          2,
+          1
+        ]
+      },
+      "expectation": "Northport are creating more close-range opportunities while trailing. Distinguish recent threat from the actual score; do not infer defensive shape.",
+      "packet_chars": 23839
+    },
+    {
+      "case_id": "activity_without_shots",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 630000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "on_ball_actions": 35,
+        "all_on_ball_actions": 49,
+        "current_shots": 0,
+        "final_third_entries": 1,
+        "score": [
+          0,
+          0
+        ]
+      },
+      "expectation": "Eastbridge dominate recorded action share but have little penetration and no shot. They DO have a final-third entry; saying zero entries or measured time-possession is wrong.",
+      "packet_chars": 22279
+    },
+    {
+      "case_id": "turnover_into_equalizer",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 2096000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 2,
+        "previous_shots": 0,
+        "score": [
+          1,
+          1
+        ],
+        "chain_ids": [
+          "a00498",
+          "a00499",
+          "a00500"
+        ],
+        "regain_to_shot_ms": 7975
+      },
+      "expectation": "An incomplete Northport pass, Eastbridge recovery and shot created an equalizer. Explain the transition and restored score parity; do not claim a coordinated press.",
+      "packet_chars": 22907
+    },
+    {
+      "case_id": "focused_player_link",
+      "match_id": "synthetic-32fe41c5d304ce68d7d9",
+      "cutoff": {
+        "period": 2,
+        "elapsed_ms": 2314000
+      },
+      "expected": {
+        "club_id": "northport",
+        "current_shots": 1,
+        "previous_shots": 2,
+        "score": [
+          2,
+          2
+        ],
+        "focus_player_id": "np10",
+        "focus_passes": 6,
+        "focus_shots": 1,
+        "chain_ids": [
+          "a01164",
+          "a01165",
+          "a01166",
+          "a01167",
+          "a01168"
+        ],
+        "regain_to_shot_ms": 13860
+      },
+      "expectation": "In Simplified Chinese, relate Isaac Lane’s involvement to a linked transition ending in his off-target shot. Do not claim he scored, or confuse prefix totals with the current window.",
+      "packet_chars": 23617
+    },
+    {
+      "case_id": "early_quiet_window",
+      "match_id": "wyscout-2058007",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 91000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 0,
+        "previous_shots": 0,
+        "score": [
+          0,
+          0
+        ]
+      },
+      "expectation": "Abstention or restrained early observations are acceptable. No complete five-minute comparison exists; do not claim sustained dominance, a tactical turning point or a completed trend.",
+      "packet_chars": 22159
+    },
+    {
+      "case_id": "other_archive_chances",
+      "match_id": "wyscout-2058007",
+      "cutoff": {
+        "period": 1,
+        "elapsed_ms": 1081000
+      },
+      "expected": {
+        "club_id": "eastbridge",
+        "current_shots": 3,
+        "previous_shots": 0,
+        "box_shots": 2,
+        "score": [
+          0,
+          0
+        ]
+      },
+      "expectation": "Eastbridge’s increase in shots includes closer opportunities but has not produced a goal. Do not label the geometric estimate calibrated xG or attribute unavailable player speeds.",
+      "packet_chars": 23734
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "archive_box_growth",
+      "status": "partial",
+      "seconds": 24.381,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 5,
+        "reported_input_tokens": 21710,
+        "reported_output_tokens": 810
+      },
+      "reading_count": 2,
+      "roles": [
+        "chance",
+        "control"
+      ]
+    },
+    {
+      "case_id": "activity_without_shots",
+      "status": "partial",
+      "seconds": 21.397,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 5,
+        "reported_input_tokens": 22139,
+        "reported_output_tokens": 751
+      },
+      "reading_count": 1,
+      "roles": [
+        "defence"
+      ]
+    },
+    {
+      "case_id": "turnover_into_equalizer",
+      "status": "partial",
+      "seconds": 20.808,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 5,
+        "reported_input_tokens": 20350,
+        "reported_output_tokens": 701
+      },
+      "reading_count": 1,
+      "roles": [
+        "players"
+      ]
+    },
+    {
+      "case_id": "focused_player_link",
+      "status": "partial",
+      "seconds": 21.428,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 5,
+        "reported_input_tokens": 19463,
+        "reported_output_tokens": 790
+      },
+      "reading_count": 3,
+      "roles": [
+        "chance",
+        "defence",
+        "control"
+      ]
+    },
+    {
+      "case_id": "early_quiet_window",
+      "status": "partial",
+      "seconds": 20.736,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 5,
+        "reported_input_tokens": 22797,
+        "reported_output_tokens": 693
+      },
+      "reading_count": 2,
+      "roles": [
+        "defence",
+        "control"
+      ]
+    },
+    {
+      "case_id": "other_archive_chances",
+      "status": "partial",
+      "seconds": 21.856,
+      "execution": {
+        "runtime": "foundry_hosted",
+        "model_calls": 5,
+        "reported_input_tokens": 21188,
+        "reported_output_tokens": 716
+      },
+      "reading_count": 3,
+      "roles": [
+        "defence",
+        "control",
+        "players"
+      ]
+    }
+  ],
+  "adversarial": [
+    {
+      "case_id": "wrong_team",
+      "status": "complete",
+      "rejected": false,
+      "seconds": 4.393
+    },
+    {
+      "case_id": "unsupported_off_ball",
+      "status": "complete",
+      "rejected": false,
+      "seconds": 3.562
+    }
+  ],
+  "evaluation_calls_reserved": 32,
+  "admission_cents_reserved": 80,
+  "manifest_id": "5f746e6cd85c23331538efb7a5fa92c15cd90ff14fa41b57f257bd4d31088e77",
+  "quality_review": {
+    "status": "manual_review_recorded",
+    "reviewer_kind": "assistant",
+    "cases": [
+      {
+        "case_id": "archive_box_growth",
+        "scores": {
+          "grounded": 0,
+          "pattern": 1,
+          "consequence": 1,
+          "alternative": 0,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "The closer-shot increase and blocked outcomes match source events, but the chance explanation calls the uncalibrated geometric estimate xG without qualification, and the control headline upgrades action share into possession dominance. Alternatives speculate about defensive relaxation/posture without evidence. Watching further box entries and shots is specific."
+      },
+      {
+        "case_id": "activity_without_shots",
+        "scores": {
+          "grounded": 0,
+          "pattern": 0,
+          "consequence": 0,
+          "alternative": 0,
+          "watch_next": 0,
+          "audience": 1
+        },
+        "rationale": "The sole reading reverses verified_turnovers attribution: these count opponent failed-pass recoveries won by Eastbridge, not Eastbridge losses. A fall from five to two cannot establish improved Eastbridge ball retention or fewer opponent counterattacks. The requested activity-with-little-penetration pattern is missed. English is readable, but the football interpretation is unsafe."
+      },
+      {
+        "case_id": "turnover_into_equalizer",
+        "scores": {
+          "grounded": 1,
+          "pattern": 0,
+          "consequence": 1,
+          "alternative": 0,
+          "watch_next": 0,
+          "audience": 1
+        },
+        "rationale": "Core facts are supported: Owen Cole recovers, scores and levels the score, with the cited match totals correct. However the explanation mainly narrates that event and lists unrelated cumulative passes rather than explaining punishment of the opponent pass loss. Good team buildup is an unsupported generic alternative for a recovery-to-immediate-shot chain, and continued shooting/passing is an unfocused next check."
+      },
+      {
+        "case_id": "focused_player_link",
+        "scores": {
+          "grounded": 0,
+          "pattern": 1,
+          "consequence": 1,
+          "alternative": 0,
+          "watch_next": 1,
+          "audience": 0
+        },
+        "rationale": "The transition-to-shot chain and shot-frequency decline are genuine, but the accepted defence reading infers pressing success without pressure evidence and control miscounts the focused player recoveries. Geometric estimates are labeled xG without qualification. The input explicitly requests zh-Hans and np10, yet all prose is English, uses raw np10, and no player reading survives. Next chance quality and entry observations are useful despite these failures."
+      },
+      {
+        "case_id": "early_quiet_window",
+        "scores": {
+          "grounded": 0,
+          "pattern": 0,
+          "consequence": 0,
+          "alternative": 0,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "At only 1:31 the system selects a high-confidence possession-dominance claim from a modest 55.56% on-ball action share. Generic duels are characterized as defensive effectiveness without duel subtype/rate evidence. Tactical-focus alternatives are unsupported. A cautious entry-count observation was possible; the published confidence/possession framing is not. Watching subsequent final-third entries is concrete."
+      },
+      {
+        "case_id": "other_archive_chances",
+        "scores": {
+          "grounded": 0,
+          "pattern": 1,
+          "consequence": 1,
+          "alternative": 0,
+          "watch_next": 1,
+          "audience": 1
+        },
+        "rationale": "A real passing-completion improvement and stable final-third entries support a limited circulation observation. The selected headline introduces an early second quarter that is absent from football clock metadata; action share is again called possession dominance. A player increase is asserted from cumulative pass totals without a comparative player window. The expected closer-shot insight is absent, and the alternatives are generic. Entry/shot observations remain actionable."
+      }
+    ],
+    "points": 17,
+    "maximum_points": 36,
+    "is_statistical_accuracy_estimate": false
+  }
+}

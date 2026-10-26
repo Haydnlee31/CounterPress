@@ -101,6 +101,16 @@
 .an-stat-row strong { font-size:22px; text-align:right; letter-spacing:-.5px; font-weight:600; }
 .an-stat-row small { font-size:9px; font-weight:400; display:block; letter-spacing:0; margin-top:3px; }
 .an-stat-row > p { margin:0 10px 18px; font-size:11px; line-height:1.6; color:#60725d; }
+.an-stat-global summary > strong { grid-column:2 / 4; text-align:center; }
+.an-metric-coverage { padding:0 10px 12px; }
+.an-metric-coverage p { margin:0 0 6px; font-size:11px; color:#60725d; line-height:1.6; }
+.an-window-range { font-size:11px; color:#64775a; margin:-12px 0 22px; }
+.an-stat-loading { margin-top:36px; padding:30px 22px; border:1px solid #d4ddcf; border-radius:16px; background:#fffef8; font-size:13px; color:#60725d; }
+.an-reasoning { margin:0 0 18px; }
+.analyst-mode .an-reasoning > summary { display:block; cursor:pointer; padding:8px 0; font-size:12px; font-weight:550; min-height:36px; color:#60725d; }
+.an-reasoning > summary:after { content:' +'; }
+.an-reasoning[open] > summary:after { content:' −'; }
+.an-reasoning p { padding:0 0 0 14px; border-left:2px solid #c7d0b6; margin:8px 0; font-size:12px; line-height:1.7; color:#405e4f; }
 .an-coverage { border-top:1px solid #d4ddcf; padding:16px 10px; }
 .analyst-mode .an-coverage > summary { display:flex; gap:10px; cursor:pointer; font-size:12px; min-height:24px; align-items:center; }
 .analyst-mode .an-coverage > summary span { color:#738568; font-size:10px; }

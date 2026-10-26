@@ -200,20 +200,21 @@ def test_lost_duel_credits_opposing_winner_consistently():
     assert metric(s,'tackles_won','away')['value'] is None
 
 
-def test_dispatch_preserves_pairs_individual_players_and_bounded_citations():
+def test_dispatch_preserves_required_pairs_and_bounded_citations():
     from counterpress.analyst.service import build_dispatch_packet
-    s=snap([event(i,i*5000)for i in range(1,121)])
-    p=build_dispatch_packet(s)
-    assert len(json.dumps(p,ensure_ascii=False,separators=(',',':')))<=24000
+    prior=[event(i+1,100000+i*10000,start={'x':60,'y':34},end={'x':80 if i<3 else 65,'y':34})for i in range(10)]
+    current=[event(i+11,350000+i*10000,outcome='complete'if i<6 else'incomplete',start={'x':60,'y':34},end={'x':65,'y':34})for i in range(10)]
+    s=snap(prior+current);p=build_dispatch_packet(s)
+    raw=json.dumps(p,ensure_ascii=False,separators=(',',':'))
+    assert len(raw)<=24000 and len(raw.encode())<=32000
     assert p['windows']==s['windows']
-    for club in ('home','away'):
-        for key in ('shots','pass_accuracy','final_third_entries','recoveries'):
-            assert {f'{w}:{club}:{key}'for w in ('current','previous')}<={m['id']for m in p['metrics']}
-    assert any(m.get('player_id')=='h1' and m['role']=='players'for m in p['metrics'])
-    assert 'xg_geometry'in p['methods']
-    for sig in p['signals']:
-        assert set(sig['evidence_ids'])<={e['id']for e in p['evidence']}
-        assert set(sig['metric_ids'])<={m['id']for m in p['metrics']}
+    for key in ('pass_accuracy','final_third_entries'):
+        assert {f'{w}:home:{key}'for w in ('current','previous')}<={m['id']for m in p['metrics']}
+    for candidate in p['candidates']:
+        reading=candidate['reading']
+        assert set(reading['evidence_ids'])<={e['id']for e in p['evidence']}
+        assert set(reading['metric_ids'])<={m['id']for m in p['metrics']}
+    assert all(m['id'] in {ref for c in p['candidates']for ref in c['reading']['metric_ids']}for m in p['metrics'])
 
 
 def test_zero_and_missing_remain_distinct():

@@ -129,3 +129,26 @@ it('finishes an in-flight reading across forward boundaries, then coalesces to t
   expect(clocks).toEqual([60000,60000,180000])
   expect(result.current.analysis?.cutoff.elapsed_ms).toBe(180000)
 })
+
+it('recovers configuration after an explicit retry without paying while its availability is unknown',async()=>{
+  const ordinary=vi.mocked(fetch).getMockImplementation()!
+  let fail=true
+  vi.mocked(fetch).mockImplementation(async(url,init)=>String(url)==='/api/analyst/config'&&fail?new Response('Unavailable',{status:503}):ordinary(url,init))
+  const {result}=renderHook(()=>useAnalyst('match-one',{period:1,elapsed_ms:120000},true,prefs))
+  await settle();expect(result.current.configFailed).toBe(true)
+  expect(requests.some(r=>r.url.endsWith('/analysis'))).toBe(false)
+  expect(result.current.snapshot).not.toBeNull()
+  fail=false;act(()=>result.current.refresh());await settle();await settle()
+  expect(result.current.configFailed).toBe(false)
+  expect(requests.filter(r=>r.url.endsWith('/analysis'))).toHaveLength(1)
+})
+
+it('invalidates and submits the selected language, depth and player focus as one new scope',async()=>{
+  const {result,rerender}=renderHook(({preferences})=>useAnalyst('match-one',{period:1,elapsed_ms:120000},true,preferences),{initialProps:{preferences:prefs as import('./data').Preferences}})
+  await settle();await settle();expect(result.current.analysis).not.toBeNull()
+  const changed={language:'zh-Hans' as const,depth:'casual' as const,focus_player_id:'eb09'}
+  rerender({preferences:changed});expect(result.current.analysis).toBeNull()
+  await settle()
+  const last=requests.filter(r=>r.url.endsWith('/analysis')).at(-1)!
+  expect(last.body).toEqual({cutoff:{period:1,elapsed_ms:120000},...changed})
+})

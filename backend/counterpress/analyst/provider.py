@@ -45,10 +45,18 @@ def validate_result(result, packet):
     evidence = {e['id'] for e in packet['evidence']}
     metrics = {m['id']: m for m in packet['metrics']}
     for reading in readings:
+        # Models may rank and select an interpretation, but cannot publish an
+        # altered fact, actor, window, unit or language. Compare the complete
+        # reading with this exact server-built snapshot's grounded candidates.
+        if reading not in [c.get('reading') for c in packet.get('candidates', [])]:
+            raise ValueError('Reading is not an approved snapshot candidate')
         if not set(reading['evidence_ids']) <= evidence or not set(reading['metric_ids']) <= metrics.keys():
             raise ValueError('Unknown evidence')
         compound = {mid for signal in packet.get('signals', []) if signal.get('role') == reading['role']
                     for mid in signal.get('metric_ids', [])}
+        compound.update(mid for candidate in packet.get('candidates', [])
+                        if candidate.get('role') == reading['role']
+                        for mid in candidate.get('reading', {}).get('metric_ids', []))
         if any(metrics[mid].get('status') == 'unavailable' or metrics[mid].get('value') is None
                or (metrics[mid].get('role') != reading['role'] and mid not in compound) for mid in reading['metric_ids']):
             raise ValueError('Unsupported metric')
@@ -105,7 +113,7 @@ class FoundryAnalyst:
         packet = build_dispatch_packet(snapshot)
         packet.update(language=request.language, depth=request.depth, focus_player_id=request.focus_player_id)
         raw = json.dumps(packet, ensure_ascii=False, separators=(',', ':'), allow_nan=False)
-        if len(raw) > 24000:
+        if len(raw) > 24000 or len(raw.encode('utf-8')) > 32000:
             raise ValueError('Analyst packet exceeds native limit')
         session_id = str(uuid4())
         async with self.credential() as credential:
@@ -128,6 +136,10 @@ class FoundryAnalyst:
                     data = json.loads(content)
                     if data.get('status') != 'completed':
                         raise ValueError('Native response incomplete')
+                    reference = data.get('agent_reference')
+                    if (not isinstance(reference, dict) or reference.get('name') != self.name
+                            or reference.get('version') != self.version):
+                        raise ValueError('Native response agent version does not match reviewed manifest')
                     text = ''.join(part.get('text', '') for item in data.get('output', [])
                                    if item.get('type') == 'message' for part in item.get('content', [])
                                    if part.get('type') == 'output_text')

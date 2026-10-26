@@ -1,0 +1,113 @@
+{
+  "verified_date": "2026-10-26",
+  "native_agents": {
+    "coordinator": {
+      "name": "FootieAnalystDirector",
+      "version": "7"
+    },
+    "specialists": {
+      "chance": {
+        "name": "FootieAnalystChance",
+        "version": "3"
+      },
+      "defence": {
+        "name": "FootieAnalystDefence",
+        "version": "3"
+      },
+      "control": {
+        "name": "FootieAnalystControl",
+        "version": "3"
+      },
+      "players": {
+        "name": "FootieAnalystPlayers",
+        "version": "3"
+      },
+      "synthesis": {
+        "name": "FootieAnalystEditor",
+        "version": "4"
+      }
+    },
+    "models": {
+      "chance": "gpt-4.1-mini",
+      "defence": "gpt-4.1-mini",
+      "control": "gpt-4.1-mini",
+      "players": "gpt-4.1-mini",
+      "synthesis": "gpt-5-mini"
+    },
+    "manifest_id": "5f746e6cd85c23331538efb7a5fa92c15cd90ff14fa41b57f257bd4d31088e77"
+  },
+  "operator_canonical_snapshot_smoke": {
+    "principal": "signed-in operator",
+    "version": "7",
+    "packet_chars": 22834,
+    "cleanup": [
+      {
+        "method": "POST",
+        "status": 204
+      },
+      {
+        "method": "DELETE",
+        "status": 204
+      }
+    ],
+    "http_status": 200,
+    "latency_seconds": 22.98,
+    "manifest_id": "5f746e6cd85c23331538efb7a5fa92c15cd90ff14fa41b57f257bd4d31088e77",
+    "status": "partial",
+    "accepted_roles": [
+      "chance",
+      "control"
+    ],
+    "usage": {
+      "input_tokens": 21039,
+      "output_tokens": 783,
+      "model_calls": 5
+    },
+    "failed_roles": [
+      "defence",
+      "players"
+    ],
+    "review": "Temporal claims, metric values, attribution and sentence completeness manually reviewed; partial coverage is expected when checks reject a specialist. Benchmark and application managed-identity proof are separate gates."
+  },
+  "container_app_identity_smoke": {
+    "principal": "counterpress-history managed identity",
+    "version": "7",
+    "cleanup": [
+      {
+        "method": "POST",
+        "status": 204
+      },
+      {
+        "method": "DELETE",
+        "status": 204
+      }
+    ],
+    "http_status": 200,
+    "result_status": "insufficient_evidence",
+    "model_calls": 0,
+    "latency_seconds": 14.6
+  },
+  "permissions": {
+    "role": "Foundry Agent Consumer",
+    "scope": "existing CounterPress project",
+    "principals": [
+      "counterpress-history managed identity",
+      "FootieAnalystDirector agent identity"
+    ],
+    "data_actions": [
+      "Microsoft.CognitiveServices/accounts/AIServices/endpoints/interact/action"
+    ],
+    "management_actions": []
+  },
+  "local_runtime_checks": {
+    "command": "PYTHONPATH=/private/tmp/footie-agentserver-inspect .venv/bin/python -m pytest tests/test_analyst_foundry_runtime.py -q",
+    "result": "32 passed in 0.20s",
+    "official_sdk_http_protocol_included": true
+  },
+  "limitations": [
+    "Canonical smoke accepted two of four specialist readings; partial is an intentional fail-closed result.",
+    "This receipt proves native invocation, bounded orchestration and teardown, not universal natural-language correctness.",
+    "Separate benchmark and frontend integration checks are required before production activation."
+  ],
+  "console_proof_method": "Short Azure Container Apps exec startup command, Python source through private PTY stdin; tokens stayed inside the running app."
+}

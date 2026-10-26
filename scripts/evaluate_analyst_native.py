@@ -1,13 +1,15 @@
 """Source-anchored native Analyst acceptance benchmark; offline unless --azure.
 
-Six preselected windows and two adversarial Editor checks; at most32 reserved
-model calls and80 admission cents. Model quality requires recorded human review.
+Six regression windows, two fresh minute-aligned windows, and two offline
+publication attacks; at most40 reserved model calls and80 admission cents.
+Quality requires explicitly attributed source-based review.
 No retries or inference while preparing/validating the corpus.
 """
 from __future__ import annotations
 import argparse
 import asyncio
 from collections import Counter
+import copy
 from datetime import datetime,timezone
 from hashlib import sha256
 import json
@@ -21,12 +23,13 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from counterpress.analyst.admission import Allowance,SQLiteStore
 from counterpress.analyst.contracts import AnalystRequest
-from counterpress.analyst.provider import FoundryAnalyst
+from counterpress.analyst.provider import FoundryAnalyst,validate_result
 from counterpress.analyst.service import build_snapshot,build_dispatch_packet
 from counterpress.assistant.evaluation import AttemptBudget
 from counterpress.personalization.service import CareerService
 from counterpress.personalization.store import DataStore
-from integrations.analyst_foundry.contracts import Selection,parse_packet
+from integrations.analyst_foundry.contracts import parse_packet
+from integrations.analyst_foundry.runtime import AnalystRuntime,Completion
 
 CASES=[
  {'id':'archive_box_growth','match_id':'wyscout-2058017','period':1,'elapsed_ms':2581000,
@@ -57,6 +60,18 @@ CASES=[
   'expectation':'Eastbridge’s increase in shots includes closer opportunities but has not produced a goal. Do not label the geometric estimate calibrated xG or attribute unavailable player speeds.',
   'roles':['chance']},
 ]
+for case in CASES:case['purpose']='regression'
+CASES.extend([
+ {'id':'heldout_outside_box_shift','purpose':'fresh_heldout','match_id':'wyscout-2058017','period':2,'elapsed_ms':1380000,
+  'expected':{'club_id':'eastbridge','current_shots':1,'previous_shots':3,'box_shots':0,'previous_box_shots':2,'score':[4,1]},
+  'expectation':'At H2 23:00, Eastbridge have one recent shot outside the box versus three prior shots including two inside. Describe the location-category change without claiming Euclidean distance increased, a defensive tactical cause, or a falling calibrated xG.',
+  'roles':['chance']},
+ {'id':'heldout_passing_progression','purpose':'fresh_heldout','match_id':'wyscout-2058017','period':2,'elapsed_ms':1860000,
+  'expected':{'club_id':'northport','current_shots':1,'previous_shots':1,'current_passes':18,'current_completed_passes':11,'previous_passes':28,'previous_completed_passes':24,'final_third_entries':2,'previous_final_third_entries':5,'score':[4,2]},
+  'expectation':'At H2 31:00, Northport passing completion drops 24/28 to 11/18 while final-third pass entries fall five to two. Connect diminished reliability and penetration, but do not assert pressure or explain individual errors without evidence.',
+  'roles':['control']},
+])
+
 RUBRIC={
  'grounded':'0=wrong entity/time/fact or unsupported physical/causal claim;1=all claims supported or explicitly qualified.',
  'pattern':'0=only narrates an event/stat;1=connects evidence into the expected meaningful pattern, or appropriately abstains in the quiet case.',
@@ -95,6 +110,7 @@ def independent_facts(store,case):
         'on_ball_actions':sum(onball(e)for e in own),'all_on_ball_actions':sum(onball(e)for e in cur),
         'final_third_entries':sum(bool(e.kind=='pass'and e.outcome in('complete','completed')and e.start and e.end and e.start.x<70<=e.end.x)for e in own),
         'score':[sum(e.goal_for==club for e in rows)for club in('eastbridge','northport')]}
+    result.update(previous_box_shots=sum(bool(e.kind=='shot' and e.outcome!='own_goal' and e.club_id==c and e.start and e.start.x>=88.5 and 13.84<=e.start.y<=54.16)for e in old), current_passes=sum(e.kind=='pass' for e in own),current_completed_passes=sum(e.kind=='pass'and e.outcome in('complete','completed')for e in own),previous_passes=sum(e.kind=='pass'and e.club_id==c for e in old),previous_completed_passes=sum(e.kind=='pass'and e.club_id==c and e.outcome in('complete','completed')for e in old),previous_final_third_entries=sum(bool(e.kind=='pass'and e.club_id==c and e.outcome in('complete','completed')and e.start and e.end and e.start.x<70<=e.end.x)for e in old))
     if case.get('focus_player_id'):
         pid=case['focus_player_id'];result.update(focus_player_id=pid,focus_passes=sum(e.kind=='pass'and e.player_id==pid for e in cur),focus_shots=sum(e.kind=='shot'and e.player_id==pid for e in cur))
     if 'chain_ids'in case['expected']:
@@ -132,56 +148,48 @@ def evaluation_remaining():
 
 def review_scores(path,results):
     if path is None:return {'status':'pending_human_review','rubric':RUBRIC}
-    review=json.loads(path.read_text());scored=[]
-    for case in CASES:
-        row=review.get(case['id']);run=next(r for r in results if r['case_id']==case['id'])
+    review_document=json.loads(path.read_text());review=review_document.get('ratings',review_document);reviewer_kind=review_document.get('reviewer_kind','unspecified');scored=[]
+    if reviewer_kind not in ('human','assistant','unspecified'):raise ValueError('Invalid reviewer attribution')
+    for run in results:
+        case_id=run['case_id'];row=review.get(case_id)
         if not isinstance(row,dict)or set(RUBRIC)-row.keys()or any(type(row[k])is not int or row[k]not in(0,1)for k in RUBRIC)or not isinstance(row.get('rationale'),str)or len(row['rationale'].strip())<20:
             raise ValueError('Each human review needs six binary ratings and a concrete rationale')
         if run['status']in('error','not_run','unavailable'):raise ValueError('Cannot quality-score a missing execution')
-        scored.append({'case_id':case['id'],'scores':{k:row[k]for k in RUBRIC},'rationale':row['rationale']})
-    return {'status':'human_review_recorded','cases':scored,'points':sum(sum(r['scores'].values())for r in scored),'maximum_points':36,'is_statistical_accuracy_estimate':False}
+        scored.append({'case_id':case_id,'scores':{k:row[k]for k in RUBRIC},'rationale':row['rationale']})
+    return {'status':'manual_review_recorded','reviewer_kind':reviewer_kind,'cases':scored,'points':sum(sum(r['scores'].values())for r in scored),'maximum_points':6*len(scored),'is_statistical_accuracy_estimate':False}
 
 
-def adversarial_inputs(packet):
-    club='northport';metric_id=f'current:{club}:shots';eid=next(e['id']for e in packet['evidence']if e['club_id']==club)
-    common={'role':'chance','headline':'A changing attack','alternative':'The spell may not persist.','watch_next':'Watch where the next attacks finish.','evidence_ids':[eid],'metric_ids':[metric_id],'confidence':'high'}
-    return [
-        ('wrong_team',{**common,'explanation':'Eastbridge are creating more close-range opportunities than before.'}),
-        ('unsupported_off_ball',{**common,'explanation':'Northport’s defensive line has dropped and their fullbacks are staying narrow.'}),
-    ]
-
-
-async def editor_check(provider,manifest,packet,reading):
-    import httpx
-    reference=manifest['agents']['synthesis']
-    checked=FoundryAnalyst(provider.endpoint,reference['name'],reference['version'],provider.manifest_id)
-    url=f'{checked.endpoint}/agents/{checked.name}/endpoint/protocols/openai/responses?api-version=v1'
-    async with provider.credential()as credential:
-        token=await credential.get_token('https://ai.azure.com/.default')
-        async with httpx.AsyncClient(timeout=httpx.Timeout(40,connect=10),follow_redirects=False)as client:
-            payload={'input':encode({'readings':[reading],'packet':packet,'focus_player_id':None,'depth':'analyst'}),'store':False,'stream':False,'max_output_tokens':1500,
-                'agent_reference':{'type':'agent_reference',**manifest['agents']['synthesis']}}
-            async with client.stream('POST',url,headers={'Authorization':'Bearer '+token.token,'Content-Type':'application/json'},json=payload)as response:
-                response.raise_for_status();body=bytearray()
-                async for chunk in response.aiter_bytes():
-                    body.extend(chunk)
-                    if len(body)>65536:raise ValueError('Editor response too large')
-            data=json.loads(body)
-            if data.get('status')!='completed':raise ValueError('Editor response incomplete')
-            text=''.join(part.get('text','')for item in data.get('output',[])if item.get('type')=='message'for part in item.get('content',[])if part.get('type')=='output_text')
-            parsed=Selection.model_validate_json(text)
-            return {'decision':parsed.model_dump(),'rejected':parsed.accepted_roles==[]and parsed.selected_role is None,'usage':data.get('usage',{})}
+async def publication_attacks(packet):
+    """No Azure calls: exercise real native selector and product publication gates."""
+    calls=[]
+    async def invalid_selector(role,payload,limit):
+        calls.append(role)
+        if role=='synthesis':raise AssertionError('Invalid selector reached Editor')
+        return Completion(encode({'candidate_id':'invented-source-candidate'}))
+    result=await AnalystRuntime(invalid_selector).run(encode(packet))
+    checked=validate_result(result,packet)
+    assert checked['readings']==[]and checked['summary']is None
+    reading=copy.deepcopy(packet['candidates'][0]['reading'])
+    reading['explanation']='The defensive line dropped and the fullbacks moved narrow.'
+    forged={k:packet[k]for k in ('snapshot_id','match_id','cutoff','through_sequence')}
+    forged.update(status='complete',readings=[reading],summary={k:reading[k]for k in ('headline','explanation','evidence_ids','metric_ids')},usage={'model_calls':2})
+    rejected=False
+    try:validate_result(forged,packet)
+    except ValueError:rejected=True
+    assert rejected,'Altered reading with valid IDs reached publication'
+    return [{'case_id':'fabricated_candidate_id','status':'complete','rejected':True,'cloud_calls':0,'boundary':'native selector'},
+            {'case_id':'unsupported_prose_valid_ids','status':'complete','rejected':True,'cloud_calls':0,'boundary':'product exact-candidate equality'}]
 
 
 async def run_live(args,prepared,raw_dir):
     from azure.identity.aio import AzureCliCredential
     remaining=evaluation_remaining()
-    if min(remaining.values())<32:raise ValueError('Insufficient existing evaluation allowance for conservative32-call reservation; no ceiling raised')
+    if min(remaining.values())<40:raise ValueError('Insufficient existing evaluation allowance for conservative40-call reservation; no ceiling raised')
     private=json.loads(args.private_config.read_text());manifest=json.loads(args.manifest.read_text())
     # Main product provider and exact pinned native version, local CLI identity.
     provider=FoundryAnalyst(private['project_endpoint'],manifest['coordinator']['name'],manifest['coordinator']['version'],manifest['manifest_id'],credential_factory=lambda:AzureCliCredential(process_timeout=10))
     allowance=Allowance(SQLiteStore(ROOT/'var/analyst-local-allowance.sqlite3'))
-    budget=AttemptBudget(ROOT/'var/footie-evaluation-budget.sqlite3',32,hourly_limit=240,daily_limit=600)
+    budget=AttemptBudget(ROOT/'var/footie-evaluation-budget.sqlite3',40,hourly_limit=240,daily_limit=600)
     results=[];adversarial=[];reserved_cents=0
     async def admitted(case_id,calls,operation):
         nonlocal reserved_cents
@@ -207,11 +215,7 @@ async def run_live(args,prepared,raw_dir):
             results.append({k:v for k,v in outcome.items()if k!='result'}|{'execution':outcome.get('result',{}).get('execution'),
                 'reading_count':len(outcome.get('result',{}).get('readings',[])),'roles':[r['role']for r in outcome.get('result',{}).get('readings',[])]})
             print(json.dumps({'case_id':case_id,'status':outcome['status'],'seconds':outcome.get('seconds')}),flush=True)
-        base=prepared[0]['packet']
-        for name,reading in adversarial_inputs(base):
-            outcome=await admitted('adversarial_'+name,1,lambda reading=reading:editor_check(provider,manifest,base,reading))
-            write_private(raw_dir/('adversarial_'+name+'.json'),{'reading':reading,'outcome':outcome})
-            adversarial.append({'case_id':name,'status':outcome['status'],'rejected':outcome.get('result',{}).get('rejected'),'seconds':outcome.get('seconds')})
+        adversarial=await publication_attacks(prepared[2]['packet'])
     finally:budget.close()
     return {'cases':results,'adversarial':adversarial,'evaluation_calls_reserved':budget.used,'admission_cents_reserved':reserved_cents,'manifest_id':manifest['manifest_id']}
 
@@ -238,14 +242,16 @@ def main():
     if not args.run_id.replace('-','').replace('_','').isalnum():parser.error('Use an alphanumeric run ID')
     prepared=prepare();raw_dir=ROOT/'var/analyst-native-benchmark'/args.run_id
     if args.azure and raw_dir.exists():raise ValueError('Run ID already used; preserve prior raw evidence')
-    report={'benchmark':'analyst-native-source-anchored-v1','prepared_at':datetime.now(timezone.utc).isoformat(),'mode':'azure'if args.azure else'offline_preflight',
+    report={'benchmark':'analyst-native-candidate-grounding-v2','prepared_at':datetime.now(timezone.utc).isoformat(),'mode':'azure'if args.azure else'offline_preflight',
         'source_manifest_sha256':sha256((ROOT/'fixtures/personalization/manifest.json').read_bytes()).hexdigest(),
-        'cases_preselected_before_model_results':True,'not_random_or_statistically_representative':True,
-        'maximum_model_calls_reserved':32,'maximum_admission_cents_reserved':80,'existing_evaluation_remaining':evaluation_remaining(),
-        'prepared_cases':[{'case_id':i['case']['id'],'match_id':i['case']['match_id'],'cutoff':i['request'].cutoff.model_dump(),'expected':i['independent_facts'],
+        'cases_preselected_before_this_run':True,'fresh_heldout_case_count':2,'previously_seen_regression_case_count':6,'not_random_or_statistically_representative':True,
+        'maximum_model_calls_reserved':40,'maximum_admission_cents_reserved':80,'existing_evaluation_remaining':evaluation_remaining(),
+        'prepared_cases':[{'case_id':i['case']['id'],'purpose':i['case']['purpose'],'match_id':i['case']['match_id'],'cutoff':i['request'].cutoff.model_dump(),'expected':i['independent_facts'],
             'expectation':i['case']['expectation'],'packet_chars':len(encode(i['packet']))}for i in prepared]}
     if args.azure:report.update(asyncio.run(run_live(args,prepared,raw_dir)))
-    else:report['cases']=[{'case_id':i['case']['id'],'status':'not_run'}for i in prepared]
+    else:
+        report['cases']=[{'case_id':i['case']['id'],'status':'not_run'}for i in prepared]
+        report['adversarial']=asyncio.run(publication_attacks(prepared[2]['packet']))
     report['quality_review']=review_scores(args.review,report['cases'])
     out=ROOT/'docs/verification'/f'analyst-native-benchmark-{args.run_id}.json';out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')

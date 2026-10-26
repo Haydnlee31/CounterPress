@@ -1,5 +1,46 @@
 # Analyst Mode verification
 
+## Candidate-based release validation
+
+The final reviewed architecture uses exact, evidence-bound candidate selection.
+The native director is v8, four specialist agents are v4, and the editor is v5;
+all six endpoints have explicit version selectors. See the
+[native smoke receipt](analyst-native-candidate-smoke-20261026.json) and
+[reviewed benchmark](analyst-native-benchmark-native-acceptance-20261026-v8-reviewed.json).
+
+```sh
+.venv/bin/python -m pytest tests/test_analyst*.py tests/test_editorial_evaluation.py -q
+```
+
+Recorded result: **158 passed, 1 skipped** (the optional SDK environment). The
+isolated native SDK environment separately passed **42 tests**. The semantic
+suite includes twelve independently written counterexamples; the bilingual and
+audience-depth compatibility matrix covers 24 combinations.
+
+The complete frontend run, `cd frontend && npm test`, passed **265 tests across
+39 files**; the production build passed. Isolated browser checks at 1440, 760,
+390 and 360 pixels found no overflow or JavaScript errors. Checks covered player
+focus, recent windows, missing map coverage, single match-wide values, unknown
+pass outcomes, source-clock playback and backward seeking. Evidence-only facts
+are excluded from the statistics controls, and partial citation lists say how
+many supporting plays are currently shown.
+
+The live benchmark returned seven complete supported analyses and one appropriate
+quiet-window abstention, using **17 reported model calls**. Six cases are now
+regressions; two fresh cases were selected before their responses and align with
+the application's source-minute schedule. Two modified-claim attacks were
+rejected by the deterministic publication boundary. The assistant's source-based
+qualitative score was **41/48**, not a human usability result or statistical
+accuracy estimate. Some consequences and counterpoints remain generic, and only
+the documented candidate families are supported.
+
+Both the actual production provider and Container App managed identity passed
+native invocation and session cleanup. The application now skips allowance
+reservation and hosted startup when no supported candidate exists. Existing
+Footie behavior and production limits remain separate.
+
+## Earlier implementation checks
+
 Local verification on 26 October 2026. Native cloud execution and release status
 are recorded separately; local tests do not establish live Foundry readiness.
 
@@ -36,9 +77,15 @@ The independent review found and fixed:
 - Completed native results requiring a second revision check before publication.
 - The editor selecting prose without an independent semantic verification pass.
 
-The final verifier is model-based. Contract tests prove rejection and failure
-handling, not perfect semantic accuracy; live held-out and adversarial checks are
-required before activation.
+The first live benchmark disproved the sufficiency of that model-based verifier:
+it accepted both deliberately false readings. Those results and the source-based
+review remain in [the native benchmark record](analyst-native-benchmark.md).
+The replacement publication boundary permits only exact readings from the
+snapshot's server-built, localized candidate catalog. Native agents rank and
+select those interpretations; neither specialist nor editor may rewrite facts.
+Transport also checks the actual returned agent version, independently of the
+version requested in the body. Candidate rules still require source-based review
+and new held-out checks; citation membership alone is not semantic accuracy.
 
 ## Interface
 
