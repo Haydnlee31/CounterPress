@@ -134,7 +134,7 @@
     "completion_tokens": 69,
     "provider_connectivity_verified": true,
     "exact_proposed_plan_retained": false,
-    "result": "failed_intent_validation; corrected locally and bounded Azure regression passed; replacement publication pending"
+    "result": "failed_intent_validation; corrected code passed local and bounded Azure regression"
   },
   "limits": [
     "No production events sent; production notification delivery not claimed.",
@@ -283,5 +283,18 @@
       "final_focused_goal_contribution_suite": 25,
       "counts_overlap": true
     }
+  },
+  "ci_source_lock_review": {
+    "initial_run": 40267386759,
+    "passed_tests": 1549,
+    "failed_tests": 3,
+    "failure": "reviewed assistant source hashes had changed; offline evaluation guard refused execution",
+    "changed_paths": [
+      "backend/counterpress/assistant/narrative.py",
+      "backend/counterpress/assistant/planner.py",
+      "backend/counterpress/assistant/service.py"
+    ],
+    "replacement_lock_version": "footie-intelligence-controls-v7-goal-contribution",
+    "fixture_and_dependency_hashes_unchanged": true
   }
 }

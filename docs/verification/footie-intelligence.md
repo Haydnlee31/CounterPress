@@ -1339,3 +1339,12 @@ passes/four players/15.71 seconds. A question incorrectly naming Luca as scorer
 returned clarification with no facts in 3.289 seconds. Source fingerprints did
 not change during either request. The isolated evaluation allowance remained
 600 calls per rolling day; production limits were not changed.
+
+The first full PR CI run (`40267386759`) reported 1,549 passed and three failed
+source-lock guard tests. The offline editorial controls lock fingerprints every
+backend module; it refused the three reviewed assistant changes. Its version was
+advanced to `footie-intelligence-controls-v7-goal-contribution`, after asserting
+that only `assistant/service.py`, `assistant/planner.py` and
+`assistant/narrative.py` hashes differed. Fixture, expected-case and dependency
+hashes were unchanged. The guard itself was not weakened. This maintenance of
+offline controls does not rerun or relabel the historical paid editorial pilot.
