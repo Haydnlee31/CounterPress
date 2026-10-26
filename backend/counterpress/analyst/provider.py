@@ -108,12 +108,20 @@ class FoundryAnalyst:
         client_id = os.environ.get('AZURE_OPENAI_MANAGED_IDENTITY_CLIENT_ID') or os.environ.get('AZURE_CLIENT_ID')
         return ManagedIdentityCredential(client_id=client_id) if client_id else AzureCliCredential(process_timeout=10)
 
-    async def analyze(self, snapshot, request):
+    packet_limit = 32000
+
+    def build_packet(self, snapshot):
         from .service import build_dispatch_packet
-        packet = build_dispatch_packet(snapshot)
+        return build_dispatch_packet(snapshot)
+
+    def validate(self, result, packet, snapshot):
+        return validate_result(result, packet)
+
+    async def analyze(self, snapshot, request):
+        packet = self.build_packet(snapshot)
         packet.update(language=request.language, depth=request.depth, focus_player_id=request.focus_player_id)
         raw = json.dumps(packet, ensure_ascii=False, separators=(',', ':'), allow_nan=False)
-        if len(raw) > 24000 or len(raw.encode('utf-8')) > 32000:
+        if len(raw.encode('utf-8')) > self.packet_limit or (self.packet_limit == 32000 and len(raw) > 24000):
             raise ValueError('Analyst packet exceeds native limit')
         session_id = str(uuid4())
         async with self.credential() as credential:
@@ -143,7 +151,7 @@ class FoundryAnalyst:
                     text = ''.join(part.get('text', '') for item in data.get('output', [])
                                    if item.get('type') == 'message' for part in item.get('content', [])
                                    if part.get('type') == 'output_text')
-                    return validate_result(json.loads(text), packet)
+                    return self.validate(json.loads(text), packet, snapshot)
                 finally:
                     # Stop/delete use a known ID even if inference times out.
                     base = f'{self.endpoint}/agents/{self.name}/endpoint/sessions/{session_id}'
@@ -160,3 +168,52 @@ class FoundryAnalyst:
                         # Keep the HTTP client open until bounded cleanup ends.
                         await cleanup_task
                         raise
+
+
+class FoundryDiscussion(FoundryAnalyst):
+    """Pinned native group chat; refuses legacy candidate-agent responses."""
+    packet_limit = 180000
+
+    def build_packet(self, snapshot):
+        from .discussion import packet_for, VERSION
+        return {**packet_for(snapshot), 'protocol': VERSION}
+
+    def validate(self, result, packet, snapshot):
+        from .discussion import Contribution, Verdict, VERSION, check_citations, publish_message, ROLES
+        if result.get('protocol') != VERSION:
+            raise ValueError('Unexpected conversation protocol')
+        for key in ('snapshot_id', 'match_id', 'cutoff', 'through_sequence'):
+            if result.get(key) != packet[key]: raise ValueError('Wrong conversation source')
+        messages = result.get('messages')
+        if not isinstance(messages, list) or len(messages) > 5: raise ValueError('Invalid conversation')
+        seen = set()
+        verified_messages = []
+        for row in messages:
+            role = row.get('role')
+            if role in seen or role not in (*ROLES, 'footie') or row.get('id') != role:
+                raise ValueError('Invalid speaker')
+            row = {**row, 'text': row.get('draft_text')}
+            if role == 'footie':
+                parsed = Verdict(accepted_ids=list(seen), revisions=[], **{k: row[k] for k in ('facts', 'text', 'watch_next', 'metric_ids', 'evidence_ids')})
+            else:
+                parsed = Contribution(**{k: row[k] for k in Contribution.model_fields})
+                if parsed.reply_to and parsed.reply_to not in seen: raise ValueError('Invalid reply')
+            check_citations(parsed, packet)
+            verified_messages.append(publish_message(row, packet))
+            seen.add(role)
+        if result.get('status') not in ('complete', 'partial', 'insufficient_evidence') or (not messages) != (result['status']=='insufficient_evidence'):
+            raise ValueError('Invalid conversation status')
+        usage = result.get('execution', {})
+        if type(usage.get('model_calls')) is not int or not 0 <= usage['model_calls'] <= 5:
+            raise ValueError('Invalid execution receipt')
+        if result['status']=='complete' and (len(messages)!=5 or messages[-1]['role']!='footie'):
+            raise ValueError('Incomplete conversation marked complete')
+        for field in ('input_tokens','output_tokens'):
+            if type(usage.get(field,0)) is not int or not 0<=usage.get(field,0)<=250000:
+                raise ValueError('Invalid usage receipt')
+        ids = {mid for row in messages for mid in row['metric_ids']}
+        names = {p['player_id']: p['name'] for p in snapshot['players']} | {c['club_id']:c['name'] for c in snapshot['clubs']}
+        return {k:result[k] for k in ('snapshot_id','match_id','cutoff','through_sequence','status','messages')} | {
+            'protocol':VERSION,'messages':verified_messages,'readings':[],'summary':None,'evidence':packet['evidence'],
+            'metrics':[{**m,'subject':names.get(m.get('player_id') or m.get('club_id'),'Match')} for m in snapshot['metrics'] if m['id'] in ids],
+            'execution':{**{k:usage.get(k,0) for k in ('model_calls','input_tokens','output_tokens')},'runtime':'foundry_hosted_agent_framework_group_chat'}}

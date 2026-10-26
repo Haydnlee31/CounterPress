@@ -54,6 +54,9 @@ class NativeCompletions:
 
 
 def create_app(runtime: AnalystRuntime | None = None, *, permit: SessionPermit | None = None):
+    protocol = os.environ.get("FOOTIE_ANALYST_PROTOCOL", "candidate-v1")
+    if protocol not in ("candidate-v1", "roundtable-v2"):
+        raise ValueError("unsupported_analyst_protocol")
     from azure.ai.agentserver.responses import ResponsesAgentServerHost, ResponsesServerOptions, TextResponse, InMemoryResponseProvider
     # No automatic HTTP/model-content instrumentation. Native Foundry agent runs
     # remain inspectable; content logging is not needed to record routing/status.
@@ -68,7 +71,12 @@ def create_app(runtime: AnalystRuntime | None = None, *, permit: SessionPermit |
     async def handler(request, context, cancellation_signal):
         raw = await context.get_input_text() or ""
         # Validate before consuming the one-run permit or creating cloud clients.
-        parse_packet(raw)
+        discussion = protocol == "roundtable-v2"
+        if discussion:
+            from .discussion import parse_discussion
+            parse_discussion(raw)
+        else:
+            parse_packet(raw)
         if permit is not None:
             permit.acquire()
         if context.shutdown.is_set() or cancellation_signal.is_set():
@@ -82,7 +90,11 @@ def create_app(runtime: AnalystRuntime | None = None, *, permit: SessionPermit |
             credential = DefaultAzureCredential()
             project = AIProjectClient(endpoint=endpoint, credential=credential)
             state["project"], state["credential"] = project, credential
-            state["runtime"] = AnalystRuntime(NativeCompletions(
+            runtime_type = AnalystRuntime
+            if discussion:
+                from .discussion import NativeDiscussion
+                runtime_type = NativeDiscussion
+            state["runtime"] = runtime_type(NativeCompletions(
                 project, json.loads(os.environ["FOOTIE_SPECIALIST_MANIFEST"])))
         result = await state["runtime"].run(raw, cancellation_signal)
         return TextResponse(context, request, text=json.dumps(result, separators=(",", ":")))

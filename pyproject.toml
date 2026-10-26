@@ -10,7 +10,8 @@ dependencies = [
     "msal>=1.39,<2",
     "uvicorn>=0.34,<1",
     "httpx>=0.28,<1",
-    "agent-framework-core>=1,<2",
+    "agent-framework-core>=1.23,<2",
+    "agent-framework-orchestrations==1.4.0",
     "agent-framework-openai>=1,<2",
     "openai>=3,<4",
     "httpx2>=2.13,<3",
@@ -23,6 +24,7 @@ dependencies = [
     "azure-storage-blob>=12.25,<13",
     "azure-monitor-opentelemetry-exporter>=1.0.0b46,<2",
     "opentelemetry-sdk>=1.39,<2",
+    "tiktoken>=0.12,<1",
 ]
 
 [project.optional-dependencies]

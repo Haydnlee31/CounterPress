@@ -19,15 +19,16 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "backend"))
 from integrations.analyst_foundry.definitions import DIRECTOR_NAME, NAMES, definition, definition_hash
 
 
-def build_plan(model: str, image: str, verifier_model: str = "gpt-5-mini") -> dict:
+def build_plan(model: str, image: str, verifier_model: str = "gpt-5-mini", discussion: bool = False) -> dict:
     return {"coordinator": DIRECTOR_NAME, "specialists": [
-        {"role": role, "name": name, "model": verifier_model if role == "synthesis" else model, "hash": definition_hash(definition(role, verifier_model if role == "synthesis" else model))}
+        {"role": role, "name": name, "model": verifier_model if role == "synthesis" else model, "hash": definition_hash(definition(role, verifier_model if role == "synthesis" else model, discussion=discussion))}
         for role, name in NAMES.items()], "image_pinned": "@sha256:" in image,
         "cpu": "1", "memory": "2Gi", "idle_timeout_seconds": 120,
-        "max_calls_per_run": 5, "specialist_output_tokens": 600, "verifier_output_tokens": 1500, "max_parallel_calls": 2, "max_runs_per_session": 1}
+        "max_calls_per_run": 5, "specialist_output_tokens": 2200 if discussion else 600, "verifier_output_tokens": 4000 if discussion else 1500, "max_parallel_calls": 1 if discussion else 2, "max_runs_per_session": 1}
 
 
 def ensure_version(project, name: str, value: dict):
@@ -53,6 +54,9 @@ def source_bundle() -> bytes:
             info = zipfile.ZipInfo("integrations/analyst_foundry/" + path.name, (2026, 1, 1, 0, 0, 0))
             info.external_attr = (stat.S_IFREG | 0o644) << 16
             archive.writestr(info, path.read_bytes())
+        core_info = zipfile.ZipInfo("integrations/analyst_foundry/discussion_core.py", (2026, 1, 1, 0, 0, 0))
+        core_info.external_attr = (stat.S_IFREG | 0o644) << 16
+        archive.writestr(core_info, (ROOT / "backend/counterpress/analyst/discussion.py").read_bytes())
         info = zipfile.ZipInfo("requirements.txt", (2026, 1, 1, 0, 0, 0))
         info.external_attr = (stat.S_IFREG | 0o644) << 16
         archive.writestr(info, (source / "requirements.txt").read_bytes())
@@ -76,20 +80,21 @@ def pin_versions(project, references: list[dict]) -> None:
             raise ValueError("endpoint_version_pin_failed")
 
 
-def provision(project, model: str, image: str, endpoint: str, *, code: bool = False, verifier_model: str = "gpt-5-mini") -> dict:
+def provision(project, model: str, image: str, endpoint: str, *, code: bool = False, verifier_model: str = "gpt-5-mini", discussion: bool = False) -> dict:
     from azure.ai.projects.models import HostedAgentDefinition, ContainerConfiguration, SessionConfiguration, ProtocolVersionRecord, AgentEndpointProtocol
     if not code and "@sha256:" not in image:
         raise ValueError("coordinator image must be pinned by digest")
     manifest = {}
     bundle_hash = None
     for role, name in NAMES.items():
-        agent = ensure_version(project, name, definition(role, verifier_model if role == "synthesis" else model))
+        agent = ensure_version(project, name, definition(role, verifier_model if role == "synthesis" else model, discussion=discussion))
         manifest[role] = {"name": agent.name, "version": agent.version}
     hosted = HostedAgentDefinition(cpu="1", memory="2Gi",
         protocol_versions=[ProtocolVersionRecord(protocol=AgentEndpointProtocol.RESPONSES, version="2.0.0")],
         session_configuration=SessionConfiguration(idle_timeout_seconds=timedelta(seconds=120)),
         environment_variables={"FOUNDRY_PROJECT_ENDPOINT": endpoint, "FOOTIE_SPECIALIST_MANIFEST": json.dumps(manifest, separators=(",", ":")),
-            "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT": "false"})
+            "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT": "false",
+            "FOOTIE_ANALYST_PROTOCOL": "roundtable-v2" if discussion else "candidate-v1"})
     if code:
         from azure.ai.projects.models import CodeConfiguration
         from azure.core.exceptions import ResourceNotFoundError
@@ -117,21 +122,24 @@ def provision(project, model: str, image: str, endpoint: str, *, code: bool = Fa
     return {"manifest_id": manifest_fingerprint(manifest, coordinator, hosted.as_dict(), bundle_hash),
             "coordinator": coordinator, "agents": manifest, "code_sha256": bundle_hash,
             "models": {role: verifier_model if role == "synthesis" else model for role in NAMES},
-            "limits": build_plan(model, image, verifier_model)}
+            "protocol": "roundtable-v2" if discussion else "candidate-v1",
+            "limits": build_plan(model, image, verifier_model, discussion)}
 
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--discussion", action="store_true", help="Prepare conversational specialist agents instead of candidate selection")
     parser.add_argument("--apply", action="store_true")
-    parser.add_argument("--model", default="gpt-4.1-mini")
+    parser.add_argument("--model", default=None)
     parser.add_argument("--verifier-model", default="gpt-5-mini")
     parser.add_argument("--image", default="")
     parser.add_argument("--manifest", type=Path)
     parser.add_argument("--code", action="store_true", help="Use native ZIP remote build instead of ACR image")
     args = parser.parse_args()
+    args.model = args.model or ("gpt-5-mini" if args.discussion else "gpt-4.1-mini")
     if not args.apply:
-        print(json.dumps(build_plan(args.model, args.image, args.verifier_model), indent=2))
+        print(json.dumps(build_plan(args.model, args.image, args.verifier_model, args.discussion), indent=2))
         return
     endpoint = os.environ.get("FOUNDRY_PROJECT_ENDPOINT", "")
     if not endpoint.startswith("https://") or not args.manifest:
@@ -140,7 +148,7 @@ def main():
     from azure.identity import DefaultAzureCredential
     try:
         with DefaultAzureCredential() as credential, AIProjectClient(endpoint=endpoint, credential=credential) as project:
-            result = provision(project, args.model, args.image, endpoint, code=args.code, verifier_model=args.verifier_model)
+            result = provision(project, args.model, args.image, endpoint, code=args.code, verifier_model=args.verifier_model, discussion=args.discussion)
         args.manifest.parent.mkdir(parents=True, exist_ok=True)
         args.manifest.write_text(json.dumps(result, indent=2) + "\n")
         print("Native Analyst Mode agent versions registered; no model calls or sessions started.")

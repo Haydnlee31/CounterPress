@@ -29,7 +29,15 @@ FOCUS = {
 }
 
 
-def definition(role: str, model: str) -> dict:
+def definition(role: str, model: str, *, discussion: bool = False) -> dict:
+    if discussion:
+        from counterpress.analyst.discussion import BASE, REVIEW, FOCUS as ROOM_FOCUS, Contribution, Verdict, strict_schema
+        return {"kind": "prompt", "model": model, "tools": [],
+            "instructions": REVIEW if role == "synthesis" else BASE + "\n" + ROOM_FOCUS[role],
+            "text": {"format": {"type": "json_schema", "name": "footie_room_" + role,
+                "schema": strict_schema(Verdict if role == "synthesis" else Contribution), "strict": True}},
+            **({"reasoning": {"effort": "medium"}} if model.startswith("gpt-5") else {})}
+
     if role == "synthesis":
         instructions = ("You are Footie's independent evidence verifier and editor. Readings are pre-rendered supported candidate selections, not model-authored prose. Rank usefulness and fit for focus/depth, reject irrelevant or contradictory selections, and never rewrite any reading. The supplied clock is authoritative: verify every temporal phrase against its human-readable period and window labels, and reject premature halftime/fulltime references. Reject incomplete prose or dangling conjunctions. Check every supplied reading "
                         "against the supplied immutable packet before accepting it. Reject unsupported causal claims, "

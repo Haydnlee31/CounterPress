@@ -17,39 +17,36 @@ const snapshot:Snapshot={snapshot_id:'snapshot-one',match_id:'wyscout-2058017',c
 ]}
 beforeEach(()=>{
   localStorage.clear();history.replaceState(null,'','/#analyst')
-  state.value={config:{available:false,mode:'metrics',roles:[],interval_ms:60000},snapshot,analysis:null,pending:false,failed:false,metricsFailed:false,refresh:vi.fn()}
+  state.value={config:{available:false,mode:'metrics',roles:[],interval_ms:60000},snapshot,analysis:null,pending:false,failed:false,metricsFailed:false,retryConfig:vi.fn(),retrySnapshot:vi.fn(),requestDiscussion:vi.fn()}
   vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({match_id:'wyscout-2058017',events:[{}],players:[]}))))
 })
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.restoreAllMocks()})
 
-it('presents metrics-only signals honestly and integrates the full-match replay',async()=>{
+it('shows the shared room and four workspaces without inventing agent commentary',async()=>{
   render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
-  expect(screen.getByRole('heading',{name:'Analyst Mode.'})).toBeTruthy()
-  expect(screen.getByText('MATCH SIGNALS')).toBeTruthy()
-  expect(screen.queryByText('FOOTIE’S MATCH READ')).toBeNull()
-  expect(screen.getAllByText('Getting closer to goal')).toHaveLength(2)
-  expect(screen.getByRole('img',{name:'On-ball activity map, attacking right'})).toBeTruthy()
-  expect(screen.getByText('4')).toBeTruthy()
+  expect(screen.getByRole('heading',{name:'The conversation'})).toBeTruthy()
+  for(const role of ['Player Analyst','Match Analyst','Chance Analyst','Defensive Analyst'])expect(screen.getByRole('heading',{name:role})).toBeTruthy()
+  expect(screen.getByText('Live discussion is not connected in this preview. The statistics below follow the replay.')).toBeTruthy()
+  expect(screen.getByText('Match heatmap')).toBeTruthy()
+  fireEvent.click(screen.getByRole('button',{name:'Explore Chance Analyst statistics'}))
   fireEvent.click(screen.getByText('Other measures'))
   expect(screen.getByText('Shot speed')).toBeTruthy();expect(screen.getByText('Not available')).toBeTruthy()
-  fireEvent.change(screen.getByLabelText('Pitch map'),{target:{value:'shot_map'}})
-  expect(screen.getByRole('img',{name:'Shot locations, attacking right'}).querySelectorAll('circle')).toHaveLength(2)
   expect(document.body.textContent).not.toContain('snapshot-one')
 })
 
-it('shows a native finding, exact source clock, counterpoint and next test',async()=>{
-  state.value.config={available:true,mode:'foundry',roles:[],interval_ms:60000}
-  const reading={role:'chance',headline:'An opening down the right',explanation:'The last two moves reached the box.',alternative:'A short spell rather than sustained control.',watch_next:'Look for the next box entry.',evidence_ids:['e1'],metric_ids:['m1'],confidence:'medium'}
-  state.value.analysis={snapshot_id:'a1',cutoff:{period:1,elapsed_ms:540000},mode:'foundry',status:'partial',readings:[reading],summary:null}
+it('shows actual peer replies, their original source clock and expandable evidence',async()=>{
+  state.value.config.discussion_available=true
+  state.value.rounds=[{snapshot_id:'a1',cutoff:{period:1,elapsed_ms:540000},mode:'discussion',status:'complete',readings:[],summary:null,metrics:snapshot.metrics,evidence:snapshot.evidence,messages:[
+    {id:'control',role:'control',text:'The activity has produced four shots.',reply_to:null,relation:'observation',metric_ids:['m1'],evidence_ids:[]},
+    {id:'chance',role:'chance',text:'That activity includes an effort on target.',reply_to:'control',relation:'builds_on',metric_ids:[],evidence_ids:['e1']},
+  ]}]
   render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
-  expect(screen.getByText('FOOTIE’S MATCH READ')).toBeTruthy()
-  expect(screen.getByText('At 9:00')).toBeTruthy()
-  expect(screen.getByText('Another reading')).toBeTruthy()
-  expect(screen.getByText('Look for the next box entry.')).toBeTruthy()
-  expect(screen.getByText('Some specialist readings are still unavailable.')).toBeTruthy()
-  const detail=screen.getAllByText('Supporting plays')[0];fireEvent.click(detail)
-  expect(screen.getAllByText('Rory Ellis').length).toBeGreaterThan(0)
-  expect(screen.queryByText('99%')).toBeNull()
+  expect(screen.getByRole('log').textContent).toContain('Builds on Match Analyst')
+  expect(screen.getAllByText('9:00').length).toBe(2)
+  fireEvent.click(screen.getAllByText('See evidence')[1])
+  expect(screen.getByText('Shot · on target')).toBeTruthy()
+  fireEvent.click(screen.getByRole('button',{name:'Discuss this spell'}))
+  expect(state.value.requestDiscussion).not.toHaveBeenCalled() // Replay is still at kick-off; no paid empty round.
 })
 
 it('keeps the new match selection in its own route and avoids result spoilers in the picker',async()=>{
@@ -65,15 +62,17 @@ it('keeps the new match selection in its own route and avoids result spoilers in
 it('labels a short early-game window by its actual bounds',async()=>{
   state.value.snapshot={...snapshot,cutoff:{period:1,elapsed_ms:120000},windows:{current:{period:1,start_ms:0,end_ms:120000,boundary:'(start,end]'}},metrics:snapshot.metrics.map(m=>({...m,window:'current'}))}
   render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
+  fireEvent.click(screen.getByRole('button',{name:'Explore Match Analyst statistics'}))
   fireEvent.click(screen.getByRole('button',{name:'Recent play'}))
-  expect(screen.getByText('0:00 – 2:00 · First half')).toBeTruthy()
+  expect(screen.getAllByText('0:00 – 2:00 · First half').length).toBeGreaterThan(0)
   expect(document.body.textContent).not.toContain('Last 5 minutes')
 })
 
 it('does not turn missing player-map coverage into zero actions',async()=>{
   render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
+  fireEvent.click(screen.getByRole('button',{name:'Explore Player Analyst statistics'}))
   fireEvent.change(screen.getByLabelText('Map subject'),{target:{value:'player:eb09'}})
-  expect(screen.getByText('Map unavailable for this view')).toBeTruthy()
+  expect(screen.getAllByText('Map unavailable for this view').length).toBeGreaterThan(0)
   expect(screen.queryByText('No recorded actions yet')).toBeNull()
 })
 
@@ -83,7 +82,7 @@ it('renders a match-wide index once and keeps unknown pass outcomes neutral',asy
     {id:'routes',key:'pass_routes',window:'prefix',role:'control',label:'Pass routes',unit:'locations',basis:'recorded_events',status:'available',club_id:'eastbridge',value:{passes:[{event_id:'p1',start:{x:10,y:20},end:{x:25,y:30},outcome:'unknown'}]}},
   ]}
   render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
-  fireEvent.click(screen.getByRole('button',{name:/Build-up/}))
+  fireEvent.click(screen.getByRole('button',{name:'Explore Match Analyst statistics'}))
   expect(screen.getAllByText('0.42')).toHaveLength(1)
   expect(screen.getByLabelText('Match-wide Threat balance: 0.42').closest('.an-stat-global')).toBeTruthy()
   fireEvent.change(screen.getByLabelText('Pitch map'),{target:{value:'pass_routes'}})
@@ -93,7 +92,7 @@ it('renders a match-wide index once and keeps unknown pass outcomes neutral',asy
 it('shows loading instead of an empty map before the statistics arrive',async()=>{
   state.value.snapshot=null
   render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
-  expect(screen.getByText('Loading match statistics…')).toBeTruthy()
+  expect(screen.getAllByText('Loading match statistics…').length).toBeGreaterThan(0)
   expect(screen.queryByText('No recorded actions yet')).toBeNull()
 })
 
@@ -111,19 +110,13 @@ it('scopes saved player focus to the current roster while retaining analysis lan
 
 it('keeps the selected metric window through a seek refresh without showing stale data',async()=>{
   const {rerender}=render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
+  fireEvent.click(screen.getByRole('button',{name:'Explore Match Analyst statistics'}))
   fireEvent.click(screen.getByRole('button',{name:'Recent play'}))
   state.value.snapshot=null;rerender(<AnalystMode/>)
-  expect(screen.getByText('Loading match statistics…')).toBeTruthy()
+  expect(screen.getAllByText('Loading match statistics…').length).toBeGreaterThan(0)
   state.value.snapshot={...snapshot,cutoff:{period:1,elapsed_ms:0}};rerender(<AnalystMode/>)
   expect(screen.getByRole('button',{name:'Recent play'}).getAttribute('aria-pressed')).toBe('true')
-  expect(screen.getByText('0:00 – 0:00 · First half')).toBeTruthy()
-})
-
-it('identifies a partial supporting-play list for an earlier reading',async()=>{
-  state.value.analysis={snapshot_id:'older',cutoff:{period:1,elapsed_ms:540000},mode:'foundry',status:'complete',readings:[],summary:{headline:'Earlier reading',explanation:'A linked move reached the box.',evidence_ids:['e1','older-play'],metric_ids:['m1']}}
-  render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
-  fireEvent.click(screen.getByText('Supporting plays'))
-  expect(screen.getByText('Showing 1 of 2 supporting plays available in this view.')).toBeTruthy()
+  expect(screen.getAllByText('0:00 – 0:00 · First half').length).toBeGreaterThan(0)
 })
 
 it('keeps evidence-only narrative facts out of metric rows and player ranking choices',async()=>{
@@ -133,6 +126,23 @@ it('keeps evidence-only narrative facts out of metric rows and player ranking ch
   ]}
   render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
   expect(screen.queryByText('One transition duration')).toBeNull()
-  fireEvent.click(screen.getByRole('button',{name:/Player impact/}))
+  fireEvent.click(screen.getByRole('button',{name:'Explore Player Analyst statistics'}))
   expect(screen.queryByText('Player in selected transition')).toBeNull()
+})
+
+it('keeps old discussion timestamped while withholding stale prose from current statistics desks',async()=>{
+  state.value.snapshot={...snapshot,cutoff:{period:1,elapsed_ms:840000}}
+  state.value.rounds=[{snapshot_id:'old',cutoff:{period:1,elapsed_ms:600000},mode:'discussion',status:'complete',readings:[],summary:null,messages:[{id:'chance',role:'chance',text:'An earlier chance finding.',reply_to:null,relation:'observation',metric_ids:['m1'],evidence_ids:[]}]}]
+  const {container}=render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
+  expect(screen.getByRole('log').textContent).toContain('An earlier chance finding.')
+  expect(container.querySelector('.an-desks')?.textContent).not.toContain('An earlier chance finding.')
+  expect(container.querySelector('.an-desks')?.textContent).toContain('Earlier finding from 10:00')
+})
+
+it('moves keyboard focus into statistics and restores it to the opening control',async()=>{
+  const {container}=render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
+  const open=screen.getByRole('button',{name:'Explore Chance Analyst statistics'});open.focus();fireEvent.click(open)
+  expect(document.activeElement).toBe(container.querySelector('.an-expanded-stats'))
+  fireEvent.click(screen.getByRole('button',{name:'Close details ×'}))
+  expect(document.activeElement).toBe(open)
 })

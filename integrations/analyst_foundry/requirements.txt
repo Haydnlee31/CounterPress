@@ -5,3 +5,5 @@ azure-ai-projects==2.9.0
 azure-identity==1.26.0
 openai==3.31.0
 pydantic==2.12.5
+agent-framework-core==1.23.0
+agent-framework-orchestrations==1.4.0

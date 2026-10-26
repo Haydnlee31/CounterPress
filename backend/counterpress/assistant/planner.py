@@ -99,13 +99,17 @@ class AzurePlanner:
         except ValueError:raise ProviderFailure('invalid','invalid_plan') from None
 
 
-async def structured_request(config,transport,prompt,data,schema,name,tokens,timeout):
+async def structured_request(config,transport,prompt,data,schema,name,tokens,timeout,*,reasoning_effort=None,request_guard=None):
         payload={'model':config.deployment,'messages':[{'role':'system','content':prompt},
             {'role':'user','content':json.dumps(data,ensure_ascii=False)}],
             'response_format':{'type':'json_schema','json_schema':{'name':name,'strict':True,'schema':schema}},
             'max_completion_tokens':tokens,'stream':False}
+        if reasoning_effort is not None: payload['reasoning_effort']=reasoning_effort
+        async def guard(request):
+            request_guard(request.content)
         try:
-            async with model_auth(config) as auth, httpx.AsyncClient(transport=transport,timeout=timeout,follow_redirects=False) as client:
+            async with model_auth(config) as auth, httpx.AsyncClient(transport=transport,timeout=timeout,follow_redirects=False,
+                    event_hooks={'request':[guard]} if request_guard else None) as client:
                 async with client.stream('POST',config.url,headers=await auth.headers(),json=payload) as response:
                     if response.status_code!=200:raise ProviderFailure('provider_error','unavailable')
                     raw=bytearray()

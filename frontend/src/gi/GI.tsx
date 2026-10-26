@@ -1,3 +1,4 @@
+import {ImportMoment} from '../highlights/ImportMoment'
 import { currentMatchId, matchDate } from './catalog'
 import {sequenceEvents} from './replay'
 import { PlaySequence } from './PlaySequence'
@@ -29,16 +30,17 @@ function ActionPitch({event,name,shots,onSelect,names}:{event:GIEvent;name:strin
 }
 
 export default function GI() {
-  const [view,setView]=useState<'overview'|'moments'|'watch'>('overview')
+  const [requestedMoment]=useState(()=>new URLSearchParams(window.location.search).get('moment'))
+  const [view,setView]=useState<'overview'|'moments'|'watch'>(()=>new URLSearchParams(window.location.search).get('view')==='watch'?'watch':requestedMoment?'moments':'overview')
   const [guide,setGuide]=useState(false),[autoAdvance,setAutoAdvance]=useState(false),[sequenceFloor,setSequenceFloor]=useState(0)
   const [matchId]=useState(currentMatchId)
   const [saved]=useState(()=>readGIWorkspace(matchId))
   const [preference]=useState(readPreferences)
   const theme=clubs[(preference.club_id??'eastbridge') as keyof typeof clubs]
   const [match,setMatch]=useState<GIMatch|null>(null),[error,setError]=useState(false),[attempt,setAttempt]=useState(0)
-  const [filter,setFilter]=useState<Filter>(saved.filter),[team,setTeam]=useState(saved.team),[player,setPlayer]=useState(saved.player),[period,setPeriod]=useState(saved.period)
-  const [map,setMap]=useState(saved.map)
-  const [selected,setSelected]=useState<string|null>(saved.selected),[limit,setLimit]=useState(40)
+  const [filter,setFilter]=useState<Filter>(requestedMoment?'all':saved.filter),[team,setTeam]=useState(requestedMoment?'':saved.team),[player,setPlayer]=useState(requestedMoment?'':saved.player),[period,setPeriod]=useState(requestedMoment?'':saved.period)
+  const [map,setMap]=useState(requestedMoment?false:saved.map)
+  const [selected,setSelected]=useState<string|null>(requestedMoment??saved.selected),[limit,setLimit]=useState(40)
   useEffect(()=>{const controller=new AbortController();setError(false)
     fetch(`/api/gi/matches/${matchId}`,{signal:controller.signal}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(setMatch).catch(e=>{if(e.name!=='AbortError')setError(true)})
     return ()=>controller.abort()
@@ -79,9 +81,9 @@ export default function GI() {
           <p>{match.teams[0].score===match.teams[1].score?'Full time · All square':`${match.teams[0].score>match.teams[1].score?'Eastbridge':'Northport'} win`} · {goals.length} goals</p>
         </section>
         <div className="gi-view-switch" role="group" aria-label="Match centre view"><button aria-pressed={view==='overview'} onClick={()=>setView('overview')}>Overview</button><button aria-pressed={view==='moments'} onClick={()=>setView('moments')}>Moments</button><button aria-pressed={view==='watch'} onClick={()=>setView('watch')}>Watch full match</button><a className="gi-standings-link" href="#football/standings">Season standings ↗</a><button onClick={()=>setGuide(!guide)} aria-expanded={guide}>How to explore</button></div>
-        {guide&&<aside className="gi-guide" aria-label="Match centre guide"><h2>Your match, at a glance</h2><p>Start with the score and team comparisons. Select a goal below to open its build-up. In Moments, watch the play unfold, or open Filters to follow a player or half.</p><button onClick={()=>{setView('moments');setGuide(false)}}>Take me to the moments →</button><button onClick={()=>setGuide(false)}>Close guide</button></aside>}
+        {guide&&<aside className="gi-guide" aria-label="Match centre guide"><h2>Your match, at a glance</h2><p>Start with the score and team comparisons. Select a goal below to open its build-up. In Moments, watch the play unfold, or open Filters to follow a player or half. Save any moment to Highlights for Footie’s summary, drawings and your own notes.</p><button onClick={()=>{setView('moments');setGuide(false)}}>Take me to the moments →</button><button onClick={()=>setGuide(false)}>Close guide</button></aside>}
         {view==='overview'&&<section className="gi-overview" aria-label="Full match overview"><div className="gi-editorial"><p className="fan-kicker">THE MATCH IN NUMBERS</p><h2>{match.headline}</h2><p>{match.summary}</p><button onClick={()=>setView('moments')}>Explore the key moments ↗</button></div><div className="gi-comparisons"><div className="gi-comparison-clubs"><strong>Eastbridge</strong><strong>Northport</strong></div>{(['Shots','Passes completed','Passes unsuccessful','Shots off target'] as const).map(label=>{const counts=[4418,9598].map(id=>match.events.filter(e=>e.team_id===id&&(label==='Shots'?e.kind==='Shot':label==='Shots off target'?e.kind==='Shot'&&e.outcome==='off_target':e.kind==='Pass'&&e.outcome===(label==='Passes completed'?'complete':'incomplete'))).length);return <div className="gi-comparison" key={label}><div><strong>{counts[0]}</strong><span>{label}</span><strong>{counts[1]}</strong></div><div className="gi-comparison-bar"><i style={{flex:counts[0]||.01}}/><i style={{flex:counts[1]||.01}}/></div></div>})}</div></section>}
-        {view==='watch'&&<section className="gi-watch" aria-label="Full match replay"><header><div><p className="fan-kicker">FULL MATCH REPLAY</p><h2>From kick-off to the final whistle.</h2></div><button onClick={()=>setView('moments')}>Explore individual moments ↗</button></header><PlaySequence fullMatch key={match.match_id} matchId={match.match_id} events={match.events} event={match.events[0]} names={names} players={match.players}/></section>}
+        {view==='watch'&&<section className="gi-watch" aria-label="Full match replay"><header><div><p className="fan-kicker">FULL MATCH REPLAY</p><h2>From kick-off to the final whistle.</h2></div><div className="gi-watch-actions"><button onClick={()=>setView('moments')}>Explore individual moments</button><a className="gi-analyst-button" href={`?match=${encodeURIComponent(matchId)}#analyst`}>Analyst Mode</a></div></header><PlaySequence fullMatch key={match.match_id} matchId={match.match_id} events={match.events} event={match.events[0]} names={names} players={match.players}/></section>}
         <div hidden={view!=='moments'}>
         <details className="gi-filter-disclosure"><summary>Filters · club, player & half</summary>
         <div className="gi-toolbar">
@@ -96,6 +98,7 @@ export default function GI() {
             {current?<>
               <div className="gi-detail-heading"><p className="fan-kicker">{teamName(current.team_id)} <span> / </span> {matchClock(current)}</p><h2>{outcomeText(current)}</h2><p><span className="gi-player-avatar">{(names.get(current.player_id)??'').split(' ').map(n=>n[0]).slice(0,2).join('')}</span>{names.get(current.player_id)}</p></div>
               <>{!map?(view==='moments'&&<PlaySequence matchId={match.match_id} sequenceFloor={sequenceFloor} autoAdvance={autoAdvance} onAutoAdvanceChange={setAutoAdvance} onComplete={advanceSequence} key={current.event_id} events={match.events} event={current} names={names} players={match.players}/>):<ActionPitch event={current} name={names.get(current.player_id)??'Player'} shots={map?scope.filter(e=>e.kind==='Shot'):undefined} onSelect={id=>{setFilter('shots');inspect(id)}} names={names}/>}</>
+              <ImportMoment match={match} event={current}/>
               {(map||!current.start)&&<div className="gi-canvas-caption"><span>{map?'Select a shot to explore the play':current.start?'Follow the highlighted players':'Location unavailable for this action'}</span>{map&&<span className="gi-legend"><i/>Eastbridge <i/>Northport</span>}</div>}
               <div className="gi-scrubber"><time>{matchClock(current)}</time><input aria-label="Match timeline" aria-valuetext={matchClock(current)} type="range" min={0} max={match.events.length-1} value={currentIndex} onChange={e=>jump(match.events[Number(e.target.value)].event_id)}/><span>FT</span></div>
               <div className="gi-step"><button disabled={currentIndex<=0} onClick={()=>jump(match.events[currentIndex-1].event_id)}>← Previous action</button><span>{current.period===1?'FIRST HALF':'SECOND HALF'}</span><button disabled={currentIndex>=match.events.length-1} onClick={()=>jump(match.events[currentIndex+1].event_id)}>Next action →</button></div>

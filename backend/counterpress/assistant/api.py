@@ -36,6 +36,7 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
             else:
                 planner=AzurePlanner(config)
                 narrator=narrator or AzureNarrator(config)
+    summary_config=load_config() if os.environ.get('COUNTERPRESS_ASSISTANT_MODEL')=='azure' else None
     router=APIRouter(prefix='/api/fan/assistant',tags=['Football assistant'])
     from .admission import configured_limits
     hourly_limit,_=configured_limits()
@@ -88,6 +89,55 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
                 return {'match_id':match_id,'event_id':event_id,'event_revision':revision,'cutoff':cutoff}
         except (OSError,sqlite3.Error,ValueError,HistoryStorageError):
             raise HTTPException(503,'The match records are temporarily unavailable. Please try again.') from None
+
+    @router.post('/summary')
+    async def highlight_summary(body:AskRequest,request:Request):
+        from .highlight_summary import write_verified_summary,enrich_evidence,SummaryRejected
+        from counterpress.personalization.metrics import select_events
+        origin=request.headers.get('origin');base=str(request.base_url).rstrip('/')
+        if origin and origin not in {base,base.replace('http://','https://',1)}:
+            raise HTTPException(403,'Open the summary from Footie.')
+        if not summary_config:raise HTTPException(503,'AI summaries are temporarily unavailable.')
+        if not body.match_id or not body.event_id or body.event_revision is None or not body.playback:
+            raise HTTPException(422,'Select a specific moment first.')
+        now=time.monotonic()
+        while calls and now-calls[0]>=60:calls.popleft()
+        if len(calls)>=30:raise HTTPException(429,'Please try again shortly.')
+        calls.append(now)
+        def packet():
+            s=service()
+            with s.store.snapshot():
+                if not s.store.row(body.match_id)['featured']:raise HTTPException(404,'Moment unavailable.')
+                visible=select_events(s.store.events(body.match_id),(body.playback.period,body.playback.elapsed_ms))
+                event=next((e for e in visible if e.event_id==body.event_id),None)
+                if not event or event.revision!=body.event_revision or (body.playback.period,body.playback.elapsed_ms)!=(event.available_period,event.available_ms):raise HTTPException(409,'The moment has changed. Reopen it.')
+                rows=[e for e in visible if e.period==event.period and event.elapsed_ms-20000<e.elapsed_ms<=event.elapsed_ms][-30:]
+                # End at the selected action, including same-clock occurrence order.
+                rows=[e for e in rows if (e.elapsed_ms,e.occurrence_order)<=(event.elapsed_ms,event.occurrence_order)]
+                live=s.career.live(body.match_id,event.available_period,event.available_ms)
+                score=dict(live['score'])
+                for later in visible:
+                    if later.goal_for and (later.period,later.elapsed_ms,later.occurrence_order)>(event.period,event.elapsed_ms,event.occurrence_order):score[later.goal_for]-=1
+                people={pid for e in rows for pid in (e.player_id,e.recipient_id,e.goalkeeper_id,e.opponent_id) if pid}
+                return {'context':{'selected_event_id':event.event_id,'score_after':score,
+                    'scope':'Recorded actions in the 20 seconds ending at the selected moment; not the whole match.',
+                    'players':{pid:s.store.players[pid].name for pid in people},
+                    'clubs':{c:s.store.clubs[c].name for c in live['score']},'pitch':'105 by 68 metres, acting team attacks positive x'},
+                    'events':[e.model_dump(mode='json') for e in rows]}
+        try:
+            evidence=await run_in_threadpool(packet)
+            async with asyncio.timeout(75):
+                async with gate:
+                    try:result=await write_verified_summary(summary_config,enrich_evidence(evidence),reserve_model_call)
+                    except SummaryRejected as rejected:
+                        result=await write_verified_summary(summary_config,enrich_evidence(evidence),reserve_model_call,feedback={'draft':rejected.draft,'issues':rejected.issues})
+            if fingerprint(await run_in_threadpool(packet))!=fingerprint(evidence):
+                raise HTTPException(409,'The moment changed while its summary was being written.')
+            return {**result,'request_id':uuid4().hex,'source_fingerprint':fingerprint(evidence)}
+        except ProviderFailure as exc:
+            raise HTTPException(429 if exc.reason=='summary_limit' else 503,'The summary could not finish. Please try again.') from None
+        except (ValueError,KeyError,TimeoutError,OSError,sqlite3.Error,HistoryStorageError):
+            raise HTTPException(503,'The summary could not be verified. Please try again.') from None
 
     @router.post('/ask')
     async def ask(body:AskRequest,request:Request):

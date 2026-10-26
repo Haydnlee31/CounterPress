@@ -1,0 +1,205 @@
+{
+  "provenance": "Real gpt-5-mini-2025-08-07 response from cumulative call four. Rejected, not accepted. Synthetic match only; no credentials or headers.",
+  "response": {
+    "facts": [
+      {
+        "metric_id": "prefix:np10:passes",
+        "compare_to": null
+      }
+    ],
+    "text": "[[fact:0]] Isaac Lane's passing volume has been modest in the match so far; his role looks limited to short build support, which needs more progressive entries to impact the scoreline.",
+    "reply_to": "control",
+    "relation": "qualifies",
+    "metric_ids": [
+      "prefix:np10:passes"
+    ],
+    "evidence_ids": []
+  },
+  "packet": {
+    "snapshot_id": "a3bf2bb9accc9e699ea28b9eb26110701fd9e781c5efecb71cf6b3e5174a5f7a",
+    "match_id": "synthetic-32fe41c5d304ce68d7d9",
+    "cutoff": {
+      "period": 1,
+      "elapsed_ms": 1440000
+    },
+    "windows": {
+      "prefix": {
+        "period": null,
+        "start_ms": 0,
+        "end_ms": 1440000,
+        "boundary": "through_cutoff"
+      },
+      "current": {
+        "period": 1,
+        "start_ms": 1140000,
+        "end_ms": 1440000,
+        "boundary": "(start,end]"
+      },
+      "previous": {
+        "period": 1,
+        "start_ms": 840000,
+        "end_ms": 1140000,
+        "boundary": "(start,end]"
+      }
+    },
+    "clubs": [
+      {
+        "club_id": "eastbridge",
+        "name": "Eastbridge"
+      },
+      {
+        "club_id": "northport",
+        "name": "Northport"
+      }
+    ],
+    "players": [
+      {
+        "player_id": "eb01",
+        "name": "Theo Ashford",
+        "role": "GK",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb02",
+        "name": "Finn Brooks",
+        "role": "DF",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb03",
+        "name": "Oliver Hayes",
+        "role": "DF",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb04",
+        "name": "Alex Rowan",
+        "role": "MF",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb05",
+        "name": "Elliot Reed",
+        "role": "DF",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb06",
+        "name": "Jamie Vale",
+        "role": "MF",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb07",
+        "name": "Lucas Hart",
+        "role": "FW",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb08",
+        "name": "Kai Mercer",
+        "role": "MF",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb09",
+        "name": "Rory Ellis",
+        "role": "FW",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb10",
+        "name": "Milo West",
+        "role": "DF",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "eb11",
+        "name": "Owen Cole",
+        "role": "FW",
+        "club_id": "eastbridge"
+      },
+      {
+        "player_id": "np01",
+        "name": "Arthur Wells",
+        "role": "GK",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np02",
+        "name": "Ben Fletcher",
+        "role": "DF",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np03",
+        "name": "Callum Stone",
+        "role": "DF",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np04",
+        "name": "Noah Arden",
+        "role": "MF",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np05",
+        "name": "Dylan Frost",
+        "role": "DF",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np06",
+        "name": "Sam Linden",
+        "role": "MF",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np07",
+        "name": "Evan Shore",
+        "role": "FW",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np08",
+        "name": "Leo Marlow",
+        "role": "MF",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np09",
+        "name": "Henry Blake",
+        "role": "FW",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np10",
+        "name": "Isaac Lane",
+        "role": "DF",
+        "club_id": "northport"
+      },
+      {
+        "player_id": "np11",
+        "name": "Jude Rivers",
+        "role": "FW",
+        "club_id": "northport"
+      }
+    ],
+    "metrics": [
+      {
+        "id": "prefix:np10:passes",
+        "key": "passes",
+        "window": "prefix",
+        "club_id": "northport",
+        "player_id": "np10",
+        "unit": "count",
+        "basis": "recorded_events",
+        "label": "Passes",
+        "value": 7,
+        "subject": "Isaac Lane"
+      }
+    ],
+    "evidence": []
+  }
+}

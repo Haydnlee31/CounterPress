@@ -138,7 +138,7 @@ it('recovers configuration after an explicit retry without paying while its avai
   await settle();expect(result.current.configFailed).toBe(true)
   expect(requests.some(r=>r.url.endsWith('/analysis'))).toBe(false)
   expect(result.current.snapshot).not.toBeNull()
-  fail=false;act(()=>result.current.refresh());await settle();await settle()
+  fail=false;act(()=>result.current.retryConfig());await settle();await settle()
   expect(result.current.configFailed).toBe(false)
   expect(requests.filter(r=>r.url.endsWith('/analysis'))).toHaveLength(1)
 })
@@ -151,4 +151,85 @@ it('invalidates and submits the selected language, depth and player focus as one
   await settle()
   const last=requests.filter(r=>r.url.endsWith('/analysis')).at(-1)!
   expect(last.body).toEqual({cutoff:{period:1,elapsed_ms:120000},...changed})
+})
+
+it('runs one manual discussion while paused and clears it on rewind without paying again',async()=>{
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init?:RequestInit)=>{
+    if(url==='/api/analyst/config')return new Response(JSON.stringify({...config,mode:'metrics',available:false,discussion_available:true}))
+    const body=JSON.parse(String(init?.body));requests.push({url,body,signal:init!.signal as AbortSignal})
+    return new Response(JSON.stringify(url.endsWith('/snapshot')?snapshot(body):{...analysis(body),messages:[{id:'control',role:'control',text:'Activity is increasing.',reply_to:null,relation:'observation',metric_ids:[],evidence_ids:[]}]}))
+  }))
+  const {result,rerender}=renderHook(({cutoff})=>useAnalyst('match-one',cutoff,false,prefs),{initialProps:{cutoff:{period:1 as const,elapsed_ms:120000}}})
+  await settle();expect(requests.filter(r=>r.url.endsWith('/discussion'))).toHaveLength(0)
+  act(()=>result.current.requestDiscussion());await settle();await settle()
+  expect(requests.filter(r=>r.url.endsWith('/discussion'))).toHaveLength(1)
+  expect(result.current.rounds).toHaveLength(1)
+  rerender({cutoff:{period:1,elapsed_ms:60000}});await settle(5000)
+  expect(result.current.rounds).toHaveLength(0)
+  expect(requests.filter(r=>r.url.endsWith('/discussion'))).toHaveLength(1)
+})
+
+it('keeps statistics and configuration retries separate from paid discussion intent',async()=>{
+  const ordinary=vi.mocked(fetch).getMockImplementation()!
+  vi.mocked(fetch).mockImplementation(async(url,init)=>String(url)==='/api/analyst/config'?new Response(JSON.stringify({...config,discussion_available:true})):ordinary(url,init))
+  const {result}=renderHook(()=>useAnalyst('match-one',{period:1,elapsed_ms:120000},false,prefs))
+  await settle()
+  act(()=>result.current.retrySnapshot());await settle()
+  act(()=>result.current.retryConfig());await settle(5000)
+  expect(requests.filter(r=>!r.url.endsWith('/snapshot'))).toHaveLength(0)
+  expect(requests.filter(r=>r.url.endsWith('/snapshot'))).toHaveLength(2)
+})
+
+it('cancels a paused manual round on an explicit forward seek and ignores late results',async()=>{
+  let resolve!:(r:Response)=>void,oldBody:any,signal:AbortSignal|undefined
+  const ordinary=vi.mocked(fetch).getMockImplementation()!
+  vi.mocked(fetch).mockImplementation(async(url,init)=>{
+    if(String(url)==='/api/analyst/config')return new Response(JSON.stringify({...config,discussion_available:true}))
+    if(String(url).endsWith('/discussion')){oldBody=JSON.parse(String(init?.body));signal=init?.signal as AbortSignal;return new Promise(r=>{resolve=r})}
+    return ordinary(url,init)
+  })
+  const {result,rerender}=renderHook(({ms,seek})=>useAnalyst('match-one',{period:1,elapsed_ms:ms},false,prefs,seek),{initialProps:{ms:120000,seek:0}})
+  await settle();act(()=>result.current.requestDiscussion());await settle()
+  expect(signal?.aborted).toBe(false)
+  rerender({ms:240000,seek:1});await settle()
+  expect(signal?.aborted).toBe(true)
+  await act(async()=>resolve(new Response(JSON.stringify({...analysis(oldBody),messages:[{id:'control',role:'control',text:'Old scope',reply_to:null,relation:'observation',metric_ids:[],evidence_ids:[]}]}))))
+  expect(result.current.rounds).toHaveLength(0);expect(result.current.pending).toBe(false)
+})
+
+it('releases the pending UI on pause and sends a cancellation for the abandoned viewing session',async()=>{
+  const ordinary=vi.mocked(fetch).getMockImplementation()!,cancelled:string[]=[]
+  vi.mocked(fetch).mockImplementation(async(url,init)=>{
+    if(String(url)==='/api/analyst/config')return new Response(JSON.stringify({...config,cancellation_available:true}))
+    if(String(url).endsWith('/cancel')){cancelled.push(String(url));return new Response('{}')}
+    if(String(url).endsWith('/analysis'))return new Response(JSON.stringify(analysis(JSON.parse(String(init?.body)),'pending')))
+    return ordinary(url,init)
+  })
+  const {result,rerender}=renderHook(({playing})=>useAnalyst('match-one',{period:1,elapsed_ms:120000},playing,prefs),{initialProps:{playing:true}})
+  await settle();await settle();expect(result.current.pending).toBe(true)
+  rerender({playing:false});await settle()
+  expect(result.current.pending).toBe(false);expect(cancelled).toHaveLength(1)
+})
+
+it('recovers from a stalled request without leaving discussion pending forever',async()=>{
+  const ordinary=vi.mocked(fetch).getMockImplementation()!
+  vi.mocked(fetch).mockImplementation(async(url,init)=>{
+    if(String(url).endsWith('/analysis'))return new Promise((_,reject)=>init?.signal?.addEventListener('abort',()=>reject(new DOMException('Aborted','AbortError'))))
+    return ordinary(url,init)
+  })
+  const {result}=renderHook(()=>useAnalyst('match-one',{period:1,elapsed_ms:120000},true,prefs))
+  await settle();await settle();expect(result.current.pending).toBe(true)
+  await settle(16000)
+  expect(result.current.pending).toBe(false);expect(result.current.failed).toBe(true)
+})
+
+it('rejects malformed or future discussion evidence before it reaches the conversation',async()=>{
+  const ordinary=vi.mocked(fetch).getMockImplementation()!
+  vi.mocked(fetch).mockImplementation(async(url,init)=>{
+    if(String(url).endsWith('/analysis'))return new Response(JSON.stringify({...analysis(JSON.parse(String(init?.body))),evidence:[{id:'future',event_id:'future',kind:'pass',outcome:'complete',revision:1,period:1,elapsed_ms:180000}]}))
+    return ordinary(url,init)
+  })
+  const {result}=renderHook(()=>useAnalyst('match-one',{period:1,elapsed_ms:120000},true,prefs))
+  await settle();await settle()
+  expect(result.current.analysis).toBeNull();expect(result.current.failed).toBe(true)
 })

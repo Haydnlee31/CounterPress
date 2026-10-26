@@ -5,7 +5,7 @@ import {FootieMascot} from './FootieMascot'
 import './ask-footie.css'
 const Footie=lazy(()=>import('./Footie'))
 
-export function AskFootie({context,onOpen,variant='default',label='Ask Footie'}:{context:FootieContext;onOpen?:()=>void;variant?:'default'|'pitch';label?:string}){
+export function AskFootie({context,onOpen,variant='default',label='Ask Footie',drawer=false}:{context:FootieContext;onOpen?:()=>void;variant?:'default'|'pitch';label?:string;drawer?:boolean}){
   const [frozen,setFrozen]=useState<FootieContext|null>(null)
   const [opening,setOpening]=useState(false),[error,setError]=useState(false)
   const abort=useRef<AbortController|null>(null)
@@ -26,7 +26,7 @@ export function AskFootie({context,onOpen,variant='default',label='Ask Footie'}:
   }
   return <><button type="button" className={variant==='pitch'?'ask-footie-pitch':'ask-footie'} aria-haspopup="dialog" disabled={opening} onClick={()=>void open()}>
     {variant==='pitch'?<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6 4V6a2 2 0 0 1 2-2Z"/><path d="M7 9h10M7 13h6"/></svg>:<FootieMascot size={32}/>} {opening?'Opening Footie…':label} {variant==='default'&&<span aria-hidden="true">↗</span>}
-  </button>{error&&<small role="alert">Couldn’t open this moment. Try Ask Footie again.</small>}{frozen&&createPortal(<FootieDialog context={frozen} compact={variant==='pitch'} close={()=>setFrozen(null)}/>,document.body)}</>
+  </button>{error&&<small role="alert">Couldn’t open this moment. Try Ask Footie again.</small>}{frozen&&createPortal(<FootieDialog context={frozen} compact={drawer||variant==='pitch'} close={()=>setFrozen(null)}/>,document.body)}</>
 }
 
 function FootieDialog({context,close,compact}:{context:FootieContext;close:()=>void;compact:boolean}){

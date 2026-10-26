@@ -1,3 +1,4 @@
+import {PreloadedSummary} from '../highlights/PreloadedSummary'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Event } from '../types'
 import { replayClock } from '../matchday/replayGallery'
@@ -10,7 +11,7 @@ import '../matchday/matchday.css'
 import './explore.css'
 
 /** Both modes share one mounted pitch, audio track and selection. */
-export function HighlightExperience({events,storyId,language='en',breakdown=false,onPlayhead}:{events:Event[];storyId:string;language?:string;breakdown?:boolean;onPlayhead?:(head:{index:number;resolved:boolean})=>void}) {
+export function HighlightExperience({events,storyId,language='en',breakdown=false,onPlayhead,summaryScore}:{events:Event[];storyId:string;summaryScore?:Record<string,number>;language?:string;breakdown?:boolean;onPlayhead?:(head:{index:number;resolved:boolean})=>void}) {
   const story=replayGallery[storyId]
   const zh=language==='zh-Hans', t=(en:string,cn:string)=>zh?cn:en
   const [view,setView]=useState<'build'|'players'|'compare'>('build')
@@ -67,6 +68,7 @@ export function HighlightExperience({events,storyId,language='en',breakdown=fals
           <div className="explore-field" id="explore-pitch" tabIndex={-1} aria-label={t('Selected play','所选回放')}>
             <div className="explore-overlay" hidden={!breakdown}><span>{view==='players' ? t('Selected player · passing routes','所选球员 · 传球路线') : t('Selected phase · passing routes','所选阶段 · 传球路线')}</span><label><input type="checkbox" checked={routes} onChange={e=>setRoutes(e.target.checked)}/>{t('Show routes','显示路线')}</label></div>
             <MatchPitch events={events} language={language} compact={breakdown} companion fromStart assistantMatchId={story?.matchId} onPlayhead={updateHead} seekTo={seek} onPlayerSelect={choosePlayer} selectedPlayer={player} routes={breakdown && routes ? records : []}/>
+            <PreloadedSummary storyId={storyId} events={events} score={summaryScore} language={language}/>
             <section hidden={!breakdown} className="explore-timeline" aria-label={t('Highlight timeline','集锦时间线')}><h2>{t('Every step of the move','进攻的每一步')}</h2><ol ref={timelineRef}>{events.map((event,index)=><li key={`${event.event_id}:${event.revision}`}><button aria-current={index===head.index?'step':undefined} onClick={()=>seekEvent(index)} aria-label={`${replayClock(event)}: ${actionText(event,zh)}`}><time>{replayClock(event)}</time><span className={`explore-event-dot ${event.action.kind==='shot'?'is-shot':''}`}>{index+1}</span><strong>{actionLabel(event,zh)}</strong><span>{playerName(event.actor.player_id)}</span></button></li>)}</ol></section>
           </div>
           <aside hidden={!breakdown} id="explore-insights" tabIndex={-1} className="explore-insights" aria-label={t('Highlight insights','集锦解读')}>

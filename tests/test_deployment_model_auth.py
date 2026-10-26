@@ -153,3 +153,53 @@ def test_assistant_activation_rejects_missing_declared_secret_even_in_managed_id
     app=deploy.model_authentication_settings(fixture(),'managed_identity')
     app['properties']['configuration']['secrets']=[{'name':'editorial-endpoint'},{'name':'editorial-deployment'}]
     with pytest.raises(deploy.DeploymentError):deploy.assistant_settings(app,'enable')
+
+
+@pytest.mark.parametrize('authentication', ['api_key', 'managed_identity'])
+def test_azure_discussion_activation_preserves_authentication_and_all_other_settings(authentication):
+    original = deploy.model_authentication_settings(fixture(), authentication)
+    original['properties']['template']['containers'][0]['env'].extend([
+        {'name': 'COUNTERPRESS_ANALYST_MODE', 'value': 'foundry'},
+        {'name': 'COUNTERPRESS_ANALYST_MANIFEST_ID', 'value': 'a' * 64},
+    ])
+    before = copy.deepcopy(original)
+    enabled = deploy.analyst_settings(original, 'azure_discussion')
+    changed = {'COUNTERPRESS_ANALYST_MODE', 'COUNTERPRESS_ANALYST_DISCUSSION'}
+    assert [e for e in entries(enabled) if e['name'] not in changed] == [e for e in entries(before) if e['name'] not in changed]
+    assert environment(enabled)['COUNTERPRESS_ANALYST_DISCUSSION']['value'] == 'azure'
+    assert environment(enabled)['COUNTERPRESS_ANALYST_MODE']['value'] == 'off'
+    assert enabled['properties']['configuration'] == before['properties']['configuration']
+    assert enabled['identity'] == before['identity']
+    assert enabled['properties']['template']['scale'] == before['properties']['template']['scale']
+    assert original == before
+    deploy.validate_app(enabled)
+    disabled = deploy.analyst_settings(enabled, 'disable')
+    assert environment(disabled)['COUNTERPRESS_ANALYST_DISCUSSION']['value'] == 'off'
+    assert [e for e in entries(disabled) if e['name'] not in changed] == [e for e in entries(before) if e['name'] not in changed]
+    assert deploy.analyst_settings(enabled, 'preserve') == enabled
+
+
+@pytest.mark.parametrize('issue', ['sqlite', 'missing-auth', 'inline-key', 'missing-secret', 'wrong-mi-identity'])
+def test_azure_discussion_rejects_unsafe_activation(issue):
+    target = fixture()
+    env = environment(target)
+    if issue == 'sqlite': env['COUNTERPRESS_STORAGE']['value'] = 'sqlite'
+    elif issue == 'missing-auth':
+        entries(target)[:] = [e for e in entries(target) if not e['name'].startswith('AZURE_OPENAI')]
+    elif issue == 'inline-key': env['AZURE_OPENAI_API_KEY'].update(value='never-log-test-value')
+    elif issue == 'missing-secret': target['properties']['configuration']['secrets'] = []
+    else:
+        target = deploy.model_authentication_settings(target, 'managed_identity')
+        environment(target)['AZURE_OPENAI_MANAGED_IDENTITY_CLIENT_ID']['value'] = '33333333-3333-4333-8333-333333333333'
+    with pytest.raises(deploy.DeploymentError):
+        deploy.analyst_settings(target, 'azure_discussion')
+
+
+def test_existing_azure_discussion_requires_auth_even_when_other_paid_features_off():
+    target = fixture()
+    entries(target)[:] = [e for e in entries(target) if not e['name'].startswith('AZURE_OPENAI')]
+    environment(target)['COUNTERPRESS_EDITORIAL']['value'] = 'off'
+    environment(target)['COUNTERPRESS_ASSISTANT_MODEL']['value'] = 'off'
+    entries(target).append({'name': 'COUNTERPRESS_ANALYST_DISCUSSION', 'value': 'azure'})
+    with pytest.raises(AssertionError, match='Invalid model authentication'):
+        deploy.validate_app(target)

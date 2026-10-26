@@ -22,11 +22,11 @@ on:
         type: choice
         options: [preserve, enable, disable]
       analyst_mode:
-        description: 'Native Foundry Analyst; enable only after pinned cloud execution and permission checks'
+        description: 'Analyst: azure_discussion reuses existing model auth; enable requires verified native Foundry pins'
         required: true
         default: preserve
         type: choice
-        options: [preserve, enable, disable]
+        options: [preserve, enable, azure_discussion, disable]
       assistant_workflow:
         description: 'Footie workflow; agent requires completed live validation and shared Cosmos admission'
         required: true

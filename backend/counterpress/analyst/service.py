@@ -154,7 +154,7 @@ def build_snapshot(career, match_id: str, request: AnalystRequest) -> dict:
     triggers=_triggers(scopes,rows,fixture,request)
     result={'match_id':match_id,'cutoff':request.cutoff.model_dump(),'through_sequence':through,
         'language':request.language,'depth':request.depth,'focus_player_id':request.focus_player_id,
-        'clubs':clubs,'score':score,'players':players,'candidates':candidates,'period_lengths_ms':{str(i+1):v for i,v in enumerate(fixture.period_lengths_ms)},'metrics':rows,'evidence':evidence,'signals':signals,
+        'momentum':momentum_series(capped,fixture,request),'clubs':clubs,'score':score,'players':players,'candidates':candidates,'period_lengths_ms':{str(i+1):v for i,v in enumerate(fixture.period_lengths_ms)},'metrics':rows,'evidence':evidence,'signals':signals,
         'windows':windows,'methods':dict(METHODS),'triggers':triggers,
         'coverage':{'visible_events':len(events),'evidence_events':len(evidence),'tracking':'unavailable','source_kind':fixture.source_kind},'metric_version':VERSION}
     result['snapshot_id']=_hash({'version':VERSION,'request':request.model_dump()|{'through_sequence':through},'fixture':fixture.model_dump(mode='json'),'events':[e.model_dump(mode='json') for e in events],'through_sequence':through})
@@ -242,3 +242,15 @@ def build_dispatch_packet(snapshot:dict) -> dict:
     raw=json.dumps(result,ensure_ascii=False,separators=(',',':'),allow_nan=False)
     if len(raw)>24000 or len(raw.encode())>32000:raise ValueError('Analyst dispatch packet exceeds bounded context')
     return result
+
+
+def momentum_series(events, fixture, request):
+    """Causal minute samples; five-minute windows never cross a half."""
+    points=[]
+    for period in range(1, request.cutoff.period+1):
+        end=request.cutoff.elapsed_ms if period==request.cutoff.period else fixture.period_lengths_ms[period-1]
+        for ms in range(60000,end+1,60000):
+            selected=[e for e in select_events(events,(period,ms)) if e.period==period and max(0,ms-300000)<e.elapsed_ms<=ms and (e.available_period,e.available_ms)<=(period,ms)]
+            a=threat([e for e in selected if e.club_id==fixture.home_id]);b=threat([e for e in selected if e.club_id==fixture.away_id])
+            points.append({'period':period,'elapsed_ms':ms,'value':round((a-b)/(a+b+1),6)})
+    return points

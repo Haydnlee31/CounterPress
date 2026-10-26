@@ -28,5 +28,10 @@ assert not any(name.startswith("AZURE_") for name in os.environ)
 for path in ("/app/.env", "/app/.git", "/app/backend", "/app/uv.lock", "/app/static/.env"):
     assert not Path(path).exists(), path
 assert Path("/data/counterpress.sqlite3").is_file()
+from unittest.mock import patch
+from counterpress.analyst.discussion import guard_azure_request
+with patch("requests.get", side_effect=AssertionError("Tokenizer attempted a runtime download")):
+    guard_azure_request(b"{}")
+print("PASS: Analyst tokenizer works in read-only runtime without downloads or model calls")
 print("PASS: non-root runtime, writable ephemeral database, no Azure environment or source credentials")
 '

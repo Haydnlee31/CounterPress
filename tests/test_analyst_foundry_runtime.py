@@ -355,3 +355,11 @@ def test_chinese_digits_are_checked_without_whitespace_before_number():
     item['explanation'] = '这段时间完成了9次射门。'
     with pytest.raises(ValueError,match='unsupported_prose'):
         validate_reading(Reading.model_validate(item),value,'chance')
+
+
+@pytest.mark.parametrize('protocol',['roundtable-v1','roundtable-v3',''])
+def test_obsolete_or_unknown_host_protocol_is_rejected_before_sdk_or_clients(monkeypatch,protocol):
+    from integrations.analyst_foundry.server import create_app
+    monkeypatch.setenv('FOOTIE_ANALYST_PROTOCOL',protocol)
+    with pytest.raises(ValueError,match='unsupported_analyst_protocol'):
+        create_app()

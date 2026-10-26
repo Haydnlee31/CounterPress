@@ -59,3 +59,28 @@ it('emits completed source clocks, not render frames or future revision availabi
  fireEvent.change(screen.getByLabelText('Full match progress'),{target:{value:'0'}})
  expect(changed).toHaveBeenLastCalledWith({cutoff:{period:1,elapsed_ms:0},playing:false})
 })
+
+it('pauses for red-pen drawing, shows marks only at their saved frame and hides them during play',()=>{
+ const strokes=[{at:.5,points:[{x:20,y:30},{x:40,y:35}]}],change=vi.fn()
+ const {container}=render(<PlaySequence events={[first]} event={first} players={players} names={names} annotations={{strokes,change}}/>)
+ fireEvent.click(screen.getByRole('button',{name:/Red pen/}))
+ expect(screen.getByRole('button',{name:'Resume'})).toBeTruthy()
+ expect(screen.getByLabelText('Draw on the paused pitch')).toBeTruthy()
+ expect(container.querySelectorAll('[data-pitch-ink] polyline')).toHaveLength(0)
+ fireEvent.change(screen.getByLabelText('Annotated frame'),{target:{value:'0.5'}})
+ expect(container.querySelectorAll('[data-pitch-ink] polyline')).toHaveLength(1)
+ fireEvent.click(screen.getByRole('button',{name:'Resume'}))
+ expect(screen.queryByLabelText('Draw on the paused pitch')).toBeNull()
+ expect(container.querySelectorAll('[data-pitch-ink] polyline')).toHaveLength(0)
+ fireEvent.click(screen.getByRole('button',{name:'Undo last stroke'}))
+ expect(change).toHaveBeenCalledWith([])
+})
+
+it('seeks evidence to its exact resolved event and revision without starting playback',()=>{
+ const changed=vi.fn(),seek=vi.fn()
+ const {container}=render(<PlaySequence events={[first,second]} event={first} players={players} names={names} fullMatch hideObservation onPlaybackChange={changed} onSeek={seek} seekTo={{eventId:'b',revision:1,requestId:1}}/>)
+ expect(container.querySelector('[data-evidence-event="b"]')).toBeTruthy()
+ expect(changed).toHaveBeenLastCalledWith({cutoff:{period:2,elapsed_ms:1000},playing:false})
+ expect(seek).toHaveBeenCalledTimes(1)
+ expect(screen.getByText('1 – 1')).toBeTruthy()
+})
