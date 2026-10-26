@@ -1071,3 +1071,57 @@ single backend warning is the existing experimental agent-framework evaluator
 notice. Full local outputs are retained under `var/phase4-*`. Staged whitespace
 and credential-pattern checks passed; unrelated `reports/` and `research_notes/`
 were excluded. These results apply to local code, not a newly deployed release.
+
+### Isolated Azure verification tooling — 26 October 2026
+
+PR 62's first increment passed GitHub CI 40258999104 (backend, frontend,
+container smoke, templates and career audit). The subsequent local increment
+adds a separate, inference-free app factory and guarded test infrastructure;
+[the runbook](../phase4-verification.md) describes the exact isolation and cleanup
+procedure. Provisioning and hosted evidence are not implied by these local results.
+
+Only the new `api/phase4.py` and server-side streaming destination configuration
+changed the frozen backend source set. The reviewed lock is now
+`footie-intelligence-controls-v6-isolated-stream-verification`; the preceding lock
+is retained locally. Questions, expected answers and source fixtures did not change.
+Production deployment rejects isolated PubSub/Blob destinations, including ambiguous
+or secret-reference overrides. Both publishing and receive-only negotiation bind
+to the same server-selected hub. A dedicated app factory exposes career/card reads,
+revision negotiation and numeric diagnostic counters, with no assistant, Studio,
+editorial or voice routes. Static serving is limited to compiled entry/assets.
+
+Independent infrastructure review found and corrected existing-resource adoption,
+missing partial-deployment recovery receipts, and cleanup racing an active ARM
+deployment. Image/tag, template, private receipt, identity ownership and production
+fingerprints are checked. The GitHub workflow only builds/publishes using existing
+registry permissions; its identity was not granted new deployment privileges.
+The hosted reader binds its origin to the control-plane proof and never sends
+an event automatically. The checkpoint helper only reads partition/checkpoint
+metadata, with a 30-second bound; it never claims ownership or writes checkpoints.
+
+Observed local verification:
+
+```text
+.venv/bin/python -m pytest -q
+1502 passed, 1 warning in 321.51s (0:05:21)
+
+.venv/bin/python -m pytest -q tests/test_phase4_guard.py tests/test_phase4_hosted.py tests/test_phase4_checkpoint.py
+65 passed in 40.49s
+
+.venv/bin/python -m pytest -q tests/test_editorial_evaluation.py tests/test_phase4_app.py tests/test_pubsub_scope.py
+77 passed, 1 warning in 5.78s
+```
+
+The final focused run covers the origin binding and checkpoint additions made
+while the full suite was running. The warning is the existing experimental
+agent-framework evaluator notice. Bicep compilation passed. No model calls were
+made. The first actual read-only Azure preflight passed the production guard but
+stopped on ARM's `RoleAssignmentNotFound` response for an absent test assignment;
+this requires narrow missing-resource classification, never treating arbitrary
+permission/network errors as absence. It created no resources.
+
+The read-only preflight subsequently passed all twelve exact absence checks.
+Observed service-specific `EntityNotFound` and `ContainerNotFound` responses were
+also added to the strict top-level missing-code classifier. Conflicting wrapper
+codes, permission failures and message substrings remain errors. Final guard
+regression: `37 passed in 0.03s`. No Azure resources were created by this preflight.

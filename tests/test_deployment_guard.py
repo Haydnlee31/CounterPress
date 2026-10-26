@@ -351,3 +351,46 @@ def test_career_bridge_enabled_configuration_is_revalidated_on_later_releases():
     app=career_bridge_app()
     app['properties']['template']['containers'][0]['env'].append({'name':'COUNTERPRESS_CAREER_STREAMING','value':'unexpected'})
     with pytest.raises(AssertionError):deploy.validate_app(app)
+
+
+def test_production_stream_scopes_accept_absent_or_explicit_defaults_without_changes():
+    defaults = {
+        'COUNTERPRESS_PUBSUB_HUB': 'counterpress',
+        'COUNTERPRESS_CHECKPOINT_CONTAINER': 'eventhub-checkpoints',
+        'COUNTERPRESS_QUARANTINE_CONTAINER': 'rejected-deliveries',
+    }
+    for explicit in (False, True):
+        app = career_bridge_app()
+        if explicit:
+            app['properties']['template']['containers'][0]['env'].extend(
+                {'name': name, 'value': value} for name, value in defaults.items())
+        original = copy.deepcopy(app)
+        deploy.validate_app(app)
+        deploy.validate_career_streaming_prerequisites(app)
+        assert app == original
+
+
+def test_production_stream_scopes_reject_verifier_or_ambiguous_overrides_even_when_off():
+    import pytest
+    defaults = {
+        'COUNTERPRESS_PUBSUB_HUB': ('counterpress', 'counterpress_phase4'),
+        'COUNTERPRESS_CHECKPOINT_CONTAINER': ('eventhub-checkpoints', 'eventhub-checkpoints-phase4'),
+        'COUNTERPRESS_QUARANTINE_CONTAINER': ('rejected-deliveries', 'rejected-deliveries-phase4'),
+    }
+    for name, (default, isolated) in defaults.items():
+        for overrides in (
+            [{'name': name, 'value': isolated}],
+            [{'name': name, 'value': ''}],
+            [{'name': name, 'value': None}],
+            [{'name': name, 'secretRef': 'unreviewed'}],
+            [{'name': name, 'value': default, 'secretRef': 'unreviewed'}],
+            [{'name': name, 'value': isolated}, {'name': name, 'value': default}],
+            [{'name': name, 'value': default}, {'name': name, 'value': default}],
+        ):
+            for bridge in ('off', 'on'):
+                app = career_bridge_app()
+                app['properties']['template']['containers'][0]['env'].extend([
+                    {'name': 'COUNTERPRESS_CAREER_STREAMING', 'value': bridge}, *overrides])
+                for validate in (deploy.validate_app, deploy.validate_career_streaming_prerequisites):
+                    with pytest.raises(deploy.DeploymentError, match='reviewed defaults'):
+                        validate(app)

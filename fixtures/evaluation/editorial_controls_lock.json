@@ -1,5 +1,5 @@
 {
-  "version": "footie-intelligence-controls-v5-live-highlight-observations",
+  "version": "footie-intelligence-controls-v6-isolated-stream-verification",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -9,6 +9,7 @@
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
     "backend/counterpress/api/main.py": "228e0fb746e00807ce07ccda43bfde7cf41370e1a1c1401884dc600262da3bae",
+    "backend/counterpress/api/phase4.py": "20bcb6446fbdf0e6c94e5ebd011cea0689cbbdb636d3bd9bc222fdad8278eeac",
     "backend/counterpress/api/snapshots.py": "7660f6430475f783e9faeb37983f5ccde28368e30135a3952f94f2bfa40eed6e",
     "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
     "backend/counterpress/assistant/admission.py": "7361bff7e95785e9cb313194121dafb838106a8262b81589e821d510a8d1198d",
@@ -98,7 +99,7 @@
     "backend/counterpress/replay.py": "9447cdf28587a6c46159f008a3f6f43c1d1b2747590c0f3fcb4112d6a44dd603",
     "backend/counterpress/storage.py": "ed26f1f0042475f467560e9d0a293d529b0a1d988ccc8d041a67a686bd79f68f",
     "backend/counterpress/streaming/__init__.py": "1b98fac600496555bf5a05dd8403e885464f1257ab08a4924fef264323790239",
-    "backend/counterpress/streaming/azure.py": "a1716b06880efa391c198e46dfecdbf9d5beea0c366ae77af6178427d155c0eb",
+    "backend/counterpress/streaming/azure.py": "a9ecf846f7d22f405b37b2d95fd939101c7c34d96bbeb875a87f2c7fed46acbe",
     "backend/counterpress/streaming/check.py": "1b00cdf302c2bda81f8087de52904924602ad42f4485d9ffcf7313b01e741400",
     "backend/counterpress/streaming/consumer.py": "f09c4ecf42a6463312fd9083962048569061b50148a694853f5557f6eda30a64",
     "backend/counterpress/streaming/contracts.py": "957b48770545beb3641a1186c2a38cacebcca2074edeef5d613105423547aca2",

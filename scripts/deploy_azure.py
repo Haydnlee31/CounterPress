@@ -230,6 +230,21 @@ def assistant_allowance_settings(app, mode):
     return result
 
 
+def validate_production_stream_scopes(entries):
+    """The production release path must never adopt verifier destinations."""
+    defaults = {
+        'COUNTERPRESS_PUBSUB_HUB': 'counterpress',
+        'COUNTERPRESS_CHECKPOINT_CONTAINER': 'eventhub-checkpoints',
+        'COUNTERPRESS_QUARANTINE_CONTAINER': 'rejected-deliveries',
+    }
+    for name, expected in defaults.items():
+        matching = [entry for entry in entries if entry.get('name') == name]
+        if (len(matching) > 1 or any(
+                entry.get('value') != expected or 'secretRef' in entry
+                for entry in matching)):
+            raise DeploymentError('Production streaming destinations must retain reviewed defaults')
+
+
 def validate_career_streaming_prerequisites(app):
     """Validate existing wiring only; never create identities, stores or credentials."""
     try:
@@ -238,6 +253,7 @@ def validate_career_streaming_prerequisites(app):
         if len(containers) != 1:
             raise ValueError
         entries = containers[0].get('env', [])
+        validate_production_stream_scopes(entries)
         env = {entry['name']: entry.get('value') for entry in entries}
         if len(env) != len(entries):
             raise ValueError
@@ -299,6 +315,7 @@ def career_streaming_settings(app, mode):
 
 def validate_app(app):
     p=app['properties'];container=p['template']['containers'][0]
+    validate_production_stream_scopes(container.get('env', []))
     env={v['name']:v.get('value') for v in container.get('env',[])}
     assert env.get('COUNTERPRESS_STORAGE')=='cosmos'
     assert env.get('COUNTERPRESS_STREAMING')=='azure'

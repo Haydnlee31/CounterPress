@@ -24,6 +24,20 @@ def endpoint(name: str, suffix: str) -> str:
         raise ValueError('Invalid streaming endpoint')
     return value.rstrip('/')
 
+def pubsub_hub() -> str:
+    # Server configuration only. This conservative Azure-valid subset avoids
+    # path separators and keeps publishing and reader tokens on one SDK client.
+    value = os.environ.get('COUNTERPRESS_PUBSUB_HUB', 'counterpress')
+    if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,127}', value):
+        raise ValueError('Invalid streaming hub name')
+    return value
+
+def blob_container(setting: str, default: str) -> str:
+    value = os.environ.get(setting, default)
+    if not re.fullmatch(r'[a-z0-9][a-z0-9-]{1,61}[a-z0-9]', value) or '--' in value:
+        raise ValueError('Invalid streaming container name')
+    return value
+
 class Publisher:
     def __init__(self, client):
         self.client = client
@@ -69,13 +83,16 @@ class StreamingRuntime:
             raise ValueError('Invalid Event Hubs namespace')
         blob = endpoint('COUNTERPRESS_CHECKPOINT_ENDPOINT', '.blob.core.windows.net')
         pubsub = endpoint('COUNTERPRESS_PUBSUB_ENDPOINT', '.webpubsub.azure.com')
+        hub = pubsub_hub()
+        checkpoint_container = blob_container('COUNTERPRESS_CHECKPOINT_CONTAINER', 'eventhub-checkpoints')
+        quarantine_container = blob_container('COUNTERPRESS_QUARANTINE_CONTAINER', 'rejected-deliveries')
         credential = await self.stack.enter_async_context(ManagedIdentityCredential(
             client_id=required('COUNTERPRESS_STREAM_CLIENT_ID')))
         client = await self.stack.enter_async_context(WebPubSubServiceClient(pubsub,
-            hub='counterpress', credential=credential, retry_total=2, logging_enable=False))
+            hub=hub, credential=credential, retry_total=2, logging_enable=False))
         self.publisher = Publisher(client)
         quarantine = await self.stack.enter_async_context(ContainerClient(blob,
-            container_name='rejected-deliveries', credential=credential, retry_total=2))
+            container_name=quarantine_container, credential=credential, retry_total=2))
         async def reject(partition, sequence, body, digest):
             from azure.core.exceptions import ResourceExistsError
             try:
@@ -86,7 +103,7 @@ class StreamingRuntime:
                 pass  # Stable offset identity, already durably quarantined.
         processor = DeliveryProcessor(self.service, self.publisher, reject, self.telemetry, self.career_service)
         self.checkpoints = BlobCheckpointStore(blob_account_url=blob,
-            container_name='eventhub-checkpoints', credential=credential)
+            container_name=checkpoint_container, credential=credential)
         self.consumer = await self.stack.enter_async_context(EventHubConsumerClient(
             fully_qualified_namespace=ns, eventhub_name=required('COUNTERPRESS_EVENTHUB_NAME'),
             consumer_group='$Default', credential=credential, checkpoint_store=self.checkpoints,

@@ -167,10 +167,10 @@ exists; never leave the old animation presented as corrected evidence.
 
 Next hosted verification design (reviewed, not provisioned): a temporary
 `counterpress-phase4` app, `histories-phase4` Cosmos container,
-`deliveries-phase4` Event Hub and `counterpress-phase4` Web PubSub hub, reusing
+`deliveries-phase4` Event Hub and `counterpress_phase4` Web PubSub hub, reusing
 existing service tiers. Keep the production guard exact; introduce a separate
-guard that rejects mixed production/test settings. The PubSub hub currently needs
-a server-side configuration extension. Verify distinct checkpoint/quarantine
+guard that rejects mixed production/test settings. The server-side hub/container configuration and isolated runtime are now prepared;
+see [the isolated verification runbook](phase4-verification.md). Verify distinct checkpoint/quarantine
 prefixes and scoped identity access before sending. Use the same byte-identical
 fixture snapshot and genuine dataset digest with a separate journal/index; never
 rewrite checksums to manufacture a new dataset. Disable inference in this test app.
