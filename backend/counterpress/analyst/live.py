@@ -154,6 +154,12 @@ def check_comment(comment, packet, history, role, *, numeric=True):
     if not numeric:return
     if re.search(r'\b[me]\d+\b',comment.text):raise ValueError('reference_in_prose')
     if any(mids[i]['key']=='xg_geometry' for i in comment.metric_ids) and not re.search(r'estimat|heuristic|估|粗略',comment.text,re.I):raise ValueError('unqualified_estimate')
+    # Aggregate counts do not identify a causal mechanism or an individual's
+    # all-round performance. These are observed false-positive editorial cases.
+    if re.search(r'\b(recoveries|turnovers|duels|pass completion)\b[^.!?;]*\b(restricted|prevented|forced|caused|ensured)\b',comment.text,re.I):
+        raise ValueError('aggregate_causal_claim')
+    if re.search(r'\b(error[‐‑–-]?free|no attacking output|no influence|no impact)\b',comment.text,re.I):
+        raise ValueError('unsupported_performance_absolute')
     # Numeric membership is an extra check, not a substitute for Footie's semantic review.
     allowed=set()
     for metric_id in comment.metric_ids:

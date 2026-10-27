@@ -179,3 +179,15 @@ def test_fast_replay_does_not_skip_focus_actions_between_coalesced_turns():
  s=snap([event(1,450000),event(2,599999,player_id='a1',club_id='away')],focus_player_id='h1')
  history=[{'role':'players','cutoff':{'period':1,'elapsed_ms':300000}},{'role':'control'}]
  assert choose_role(s,history)=='players'
+
+
+@pytest.mark.parametrize('text', [
+ 'Five recoveries have restricted Northport to only one pass into the box.',
+ 'His pass completion forced the opposition back.',
+ 'Hayes has been error-free with three completed passes.',
+ 'Hayes provides no attacking output so far.',
+])
+def test_observed_editor_false_positives_cannot_publish(text):
+ p=live_packet(source(),'control')
+ with pytest.raises(ValueError,match='aggregate_causal_claim|unsupported_performance_absolute'):
+  check_comment(Comment(**comment(text=text,evidence_ids=['e1:r1'])),p,[],'control')
