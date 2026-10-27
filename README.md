@@ -1,260 +1,208 @@
 <div align="center">
 
-# CounterPress
+# Footie (CounterPress)
 
 [![CI](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml/badge.svg)](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml)
-![Python 3.13](https://img.shields.io/badge/python-3.13-blue?style=flat-square&logo=python&logoColor=white)
-![Node 24](https://img.shields.io/badge/node-24-green?style=flat-square&logo=node.js&logoColor=white)
-![FastAPI 0.115+](https://img.shields.io/badge/FastAPI-0.115+-teal?style=flat-square&logo=fastapi)
-![React 18](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react)
-![Azure Container Apps](https://img.shields.io/badge/Azure-Container_Apps-0078D4?style=flat-square&logo=microsoftazure)
-![License MIT](https://img.shields.io/badge/license-MIT-orange?style=flat-square)
+![Python 3.13](https://img.shields.io/badge/python-3.13-blue?logo=python&logoColor=white)
+![React 19](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Azure](https://img.shields.io/badge/Microsoft-Azure-0078D4)
 
-<br>
+**Your club. Your moments. Your understanding of the game.**
 
-***Synthetic football intelligence -- deterministic match replays with evidence-backed analytical insights.***
+Football intelligence for fans, analysts and coaches: follow your players, replay the action, hear specialist perspectives and keep the moments that matter.
 
-<br>
+[Open Footie](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/) · [Watch the demo](https://www.youtube.com/watch?v=vqpPXBcn0R0) · [Quick start](#quick-start) · [Architecture](#architecture)
 
-[Live Demo](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/) | [Documentation](#documentation) | [Quick Start](#quick-start) | [Architecture](#architecture)
+[![Footie Analyst Mode: four specialist desks around a replay, with an evidence-linked conversation below](docs/screenshots/footie-analyst-mode.jpg)](https://www.youtube.com/watch?v=vqpPXBcn0R0)
 
-<br>
-
-<img src="docs/screenshots/matchday-desktop.png" alt="CounterPress Matchday view" width="820">
+*Watch the two-minute walkthrough on YouTube, or explore the app without signing in.*
 
 </div>
 
----
+## Start with the game
 
-## What is CounterPress?
+Footie connects a match replay, a developing analyst conversation and a personalised football record. The same play can be a fan's favourite goal, a player's contribution to a move, or a coaching point to revisit on the pitch.
 
-**CounterPress turns raw football events into an interactive, inspectable replay experience where every single claim traces back to exact event records, timestamps, field coordinates, and revision IDs.** There are no hallucinated narratives, no ungrounded AI prose, and no hidden assumptions. The platform covers the full lifecycle of football intelligence -- from event ingestion and deterministic metric computation, through multi-workspace visual analysis, all the way to deep-linked evidence inspection.
+The main navigation has four workspaces: **Match Centre**, **Highlights**, **Clubhouse** and **Footie**. **Analyst Mode** opens from Match Centre's full-match view.
 
-Coaches see actionable pattern breakdowns. Analysts see verifiable evidence chains. Fans see clear, cited stories. Editorial teams see presenter-ready overlays. Everyone sees the same ground truth.
+### Match Centre — find the moment
 
-The platform ships with 44 featured players, 4 clubs, 840 historical fixtures, and 4 full featured matches -- all queryable, all traceable, all deterministic.
+Start with the match overview, browse moments using the action filter, or watch the full-match replay. Player portraits, hover cards, shot trajectories and playback controls help you follow the action. Save a moment to Highlights when you want to return to it.
 
-> "If you cannot point to the exact event record that supports a claim, the claim does not appear on screen."
->
-> -- The CounterPress design principle
+![Match Centre moment replay with player portraits, playback controls and an action-filter dropdown](docs/screenshots/footie-match-centre.jpg)
 
----
+### Analyst Mode — four perspectives, one conversation
 
-## Live Demo
+Watch the match alongside four specialists:
 
-<div align="center">
+| Analyst | What they follow |
+|---|---|
+| **Player Analyst** | Individual involvement, passing, goals and assists, with a selectable player focus and activity map. |
+| **Match Analyst** | The broader balance of play, progression, passing patterns and momentum. |
+| **Chance Analyst** | Shot creation, shooting outcomes and the passages that lead to opportunities. |
+| **Defensive Analyst** | Duels, recoveries and how a team responds when possession changes. |
 
-<br>
+As the replay advances, a turn manager gives relevant specialists new, linked passages of play. They can build on or qualify a colleague's earlier finding. Footie reviews proposed commentary against the current evidence before publication; quiet spells can pass without a forced comment. The latest contribution stays visible, with earlier discussion and supporting actions available to inspect.
 
-**No sign-in. No API key. No Azure account. Just open the link.**
+At full time, an automatic **match report** brings together each team's strengths, weaknesses and practical coaching ideas. Pitch-zone and shot visuals help connect the interpretation to the recorded action.
 
-### [counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/)
+![Full-time match report with Footie's verdict, team statistics and coaching analysis](docs/screenshots/footie-match-report.jpg)
 
-<br>
+### Highlights — keep it, replay it, draw on it
 
-<img src="docs/screenshots/azure-hosted-recovery-en.png" alt="CounterPress replay with evidence panel" width="780">
+Save a moment from Match Centre into your own collection. Replay the sequence, read **Footie's Summary**, add coaching notes and draw red-pen annotations on the pitch. Preloaded highlights provide ready-to-explore examples, while Breakdown lets you inspect the build-up more closely.
 
-<br><br>
+Collections, drawings and notes are saved in your browser.
 
-</div>
+![Saved highlight with red-pen coaching annotations showing possible player movement](docs/screenshots/footie-highlight-annotations.jpg)
 
----
+### Clubhouse — make it yours
 
-## Philosophy -- Bounded AI
+Explore **44 featured players across four clubs**. Follow favourites, compare players, inspect career and season statistics, and browse match histories. Player profiles include event-location heatmaps and role-relevant metrics; club profiles and standings add the team perspective. Your follows shape the recommendations you see.
 
-> CounterPress treats AI as a selector, not a generator. Azure OpenAI chooses from pre-computed candidates and plans structured queries. It never fabricates facts. Every model call is bounded by design: $0.10 per run, $30 lifetime cap, 120 runs per hour -- enforced in durable shared admission, not just client-side limits.
+![Clubhouse player directory with portraits, player search and club filters](docs/screenshots/footie-clubhouse-players.jpg)
 
-The system works through a strict separation of concerns:
+| Player insight | Club discovery |
+|---|---|
+| ![Player activity heatmap and statistical comparisons](docs/screenshots/footie-player-statistics.jpg) | ![Clubhouse club cards for Eastbridge, Northport, Southbank and Redhaven](docs/screenshots/footie-clubhouse-clubs.jpg) |
 
-```
-Raw Events --> Deterministic Metrics --> Pre-computed Candidates --> AI Selection --> Cited Display
-     |                |                         |                        |              |
-  Append-only    Python-computed         Evidence-linked         Structured only    Traceable
-  with revisions   no model calls       never model-generated   query planning     to source
-```
+### Footie — ask about the records
 
-Corrections append new revisions rather than overwriting. Any historical state can be reconstructed. The synthetic generator is seeded and deterministic -- Brier scores of 0.114 (pass completion) and 0.095 (shot conversion) calibrated on 2017/18 English league data (CC BY 4.0).
+Ask questions about a player, club or match, compare performances, and inspect the figures behind an answer. The assistant can delegate match and career questions to specialists using validated data tools. Contextual **Ask Footie** controls connect questions to player profiles and replay moments.
 
----
+English and Simplified Chinese are supported in the experience, with shared preferences across the main workspaces. Translation coverage is still being completed: some controls and preloaded highlight summaries remain English, and Analyst Mode's language selection does not yet persist on refresh.
 
-## Features
+## How the intelligence works
 
-### Matchday -- The Interactive Pitch
+Footie combines computed football metrics with model-authored interpretation. It is not limited to selecting prewritten sentences.
 
-The default workspace. A full 22-player animated pitch with ball movement, play/pause controls, and configurable speed (0.5x, 1x, 1.5x). Click any player marker to inspect their name, position, and current involvement. The "Catch me up" button generates cited segment stories from the active time window. Team preferences, language selection, and explanation depth are saved on-device with no sign-in required. On mobile, the pitch renders in portrait orientation with reduced-motion fallback for accessibility.
+1. **Read the available events.** Stable match/event IDs, revisions and availability times define what is known at the current replay position.
+2. **Compute the facts.** Python derives statistics and links recorded actions into passages of play. The model is not responsible for inventing or calculating the underlying totals.
+3. **Ask a relevant specialist.** The live manager supplies a role-specific evidence packet and earlier approved discussion, so commentary can connect actions and explain their significance.
+4. **Review before publishing.** Independent model review and deterministic checks assess factual support, references, timing and repetition. Unsupported drafts are withheld.
+5. **Let the viewer inspect it.** Published findings retain their source time and evidence links. Full-time reports consider the wider match record.
 
-### Analyst Mode -- Four Specialist Agents
-
-Four domain-specific analysts -- Chances, Build-up, Transitions, and Player Impact -- each select insights from pre-generated evidence candidates. This is not free-form generation: the agents operate within a bounded execution framework with native Foundry execution paths. Statistics are sampled every 15 seconds during playback, with full analysis requests at 1-minute intervals. The spending cap of $0.10 per run is enforced server-side.
-
-### Footie -- The Grounded Multi-Agent Assistant
-
-A conversational Q&A system where the Footie Orchestrator delegates to a Match Analyst and a Career Analyst. Each specialist executes validated Python queries against a consistent football-record snapshot. Answers are pre-calculated facts, not model-generated prose. At most two model calls per question. Contextual dialogs surface on player profiles, replays, and highlights -- always grounded in the same deterministic data layer.
-
-### Highlight Breakdown and Exploration
-
-Three authored highlight replays with build-up phase inspection, player involvement tracking, phase-by-phase comparisons, and timeline breakdowns. Every phase links back to the events that composed it. Bilingual support in English and Simplified Chinese.
-
-### Real-Time Streaming
-
-Azure Event Hubs ingestion with Blob Storage checkpoints feeds revision notices through Azure Web PubSub to browser subscribers in real time. Duplicate delivery is prevented at the protocol level, with browser-side reconciliation on reconnect ensuring no missed updates and no phantom duplicates.
-
-<div align="center">
-<img src="docs/screenshots/streaming-live.png" alt="CounterPress streaming architecture in action" width="780">
-</div>
-
-### Studio -- Editorial Tools
-
-Opt-in editorial review and presenter tooling behind Entra/OIDC authentication. Presenter cues, lower-third previews, and verified HTML downloads -- all backed by the same evidence layer, with Cosmos DB and SQLite quotas enforced per session.
-
-### Clubhouse -- Fan Personalization
-
-Device-only personalization with zero sign-in friction. Favorite clubs (4 available), favorite players (12 featured per club), primary club and focus player selection. Player and club profiles with career totals, season statistics, activity maps, and evidence links. A ranked highlights home feed adapts to fan preferences, and 2-to-4 player comparisons render side-by-side with shared axes.
-
----
-
-## Frontend Workspaces
-
-| Route | Purpose |
-|---------------|-----------------------------------------------------|
-| `#matchday`   | Interactive 22-player pitch, highlights, catch-me-up |
-| `#analyst`    | Full-match reading with 4 specialist agent insights   |
-| `#explore`    | Highlight breakdown with build-up phases              |
-| `#gi`         | Full-match event reader, shot map, pitch canvas       |
-| `#assistant`  | Footie multi-agent Q&A                                |
-| `#studio`     | Editorial review and presenter tools                  |
-| `#football`   | Clubhouse -- device-only fan personalization           |
-
----
+These checks reduce unsupported claims; they do not make model interpretation infallible. Seeking, changing matches or receiving corrections invalidates stale results rather than carrying future or outdated findings into the current view.
 
 ## Architecture
 
-<div align="center">
-<img src="docs/screenshots/architecture.png" alt="CounterPress system architecture" width="680">
-</div>
+```mermaid
+flowchart TD
+    Events["Synthetic events and source revisions"] --> Hubs["Azure Event Hubs"]
+    Hubs --> Ingest["FastAPI ingestion and validation"]
+    Ingest --> Cosmos["Azure Cosmos DB: revision history"]
+    Ingest --> Blob["Azure Blob Storage: checkpoints"]
+    Ingest --> PubSub["Azure Web PubSub: revision notices"]
+    Library["Curated replays and calibrated career records"] --> API
+    Cosmos --> API["FastAPI: football data and evidence tools"]
+    API --> Manager["Analyst turn manager and conversation memory"]
+    Manager --> Specialists["Player · Match · Chance · Defensive"]
+    Specialists --> Models["Azure OpenAI: draft and review"]
+    Models --> Review["Footie factual review and publication checks"]
+    Review --> UI["React: Match Centre, Highlights, Clubhouse and Footie"]
+    API --> Assistant["Footie assistant: Microsoft Agent Framework"]
+    Assistant --> Models
+    PubSub --> UI
+    API --> Report["Full-time report and highlight summaries"]
+    Report --> Models
+    Runtime["Azure Container Apps: application runtime"] -. hosts .-> API
+    Runtime -. hosts .-> Manager
+    Runtime -. hosts .-> Assistant
+    Manager -. traces .-> Monitor["OpenTelemetry, Azure Monitor and Foundry-linked observability"]
+    Assistant -. traces .-> Monitor
+```
 
----
+**Two complementary paths:** Event Hubs and Web PubSub handle incoming revisions; the curated match library drives the replay experience. Accelerated playback reveals recorded events at its replay clock—it is not a live video feed.
 
-## Tech Stack
+The current live analyst conversation uses an application-managed turn scheduler in Azure Container Apps. The general Footie assistant uses Microsoft Agent Framework for specialist coordination. Separate native Foundry agent integrations also exist; the live scheduler should not be confused with that execution path.
 
-| Layer                  | Technology                                              |
-|------------------------|---------------------------------------------------------|
-| Frontend               | React 18, TypeScript, Vite                              |
-| Backend                | FastAPI 0.115+, Pydantic 2.10+, Python 3.13            |
-| Local storage          | SQLite                                                  |
-| Cloud storage          | Azure Cosmos DB (serverless)                            |
-| AI orchestration       | Microsoft Agent Framework Core 1.23+, Azure OpenAI     |
-| Streaming              | Azure Event Hubs, Azure Web PubSub                     |
-| Containerisation       | Docker (digest-pinned, read-only FS)                    |
-| Infrastructure         | Azure Container Apps, Bicep                             |
-| CI/CD                  | GitHub Actions (Entra OIDC), uv 0.11.29, Node.js 24   |
-| Observability          | OpenTelemetry + Azure Monitor                           |
-| Testing                | pytest, Vitest                                          |
+| Layer | Implementation |
+|---|---|
+| Interface | React 19, TypeScript, Vite |
+| API and data contracts | FastAPI, Pydantic, Python |
+| Local and cloud persistence | SQLite; Azure Cosmos DB for hosted history and shared state |
+| AI | Azure OpenAI; Microsoft Agent Framework assistant coordination |
+| Streaming | Azure Event Hubs, Blob checkpoints, Azure Web PubSub |
+| Hosting and delivery | Azure Container Apps, Container Registry, Bicep, GitHub Actions with Entra OIDC |
+| Observability | OpenTelemetry, Azure Monitor and Foundry-linked tracing |
+| Verification | pytest, Vitest, model evaluations and replay acceptance checks |
 
----
+## Data and scope
 
-## Quick Start
+Featured clubs and players are fictional. The career dataset contains **840 historical fixtures**; player histories include matches beyond the curated replay library. Synthetic statistics are calibrated against licensed football event data, with role-specific validation rather than arbitrary totals.
 
-**Prerequisites:** Python 3.13 (via `.python-version`), [uv](https://docs.astral.sh/uv/getting-started/installation/), Node.js 24+
+The pitch is **105 × 68 metres**, with normalized attacking direction for analysis. Comparison windows exclude their start and include their end. Event-location heatmaps show where recorded actions occurred; supporting replay movement is reconstructed, not measured continuous player tracking. Video upload, automatic event extraction and measured sprint tracking are not current features.
 
-No credentials, environment files, database servers, or cloud subscriptions are required. SQLite is created automatically.
+Source attribution: Luca Pappalardo and Emanuele Massucco / Wyscout, [events](https://doi.org/10.6084/m9.figshare.7770599), [matches](https://doi.org/10.6084/m9.figshare.7770422) and [players](https://doi.org/10.6084/m9.figshare.7765196), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Adaptations include fictional display identities, coordinate scaling, aggregate calibration and generated fixtures. See the [data methodology](docs/personalization-data.md) and [positional validation](docs/position-calibration.md).
 
-**1. Install and start the backend**
+## Quick start
+
+Use Python 3.13, [uv](https://docs.astral.sh/uv/getting-started/installation/) and Node.js 24. Replay and statistics browsing work locally without Azure credentials; model-generated discussion, summaries and answers require configured Azure access.
+
+**Backend** — from the repository root:
 
 ```sh
-UV_CACHE_DIR=.uv-cache uv sync --locked
+uv sync --locked
 uv run --frozen uvicorn counterpress.api.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-**2. Install and start the frontend** (second terminal)
+**Frontend** — in a second terminal:
 
 ```sh
 cd frontend
-npm ci --cache ../.npm-cache --no-audit --no-fund
+npm ci --no-audit --no-fund
 npm run dev
 ```
 
-**3. Verify**
+Open [localhost:5173](http://127.0.0.1:5173/) for the app or [localhost:8000/docs](http://127.0.0.1:8000/docs) for the API. Check backend health with `curl http://127.0.0.1:8000/health`.
+
+**Local AI preview** — after configuring server-side Azure model access, build the frontend, then start the desired preview from the repository root:
 
 ```sh
-curl -sS http://127.0.0.1:8000/health
-# --> {"status":"ok","service":"counterpress"}
+npm --prefix frontend run build
+
+# Footie assistant with Match and Career specialists
+uv run --frozen python scripts/run_footie_local.py --azure --multiagent --port 8021
+
+# Alternatively: Analyst Mode with live discussion
+uv run --frozen python scripts/run_analyst_local.py --discussion --port 8018
 ```
 
-Open [http://127.0.0.1:5173/](http://127.0.0.1:5173/) for the development UI, or [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) for the interactive API explorer.
+Open `http://127.0.0.1:8021/#assistant` or `http://127.0.0.1:8018/#analyst`, respectively. Keep credentials in local, ignored configuration or managed identity bindings—never in the frontend or repository.
 
-**4. Run the tests**
+**Tests:**
 
 ```sh
 uv run --frozen pytest -q
-cd frontend && npm test
+npm --prefix frontend test
+npm --prefix frontend run build
 ```
 
-**5. Start Footie locally** (optional)
+Repository URLs, Python package names and configuration identifiers retain their existing technical names so links, commands and integrations continue to work.
 
-```sh
-.venv/bin/python scripts/run_footie_local.py --azure --multiagent --port 8021
-# Open http://127.0.0.1:8021/#assistant
-```
+## Workspace links
 
-Omit `--azure` for direct statistics lookups without model calls.
-
----
-
-## Scenarios
-
-The Analysis workspace ships with nine synthetic scenarios, each backed by deterministic evidence chains:
-
-| Scenario                         | What it shows                                                  |
-|----------------------------------|----------------------------------------------------------------|
-| Recovery increase                | Team high-recovery count rises from 1 to 4 across windows     |
-| Recovery control                 | Count stays at 1 (negative control)                            |
-| Pressure and escape shift        | Defensive pressure exposure and build-up escape rates change   |
-| Pressure and escape control      | Rates remain stable (negative control)                         |
-| Possession without progression   | Sustained possession with < 15m forward gain increases         |
-| Player recovery share increase   | Individual player's share of team recoveries rises             |
-| Player recovery share control    | Player share stays constant (negative control)                 |
-| Live recovery corrections        | Four source revisions: update, withdrawal, restoration         |
-| Generated segment                | Seeded synthetic ten-minute segment from calibrated generator  |
-
-Select any scenario, press **Go to comparison**, and open **Show evidence** to inspect the exact event source records and revision IDs.
-
----
-
-## Azure Deployment
-
-The live demo runs on Azure Container Apps with scale-to-zero consumption. Infrastructure is defined in Bicep and deployed via GitHub Actions with Entra OIDC federation.
-
-| Service                            | Configuration                                      |
-|------------------------------------|----------------------------------------------------|
-| Azure Container Apps               | Consumption profile, 0-1 replica, scale to zero    |
-| Azure Cosmos DB                    | Serverless, pay-per-request, East US 2             |
-| Azure Event Hubs                   | Basic tier, managed identity                       |
-| Azure Web PubSub                   | Free tier, receive-only browser tokens             |
-| Azure Blob Storage                 | Checkpoint storage for Event Hubs                  |
-| Azure Container Registry           | Private, digest-pinned images                      |
-| Azure Monitor + Log Analytics      | Telemetry, no prompt/completion logging             |
-
-See [docs/deployment.md](docs/deployment.md) for the full setup sequence and operational runbook.
-
----
+| Route | Experience |
+|---|---|
+| `/` or `#gi` | Match Centre: overview, moments and full-match replay |
+| `#analyst` | Specialist conversation, player focus and full-time report |
+| `#highlights` | Saved moments, summaries, annotations and coaching notes |
+| `#highlights/preloaded` | Preloaded highlight replays |
+| `#matchday/breakdown` | Detailed breakdown of a preloaded highlight |
+| `#football` | Clubhouse: players, clubs, following, comparisons and standings |
+| `#assistant` | Footie questions and evidence-backed answers |
 
 ## Documentation
 
-| Guide                                                           | Description                                |
-|-----------------------------------------------------------------|--------------------------------------------|
-| [docs/demo-guide.md](docs/demo-guide.md)                       | Demo walkthrough for judges                |
-| [docs/analyst-mode.md](docs/analyst-mode.md)                   | Analyst Mode with native Foundry execution |
-| [docs/grounded-assistant.md](docs/grounded-assistant.md)       | Footie assistant architecture              |
-| [docs/deployment.md](docs/deployment.md)                       | Azure setup and operations                 |
-| [docs/personalization-data.md](docs/personalization-data.md)   | 44 players, 4 clubs, 840 fixtures          |
-| [docs/fan-personalization.md](docs/fan-personalization.md)     | Fan layer architecture                     |
-| [docs/streaming.md](docs/streaming.md)                         | Event Hubs + Web PubSub streaming          |
-| [docs/workflow.md](docs/workflow.md)                            | Bounded Analyst/Producer workflow           |
-| [docs/progress.md](docs/progress.md)                           | Current milestone and next work            |
+| Guide | What it covers |
+|---|---|
+| [Analyst conversation and reports](docs/analyst-room.md) | Live scheduling, evidence, memory, reports and release history |
+| [Highlights workspace](docs/highlights-workspace.md) | Saved replays, summaries and annotations |
+| [Footie assistant](docs/grounded-assistant.md) | Data tools and specialist coordination |
+| [Player and club data](docs/personalization-data.md) | Generation, calibration, coverage and API contracts |
+| [Fan personalization](docs/fan-personalization.md) | Profiles, follows and personalised recommendations |
+| [Streaming](docs/streaming.md) | Event Hubs ingestion and Web PubSub revision delivery |
+| [Deployment](docs/deployment.md) | Azure operations and release verification |
 
----
-
-## License
-
-MIT
+Screenshots above are stills from the latest Footie demo recording, captured on 28 October 2026. The [demo video](https://www.youtube.com/watch?v=vqpPXBcn0R0) shows the complete walkthrough.
