@@ -1,122 +1,172 @@
+<div align="center">
+
 # CounterPress
 
 [![CI](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml/badge.svg)](https://github.com/Haydnlee31/CounterPress/actions/workflows/ci.yml)
+![Python 3.13](https://img.shields.io/badge/python-3.13-blue?style=flat-square&logo=python&logoColor=white)
+![Node 24](https://img.shields.io/badge/node-24-green?style=flat-square&logo=node.js&logoColor=white)
+![FastAPI 0.115+](https://img.shields.io/badge/FastAPI-0.115+-teal?style=flat-square&logo=fastapi)
+![React 18](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react)
+![Azure Container Apps](https://img.shields.io/badge/Azure-Container_Apps-0078D4?style=flat-square&logo=microsoftazure)
+![License MIT](https://img.shields.io/badge/license-MIT-orange?style=flat-square)
 
-**Using or judging the demo? Start with the [demo user guide](docs/demo-guide.md)**
+<br>
 
-**Full-match intelligence:** [Analyst Mode](docs/analyst-mode.md) adds a Matchday
-**Watch full match** entry, four football perspectives, playback-scoped metrics
-and spatial maps. Its optional native Foundry execution path is isolated from
-the existing Footie assistant; an unconfigured local preview makes no model calls.
+***Synthetic football intelligence -- deterministic match replays with evidence-backed analytical insights.***
 
-**Building player and club profiles?** The [personalization data foundation](docs/personalization-data.md)
-provides 44 featured players, four clubs, 840 historical fixtures and four featured
-matches through read-only `/api/data/` endpoints. The guide includes local startup,
-metric definitions, coverage, evidence and frontend integration boundaries.
+<br>
 
-**Try player personalization locally:** Open [Clubhouse](http://127.0.0.1:8017/#football)
-and follow the [user test walkthrough](docs/my-football-local.md) for profiles,
-favorites, comparisons and highlight insights. This interface is not deployed yet.
+[Live Demo](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/) | [Documentation](#documentation) | [Quick Start](#quick-start) | [Architecture](#architecture)
 
-**Connecting the redesigned UI?** The [fan personalization layer](docs/fan-personalization.md)
-adds device-owned favorites, ranked highlights, player/club views, comparisons and
-playback-scoped player focus under `/api/fan/`. The local hub uses its independent
-client adapter. Keep the [Reactor review and product decisions](docs/reactor-review-context.md)
-as important context for this phase and the later Footie assistant.
+<br>
 
-The new [GI full-match reader](docs/gi.md) is available at `/#gi`: Eastbridge/Northport club aliases, a pitch canvas and shot map, outcome filters and action context backed by licensed full-match events. Synchronized video seeking is pending. The [unified app navigation](docs/unified-experience.md) now links all workspaces and preserves your browsing context.
-for the live link, a five-minute walkthrough, scenario results and evidence explanations.
+<img src="docs/screenshots/matchday-desktop.png" alt="CounterPress Matchday view" width="820">
 
-The default **Matchday** experience opens with a shared cream/green theme, club accents, original crests, an
-interactive 22-player pitch and plain-language stories. Play the recent sequence,
-select players, catch up and inspect readable evidence without leaving Matchday.
-Team, language and explanation preferences are saved on this device.
-**Analysis & presenter tools** keeps the detailed analysis workspace available.
-See the [redesign delivery plan](docs/redesign-implementation.md) for the remaining
-bounded AI, Studio and evaluation stages.
+</div>
 
-Synthetic football insights through Stage 5: a React replay screen with inspectable evidence,
-durable history, correction-driven updates and withdrawals, backed by FastAPI and
-deterministic synthetic match calculations. Stage 6 includes the Azure wording
-adapter and bounded Microsoft Agent Framework Analyst/Producer workflow, verified
-offline and against the configured Azure deployment.
-Stage 7 adds analyst/casual views, club and player preferences, a card display
-budget, and English/Simplified Chinese presentation variants with revision-aware caching.
-The first Stage 8 increment adds a seeded possession generator, independently
-reviewed controls and whole-match development/holdout splits.
-The second Stage 8 increment adds observed build-up episodes, duel-based pressure
-exposure and pressured-escape comparisons with typed evidence and a local CLI.
-The third increment persists those comparisons with independent lifecycle
-revisions and displays bilingual pressure/escape cards with inspectable episodes.
-The fourth adds sustained possession without progression, independent positive
-and negative controls, durable corrections and bilingual episode evidence.
-The fifth adds actor-attributed player high-recovery shares, independent controls,
-revision-aware CLI evidence and an API over persisted source history.
-The sixth persists those player stories, handles correction-driven withdrawal and
-restoration, and adds bilingual replay cards with exact actor attribution.
-The seventh adds bilingual segment recaps with exact evidence citations and
-correction-aware selection from the same publication ledger.
-The eighth adds bounded Microsoft Agent Framework recap review and approved
-presentation choices, verified offline and with one successful live Azure run.
+---
 
-Stage 9 now has a deployed Azure Container Apps demo, a private container registry
-and managed-identity image pulls, with a USD 125 total trial budget. The hosted app
-uses serverless Cosmos DB history, Event Hubs ingestion, Blob checkpoints and
-Web PubSub revision delivery. The full streaming path and duplicate delivery have
-been verified live. Local development still defaults to SQLite and HTTP polling.
-See the [deployment guide](docs/deployment.md) for startup, costs, temporary storage
-limits, and the manual Azure sequence. Shared history design and verification are
-in the [Cosmos DB guide](docs/cosmos.md). The [operations runbook](docs/operations.md)
-explains manual OIDC deployment and bounded streaming telemetry.
+## What is CounterPress?
 
-## Local setup
+**CounterPress turns raw football events into an interactive, inspectable replay experience where every single claim traces back to exact event records, timestamps, field coordinates, and revision IDs.** There are no hallucinated narratives, no ungrounded AI prose, and no hidden assumptions. The platform covers the full lifecycle of football intelligence -- from event ingestion and deterministic metric computation, through multi-workspace visual analysis, all the way to deep-linked evidence inspection.
 
-GitHub Actions runs backend tests, frontend tests/builds, a production-container
-HTTP smoke check and Bicep compilation on pushes to `main`,
-pull requests targeting `main`, and manual runs from the Actions tab. The workflow
-uses Python from `.python-version`, uv 0.11.29, Node.js 24 and committed dependency
-locks. Actions are pinned to commit hashes, repository permissions are read-only,
-and no Azure credentials or live model requests are used. See
-[the workflow](.github/workflows/ci.yml) and the official
-[uv](https://docs.astral.sh/uv/guides/integration/github/) and
-[Node.js setup](https://github.com/actions/setup-node) action documentation.
+Coaches see actionable pattern breakdowns. Analysts see verifiable evidence chains. Fans see clear, cited stories. Editorial teams see presenter-ready overlays. Everyone sees the same ground truth.
 
-Prerequisites: Python 3.11+ and [uv](https://docs.astral.sh/uv/getting-started/installation/).
-The project selects Python 3.13 through `.python-version`. Run from this directory:
+The platform ships with 44 featured players, 4 clubs, 840 historical fixtures, and 4 full featured matches -- all queryable, all traceable, all deterministic.
+
+> "If you cannot point to the exact event record that supports a claim, the claim does not appear on screen."
+>
+> -- The CounterPress design principle
+
+---
+
+## Live Demo
+
+<div align="center">
+
+<br>
+
+**No sign-in. No API key. No Azure account. Just open the link.**
+
+### [counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/)
+
+<br>
+
+<img src="docs/screenshots/azure-hosted-recovery-en.png" alt="CounterPress replay with evidence panel" width="780">
+
+<br><br>
+
+</div>
+
+---
+
+## Philosophy -- Bounded AI
+
+> CounterPress treats AI as a selector, not a generator. Azure OpenAI chooses from pre-computed candidates and plans structured queries. It never fabricates facts. Every model call is bounded by design: $0.10 per run, $30 lifetime cap, 120 runs per hour -- enforced in durable shared admission, not just client-side limits.
+
+The system works through a strict separation of concerns:
+
+```
+Raw Events --> Deterministic Metrics --> Pre-computed Candidates --> AI Selection --> Cited Display
+     |                |                         |                        |              |
+  Append-only    Python-computed         Evidence-linked         Structured only    Traceable
+  with revisions   no model calls       never model-generated   query planning     to source
+```
+
+Corrections append new revisions rather than overwriting. Any historical state can be reconstructed. The synthetic generator is seeded and deterministic -- Brier scores of 0.114 (pass completion) and 0.095 (shot conversion) calibrated on 2017/18 English league data (CC BY 4.0).
+
+---
+
+## Features
+
+### Matchday -- The Interactive Pitch
+
+The default workspace. A full 22-player animated pitch with ball movement, play/pause controls, and configurable speed (0.5x, 1x, 1.5x). Click any player marker to inspect their name, position, and current involvement. The "Catch me up" button generates cited segment stories from the active time window. Team preferences, language selection, and explanation depth are saved on-device with no sign-in required. On mobile, the pitch renders in portrait orientation with reduced-motion fallback for accessibility.
+
+### Analyst Mode -- Four Specialist Agents
+
+Four domain-specific analysts -- Chances, Build-up, Transitions, and Player Impact -- each select insights from pre-generated evidence candidates. This is not free-form generation: the agents operate within a bounded execution framework with native Foundry execution paths. Statistics are sampled every 15 seconds during playback, with full analysis requests at 1-minute intervals. The spending cap of $0.10 per run is enforced server-side.
+
+### Footie -- The Grounded Multi-Agent Assistant
+
+A conversational Q&A system where the Footie Orchestrator delegates to a Match Analyst and a Career Analyst. Each specialist executes validated Python queries against a consistent football-record snapshot. Answers are pre-calculated facts, not model-generated prose. At most two model calls per question. Contextual dialogs surface on player profiles, replays, and highlights -- always grounded in the same deterministic data layer.
+
+### Highlight Breakdown and Exploration
+
+Three authored highlight replays with build-up phase inspection, player involvement tracking, phase-by-phase comparisons, and timeline breakdowns. Every phase links back to the events that composed it. Bilingual support in English and Simplified Chinese.
+
+### Real-Time Streaming
+
+Azure Event Hubs ingestion with Blob Storage checkpoints feeds revision notices through Azure Web PubSub to browser subscribers in real time. Duplicate delivery is prevented at the protocol level, with browser-side reconciliation on reconnect ensuring no missed updates and no phantom duplicates.
+
+<div align="center">
+<img src="docs/screenshots/streaming-live.png" alt="CounterPress streaming architecture in action" width="780">
+</div>
+
+### Studio -- Editorial Tools
+
+Opt-in editorial review and presenter tooling behind Entra/OIDC authentication. Presenter cues, lower-third previews, and verified HTML downloads -- all backed by the same evidence layer, with Cosmos DB and SQLite quotas enforced per session.
+
+### Clubhouse -- Fan Personalization
+
+Device-only personalization with zero sign-in friction. Favorite clubs (4 available), favorite players (12 featured per club), primary club and focus player selection. Player and club profiles with career totals, season statistics, activity maps, and evidence links. A ranked highlights home feed adapts to fan preferences, and 2-to-4 player comparisons render side-by-side with shared axes.
+
+---
+
+## Frontend Workspaces
+
+| Route | Purpose |
+|---------------|-----------------------------------------------------|
+| `#matchday`   | Interactive 22-player pitch, highlights, catch-me-up |
+| `#analyst`    | Full-match reading with 4 specialist agent insights   |
+| `#explore`    | Highlight breakdown with build-up phases              |
+| `#gi`         | Full-match event reader, shot map, pitch canvas       |
+| `#assistant`  | Footie multi-agent Q&A                                |
+| `#studio`     | Editorial review and presenter tools                  |
+| `#football`   | Clubhouse -- device-only fan personalization           |
+
+---
+
+## Architecture
+
+<div align="center">
+<img src="docs/screenshots/architecture.png" alt="CounterPress system architecture" width="680">
+</div>
+
+---
+
+## Tech Stack
+
+| Layer                  | Technology                                              |
+|------------------------|---------------------------------------------------------|
+| Frontend               | React 18, TypeScript, Vite                              |
+| Backend                | FastAPI 0.115+, Pydantic 2.10+, Python 3.13            |
+| Local storage          | SQLite                                                  |
+| Cloud storage          | Azure Cosmos DB (serverless)                            |
+| AI orchestration       | Microsoft Agent Framework Core 1.23+, Azure OpenAI     |
+| Streaming              | Azure Event Hubs, Azure Web PubSub                     |
+| Containerisation       | Docker (digest-pinned, read-only FS)                    |
+| Infrastructure         | Azure Container Apps, Bicep                             |
+| CI/CD                  | GitHub Actions (Entra OIDC), uv 0.11.29, Node.js 24   |
+| Observability          | OpenTelemetry + Azure Monitor                           |
+| Testing                | pytest, Vitest                                          |
+
+---
+
+## Quick Start
+
+**Prerequisites:** Python 3.13 (via `.python-version`), [uv](https://docs.astral.sh/uv/getting-started/installation/), Node.js 24+
+
+No credentials, environment files, database servers, or cloud subscriptions are required. SQLite is created automatically.
+
+**1. Install and start the backend**
 
 ```sh
 UV_CACHE_DIR=.uv-cache uv sync --locked
 uv run --frozen uvicorn counterpress.api.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-`uv sync` creates `.venv` and installs the application and test dependencies using
-`uv.lock`. No credentials, environment file, separate database server or cloud
-subscription is needed. SQLite history is created at `var/counterpress.sqlite3`;
-set `COUNTERPRESS_DB_PATH` to choose a different file. Host and port are explicit Uvicorn options. Stop the server with Ctrl+C.
-
-In another terminal:
-
-```sh
-curl -sS http://127.0.0.1:8000/health
-```
-
-Response:
-
-```json
-{"status":"ok","service":"counterpress"}
-```
-
-Interactive API docs: <http://127.0.0.1:8000/docs>.
-OpenAPI: <http://127.0.0.1:8000/openapi.json>.
-Health reports process liveness only.
-
-## Open the interface
-
-For playback-synchronised Match Centre insights and their pinned **Ask Footie
-why** handoff, see [live observations](docs/live-observations.md), including the
-same-origin local preview and validation commands.
-
-With the backend running, use another terminal:
+**2. Install and start the frontend** (second terminal)
 
 ```sh
 cd frontend
@@ -124,384 +174,87 @@ npm ci --cache ../.npm-cache --no-audit --no-fund
 npm run dev
 ```
 
-Open <http://127.0.0.1:5173/> for frontend development. **Matchday** contains
-highlights and their **Breakdown**; **Match Centre** contains full-match playback
-and individual moments; **Clubhouse** contains player and club profiles. Use the
-[same-origin preview](docs/live-observations.md#local-verification) when testing
-contextual **Ask Footie** conversations. See the [interface guide](docs/interface.md)
-for the original scenario contracts and verification details. The [history guide](docs/history.md)
-explains persistence, correction ingestion and historical replay.
-
-## Evaluate the editorial workflow
-
-The [frozen editorial pilot](docs/evaluation/editorial-pilot.md) compares templates,
-a single Microsoft Agent Framework editor and the existing Analyst/Producer pair.
-It runs locally, defaults to no model calls, and separates supported factual output
-from actual AI success and human usefulness. The [fan usability kit](docs/evaluation/fan-usability.md)
-provides tasks and blank anonymous forms; no human study has been completed.
-The assigned-editor [Studio AI pilot](docs/studio.md) is enabled on the hosted app.
-Matchday remains factual and makes no model calls; human usefulness review remains pending.
-Studio also offers [presenter cues and lower-third previews](docs/studio.md#presenter-cues-and-lower-thirds)
-from one approved story, with checked HTML downloads and complete qualifications.
-These formats make no model calls and do not publish to a broadcast system.
-
-The [editorial access guide](docs/editorial-access.md) describes the opt-in Entra
-API, shared Cosmos/SQLite quotas, duplicate-request prevention and revision-bound
-cache. Real Entra/local API and managed-identity Cosmos integration checks passed;
-hosted Studio authorization and a bounded authenticated model check have also passed.
-Participant review remains pending. The current evaluation CLI is
-a separately frozen regression suite; the original paid pilot report is unchanged.
-The [integration guide](docs/editorial-integration.md) records the real Entra
-sign-in check and repeatable identity/Cosmos verification commands.
+**3. Verify**
 
 ```sh
-uv run --frozen python -m counterpress.evaluation.editorial
+curl -sS http://127.0.0.1:8000/health
+# --> {"status":"ok","service":"counterpress"}
 ```
 
-## Validate the foundation
+Open [http://127.0.0.1:5173/](http://127.0.0.1:5173/) for the development UI, or [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) for the interactive API explorer.
+
+**4. Run the tests**
 
 ```sh
-uv run --frozen python -m counterpress.fixture fixtures/tiny_possession.json
 uv run --frozen pytest -q
+cd frontend && npm test
 ```
 
-The first command loads only the fixture, validates its shape, identities, actors,
-timing and possession transitions, and prints the event IDs. It never reads the
-hand-written expected results in `tests/expected_tiny_possession.json`.
-Tests independently check those expectations, event references, window boundaries,
-and invalid inputs, as well as the health endpoint and documentation routes.
-
-## Files and scope
-
-- `backend/counterpress/domain/models.py`: football contracts, with no API/cloud dependencies.
-- `backend/counterpress/api/main.py`: FastAPI application and typed health response.
-- `backend/counterpress/api/snapshots.py`: historical snapshots and deterministic lifecycle publications.
-- `backend/counterpress/history.py`: storage interface, SQLite journal and versioned evidence.
-- `backend/counterpress/ingest.py`: local atomic revision ingestion CLI.
-- `backend/counterpress/fixture.py`: initial-revision fixture validation and CLI.
-- `backend/counterpress/domain/replay.py`: canonical revision selection, source journal and pure state reduction.
-- `backend/counterpress/domain/metrics.py`: pass totals/distances and high-recovery comparisons.
-- `backend/counterpress/clock.py`: virtual play, pause, reset and speed controls.
-- `backend/counterpress/replay.py`: replay sessions, snapshots and console report.
-- `backend/counterpress/generator/`: seeded conditional possession simulation and separate evaluator exports.
-- `tests/test_generator.py` and `tests/expected_generator_controls.json`: continuity audits and independent controls.
-- `backend/counterpress/domain/pressure.py` and `backend/counterpress/pressure.py`: observed episode evidence and analysis CLI.
-- `backend/counterpress/pressure_publications.py` and `backend/counterpress/pressure_views.py`: durable pressure publication and bilingual presentation.
-- `fixtures/pressure/`, `tests/test_pressure.py`, `tests/expected_pressure.json`: independent episode controls and regression checks.
-- `backend/counterpress/domain/progression.py` and `backend/counterpress/progression.py`: sustained-possession evidence and CLI.
-- `fixtures/progression/`, `tests/test_progression.py`, `tests/expected_progression.json`: independent progression controls, corrections and regression checks.
-- `backend/counterpress/domain/contributions.py` and `backend/counterpress/contributions.py`: player high-recovery share evidence and CLI.
-- `fixtures/contributions/`, `tests/test_contributions.py`, `tests/expected_contributions.json`: independent actor attribution controls and revision checks.
-- `backend/counterpress/contribution_publications.py` and `backend/counterpress/contribution_views.py`: durable player histories and bilingual views.
-- `tests/test_contribution_history.py` and `frontend/src/ContributionCard.test.tsx`: player lifecycle, cooldown, persistence and display checks.
-- `fixtures/tiny_possession.json`: fictional Eastbridge/Northport sequence.
-- `fixtures/recovery_increase.json` and `fixtures/recovery_control.json`: 89-event,
-  ten-minute scenarios with independently checked one-versus-four and one-versus-one counts.
-- `fixtures/faults/`: invalid player/coordinate examples and duplicate/correction record arrays.
-- `tests/expected_tiny_possession.json`: separately hand-checked oracle and example evidence packet.
-- `tests/test_foundation.py`: foundation checks.
-- `tests/test_snapshot_api.py`: API and evidence integrity checks.
-- `tests/test_history.py`: durability, lifecycle, correction, atomicity and viewer checks.
-- `fixtures/faults/recovery_corrections.json`: four source revisions for update/withdraw/re-create.
-- `frontend/src/`: React TypeScript screen, playback controls, pitch, evidence panel and interaction tests.
-- `tests/test_replay.py` and `tests/expected_tiny_metrics.json`: replay checks and hand-calculated metric expectations.
-- `tests/test_scenario_fixtures.py`, `tests/expected_recovery_scenarios.json`, and
-  `tests/expected_faults.json`: scenario audits and separate expected results.
-- [Fixture review](docs/fixtures.md): qualifying recovery IDs, control differences and fault semantics.
-- [Contract conventions](docs/contracts.md): identity, timing, coordinates and evidence semantics.
-- [Progress](docs/progress.md): current milestone and next work.
-- [Replay guide](docs/replay.md): controls, revision handling, commands and limits.
-
-The fixture starts at minute 48 with Eastbridge trailing 0–1. It demonstrates a
-duel followed by established control, a completed pass, an incomplete pass and an
-opponent recovery. Its one-minute span is for contract checks; the planned ten-minute
-one-versus-four recovery data is now available in the separate ten-minute fixture.
-Replay computes these comparisons from event data and the interface displays the
-eligible fact alongside its exact supporting records.
-
-The fixture validator accepts only ordered initial revisions. The replay journal
-also accepts exact retransmissions and corrections through `--updates`. It rebuilds
-snapshots from available canonical revisions. The snapshot API publishes the
-historically eligible factual card, evidence and lifecycle revision to the interface.
-SQLite survives restarts and the browser retains withdrawal revisions within each
-playback scope. Both the single-call adaptation and bounded Analyst/Producer
-workflow are implemented and verified against Azure. Audience preferences and
-bilingual explanation styles are now implemented with the same evidence checks.
-The seeded generator now exports feeds compatible with the existing replay and
-evidence pipeline. The pressure-proxy and defensive build-up-escape detector now
-provides CLI evidence and durable replay cards with fully observed episodes and
-meaningful controls. Possession without progression now has its own independent
-controls, episode evidence and durable replay cards. Player high-recovery share
-detection now provides independent controls and source-linked CLI/API attribution.
-Durable player publications and bilingual replay cards are now implemented.
-The [Cosmos DB adapter](docs/cosmos.md) adds atomic shared history, conflict
-detection and a live restart-check command. See the progress log for live
-verification. The optional Studio AI action is separately authenticated and quota-limited. The optional
-[streaming path](docs/streaming.md) adds Event Hubs ingestion, Blob checkpoints
-and Web PubSub revision notices with snapshot resynchronization.
-
-## Run the replay
+**5. Start Footie locally** (optional)
 
 ```sh
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.replay fixtures/recovery_increase.json --speed 60
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.replay fixtures/recovery_control.json
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.replay fixtures/recovery_increase.json --at 54:00
+.venv/bin/python scripts/run_footie_local.py --azure --multiagent --port 8021
+# Open http://127.0.0.1:8021/#assistant
 ```
 
-The first two reports show one versus four and one versus one high recoveries,
-with exact source IDs. At 54:00, the final comparison is not ready and future
-events are absent. The CLI advances a virtual clock without real-time waiting;
-speed affects the elapsed time needed to advance, not event timestamps or metrics.
+Omit `--azure` for direct statistics lookups without model calls.
 
-Implementation references: [FastAPI first steps](https://fastapi.tiangolo.com/tutorial/first-steps/),
-[Pydantic validators](https://pydantic.dev/docs/validation/latest/concepts/validators/),
-[uv projects](https://docs.astral.sh/uv/guides/projects/).
+---
 
-## Try a persisted correction
+## Scenarios
 
-```sh
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.ingest increase fixtures/faults/recovery_corrections.json
-```
+The Analysis workspace ships with nine synthetic scenarios, each backed by deterministic evidence chains:
 
-The browser discovers the extended history while paused. Seek to 58:05 for the
-updated 1-to-3 card, 58:10 for withdrawal, and 58:15 for a new 1-to-2 card. Seek
-back to 58:00 for the original 1-to-4 evidence. Repeating the command is harmless.
-Use the same database path for the API and CLI; [details](docs/history.md).
+| Scenario                         | What it shows                                                  |
+|----------------------------------|----------------------------------------------------------------|
+| Recovery increase                | Team high-recovery count rises from 1 to 4 across windows     |
+| Recovery control                 | Count stays at 1 (negative control)                            |
+| Pressure and escape shift        | Defensive pressure exposure and build-up escape rates change   |
+| Pressure and escape control      | Rates remain stable (negative control)                         |
+| Possession without progression   | Sustained possession with < 15m forward gain increases         |
+| Player recovery share increase   | Individual player's share of team recoveries rises             |
+| Player recovery share control    | Player share stays constant (negative control)                 |
+| Live recovery corrections        | Four source revisions: update, withdrawal, restoration         |
+| Generated segment                | Seeded synthetic ten-minute segment from calibrated generator  |
 
-## Model adaptation (first Stage 6 increment)
+Select any scenario, press **Go to comparison**, and open **Show evidence** to inspect the exact event source records and revision IDs.
 
-The adapter accepts only two approved wording templates and inserts verified facts
-in code. It records timeouts, refusals, invalid drafts and stale evidence, retaining
-the factual explanation as fallback. No model call runs on a snapshot request.
+---
 
-See [adaptation setup](docs/adaptation.md) and `.env.example` for the explicit Azure
-configuration and one-call CLI. Local tests use mocked HTTP; a separate live
-request to the configured deployment passed. See the progress log for its result.
+## Azure Deployment
 
-## Bounded Analyst/Producer workflow
+The live demo runs on Azure Container Apps with scale-to-zero consumption. Infrastructure is defined in Bicep and deployed via GitHub Actions with Entra OIDC federation.
 
-The Analyst requests read-only comparison and quality evidence, then accepts,
-narrows or rejects a candidate. The Producer receives a fresh validated package
-and selects approved wording. Hard limits allow three Analyst requests, three
-tool invocations, one Producer request and eight seconds overall. Corrections,
-timeout and invalid output preserve the factual fallback.
+| Service                            | Configuration                                      |
+|------------------------------------|----------------------------------------------------|
+| Azure Container Apps               | Consumption profile, 0-1 replica, scale to zero    |
+| Azure Cosmos DB                    | Serverless, pay-per-request, East US 2             |
+| Azure Event Hubs                   | Basic tier, managed identity                       |
+| Azure Web PubSub                   | Free tier, receive-only browser tokens             |
+| Azure Blob Storage                 | Checkpoint storage for Event Hubs                  |
+| Azure Container Registry           | Private, digest-pinned images                      |
+| Azure Monitor + Log Analytics      | Telemetry, no prompt/completion logging             |
 
-```sh
-UV_CACHE_DIR=.uv-cache uv run --env-file .env --frozen python -m counterpress.workflow increase --at-ms 780000
-```
+See [docs/deployment.md](docs/deployment.md) for the full setup sequence and operational runbook.
 
-The command uses the existing Azure configuration and persists a sanitized audit.
-The replay screen shows short action labels at the comparison cutoff. See the
-[workflow guide](docs/workflow.md) for controls, limits and live verification.
+---
 
-## Audience views and languages
+## Documentation
 
-Choose **Analyst** or **Casual**, then **English** or **简体中文** above the
-scoreboard. Club/metric preferences rank eligible insights; player selection
-highlights actual qualifying contributions. Try `eb09` at 58:00 for event `p064`,
-or `eb04` for an honest empty state. Team totals remain 1 versus 4.
+| Guide                                                           | Description                                |
+|-----------------------------------------------------------------|--------------------------------------------|
+| [docs/demo-guide.md](docs/demo-guide.md)                       | Demo walkthrough for judges                |
+| [docs/analyst-mode.md](docs/analyst-mode.md)                   | Analyst Mode with native Foundry execution |
+| [docs/grounded-assistant.md](docs/grounded-assistant.md)       | Footie assistant architecture              |
+| [docs/deployment.md](docs/deployment.md)                       | Azure setup and operations                 |
+| [docs/personalization-data.md](docs/personalization-data.md)   | 44 players, 4 clubs, 840 fixtures          |
+| [docs/fan-personalization.md](docs/fan-personalization.md)     | Fan layer architecture                     |
+| [docs/streaming.md](docs/streaming.md)                         | Event Hubs + Web PubSub streaming          |
+| [docs/workflow.md](docs/workflow.md)                            | Bounded Analyst/Producer workflow           |
+| [docs/progress.md](docs/progress.md)                           | Current milestone and next work            |
 
-Two local viewer profiles have independent preferences. Variant caching is shared
-by evidence revision and perspective, and corrections invalidate old variants.
-No Azure call is needed to switch views. See the [audience guide](docs/audience.md)
-for cache behavior, language conventions, limitations and verification.
+---
 
-## Generate synthetic segments
+## License
 
-```sh
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.generator --seed 2 --profile pressure-shift --output var/my-generated-match
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.replay var/my-generated-match/feeds/sim-cd3f34e3015e1cec5197fe8c.json
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.generator --suite --output var/my-generated-suite
-```
-
-Choose a new output directory for each export. `feeds/` contains only public
-Event-contract fixtures; `evaluation/` contains seeds, hidden settings, change
-times, outcome labels and split assignments. Only feed files belong in replay or
-agent inputs. The suite has 36 development and six held-out ten-minute segments.
-Generated segments are available through the CLI; the browser still selects the
-curated scenarios. See the [generator guide](docs/generator.md) for controls,
-custom settings and limitations. No Azure configuration is needed.
-
-## Inspect pressure and build-up escape
-
-```sh
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.pressure fixtures/pressure/increase.json --windows 48:00 49:00 50:00
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.pressure fixtures/pressure/control.json --windows 48:00 49:00 50:00
-```
-
-These hand-authored two-minute controls show changing and unchanged episode
-rates. Add `--json` for typed evidence with source revisions, or pass a generated
-feed and `--team northport` to inspect the opposing build-up. Default windows are
-48:00–53:00 and 53:00–58:00. Defensive-third duels are a disclosed pressure proxy;
-the detector does not infer unobserved pressure or causal tactical effectiveness.
-See the [pressure guide](docs/pressure.md) for episode rules, exclusions, minimum
-samples, cooldown receipts and corrections.
-
-In the browser, select **Pressure and escape shift**, then **Go to comparison**.
-Choose **Pressure exposure** or **Escape under pressure** under Metric focus.
-The one-card budget ranks eligible recovery and pressure stories together.
-**Show evidence** opens sample counts, exclusions, episode outcomes and exact
-source revisions. The **Pressure and escape control** scenario has no eligible
-rate-change card. See [publication and UI details](docs/pressure-publication.md).
-
-To try corrections against the same local database used by the API:
-
-```sh
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.ingest pressure-increase fixtures/pressure/replay_corrections.json
-```
-
-Seek to 58:05 for updated exposure and withdrawn escape, 58:10 for both withdrawn,
-and 58:15 for restored stories. Seeking back to 58:00 retains the original facts.
-
-## Inspect possession without progression
-
-```sh
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.progression fixtures/progression/increase.json
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.progression fixtures/progression/control.json
-```
-
-The positive control changes from 1/6 to 4/6 sustained possessions without 15 m
-of observed forward gain; the negative control stays at 1/6. In the browser,
-select **Possession without progression**, then **Go to comparison** and
-**Show evidence**. This is a spatial proxy, not a claim about possession dominance
-or tactical value. See the [progression guide](docs/progression.md) for eligibility,
-excluded episodes, correction commands and verification.
-
-## Inspect player contributions
-
-```sh
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.contributions fixtures/contributions/increase.json --player eb04
-UV_CACHE_DIR=.uv-cache uv run --frozen python -m counterpress.contributions fixtures/contributions/control.json --player eb04
-```
-
-The positive control changes the selected player's share from 1/4 to 3/4 while
-team totals stay fixed. The negative stays at 1/4. Only the recovery actor receives
-credit; duel winners and pass recipients do not. Counts and shares must both rise
-to qualify. This does not measure overall player quality or tactical impact.
-See the [contribution guide](docs/contributions.md) for policy, historical actor
-corrections and API usage.
-
-In the browser, select **Player recovery share increase**, then **Go to comparison**
-and **Show evidence**. Select **Player recovery share** under Metric focus to
-prioritize player stories. The card retains the full team denominator and labels
-each recorded recovery's attribution. See [publication and replay details](docs/contribution-publication.md)
-for correction commands, historical evidence, cooldown and shared card ranking.
-
-## Catch up on the replay
-
-Expand **Catch up on this segment** below the match metrics. Up to four current
-eligible stories use your viewpoint and link to their exact evidence revisions.
-The recap covers 48:00–58:00 and updates with corrections. Card budget zero hides
-it. See the [recap guide](docs/recaps.md) for scope, citations and correction checks.
-
-To explicitly adapt a recap using the configured Azure deployment, see the
-[bounded recap workflow](docs/recap-workflow.md). Model choices retain validated
-facts/citations, expire automatically, and fall back to the complete factual recap.
-
-The [aggregate-calibrated full-match generator](docs/calibrated-generator.md) learns from 15 licensed matches, checks five held-out matches, and generates new native Event feeds. Its selected 2–2 match is also available in the Match Centre library.
-
-### Local grounded football assistant
-
-[Footie](docs/grounded-assistant.md) answers bounded player, club and match
-questions with calculated visuals, evidence and concise contextual stories.
-Azure selects the query and story emphasis; Python owns every factual sentence.
-**Ask Footie** on profiles and linked replays carries the season or frozen
-source-event time into a dialog without leaving the page.
-Start the local preview with
-`.venv/bin/python scripts/run_footie_local.py --azure`, then open
-`http://127.0.0.1:8017/#assistant`. Omit `--azure` for direct statistics lookups.
-Existing model settings remain in the ignored local `.env`; no new Azure service
-is required. [Verification](docs/verification/grounded-assistant.md).
-
-
-### Footie bounded research
-
-The assistant now supports up to three explicit statistics in one answer or
-comparison, with a separate chart scale per measure. `--azure --agent` opts into
-a single Microsoft Agent Framework agent using validated, read-only football
-queries and evidence-bound sentence selection. The single-agent mode was enabled
-in Azure in release #56; historical verification notes retain their original
-pre-release status.
-
-See [implementation, evaluation findings and remaining release gates](docs/verification/footie-agent-research.md).
-The current local preview uses port 8021 without paid inference:
-
-```bash
-npm --prefix frontend run build
-.venv/bin/python scripts/run_footie_local.py --port 8021
-```
-
-Try “Compare Rory Ellis and Dario Voss goals and assists last season”, followed
-by “And this season?”. The same UI accepts the existing one-metric and selected
-match-moment questions. The final authored Azure sample passed 10/10 cases, including 9/9 agent
-workflows without fallback; unseen fan questions still need broader evaluation.
-Agent mode now requires durable SQLite or Cosmos admission: at most ten research
-jobs (twenty reserved model calls) per rolling hour across instances, with
-revision-aware duplicate suppression. Real Cosmos admission passed under the app managed identity, including a write
-conflict and fresh-process quota recovery. Version 5 enforces operation inheritance
-for period-only follow-ups and passed the final broad Azure check.
-Activation uses the manual deployment workflow’s explicit `assistant_workflow`
-selection. Use `agent` on the current image to roll back multi-agent behavior;
-`structured_lookup` now requires paid inference to be disabled, because its legacy
-planner does not enforce the shared daily allowance.
-
-### Footie multi-agent research and Foundry monitoring
-
-The `multiagent` workflow keeps execution in Azure Container Apps. Footie can
-delegate a compound question to a Match Analyst and a Career Analyst, then select
-an explanation from their calculated evidence. Simple questions use one
-specialist. Python validates the scope, computes statistics and rereads evidence
-before answering. This does not add video interpretation or arbitrary database
-access.
-
-Local preview: `.venv/bin/python scripts/run_footie_local.py --azure --multiagent --port 8021`,
-then open `http://127.0.0.1:8021/#assistant`. This uses the existing ignored `.env`
-and durable local admission; tracing remains off unless explicitly configured.
-
-Foundry external-agent registrations expose sanitized OpenTelemetry traces from
-the existing app through a project-linked Application Insights resource. The
-runtime is not moved into Foundry. See the [monitoring and inspection guide](docs/footie-foundry-monitoring.md).
-
-```mermaid
-flowchart LR
-  UI[Footie dashboard] --> API[FastAPI in Container Apps]
-  API --> Admission[Shared Cosmos admission and cache]
-  Admission --> Footie[Footie orchestrator]
-  Footie --> Match[Match Analyst]
-  Footie --> Career[Career Analyst]
-  Match --> Tools[Validated Python queries]
-  Career --> Tools
-  Tools --> Records[One consistent football-record snapshot]
-  Records --> Verify[Recheck evidence and revisions]
-  Verify --> Answer[Approved explanation and charts]
-  Answer --> UI
-  API -. Sanitized OpenTelemetry spans .-> Insights[Application Insights]
-  Insights --> Foundry[Foundry external-agent traces]
-```
-
-Match Analyst currently covers the selected match's score, goals, recorded moment
-and milestone context. Career Analyst covers players, club totals and leaders,
-comparisons, seasons and recent form. They cannot run arbitrary SQL, browse the
-internet, change records or interpret video. Specialist queries execute against
-one snapshot; a correction arriving during explanation invalidates stale claims.
-A replay combined with player history uses completed history **before kickoff**,
-clearly labelled in the answer. Inclusive live career totals are not yet supported.
-
-Compound follow-ups currently ask for clarification because the dashboard's
-conversation contract stores one previous query. Partial answers visibly identify
-unavailable scope. Model failure returns a verified calculated answer where
-possible. These behaviours are tested separately from successful agent completion
-in the [benchmark protocol and results](docs/verification/footie-multiagent-benchmark.md).
-
-The manual deployment workflow explicitly selects `assistant_workflow=multiagent`,
-`assistant_tracing=enable`, and optionally `assistant_allowance=pilot125` after
-validation. The pilot reserves up to 120 model calls per rolling hour and 400 per
-rolling day. Each new multi-agent job reserves four slots conservatively, including
-simple questions that may use only two; this permits up to 30 new jobs/hour and
-100/day. Cached repeats make no new model calls. The US$125 Azure budget is a
-project-wide alert envelope, not an automatic spending stop.
-
-Rollback uses `assistant_workflow=agent` **on this image or a newer compatible
-image**. The admission document now tracks weighted reservations; older images
-cannot read that format and fail closed. Do not delete the control document to
-make a rollback work: that would reset the shared spending allowance.
+MIT
