@@ -424,13 +424,17 @@
  .an-header-context select {font-size:12px}
 }
 /* One transport row, one utility row; keep the match clock separate from replay duration. */
-.analyst-mode .gi-replay-dock {display:grid;grid-template-columns:minmax(0,1fr);gap:10px 12px}
+.analyst-mode .gi-replay-dock {display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 16px}
 .analyst-mode .gi-playback {grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px}
 .analyst-mode .gi-playback input {min-width:0;width:100%}
 .analyst-mode .gi-playback>span[hidden] {display:none}
 .analyst-mode .gi-replay-tools {grid-column:1;grid-row:2;margin:0;padding:0}
 .analyst-mode .gi-replay-footer {display:contents}
-.analyst-mode .gi-replay-caption {grid-column:1/-1;grid-row:3;padding:0}
+.analyst-mode .gi-replay-caption {grid-column:2;grid-row:2;align-self:center;text-align:right;padding:0;min-width:0}
+@media(max-width:480px){
+ .analyst-mode .gi-replay-dock {grid-template-columns:minmax(0,1fr)}
+ .analyst-mode .gi-replay-caption {grid-column:1;grid-row:3;text-align:left}
+}
 .analyst-mode .gi-card-disclosure {grid-column:1/-1;margin:0}
 
 /* Keep the newest insight at the top; history never pushes it out of view. */
