@@ -48,7 +48,7 @@ def test_two_calls_publish_only_after_editor_review_and_allow_repairs():
   packet=json.loads(data['messages'][1]['content'])['source'];eid=packet['evidence'][0]['id']
   row=comment(evidence_ids=[eid],metric_ids=[next(m['id'] for m in packet['metrics'] if m['key']=='final_third_entries' and m.get('club_id')=='home' and m['window']=='current')])
   if len(seen)==1:row['text']='They made 99 entries.'
-  else:row.update(publish=True,text='The pass entered the final third. That is a route worth following, but the next action will decide whether it becomes a chance.')
+  else:row.update(publish=True,added_value='sequence',new_reading='The recorded entry connects to the following attack.',unsupported_premises=[],text='The pass entered the final third. That is a route worth following, but the next action will decide whether it becomes a chance.')
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(row)}}],'usage':{'prompt_tokens':123,'completion_tokens':80}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-4.1-mini',api_key='fake-test-only')
  r=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))
@@ -58,7 +58,7 @@ def test_two_calls_publish_only_after_editor_review_and_allow_repairs():
  assert 'reasoning_effort' not in seen[0]
 
 
-@pytest.mark.parametrize('review', ['reject','invented_number','unknown_citation'])
+@pytest.mark.parametrize('review', ['reject','invented_number','unknown_citation','no_added_value','unsupported_premise','repetition'])
 def test_editor_rejection_or_invalid_repair_never_reaches_conversation(review):
  s=source();count=0
  def transport(req):
@@ -66,7 +66,10 @@ def test_editor_rejection_or_invalid_repair_never_reaches_conversation(review):
   count+=1;p=json.loads(json.loads(req.content)['messages'][1]['content'])['source']
   row=comment(evidence_ids=[p['evidence'][0]['id']],metric_ids=[next(m['id'] for m in p['metrics'] if m['key']=='final_third_entries' and m.get('club_id')=='home' and m['window']=='current')])
   if count==2:
-   row['publish']=review!='reject'
+   row.update(publish=review!='reject',added_value='contrast',new_reading='A new supported contrast.',unsupported_premises=[])
+   if review=='repetition':row['new_reading']=''
+   if review=='no_added_value':row['added_value']='none'
+   if review=='unsupported_premise':row['unsupported_premises']=['Individual blame is not supported']
    if review=='reject':row['text']=''
    if review=='invented_number':row['text']='They scored 99 goals.'
    if review=='unknown_citation':row['metric_ids']=['unknown']
@@ -129,3 +132,38 @@ def test_live_comparisons_do_not_mix_unequal_early_match_windows():
  s=snap([event(1,479999)],ms=480000)
  assert all(m['window']!='previous' for m in live_packet(s,'control')['metrics'])
  assert live_packet(source(),'control')['window_meanings']['current'].startswith('most recent')
+
+
+def test_focus_context_preserves_defensive_contributions_and_comparable_spells():
+ s=snap([event(1,299999,kind='recovery'),event(2,599999,kind='duel',outcome='won')],focus_player_id='h1')
+ p=live_packet(s,'players')
+ rows={m['id']:m['value'] for m in p['metrics']}
+ assert rows['previous:h1:recoveries']==1 and rows['current:h1:recoveries']==0
+ assert rows['current:h1:duels_won']==1 and rows['previous:h1:duels_won']==0
+ # Partial preceding windows are not a valid comparison.
+ assert not any(m['window']=='previous' for m in live_packet(snap([event(1,479999)],ms=480000,focus_player_id='h1'),'players')['metrics'])
+
+
+def test_idle_focused_player_does_not_get_recycled_turns():
+ history=[{'role':'players','cutoff':{'period':1,'elapsed_ms':540000}},{'role':'control'}]
+ quiet=snap([event(1,539000),event(2,599999,player_id='a1',club_id='away')],focus_player_id='h1')
+ assert choose_role(quiet,history)!='players'
+ active=snap([event(1,539000),event(2,599999)],focus_player_id='h1')
+ assert choose_role(active,history)=='players'
+
+
+def test_focus_actions_survive_other_players_activity_without_future_leakage():
+ rows=[event(1,500000)]+[event(i,500000+i*1000,player_id='a1',club_id='away') for i in range(2,25)]+[event(25,600001)]
+ p=live_packet(snap(rows,focus_player_id='h1'),'players')
+ ids={e['id'] for e in p['evidence']}
+ assert 'e1:r1' in ids and 'e25:r1' not in ids and len(ids)<=8
+
+
+def test_gate_rejects_cross_club_citations_and_prefix_as_previous_spell():
+ s=snap([event(1,1000),event(2,590000),event(3,2000)],focus_player_id='h1');p=live_packet(s,'players')
+ with pytest.raises(ValueError,match='unsupported_trend'):
+  check_comment(Comment(**comment(text='His involvement fell from two actions to one.',metric_ids=['prefix:h1:on_ball_actions','current:h1:on_ball_actions'],evidence_ids=[])),p,[],'players')
+ p=live_packet(s,'control')
+ with pytest.raises(ValueError,match='missing_club_reference'):
+  check_comment(Comment(**comment(text='Away made no passes into the box.',metric_ids=['current:home:box_entries'],evidence_ids=[])),p,[],'control')
+ check_comment(Comment(**comment(text='Home passes decreased from the preceding spell.',metric_ids=['current:home:passes','previous:home:passes'],evidence_ids=[])),p,[],'control')

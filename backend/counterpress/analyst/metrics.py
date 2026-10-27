@@ -6,7 +6,7 @@ Estimates are explicitly separate from authored probabilities and measurements.
 from collections import Counter
 import math
 
-VERSION = 'analyst-event-metrics-v2-grounded-candidates'
+VERSION = 'analyst-event-metrics-v3-focused-windows'
 COMPLETE = {'complete', 'completed'}
 CONTROLLED = {'complete', 'completed', 'controlled', 'established', 'successful'}
 ON_BALL = {'pass', 'shot', 'carry'}

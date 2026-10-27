@@ -126,10 +126,14 @@ def build_snapshot(career, match_id: str, request: AnalystRequest) -> dict:
                 for key,label in [('assists','Assists'),('key_passes','Shot-creating passes'),('saves','Saves')]:
                     available=fixture.assist_basis!='unavailable' if key=='assists' else fixture.shot_assists_complete if key=='key_passes' else fixture.source_kind!='adapted_archive'
                     rows.append({'id':f'{w}:{p["player_id"]}:{key}','key':key,'window':w,'club_id':p['club_id'],'player_id':p['player_id'],'label':label,'unit':'count','basis':'recorded_events' if available else 'unavailable','status':'available' if available else 'unavailable','value':summary['players'][p['player_id']][key] if available else None,'role':'players','method':'counts'})
-        if w=='current':
+        if w in ('current','previous'):
             for p in players:
+                focused=p['player_id']==request.focus_player_id
+                if w=='previous' and not focused: continue
+                keys={'on_ball_actions','shots'} if w=='current' else set()
+                if focused: keys |= {'passes','passes_completed','pass_accuracy','duels_won','recoveries'}
                 for metric in metric_rows(selected,club_id=p['club_id'],player_id=p['player_id'],window=w,duration_ms=duration,all_events=selected,source_kind=fixture.source_kind):
-                    if metric['key'] in {'on_ball_actions','shots'}: rows.append(metric)
+                    if metric['key'] in keys: rows.append(metric)
         for row in rows:
             if row['window']==w and row['key']=='duels_won':
                 row['value']=(summary['players'][row['player_id']] if row.get('player_id') else summary['clubs'][row['club_id']])['duels_won']

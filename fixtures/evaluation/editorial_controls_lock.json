@@ -1,5 +1,5 @@
 {
-  "version": "v20-live-analyst-desk",
+  "version": "v21-focused-analyst-editor",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -13,11 +13,11 @@
     "backend/counterpress/analyst/candidates.py": "792ac3b7d792210f57cee53c319d707eee622cef8ecb1e078633ee597f139d58",
     "backend/counterpress/analyst/contracts.py": "71427dc3d3624aec70ff6521a68acda1e170b27de5130a81f93436ac584d9370",
     "backend/counterpress/analyst/discussion.py": "755008aaf0f1bce01b32d9012ffb8002e241996ccd2cad587b20ad7b07dd737d",
-    "backend/counterpress/analyst/live.py": "31b9a93964918386d6aa3f35054c69fb90166be0546f1d5b83a9d72f753ce762",
+    "backend/counterpress/analyst/live.py": "8b08ffa05f33bb6612f5b22c444b1091f6ec8ed337c2ddd48178b83511ba33cb",
     "backend/counterpress/analyst/live_admission.py": "a4aa351935e08a025698f21a385cfb50084bda8059aff82379dde65a9abe97b0",
-    "backend/counterpress/analyst/metrics.py": "d9739662fbbfdd693a4ebbd41fb1ca05b2b905c7221dd1c547c2aab9346ef2b5",
+    "backend/counterpress/analyst/metrics.py": "d3f1826c5a76bb949b2745ea2988f351a4cfd6d1bbef6b74849947975b87e4f9",
     "backend/counterpress/analyst/provider.py": "e63286129891454d1814236159954a7b8f8623a6f671886dc6aebf242b5ba718",
-    "backend/counterpress/analyst/service.py": "cc13855ba5c76bf3c8abf1c296ceffd916e7834c23a15fa0c1d79b32669e66be",
+    "backend/counterpress/analyst/service.py": "fe09497a27bfc1b4e69c8e3e88b35f5f6eb0f408b7fc047f48b4596c6cb72a4c",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
     "backend/counterpress/api/main.py": "db16b1f8c7aa2854685500d4d29afe7678a2646841808686d8c4fb452a31b9d5",
     "backend/counterpress/api/phase4.py": "20bcb6446fbdf0e6c94e5ebd011cea0689cbbdb636d3bd9bc222fdad8278eeac",

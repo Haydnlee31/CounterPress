@@ -1,6 +1,5 @@
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react'
 import {AppHeader} from '../shell/AppHeader'
-import {ClubCrest} from '../matchday/ClubCrest'
 import {PlaySequence} from '../gi/PlaySequence'
 import type {ReplayPlayback} from '../gi/PlaySequence'
 import {alias} from '../gi/data'
@@ -10,7 +9,6 @@ import {readPreferences} from '../../../integrations/personalization/client'
 import {clockLabel} from './data'
 import {ContextualInsight} from './ContextualInsight'
 import {AnalystConversation,SpecialistDesks} from './AnalystRoom'
-import {PlayerOptions} from './PlayerOptions'
 import {MetricBoard} from './MetricBoard'
 import type {Evidence,Preferences,Role} from './data'
 import {useAnalyst} from './useAnalyst'
@@ -19,7 +17,7 @@ import '../gi/gi.css'
 import './analyst.css'
 
 function initialPreferences():Preferences{
-  try{const p=readPreferences(localStorage).preferences;return {language:p.language,depth:p.depth,focus_player_id:p.focus_player_id??null}}
+  try{const p=readPreferences(localStorage).preferences;return {language:p.language,depth:'analyst',focus_player_id:p.focus_player_id??null}}
   catch{return {language:'en',depth:'analyst',focus_player_id:null}}
 }
 
@@ -46,10 +44,9 @@ export default function AnalystMode(){
   function closeDetails(){detailRef.current?.close();setLens(null);detailOpener.current?.focus({preventScroll:true})}
   function chooseMatch(value:string){setSelectedEvidence(null);setPlayback({cutoff:{period:1,elapsed_ms:0},playing:false});setMatchId(value);setPreferences(p=>({...p,focus_player_id:null}));const url=new URL(location.href);url.searchParams.set('match',value);history.replaceState(null,'',url)}
   const conversation=<AnalystConversation rounds={rounds} pending={pending} failed={failed} available={!!config?.discussion_available} playing={playback.playing} ready={playback.cutoff.elapsed_ms>=60000} analysis={analysis} live={config?.discussion_style==='live'} refresh={requestDiscussion} onEvidence={e=>{setSelectedEvidence({...e,requestId:(selectedEvidence?.requestId??0)+1});pitchRef.current?.focus({preventScroll:true});pitchRef.current?.scrollIntoView({block:'start',behavior:'smooth'})}}/>
-  return <div className="analyst-mode matchday"><a className="fan-skip" href="#analyst-main">Skip to Analyst Mode</a><AppHeader active="gi" hideContext/>
+  const headerContext=<div className="an-header-context"><h1>Analyst Mode</h1><label className="an-match-picker"><span className="an-sr-only">Choose a match</span><select aria-label="Choose a match" value={matchId} onChange={e=>chooseMatch(e.target.value)}>{matchLibrary.map(m=><option value={m.id} key={m.id}>Eastbridge × Northport · {matchDate(m.date)}</option>)}</select></label><label className="an-language"><span className="an-sr-only">Language</span><select aria-label="Analysis language" value={preferences.language} onChange={e=>setPreferences(p=>({...p,language:e.target.value as Preferences['language']}))}><option value="en">English</option><option value="zh-Hans">简体中文</option></select></label></div>
+  return <div className="analyst-mode matchday"><a className="fan-skip" href="#analyst-main">Skip to Analyst Mode</a><AppHeader active="gi" hideContext brandContext={headerContext}/>
     <main id="analyst-main" className="an-main" tabIndex={-1}>
-      <header className="an-heading"><div><a className="an-back" href={`?match=${encodeURIComponent(matchId)}#gi`}>← Match Centre</a><p className="an-eyebrow">THE FULL MATCH</p><h1>Analyst Mode<span>.</span></h1></div><label className="an-match-picker">Choose a match<select aria-label="Choose a match" value={matchId} onChange={e=>chooseMatch(e.target.value)}>{matchLibrary.map(m=><option value={m.id} key={m.id}>Eastbridge × Northport · {matchDate(m.date)}</option>)}</select></label></header>
-      <div className="an-toolbar"><div className="an-matchup"><ClubCrest club="eastbridge"/><span>Eastbridge <i>×</i> Northport</span><ClubCrest club="northport"/></div><details className="an-view-settings"><summary>Your view <span aria-hidden="true">⌄</span></summary><div><label>Detail<select aria-label="Analysis detail" value={preferences.depth} onChange={e=>setPreferences(p=>({...p,depth:e.target.value as Preferences['depth']}))}><option value="casual">Match story</option><option value="analyst">In depth</option></select></label><label>Language<select aria-label="Analysis language" value={preferences.language} onChange={e=>setPreferences(p=>({...p,language:e.target.value as Preferences['language']}))}><option value="en">English</option><option value="zh-Hans">简体中文</option></select></label><label>Player focus<select aria-label="Player focus" value={focusPlayer??''} onChange={e=>setPreferences(p=>({...p,focus_player_id:e.target.value||null}))}><option value="">Everyone</option>{snapshot&&<PlayerOptions snapshot={snapshot}/>}</select></label></div></details></div>
       <SpecialistDesks snapshot={snapshot} rounds={rounds} focusPlayerId={focusPlayer} setFocus={value=>setPreferences(p=>({...p,focus_player_id:value}))} open={role=>{detailOpener.current=document.activeElement as HTMLElement;setLens(role)}} conversation={<>{conversation}<ContextualInsight snapshot={snapshot} rounds={rounds} focusPlayerId={focusPlayer}/></>} pitch={<section ref={pitchRef} tabIndex={-1} className="an-watch-layout" aria-label="Full match and analysis"><div className="an-pitch-panel">
         {matchError?<div className="an-replay-error" role="alert"><h2>The match couldn’t load.</h2><button onClick={()=>setAttempt(n=>n+1)}>Try again</button></div>:match?<PlaySequence key={matchId} matchId={matchId} events={match.events} event={match.events[0]} names={names} players={match.players} fullMatch analystPlayback hideObservation focusPlayerId={focusPlayer} onPlaybackChange={onPlayback} onSeek={onSeek} seekTo={selectedEvidence?{eventId:selectedEvidence.event_id,revision:selectedEvidence.revision,requestId:selectedEvidence.requestId}:undefined}/>:<div className="an-replay-loading" role="status">Opening the match…</div>}
       </div></section>}/>

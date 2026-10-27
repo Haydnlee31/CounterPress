@@ -377,3 +377,59 @@
 
 .an-map-legend>span {display:inline-flex;align-items:center;gap:5px}
 .an-map-legend>span:not(.an-density-key)>i {width:8px;height:8px;border-radius:50%;display:inline-block;box-shadow:0 0 0 1px #173e3326}
+
+/* Analyst-specific header context shares the brand row without crowding navigation. */
+.an-sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.analyst-mode .cp-header {max-width:1920px;padding:16px 28px;gap:24px;flex-wrap:wrap}
+.an-header-context {display:flex;align-items:center;gap:16px;flex:1;min-width:0}
+.an-header-context h1 {font-size:19px;letter-spacing:-.6px;white-space:nowrap;margin:0;padding-left:20px;border-left:1px solid #cad4c4;line-height:1.4}
+.analyst-mode .an-header-context .an-match-picker {margin:0;max-width:none;min-width:0;flex:0 1 285px}
+.an-header-context select {min-height:40px;max-width:100%;width:100%;padding:8px 26px 8px 10px;border:1px solid #d4ddcf;border-radius:9px;background:#fffef8;color:#173e33;font-size:12px}
+.an-language {min-width:95px}
+.analyst-mode .cp-navigation {gap:20px}
+.analyst-mode .an-main {padding-top:16px}
+.an-score-stage {display:grid;grid-template-columns:minmax(64px,1fr) minmax(0,5fr) minmax(64px,1fr);align-items:center;gap:8px}
+.an-score-club {display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;text-align:center}
+.an-score-club .fan-crest {width:38px;height:44px;filter:none}
+.an-score-club span {font-size:11px;font-weight:650;overflow-wrap:anywhere}
+.an-score-club strong {font-size:32px;line-height:1;font-variant-numeric:tabular-nums;font-weight:600}
+.an-score-home {color:#eed48a}
+.an-score-away {color:#b9ddf7}
+.an-match-clock {display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0 0;font-size:10px;color:#bfcfbd}
+.an-match-clock time {font-size:15px;font-weight:650;font-variant-numeric:tabular-nums;color:#f8f5df}
+.analyst-mode .an-pitch-panel .gi-replay .an-score-stage .gi-pitch {max-height:clamp(230px,34dvh,340px);min-width:0}
+@media(max-width:1300px){
+ .analyst-mode .cp-header {gap:10px 20px}
+ .analyst-mode .cp-navigation {width:100%;order:3;justify-content:flex-end;margin:0;gap:24px}
+ .analyst-mode .cp-navigation a {padding:6px 0;min-height:34px}
+ .an-header-context .an-match-picker {margin-left:auto}
+}
+@media(max-width:1100px){
+ .an-score-stage {grid-template-columns:1fr 1fr;gap:12px}
+ .an-score-stage .gi-pitch {grid-column:1/-1;grid-row:2}
+ .an-score-club {flex-direction:row;gap:8px;text-align:left}
+ .an-score-away {justify-content:flex-end}
+ .an-score-club .fan-crest {width:22px;height:27px}
+ .an-score-club strong {font-size:22px}
+}
+@media(max-width:700px){
+ .analyst-mode .cp-header {padding:12px 14px;gap:10px}
+ .analyst-mode .cp-wordmark {width:112px}
+ .an-header-context {display:contents}
+ .an-header-context h1 {border:0;padding:0;font-size:17px;margin-right:auto}
+ .an-header-context .an-language {order:1;min-width:84px}
+ .analyst-mode .an-header-context .an-match-picker {order:2;flex:1 1 100%;width:100%}
+ .analyst-mode .cp-navigation {justify-content:space-between;gap:10px}
+ .analyst-mode .cp-navigation a {font-size:11px}
+ .an-header-context select {font-size:12px}
+}
+/* One transport row, one utility row; keep the match clock separate from replay duration. */
+.analyst-mode .gi-replay-dock {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 12px}
+.analyst-mode .gi-playback {grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px}
+.analyst-mode .gi-playback input {min-width:0;width:100%}
+.analyst-mode .gi-playback>span[hidden] {display:none}
+.analyst-mode .gi-replay-tools {grid-column:1;grid-row:2;margin:0;padding:0}
+.analyst-mode .gi-replay-footer {display:contents}
+.analyst-mode .gi-replay-footer .ft-context-pitch {grid-column:2;grid-row:2;align-self:center}
+.analyst-mode .gi-replay-caption {grid-column:1/-1;grid-row:3;padding:0}
+.analyst-mode .gi-card-disclosure {grid-column:1/-1;margin:0}
