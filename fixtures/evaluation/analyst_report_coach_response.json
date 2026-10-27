@@ -1,0 +1,197 @@
+{
+  "purpose": "Captured synthetic-match model outputs for deterministic publication regression; not a universal coaching-quality benchmark.",
+  "match_id": "synthetic-32fe41c5d304ce68d7d9",
+  "source_id": "89015228d5ac2a928c91d60a52a88d009f7a5fb0395724ee4284403cc9a7dc46",
+  "outputs": [
+    {
+      "headline": "Eastbridge supplied more passes; Northport supplied many more shots",
+      "overview": {
+        "title": "Match contrast",
+        "text": "The match finished 2–2, but Eastbridge completed substantially more passes while Northport generated many more attempts. Eastbridge recorded 442 passes and seven shots; Northport had 373 passes and sixteen shots. That statistical contrast frames a review of when Eastbridge’s linking play leads to shots and why Northport’s final actions produced blocks.",
+        "evidence_ids": [
+          "E015",
+          "E026",
+          "E009"
+        ]
+      },
+      "teams": [
+        {
+          "club_id": "eastbridge",
+          "strength": {
+            "title": "Worked sequence — return-pass finish",
+            "text": "Eastbridge’s 71:12 goal shows a clear, repeatable sequence: Oliver Hayes received play, carried into the centre, exchanged a return with Kai Mercer and finished. That passage combined short, central exchanges and a quick return to open the shooting lane without prolonged linking.",
+            "evidence_ids": [
+              "E007",
+              "E018"
+            ]
+          },
+          "weakness": {
+            "title": "Long build vs quick recovery contrast",
+            "text": "An early left-side build ended with Jamie Vale’s blocked shot at 0:14 after five linked actions, while a short recovery produced Owen Cole’s 34:54 goal. The team’s longer linking passages sometimes failed to convert into attempts compared with quicker recovery-led shots.",
+            "evidence_ids": [
+              "E001",
+              "E005",
+              "E015"
+            ]
+          },
+          "adjustment": {
+            "title": "Test: when to stop linking and take the shot",
+            "text": "Why: Eastbridge’s high pass volume produced fewer attempts; comparing a long early build (0:14) with quick recovery finishes (34:54, 71:12) can expose decision points on taking the shot. Action: run a video review of E001 versus E005 and E007, then a training drill starting from a high recovery where the team must attempt a shot within six seconds or after no more than three passes; include a supervised repetition replicating the Hayes–Mercer return pass. Measure: count average passes per shot and shots per recovery in the drill and compare those counts to the match passages cited.",
+            "evidence_ids": [
+              "E001",
+              "E005",
+              "E007"
+            ],
+            "action": "Video-review E001 against E005 and E007 with players; then run a drill starting from a high recovery where players must attempt a shot within six seconds or after at most three passes, including repetitions that replicate the Hayes–Mercer return-pass finish.",
+            "measure": "Count average passes per shot and the number of shots produced per recovery during the drill, then compare these counts with the matched passages (E001, E005, E007)."
+          },
+          "player": {
+            "title": "Oliver Hayes — defender joining the finish",
+            "text": "Oliver Hayes (defender) carried into attack and finished the 71:12 passage, registering a goal and multiple shots across the match. His carry and shot after exchanging passes with Kai Mercer converted a combined move into a score, showing his impact when joining forward phases.",
+            "evidence_ids": [
+              "E018",
+              "E007"
+            ]
+          }
+        },
+        {
+          "club_id": "northport",
+          "strength": {
+            "title": "Worked sequence — return-pass creation",
+            "text": "Northport’s 20:03 goal came from a left-entry sequence that involved a return pass before the finish. Jude Rivers received a returning ball from Ben Fletcher and struck from the centre; the multi-pass approach produced a central opportunity that finished successfully.",
+            "evidence_ids": [
+              "E004",
+              "E029"
+            ]
+          },
+          "weakness": {
+            "title": "Blocked attempts and the final ball",
+            "text": "A blocked attempt at 11:21 had Callum Stone feed Henry Blake whose shot was blocked; compare that final pass and arrival to the 20:03 Jude Rivers finish. The clear coaching task is to review the final pass options and the shooting choice at the moment of delivery.",
+            "evidence_ids": [
+              "E003",
+              "E004",
+              "E026"
+            ]
+          },
+          "adjustment": {
+            "title": "Test: final-pass and shooting decision under arrival pressure",
+            "text": "Why: Northport recorded multiple blocked attempts; reviewing final-ball choices in blocked versus scored passages may reduce blocks. Action: video-review E003 against E004 focusing on the Callum Stone→Henry Blake arrival and Ben Fletcher→Jude Rivers return; in training, recreate the wide-to-centre arrival so the forward must choose to shoot or lay off, with a hypothetical variation that enforces a mandatory return pass before shooting. Measure: record blocked shots and on-target outcomes from the recreated arrivals and tally how often the forward shoots immediately versus passes, then compare those counts to the match passages cited.",
+            "evidence_ids": [
+              "E003",
+              "E004",
+              "E026"
+            ],
+            "action": "Run a video session comparing E003 and E004 focusing on the final pass and arrival; then rehearse the Callum Stone→Henry Blake type arrival in training, allowing the forward to choose shoot or lay off, and test a variation that enforces a return pass before shooting.",
+            "measure": "Count blocked versus on-target shots from those recreated arrivals and record the number of immediate shots versus lay-offs; compare these counts to the match blocked-shot and goal passages (E003, E004, E026)."
+          },
+          "player": {
+            "title": "Jude Rivers — forward finishing the return",
+            "text": "Jude Rivers (forward) completed a multi-pass approach and finished at 20:03 after a return-pass involvement with Ben Fletcher. Rivers’ arrival on the returning ball and his finish converted a constructed sequence into a goal, reflecting his role in central finishing phases.",
+            "evidence_ids": [
+              "E029",
+              "E004"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "supported": true,
+      "coaching_ready": true,
+      "reading": {
+        "headline": "Eastbridge completed more passes while Northport produced many more shots in a 2–2 draw",
+        "overview": {
+          "title": "Match contrast",
+          "text": "The match finished 2–2. Eastbridge completed 442 passes and seven shots; Northport completed 373 passes and sixteen shots. Use this contrast to review how Eastbridge’s linking sequences reached shots and how Northport’s final actions led to a high number of blocked attempts and other non-goals.",
+          "evidence_ids": [
+            "E015",
+            "E026",
+            "E009"
+          ]
+        },
+        "teams": [
+          {
+            "club_id": "eastbridge",
+            "strength": {
+              "title": "Worked sequence — Hayes–Mercer return led to a goal",
+              "text": "At 71:12 Oliver Hayes carried and combined with Kai Mercer, exchanged a return pass and finished from the centre for a goal. This short central exchange produced a successful finish and is a clear recorded example of an effective linking-and-return sequence.",
+              "evidence_ids": [
+                "E007",
+                "E018"
+              ]
+            },
+            "weakness": {
+              "title": "Long linking sequence ended in a blocked shot",
+              "text": "An early left-side build at 0:14 involved five linked actions (Ellis→West→Cole→Vale) and ended with Jamie Vale’s blocked shot. Contrast this with the quick recovery finish at 34:54 (Owen Cole) to review when longer linking passages are reaching shots versus when quicker recoveries produce attempts.",
+              "evidence_ids": [
+                "E001",
+                "E005",
+                "E015"
+              ]
+            },
+            "adjustment": {
+              "title": "Test when to stop linking and attempt a finish",
+              "text": "Why: The team’s high pass volume includes both longer build sequences and short recoveries that reached shots. Testing decision thresholds will show whether earlier finishing or planned short returns produce more usable shots from comparable situations (see E001, E005, E007).",
+              "evidence_ids": [
+                "E001",
+                "E005",
+                "E007"
+              ],
+              "action": "Video-review passages E001, E005 and E007 with the attacking players involved, then run a training drill starting from a high recovery or similar build where the sequence must produce a shot within six seconds or after no more than three passes; include repetitions that replicate the Hayes–Mercer return-pass combination.",
+              "measure": "During the drill, count average passes per shot and count shots produced per recovery; compare those drill counts with the match passages cited (E001, E005, E007)."
+            },
+            "player": {
+              "title": "Oliver Hayes — defender joining attack and finishing",
+              "text": "Oliver Hayes (defender) carried into attack and finished the 71:12 passage, scoring and contributing multiple shots overall. His carry and the return pass with Kai Mercer converted a short central combination into a goal, evidencing his impact when joining forward phases.",
+              "evidence_ids": [
+                "E018",
+                "E007"
+              ]
+            }
+          },
+          {
+            "club_id": "northport",
+            "strength": {
+              "title": "Worked sequence — return pass produced a central finish",
+              "text": "At 20:03 Jude Rivers finished after a multi-pass left-entry that included a return from Ben Fletcher. That recorded sequence—left entry, return pass, finish from centre—resulted in a goal and shows a successful repeated pattern of creating a central shooting opportunity.",
+              "evidence_ids": [
+                "E004",
+                "E029"
+              ]
+            },
+            "weakness": {
+              "title": "Blocked arrival — final pass and shooting decision",
+              "text": "At 11:21 Callum Stone’s pass found Henry Blake, whose shot was blocked. Compare the timing and final-ball arrival in E003 with the successful return-and-finish in E004 to review whether different final-pass or shot decisions affect the frequency of blocked attempts.",
+              "evidence_ids": [
+                "E003",
+                "E004",
+                "E026"
+              ]
+            },
+            "adjustment": {
+              "title": "Test final-pass and shooting choices on arrival",
+              "text": "Why: Multiple blocked attempts suggest the need to inspect final-ball shape and the shooter’s choice on arrival. Comparing blocked versus scored passages can identify repeatable decision points to rehearse (see E003 and E004).",
+              "evidence_ids": [
+                "E003",
+                "E004",
+                "E026"
+              ],
+              "action": "Video-review E003 and E004 with the final-pass providers and the involved forwards, then rehearse the Callum Stone→Henry Blake arrival in training with defenders simulating a blocking line; run two variations—one allowing the forward to choose immediately, one enforcing a mandatory return pass before shooting.",
+              "measure": "Record the number of blocked shots and on-target outcomes from the recreated arrivals and tally how often the forward shoots immediately versus lays off; compare those counts with the match blocked-shot and goal passages (E003, E004) and the team’s blocked-shot total (E026)."
+            },
+            "player": {
+              "title": "Jude Rivers — forward finishing a return",
+              "text": "Jude Rivers (forward) completed multiple passes and finished at 20:03 after receiving a return pass from Ben Fletcher. That recorded arrival-and-finish converted a constructed sequence into a goal and is a concrete example for rehearsing similar arrival patterns.",
+              "evidence_ids": [
+                "E029",
+                "E004"
+              ]
+            }
+          }
+        ]
+      },
+      "issues": []
+    }
+  ],
+  "expected_overview": "The match finished 2–2. Eastbridge completed 384 of 442 passes and took 7 shots; Northport completed 316 of 373 passes and took 16 shots."
+}

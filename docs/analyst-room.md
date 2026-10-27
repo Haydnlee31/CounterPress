@@ -294,7 +294,7 @@ perfect or that every source minute warrants another message.
 At the end of Analyst Mode's full replay, **Match summary** opens a visual report.
 Opening it is free. **Approve deep analysis** explicitly starts a bounded report:
 one gpt-5-mini author (up to 6,000 output tokens, medium reasoning) and an independent
-reviewer/editor (up to 3,000 output tokens, low reasoning). Each request is guarded at
+reviewer/editor (up to 5,000 output tokens, low reasoning). Each request is guarded at
 18,000 input tokens including a conservative framing margin. The durable ledger
 reserves US$0.10 before either call, within the existing match and shared Analyst
 allowances. This conservative accounting ceiling is not an Azure invoice. Failed
@@ -333,3 +333,56 @@ The interpretation follows the distinction between wide-area delivery and chance
 creation described by [FIFA's analysis of wide areas](https://www.fifatrainingcentre.com/en/fwc2022/technical-and-tactical-analysis/use-of-wide-areas.php)
 and [FIFA Game Insights](https://www.fifatrainingcentre.com/en/game/game-insights/using-wide-areas.php).
 These are methodology references, not additional evidence about Footie's matches.
+
+
+### Coaching-quality refinement (27 October)
+
+A published-browser test returned unavailable after about 45 seconds. A captured
+local reproduction succeeded, but its headline incorrectly implied a win in a
+2–2 draw and its recommendations were generic. The first two refinement checks
+were withheld: field names leaked into prose and independent entry counts were
+incorrectly compared with bounded shot-route windows. These are failed checks,
+not accepted sample reports. The original production failure was not reproduced
+locally; safe stage/type diagnostics now make future failures distinguishable
+without logging model prose, URLs or credentials.
+
+The report now gives each team a proposed coaching task and a measurable check,
+with direct links to the referenced shot passages. The model receives roles,
+score-before-shot context, final recorded actions, exact return-pass combinations
+and shot outcomes. Whole-match aggregates remain intact, while examples select
+up to three goals, the first blocked shot and the first other failed attempt per
+team. The examples illustrate the counts; they do not estimate causal effects.
+Independent final-third entry totals and truncated linked-route counts are omitted
+from the writing packet because they cannot form a valid entry-to-shot funnel.
+They remain in the visual report. Editorial questions depend on the team evidence:
+more circulation with fewer attempts, frequent blocked attempts, or a focused
+review of other unsuccessful finishes. A question is not a tactical diagnosis.
+
+The editor can repair a draft before final validation. Both factual support and
+coaching usefulness must pass. Final draw/win consistency is independently checked;
+aggregate-score claims are rejected. Short citation aliases are mapped back to real
+facts and passages. Standalone citation brackets are removed; references used in a sentence become readable passage clocks so the sentence stays intact.
+This does not establish unobserved defender positioning, shot quality or causality.
+
+The coaching approach follows UEFA's use of concrete tactical observations with
+video and data: https://www.uefa.com/development/performance-analysis/about-performance-analysis/
+The external methodology supplies no facts about the synthetic match.
+
+
+A further bounded live author/editor check completed in 47.83 seconds. Manual
+review found a pass-attempt/completion label error and grammatical gaps from
+removed citation aliases. A narrowly scoped formatter now reconciles explicit,
+cited full-match overview pass totals (not player, window or qualified pass counts)
+with the computed values. The captured response is checked in
+`fixtures/evaluation/analyst_report_coach_response.json` and replayed through the
+final publication code without model calls. It preserves a correct 2–2 result,
+384/442 and 316/373 completed/attempted passes, distinct coaching tasks and
+readable references to actual passages. A single cited sequence is described as
+an example rather than proof of a repeated pattern. This observed case is useful
+as a coaching review prompt; it does not validate every future generated report.
+
+The tested Northport task contrasts Stone to Blake at 11:21 (blocked) with the
+Rivers/Fletcher return at 20:03 (goal), then proposes testing final-pass choices and
+recording blocked/on-target outcomes. Eastbridge instead reviews longer build-up
+against the recovery finish and Hayes/Mercer return. These are proposed drills
+and review questions, not claims about unobserved defensive positioning.

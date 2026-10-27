@@ -40,3 +40,18 @@ it('uses a readable dark loading state while deep analysis runs',async()=>{
  expect(container.querySelector('.mr-intro .footie-loading.is-dark.is-compact, .mr-intro .footie-loading.is-compact.is-dark')).toBeTruthy()
  expect(screen.getByText('Footie is connecting the patterns…')).toBeTruthy()
 })
+
+it('shows a concrete coaching task and lets the reader inspect its cited passage',async()=>{
+ const route={id:'shot:test',club_id:'Away',player:'Avery Moss',period:1,elapsed_ms:3000,outcome:'blocked',goal:false,entry_lane:'left',shot_lane:'centre',points:[{x:60,y:10},{x:90,y:34}],actors:['Casey Vale','Avery Moss'],actions:['pass','shot']}
+ const report={...reading,teams:reading.teams.map(t=>({...t,adjustment:{...claim,action:'Review the final pass with Moss before repeating the combination.',measure:'Count blocked and unblocked attempts after the return pass.',evidence_ids:['shot:test']}}))}
+ vi.stubGlobal('matchMedia',vi.fn(()=>({matches:true})))
+ vi.stubGlobal('requestAnimationFrame',(fn:FrameRequestCallback)=>{fn(0);return 1})
+ const scroll=vi.fn();Object.defineProperty(Element.prototype,'scrollIntoView',{configurable:true,value:scroll})
+ vi.mocked(fetch).mockImplementation(async(_url,init)=>new Response(JSON.stringify(init?.method==='POST'?{match_id:'match',source_id:'version',status:'complete',reading:report}:{...data,routes:[route]})))
+ render(<MatchReport matchId="match" language="en"/>);fireEvent.click(screen.getByRole('button',{name:'Match summary ↗'}));await screen.findByText('Approve deep analysis');fireEvent.click(screen.getByText('Approve deep analysis'))
+ await screen.findByText('Try this');expect(screen.getByText('Count blocked and unblocked attempts after the return pass.')).toBeTruthy()
+ fireEvent.click(screen.getByRole('button',{name:'View 0:03 · Avery Moss ↗'}))
+ expect(screen.getByRole('button',{name:'Away'}).getAttribute('aria-pressed')).toBe('true')
+ expect(scroll).toHaveBeenCalledWith({behavior:'instant',block:'start'})
+ expect(screen.getByRole('img',{name:'Avery Moss: linked build-up to blocked'})).toBeTruthy()
+})
