@@ -47,7 +47,7 @@ it('removes sent-off players at the correct point without revealing a future car
 it('emits completed source clocks, not render frames or future revision availability',()=>{
  const changed=vi.fn(),late={...first,available_ms:4000}
  render(<PlaySequence events={[late,second]} event={late} players={players} names={names} fullMatch hideObservation onPlaybackChange={changed}/>)
- expect(changed).toHaveBeenLastCalledWith({cutoff:{period:1,elapsed_ms:0},playing:false})
+ expect(changed).toHaveBeenLastCalledWith({cutoff:{period:1,elapsed_ms:0},playing:false,finished:false})
  fireEvent.click(screen.getByRole('button',{name:'Play match'}))
  const before=changed.mock.calls.length
  for(let i=0;i<3;i++)step()
@@ -55,9 +55,9 @@ it('emits completed source clocks, not render frames or future revision availabi
  for(let i=0;i<20;i++)step()
  expect(changed.mock.calls.some(([v])=>v.cutoff.elapsed_ms===4000)).toBe(false)
  fireEvent.change(screen.getByLabelText('Full match progress'),{target:{value:'1'}})
- expect(changed).toHaveBeenLastCalledWith({cutoff:{period:2,elapsed_ms:1000},playing:false})
+ expect(changed).toHaveBeenLastCalledWith({cutoff:{period:2,elapsed_ms:1000},playing:false,finished:true})
  fireEvent.change(screen.getByLabelText('Full match progress'),{target:{value:'0'}})
- expect(changed).toHaveBeenLastCalledWith({cutoff:{period:1,elapsed_ms:0},playing:false})
+ expect(changed).toHaveBeenLastCalledWith({cutoff:{period:1,elapsed_ms:0},playing:false,finished:false})
 })
 
 it('pauses for red-pen drawing, shows marks only at their saved frame and hides them during play',()=>{
@@ -80,7 +80,7 @@ it('seeks evidence to its exact resolved event and revision without starting pla
  const changed=vi.fn(),seek=vi.fn()
  const {container}=render(<PlaySequence events={[first,second]} event={first} players={players} names={names} fullMatch hideObservation onPlaybackChange={changed} onSeek={seek} seekTo={{eventId:'b',revision:1,requestId:1}}/>)
  expect(container.querySelector('[data-evidence-event="b"]')).toBeTruthy()
- expect(changed).toHaveBeenLastCalledWith({cutoff:{period:2,elapsed_ms:1000},playing:false})
+ expect(changed).toHaveBeenLastCalledWith({cutoff:{period:2,elapsed_ms:1000},playing:false,finished:false})
  expect(seek).toHaveBeenCalledTimes(1)
  expect(screen.getByText('1 – 1')).toBeTruthy()
 })
