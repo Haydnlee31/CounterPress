@@ -1,0 +1,42 @@
+import {cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react'
+import {afterEach,beforeEach,expect,it,vi} from 'vitest'
+import {MatchReport} from './MatchReport'
+const team=(club_id:string)=>({club_id,name:club_id,totals:{goals:1,shots:3,shot_goals:1,high_recoveries:2,pass_completion:80,known_passes:5,passes:6},cells:Array(18).fill(2),lanes:[{lane:'left',shots:3,goals:1,conversion:33.3},{lane:'centre',shots:0,goals:0,conversion:null}]})
+const data={match_id:'match',source_id:'version',available:true,teams:[team('Home'),team('Away')],routes:[],facts:[{id:'fact',label:'Three attempts',value:3}]}
+const claim={title:'A useful pattern',text:'The side found the box.',evidence_ids:['fact']}
+const reading={headline:'A balanced contest',overview:claim,teams:['Home','Away'].map(club_id=>({club_id,strength:claim,weakness:claim,adjustment:claim,player:claim}))}
+beforeEach(()=>{
+ Object.defineProperty(HTMLDialogElement.prototype,'showModal',{configurable:true,value:vi.fn(function(this:HTMLDialogElement){this.open=true})})
+ Object.defineProperty(HTMLDialogElement.prototype,'close',{configurable:true,value:vi.fn(function(this:HTMLDialogElement){this.open=false})})
+ vi.stubGlobal('fetch',vi.fn(async(_url,init)=>new Response(JSON.stringify(init?.method==='POST'?{match_id:'match',source_id:'version',status:'complete',reading}:data))))
+})
+afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.restoreAllMocks()})
+it('requires an explicit approval click; opening charts makes no paid request',async()=>{
+ render(<MatchReport matchId="match" language="en"/>);expect(fetch).not.toHaveBeenCalled()
+ fireEvent.click(screen.getByRole('button',{name:'Match summary ↗'}));await screen.findByText('Where they played')
+ expect(fetch).toHaveBeenCalledTimes(1);expect(screen.getByRole('img',{name:/18-zone/}).querySelectorAll('text')).toHaveLength(19)
+ fireEvent.click(screen.getByRole('button',{name:'Approve deep analysis'}));await screen.findByText('A balanced contest')
+ expect(fetch).toHaveBeenLastCalledWith('/api/analyst/matches/match/report',expect.objectContaining({method:'POST',body:JSON.stringify({approve:true,language:'en'})}))
+ fireEvent.click(screen.getByRole('button',{name:'Away'}));expect(screen.getByRole('img',{name:/Away: 18-zone/})).toBeTruthy()
+ fireEvent.click(screen.getByRole('button',{name:'Close match summary'}));expect(document.activeElement).toBe(screen.getByRole('button',{name:'Match summary ↗'}))
+})
+it('does not show a stale report after a source correction',async()=>{
+ vi.mocked(fetch).mockImplementation(async(_url,init)=>new Response(JSON.stringify(init?.method==='POST'?{match_id:'match',source_id:'new-version',status:'complete',reading}:data)))
+ render(<MatchReport matchId="match" language="en"/>);fireEvent.click(screen.getByRole('button',{name:'Match summary ↗'}));await screen.findByText('Approve deep analysis');fireEvent.click(screen.getByText('Approve deep analysis'))
+ await waitFor(()=>expect(screen.getByRole('alert').textContent).toContain('Match records changed'))
+ expect(screen.queryByText('A balanced contest')).toBeNull()
+})
+it('keeps the visual report available when the allowance is exhausted',async()=>{
+ vi.mocked(fetch).mockImplementation(async(_url,init)=>new Response(JSON.stringify(init?.method==='POST'?{match_id:'match',source_id:'version',status:'budget_limit'}:data)))
+ render(<MatchReport matchId="match" language="en"/>);fireEvent.click(screen.getByRole('button',{name:'Match summary ↗'}));await screen.findByText('Approve deep analysis');fireEvent.click(screen.getByText('Approve deep analysis'))
+ await waitFor(()=>expect(screen.getByRole('alert').textContent).toContain('allowance is used up'))
+ expect(screen.getByText('Which routes paid off?')).toBeTruthy()
+})
+
+it('uses a readable dark loading state while deep analysis runs',async()=>{
+ vi.mocked(fetch).mockImplementation(async(_url,init)=>init?.method==='POST'?new Promise<Response>(()=>{}):new Response(JSON.stringify(data)))
+ const {container}=render(<MatchReport matchId="match" language="en"/>)
+ fireEvent.click(screen.getByRole('button',{name:'Match summary ↗'}));await screen.findByText('Approve deep analysis');fireEvent.click(screen.getByText('Approve deep analysis'))
+ expect(container.querySelector('.mr-intro .footie-loading.is-dark.is-compact, .mr-intro .footie-loading.is-compact.is-dark')).toBeTruthy()
+ expect(screen.getByText('Footie is connecting the patterns…')).toBeTruthy()
+})

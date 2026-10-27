@@ -65,7 +65,7 @@ class AnalystBoundary:
         await self.app(scope, buffered, private_send)
 
 
-def install_analyst(app, career_service, history_store=None, provider=None, allowance=None, discussion_provider=None, live_allowance=None):
+def install_analyst(app, career_service, history_store=None, provider=None, allowance=None, discussion_provider=None, live_allowance=None, report_provider=None):
     router = APIRouter(prefix='/api/analyst', tags=['Analyst Mode'])
     if provider is None and os.environ.get('COUNTERPRESS_ANALYST_MODE') == 'foundry':
         from .provider import FoundryAnalyst
@@ -107,6 +107,10 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
         else:
             discussion_provider = None
             live = False
+    from .report import AzureMatchReport, ReportAllowance, ReportRequest, report_data
+    if report_provider is None and live_allowance is not None and hasattr(discussion_provider, 'config'):
+        report_provider = AzureMatchReport(discussion_provider.config)
+    report_ledger = ReportAllowance(live_allowance.store) if live_allowance is not None else None
     tasks = set()
     running = {}
     viewers = {}
@@ -161,7 +165,7 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
                 'matches': list(MATCHES), 'discussion_available': discussion_provider is not None,
                 'discussion_runtime': 'footie_live_turn_manager' if live else 'microsoft_agent_framework' if discussion_provider else None,
                 'discussion_style': 'live' if live else 'roundtable', 'match_model_allowance_usd': 2.7 if live else None,
-                'cancellation_available': True}
+                'cancellation_available': True, 'report_available': report_provider is not None and report_ledger is not None}
 
     @router.post('/matches/{match_id}/snapshot')
     async def metrics(match_id: str, body: AnalystRequest):
@@ -253,6 +257,57 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
             return {**envelope, 'status': 'cancelled'}
         if job['status'] == 'complete':
             return {**envelope, **job['result'], 'cached': True}
+        return {**envelope, 'status': job['status']}
+
+    def full_report_data(match_id):
+        try:
+            return report_data(career(), match_id)
+        except KeyError:
+            raise HTTPException(404, 'Match not found') from None
+        except (ValueError, OSError, sqlite3.Error, HistoryStorageError):
+            raise HTTPException(503, 'Match report records are temporarily unavailable') from None
+
+    @router.get('/matches/{match_id}/report')
+    async def report_preview(match_id: str):
+        data = await run_in_threadpool(full_report_data, match_id)
+        return {**data, 'available': report_provider is not None and report_ledger is not None,
+                'maximum_cost_usd': .10, 'status': 'not_requested'}
+
+    async def execute_report(key, owner, data, language):
+        result = None
+        try:
+            result = await asyncio.wait_for(report_provider.analyze(data, language), timeout=135)
+            latest = await run_in_threadpool(full_report_data, data['match_id'])
+            if latest['source_id'] != data['source_id']: result = None
+        except (Exception, asyncio.CancelledError):
+            result = None
+        finally:
+            try:
+                await run_in_threadpool(report_ledger.finish, key, owner, result, time.time())
+            except (HistoryStorageError, OSError):
+                pass
+            running.pop(key, None)
+
+    @router.post('/matches/{match_id}/report')
+    async def deep_report(match_id: str, body: ReportRequest):
+        now = time.monotonic()
+        while calls and calls[0] < now - 60: calls.popleft()
+        if len(calls) >= 120: raise HTTPException(429, 'Please wait a moment')
+        calls.append(now)
+        data = await run_in_threadpool(full_report_data, match_id)
+        envelope = {'match_id': match_id, 'source_id': data['source_id'], 'reading': None}
+        if report_provider is None or report_ledger is None: return {**envelope, 'status': 'disabled'}
+        from .report import VERSION
+        deployment = getattr(getattr(report_provider, 'config', None), 'deployment', 'test')
+        key = 'report:' + hashlib.sha256(json.dumps([VERSION, data['source_id'], body.language, deployment]).encode()).hexdigest()
+        try:
+            job = await run_in_threadpool(report_ledger.reserve, key, time.time(), match_id, key, {'period':2,'elapsed_ms':3600000})
+        except (HistoryStorageError, OSError):
+            return {**envelope, 'status': 'unavailable'}
+        if job.get('admitted'):
+            task = asyncio.create_task(execute_report(key, job['owner'], data, body.language))
+            running[key] = task; tasks.add(task); task.add_done_callback(tasks.discard)
+        if job['status'] == 'complete': return {**envelope, **job['result'], 'cached': True}
         return {**envelope, 'status': job['status']}
 
     app.add_middleware(AnalystBoundary)

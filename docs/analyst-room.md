@@ -288,3 +288,48 @@ provider failure. The over-strong single-pass "liability" judgement seen during
 the replay is now blocked by a regression check. These safeguards improve the
 observed conversation; they do not promise that every football interpretation is
 perfect or that every source minute warrants another message.
+
+## Full-time match report
+
+At the end of Analyst Mode's full replay, **Match summary** opens a visual report.
+Opening it is free. **Approve deep analysis** explicitly starts a bounded report:
+one gpt-5-mini author (up to 6,000 output tokens, medium reasoning) and an independent
+reviewer/editor (up to 3,000 output tokens, low reasoning). Each request is guarded at
+18,000 input tokens including a conservative framing margin. The durable ledger
+reserves US$0.10 before either call, within the existing match and shared Analyst
+allowances. This conservative accounting ceiling is not an Azure invoice. Failed
+attempts remain charged. Same source revision, language, model and report version
+reuse the saved result; changing a source invalidates it. No credit is granted or
+budget increased by this feature.
+
+The report calculates facts before generation: score (including own goals), shot
+conversion (excluding own goals), pass completion with known-outcome denominators,
+half-by-half attempts, player contributions and recorded high recoveries where
+coverage supports them. Every paragraph carries registered evidence references;
+a separate model checks and edits the headline, prose, numbers, denominators and
+causal interpretations before any narrative is published. Final references and
+report structure are validated again; raw IDs and millisecond timestamps are
+blocked from displayed prose. An unverifiable report leaves
+the deterministic charts available. This reduces factual errors; it does not
+establish the truth of every tactical interpretation.
+
+The pitch is 105 × 68 m, divided into six equal length bands and three width
+channels. Both teams attack +x; y below 68/3 is attacking left, then centre, then
+right. An attacking left route faces the opponent's right side. Cell counts are
+located on-ball actions, not player occupancy or possession duration.
+
+A shot's entry route is the **first observed crossing of x=70** in its preceding
+continuous, holder-linked chain, bounded to 30 seconds/eight earlier actions.
+Opponent actions, restarts, missing recipient links, unknown outcomes, occurrence
+gaps and gaps over 12 seconds break the chain. Shot origin is a separate statistic.
+Unknown entry routes remain unknown. Archive matches without reliable recipient
+links therefore default to shot-origin channel comparisons rather than fabricated
+build-ups. Lane conversion shows goals AND attempts, with null for an empty sample.
+No single-match channel rate is a reliable prediction or proof of an individual
+defender's weakness. Suggestions are hypotheses; high recovery counts alone are
+not proof of aggression or a pressing system.
+
+The interpretation follows the distinction between wide-area delivery and chance
+creation described by [FIFA's analysis of wide areas](https://www.fifatrainingcentre.com/en/fwc2022/technical-and-tactical-analysis/use-of-wide-areas.php)
+and [FIFA Game Insights](https://www.fifatrainingcentre.com/en/game/game-insights/using-wide-areas.php).
+These are methodology references, not additional evidence about Footie's matches.

@@ -12,7 +12,7 @@ import {discipline} from './discipline'
 import {AskFootie} from '../assistant/AskFootie'
 import {momentContext} from '../assistant/context'
 import {LiveObservation,completedObservationCutoff} from './LiveObservation'
-export type ReplayPlayback = {cutoff:{period:1|2;elapsed_ms:number};playing:boolean}
+export type ReplayPlayback = {cutoff:{period:1|2;elapsed_ms:number};playing:boolean;finished?:boolean}
 export function PlaySequence({events,event,names,players,matchId,fullMatch=false,autoAdvance=false,onAutoAdvanceChange,onComplete,visible=true,sequenceFloor=0,onPlaybackChange,hideObservation=false,analystPlayback=false,seekTo,onSeek,annotations,focusPlayerId}:{events:GIEvent[];event:GIEvent;names:Map<string,string>;players:GIPlayer[];matchId?:string;fullMatch?:boolean;autoAdvance?:boolean;onAutoAdvanceChange?:(value:boolean)=>void;onComplete?:()=>void;visible?:boolean;sequenceFloor?:number;onPlaybackChange?:(value:ReplayPlayback)=>void;hideObservation?:boolean;analystPlayback?:boolean;seekTo?:{eventId:string;revision:number;requestId:number};onSeek?:(reason:'timeline'|'evidence')=>void;annotations?:{strokes:Stroke[];change:(strokes:Stroke[])=>void};focusPlayerId?:string|null}) {
   const sequence=useMemo(()=>sequenceEvents(events,event).filter(e=>events.findIndex(x=>x.event_id===e.event_id)>=sequenceFloor),[events,event,sequenceFloor])
   const actions=useMemo(()=>positionedActions(fullMatch?events:sequence,fullMatch?4418:event.team_id),[events,event,fullMatch,sequence])
@@ -53,7 +53,7 @@ export function PlaySequence({events,event,names,players,matchId,fullMatch=false
   const playbackCallback=useRef(onPlaybackChange);playbackCallback.current=onPlaybackChange
   const completedPeriod=observationCutoff?.period??activeAction?.event.period??1
   const completedMs=observationCutoff?.elapsed_ms??0
-  useEffect(()=>{playbackCallback.current?.({cutoff:{period:completedPeriod,elapsed_ms:completedMs},playing:playing&&visible})},[completedPeriod,completedMs,playing,visible])
+  useEffect(()=>{playbackCallback.current?.({cutoff:{period:completedPeriod,elapsed_ms:completedMs},playing:playing&&visible,finished:progress>=1})},[completedPeriod,completedMs,playing,visible,progress>=1])
   const phaseAt=activeAction?Math.min(1,(clock-activeAction.at)/activeAction.duration):0
   const cutoff=activeAction?{period:activeAction.event.period,elapsed_ms:activeAction.event.elapsed_ms+(phaseAt>=activeAction.resolved?0:-1)}:undefined
   const cards=discipline(events,cutoff)
