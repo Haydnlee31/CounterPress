@@ -1,4 +1,4 @@
-import {cleanup,render,screen} from '@testing-library/react'
+import {cleanup,render,screen,fireEvent} from '@testing-library/react'
 import {afterEach,expect,it} from 'vitest'
 import {ContextualInsight} from './ContextualInsight'
 import {MetricMap} from './MetricBoard'
@@ -21,12 +21,20 @@ it('groups every player once under their club',()=>{
  expect(groups[0].querySelector('option')?.value).toBe('a1')
  expect(groups[1].querySelector('option')?.value).toBe('b1')
 })
-it('keeps multiple reviewed live turns visible rather than replacing the conversation',()=>{
+it('shows the latest comment without scrolling and retains expandable history',()=>{
  const rounds=[1,2,3].map(i=>({snapshot_id:`s${i}`,mode:'discussion',status:'complete',readings:[],summary:null,cutoff:{period:1,elapsed_ms:i*60000},messages:[{id:'control',role:'control',text:`Reading ${i}`,metric_ids:[],evidence_ids:[],reply_to:null,relation:'observation'}]})) as Analysis[]
- render(<AnalystConversation rounds={rounds} pending={false} available playing live analysis={rounds[2]} refresh={()=>{}}/>)
- const log=screen.getByRole('log')
- for(const i of [1,2,3])expect(log.textContent).toContain(`Reading ${i}`)
- expect(screen.queryByText('Earlier discussion')).toBeNull()
+ const {rerender,container}=render(<AnalystConversation rounds={rounds.slice(0,2)} pending={false} available playing live analysis={rounds[1]} refresh={()=>{}}/>)
+ expect(screen.getByRole('log').textContent).toContain('Reading 2')
+ expect(screen.getByRole('log').textContent).not.toContain('Reading 1')
+ const history=container.querySelector('details')!
+ expect(history.open).toBe(false)
+ fireEvent.click(history.querySelector('summary')!)
+ rerender(<AnalystConversation rounds={rounds} pending={false} available playing live analysis={rounds[2]} refresh={()=>{}}/>)
+ expect(screen.getByRole('log').textContent).toContain('Reading 3')
+ expect(screen.getByRole('log').textContent).not.toContain('Reading 2')
+ expect(history.open).toBe(true)
+ expect(screen.getByRole('region',{name:'Earlier analyst comments'}).textContent).toContain('Reading 2')
+ expect(screen.getByRole('region',{name:'Earlier analyst comments'}).textContent).toContain('Reading 1')
 })
 
 
