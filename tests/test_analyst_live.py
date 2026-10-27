@@ -167,3 +167,9 @@ def test_gate_rejects_cross_club_citations_and_prefix_as_previous_spell():
  with pytest.raises(ValueError,match='missing_club_reference'):
   check_comment(Comment(**comment(text='Away made no passes into the box.',metric_ids=['current:home:box_entries'],evidence_ids=[])),p,[],'control')
  check_comment(Comment(**comment(text='Home passes decreased from the preceding spell.',metric_ids=['current:home:passes','previous:home:passes'],evidence_ids=[])),p,[],'control')
+
+
+def test_fast_replay_does_not_skip_focus_actions_between_coalesced_turns():
+ s=snap([event(1,450000),event(2,599999,player_id='a1',club_id='away')],focus_player_id='h1')
+ history=[{'role':'players','cutoff':{'period':1,'elapsed_ms':300000}},{'role':'control'}]
+ assert choose_role(s,history)=='players'
