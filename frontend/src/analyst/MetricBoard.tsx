@@ -1,3 +1,4 @@
+import {FootieLoader} from '../shell/FootieLoader'
 import {useEffect,useState,useId} from 'react'
 import {PlayerOptions} from './PlayerOptions'
 import {clockLabel,coverageLabel,finiteMetric,metricUnit,metricValue,recentRange} from './data'
@@ -43,7 +44,7 @@ export function MetricBoard({snapshot,lens,focusPlayerId}:{snapshot:Snapshot|nul
   const [playerKey,setPlayerKey]=useState('goals')
   const actualPlayerKey=playerKeys.includes(playerKey)?playerKey:playerKeys[0]
   const ranks=players.filter(m=>m.key===actualPlayerKey&&finiteMetric(m)).sort((a,b)=>Number(b.value)-Number(a.value)).slice(0,10)
-  if(!snapshot)return <div className="an-stat-loading" role="status">Loading match statistics…</div>
+  if(!snapshot)return <FootieLoader compact label="Loading match statistics…"/>
   return <section className="an-metric-board" aria-label="Match statistics"><div className="an-section-head"><div><p className="an-eyebrow">THE EVIDENCE</p><h2>See the pattern.</h2></div><div className="an-segment" role="group" aria-label="Statistics time window"><button aria-pressed={window==='prefix'} onClick={()=>setWindow('prefix')}>Match so far</button><button aria-pressed={window==='current'} onClick={()=>setWindow('current')}>Recent play</button></div></div>
     <p className="an-window-range">{window==='current'?recentRange(snapshot):`Kick-off to ${snapshot?clockLabel(snapshot.cutoff):'now'}`}</p><div className="an-metric-layout"><div>
       {lens==='players'&&ranks.length>0?<><label className="an-player-metric">Compare players<select value={actualPlayerKey} onChange={e=>setPlayerKey(e.target.value)}>{playerKeys.map(key=><option key={key} value={key}>{players.find(m=>m.key===key)?.label}</option>)}</select></label><ol className="an-rankings">{ranks.map((m,i)=><li key={m.id}><span>{String(i+1).padStart(2,'0')}</span><strong>{names.get(m.player_id!)??'Player'}</strong><b>{metricValue(m)} <small>{metricUnit(m)}</small></b></li>)}</ol></>:<>

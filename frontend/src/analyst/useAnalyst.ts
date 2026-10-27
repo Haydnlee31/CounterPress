@@ -97,7 +97,7 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
         if(view.status==='pending'){
           if(Date.now()-start<(live?45000:120000)){schedule(()=>void request(at,start),live?1000:3000);return}
           setIntel(old=>({scope,view:old.scope===scope?old.view:undefined,failed:true,pending:false}))
-        }else {setIntel({scope,view,pending:false});if(view.messages?.length)setRounds(old=>({scope,views:[...(old.scope===scope?old.views:[]).filter(r=>r.snapshot_id!==view.snapshot_id),view].slice(live?-40:-6)}))}
+        }else {setIntel({scope,view,pending:false,failed:view.status==='unavailable'});if(view.messages?.length)setRounds(old=>({scope,views:[...(old.scope===scope?old.views:[]).filter(r=>r.snapshot_id!==view.snapshot_id),view].slice(live?-40:-6)}))}
         // An exhausted allowance is terminal for this viewing run; manual retry
         // or a fresh session can check it later without a request every minute.
         if(playing&&!['hourly_limit','daily_limit','budget_limit','disabled'].includes(view.status))schedule(next,1000)

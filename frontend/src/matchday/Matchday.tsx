@@ -1,3 +1,4 @@
+import {FootieLoader} from '../shell/FootieLoader'
 import { AppHeader } from '../shell/AppHeader'
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
@@ -430,15 +431,7 @@ export function Matchday({breakdown=false}:{breakdown?:boolean}) {
             </button>
           </section>
         ) : !snapshot ? (
-          <section className="fan-empty" role="status">
-            <h3>{t('Bringing you the match story…', '正在加载比赛故事…')}</h3>
-            <p>
-              {t(
-                'Loading the latest plays.',
-                '正在加载最新回放。',
-              )}
-            </p>
-          </section>
+          <FootieLoader language={p.language} label={t('Loading the latest plays.', '正在加载最新回放。')}/>
         ) : isReplayStory ? null : first ? (
           <article className="fan-hero">
             <div className="fan-hero-copy">

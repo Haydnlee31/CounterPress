@@ -119,3 +119,23 @@
   .ft-standalone > .ft-main .ft-starters button { gap: 12px; padding: 18px 16px; }
   .football-hub .fh-profile-actions { row-gap: 12px; }
 }
+
+/* Phone ergonomics only; desktop layouts and statistical treatments are unchanged. */
+@media(max-width:700px){
+ .footie-dialog .footie-dialog-top>button{width:44px;height:44px;flex-shrink:0}
+ .footie-dialog .ft-composer textarea,.ft-page .ft-composer textarea,
+ .football-hub .fh-search input,.hl-notes textarea{font-size:16px}
+ .football-hub .fh-follow,.football-hub .fh-filter-toggle,.hl-page .hl-remove-link,
+ .hl-page .hl-notes button,.highlight-experience .hl-ink-tools button{min-height:44px}
+ .football-hub .fh-settings select,.football-hub .fh-filters select{min-height:44px;font-size:16px}
+}
+@media(hover:none){
+ .football-hub .fh-player-card:hover{transform:none;box-shadow:none}
+ .football-hub .fh-player-art:hover .fh-shirt{transform:translateX(-50%) rotate(-5deg)}
+}
+/* Keep Clubhouse controls reachable on narrow phones. */
+@media(max-width:380px){
+ .football-hub .fh-topline{flex-wrap:wrap}
+ .football-hub .fh-settings{flex-direction:row;flex-wrap:wrap;gap:8px}
+ .football-hub .fh-tabs{flex-wrap:wrap;justify-content:flex-start;gap:0 18px}
+}

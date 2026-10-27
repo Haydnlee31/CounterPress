@@ -1,0 +1,37 @@
+/* Shared motion vocabulary. Functional numbers, charts and playback never use it. */
+:root{--cp-ease-out:cubic-bezier(.23,1,.32,1);--cp-press-duration:120ms}
+.footie-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:260px;padding:32px 20px;text-align:center;font:14px/1.6 Arial,sans-serif;color:var(--cp-text,#173e33)}
+.footie-loading .footie-loading-title{display:block;font-size:18px;font-weight:600;line-height:1.4;margin-bottom:6px}
+.footie-loading p{margin:0!important;font-size:14px!important;line-height:1.6;color:var(--cp-muted,#52695e)}
+.footie-loading.is-compact{flex-direction:row;justify-content:flex-start;gap:12px;min-height:88px;padding:16px;text-align:left}
+.footie-loading.is-compact .footie-loading-title{font-size:14px;margin-bottom:3px}
+.footie-loading.is-compact p{font-size:13px!important}
+.footie-loading.is-dark{color:#fff6e3}.footie-loading.is-dark p{color:#cfdecf}
+.footie-loading[data-paused=true] .footie-mascot *{animation-play-state:paused!important}
+/* A brief warm-up, not an endless attention loop. All animated geometry is transform-only. */
+.is-juggling .fm-blink{animation:none}
+.is-juggling .fm-foot-right{transform-origin:146px 164px;animation:fm-kick 1200ms linear 3}
+.is-juggling .fm-juggle-ball{animation:fm-juggle 1200ms linear 3}
+@keyframes fm-kick{0%,100%{transform:rotate(-16deg)}14%,80%{transform:rotate(0deg)}}
+@keyframes fm-juggle{
+  0%,100%{transform:translate(176px,154px)}
+  12.5%{transform:translate(182px,108px)}
+  25%{transform:translate(187px,75px)}
+  37.5%{transform:translate(190px,55px)}
+  50%{transform:translate(191px,48px)}
+  62.5%{transform:translate(190px,55px)}
+  75%{transform:translate(187px,75px)}
+  87.5%{transform:translate(182px,108px)}
+}
+/* Press feedback belongs to deliberate pointer actions, never keyboard navigation. */
+@media(prefers-reduced-motion:no-preference){
+ :is(.fh-follow,.hl-notes button,.hl-primary,.ask-footie,.ask-footie-pitch,.ft-composer button[type=submit]):not(:focus-visible){transition:transform var(--cp-press-duration) var(--cp-ease-out)}
+ :is(.fh-follow,.hl-notes button,.hl-primary,.ask-footie,.ask-footie-pitch,.ft-composer button[type=submit]):active:not(:focus-visible):not(:disabled){transform:scale(.97)}
+}
+@media(prefers-reduced-motion:reduce){
+ .footie-loading .footie-mascot *{animation:none!important;transition:none!important}
+ .footie-loading .fm-juggle-ball{transform:translate(176px,154px)}
+ .footie-loading .fm-foot-right{transform:none}
+}
+
+.footie-loading.is-page{min-height:100dvh;background:var(--cp-background,#f3f4ed);padding:32px 20px}

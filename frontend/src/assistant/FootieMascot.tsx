@@ -1,7 +1,7 @@
 import {useEffect,useId,useRef,useState} from 'react'
 import './mascot.css'
 
-export type FootieMood='greeting'|'idle'|'listening'|'thinking'|'celebrating'|'resting'
+export type FootieMood='greeting'|'idle'|'listening'|'thinking'|'celebrating'|'resting'|'juggling'
 
 /** Decorative companion. Status text and controls remain separate and accessible. */
 export function FootieMascot({mood='idle',size=64,trackPointer=false}:{mood?:FootieMood;size?:number;trackPointer?:boolean}){
@@ -49,7 +49,7 @@ export function FootieMascot({mood='idle',size=64,trackPointer=false}:{mood?:Foo
   const closed=state==='celebrating'||state==='resting'
   const eyes=state==='thinking'?{x:2,y:-2}:gaze
   return <span ref={root} className={`footie-mascot is-${state}`} style={{width:size,height:size}} aria-hidden="true" data-mood={state}>
-    <svg viewBox="0 0 200 190" focusable="false">
+    <svg viewBox={state==='juggling'?'-10 -15 220 210':'0 0 200 190'} focusable="false">
       <defs><radialGradient id={gradient} cx="42%" cy="30%" r="75%"><stop offset="55%" className="fm-cream-stop"/><stop offset="100%" className="fm-shade-stop"/></radialGradient></defs>
       <g className="fm-character">
         <g className="fm-feet">
@@ -70,6 +70,7 @@ export function FootieMascot({mood='idle',size=64,trackPointer=false}:{mood?:Foo
         </g>
         {state==='thinking'&&<ellipse className="fm-arm" cx="147" cy="129" rx="14" ry="19" transform="rotate(-30 147 129)"/>}
       </g>
+      {state==='juggling'&&<g className="fm-juggle-ball" transform="translate(176 154)"><circle r="11" fill="#fff6e3" stroke="#193f32" strokeWidth="1.5"/><path d="m0-5 5 4-2 6h-6l-2-6Z M-9-5l4 4M9-5 5-1M0 10V5" fill="#193f32" stroke="#193f32" strokeWidth="1.3"/></g>}
     </svg>
   </span>
 }

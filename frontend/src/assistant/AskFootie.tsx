@@ -1,3 +1,4 @@
+import {FootieLoader} from '../shell/FootieLoader'
 import {lazy,Suspense,useEffect,useRef,useState} from 'react'
 import {createPortal} from 'react-dom'
 import type {FootieContext} from './context'
@@ -8,9 +9,11 @@ const Footie=lazy(()=>import('./Footie'))
 export function AskFootie({context,onOpen,variant='default',label='Ask Footie',drawer=false}:{context:FootieContext;onOpen?:()=>void;variant?:'default'|'pitch';label?:string;drawer?:boolean}){
   const [frozen,setFrozen]=useState<FootieContext|null>(null)
   const [opening,setOpening]=useState(false),[error,setError]=useState(false)
+  const [animateEntry,setAnimateEntry]=useState(false)
   const abort=useRef<AbortController|null>(null)
   useEffect(()=>()=>abort.current?.abort(),[])
-  async function open(){
+  async function open(pointerInitiated:boolean){
+    setAnimateEntry(pointerInitiated)
     onOpen?.();const snapshot=structuredClone(context)
     if(!snapshot.resolveSource){setFrozen(snapshot);return}
     abort.current?.abort();const controller=new AbortController();abort.current=controller
@@ -24,18 +27,22 @@ export function AskFootie({context,onOpen,variant='default',label='Ask Footie',d
     }catch{if(!controller.signal.aborted)setError(true)}
     finally{if(!controller.signal.aborted)setOpening(false)}
   }
-  return <><button type="button" className={variant==='pitch'?'ask-footie-pitch':'ask-footie'} aria-haspopup="dialog" disabled={opening} onClick={()=>void open()}>
+  return <><button type="button" className={variant==='pitch'?'ask-footie-pitch':'ask-footie'} aria-haspopup="dialog" disabled={opening} onClick={e=>void open(e.detail>0)}>
     {variant==='pitch'?<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6 4V6a2 2 0 0 1 2-2Z"/><path d="M7 9h10M7 13h6"/></svg>:<FootieMascot size={32}/>} {opening?'Opening Footie…':label} {variant==='default'&&<span aria-hidden="true">↗</span>}
-  </button>{error&&<small role="alert">Couldn’t open this moment. Try Ask Footie again.</small>}{frozen&&createPortal(<FootieDialog context={frozen} compact={drawer||variant==='pitch'} close={()=>setFrozen(null)}/>,document.body)}</>
+  </button>{error&&<small role="alert">Couldn’t open this moment. Try Ask Footie again.</small>}{frozen&&createPortal(<FootieDialog animateEntry={animateEntry} context={frozen} compact={drawer||variant==='pitch'} close={()=>setFrozen(null)}/>,document.body)}</>
 }
 
-function FootieDialog({context,close,compact}:{context:FootieContext;close:()=>void;compact:boolean}){
+function FootieDialog({context,close,compact,animateEntry}:{context:FootieContext;close:()=>void;compact:boolean;animateEntry:boolean}){
   const dialog=useRef<HTMLDialogElement>(null)
   useEffect(()=>{
     const el=dialog.current!,previous=document.activeElement as HTMLElement|null
     const overflow=document.body.style.overflow
     el.showModal();document.body.style.overflow='hidden'
-    return()=>{el.close();document.body.style.overflow=overflow;previous?.focus()}
+    // Spatial feedback for pointer-opened drawers only; keyboard access is immediate.
+    const ease=getComputedStyle(el).getPropertyValue('--cp-ease-out').trim()||'cubic-bezier(.23,1,.32,1)'
+    const animation=compact&&animateEntry&&typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: no-preference)').matches&&typeof el.animate==='function'
+      ?el.animate([{opacity:0,transform:'translateX(12px)'},{opacity:1,transform:'translateX(0)'}],{duration:200,easing:ease}):null
+    return()=>{animation?.cancel();el.close();document.body.style.overflow=overflow;previous?.focus()}
   },[])
   return <dialog className={`footie-dialog${compact?' footie-drawer':''}`} ref={dialog} aria-label="Ask Footie" onCancel={e=>{e.preventDefault();close()}} onClick={e=>{
     if(e.target===e.currentTarget)close()
@@ -43,6 +50,6 @@ function FootieDialog({context,close,compact}:{context:FootieContext;close:()=>v
     if(link?.getAttribute('href')?.startsWith('#football/'))close()
   }}>
     <div className="footie-dialog-top">{compact?<div className="footie-drawer-identity"><FootieMascot size={44}/><div><strong>Footie</strong><small>Alongside the action</small></div></div>:<span>{context.matchId?'Paused at this moment':'From Clubhouse'}</span>}<button type="button" onClick={close} aria-label="Close Footie">×</button></div>
-    <Suspense fallback={<p role="status">Opening Footie…</p>}><Footie context={context} compact={compact}/></Suspense>
+    <Suspense fallback={<FootieLoader compact label="Opening Footie…"/>}><Footie context={context} compact={compact}/></Suspense>
   </dialog>
 }

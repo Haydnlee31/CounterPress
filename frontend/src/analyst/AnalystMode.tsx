@@ -1,3 +1,4 @@
+import {FootieLoader} from '../shell/FootieLoader'
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react'
 import {AppHeader} from '../shell/AppHeader'
 import {PlaySequence} from '../gi/PlaySequence'
@@ -48,7 +49,7 @@ export default function AnalystMode(){
   return <div className="analyst-mode matchday"><a className="fan-skip" href="#analyst-main">Skip to Analyst Mode</a><AppHeader active="gi" hideContext brandContext={headerContext}/>
     <main id="analyst-main" className="an-main" tabIndex={-1}>
       <SpecialistDesks snapshot={snapshot} rounds={rounds} focusPlayerId={focusPlayer} setFocus={value=>setPreferences(p=>({...p,focus_player_id:value}))} open={role=>{detailOpener.current=document.activeElement as HTMLElement;setLens(role)}} conversation={<>{conversation}<ContextualInsight snapshot={snapshot} rounds={rounds} focusPlayerId={focusPlayer}/></>} pitch={<section ref={pitchRef} tabIndex={-1} className="an-watch-layout" aria-label="Full match and analysis"><div className="an-pitch-panel">
-        {matchError?<div className="an-replay-error" role="alert"><h2>The match couldn’t load.</h2><button onClick={()=>setAttempt(n=>n+1)}>Try again</button></div>:match?<PlaySequence key={matchId} matchId={matchId} events={match.events} event={match.events[0]} names={names} players={match.players} fullMatch analystPlayback hideObservation focusPlayerId={focusPlayer} onPlaybackChange={onPlayback} onSeek={onSeek} seekTo={selectedEvidence?{eventId:selectedEvidence.event_id,revision:selectedEvidence.revision,requestId:selectedEvidence.requestId}:undefined}/>:<div className="an-replay-loading" role="status">Opening the match…</div>}
+        {matchError?<div className="an-replay-error" role="alert"><h2>The match couldn’t load.</h2><button onClick={()=>setAttempt(n=>n+1)}>Try again</button></div>:match?<PlaySequence key={matchId} matchId={matchId} events={match.events} event={match.events[0]} names={names} players={match.players} fullMatch analystPlayback hideObservation focusPlayerId={focusPlayer} onPlaybackChange={onPlayback} onSeek={onSeek} seekTo={selectedEvidence?{eventId:selectedEvidence.event_id,revision:selectedEvidence.revision,requestId:selectedEvidence.requestId}:undefined}/>:<div className="an-replay-loading"><FootieLoader dark label={preferences.language==='zh-Hans'?'正在打开比赛…':'Opening the match…'} language={preferences.language}/></div>}
       </div></section>}/>
 
       {selectedEvidence&&<p className="an-evidence-location" role="status">Selected evidence: {selectedEvidence.kind} at {clockLabel(selectedEvidence)}.</p>}

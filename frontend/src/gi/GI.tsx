@@ -1,3 +1,4 @@
+import {FootieLoader} from '../shell/FootieLoader'
 import {ImportMoment} from '../highlights/ImportMoment'
 import { currentMatchId, matchDate } from './catalog'
 import {sequenceEvents} from './replay'
@@ -73,7 +74,7 @@ export default function GI() {
     <a className="fan-skip" href="#gi-content" onClick={e=>{e.preventDefault();document.getElementById('gi-content')?.focus()}}>Skip to match centre</a>
     <AppHeader active="gi"/>
     <main id="gi-content" tabIndex={-1}>
-      {error?<section role="alert"><h1>The match couldn’t load</h1><button onClick={()=>setAttempt(n=>n+1)}>Try again</button></section>:!match?<p role="status">Opening match centre…</p>:<>
+      {error?<section role="alert"><h1>The match couldn’t load</h1><button onClick={()=>setAttempt(n=>n+1)}>Try again</button></section>:!match?<FootieLoader label="Opening match centre…"/>:<>
         <section className="gi-match-header" aria-label="Match result">
           <div className="gi-match-label"><span className="gi-live-dot"/> FULL TIME <span>MATCH CENTRE</span></div>
           <h1 aria-label={`Eastbridge ${match.teams[0].score} – ${match.teams[1].score} Northport`}><span className="gi-club"><ClubCrest club="eastbridge"/>Eastbridge</span><span className="gi-score">{match.teams[0].score}<i>:</i>{match.teams[1].score}</span><span className="gi-club">Northport<ClubCrest club="northport"/></span></h1>

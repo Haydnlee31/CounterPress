@@ -288,3 +288,19 @@ it('aborts a slow statistics request on explicit seek and rejects its late respo
   await act(async()=>resolve(new Response(JSON.stringify(snapshot(firstBody)))))
   expect(result.current.snapshot?.cutoff.elapsed_ms).toBe(180000)
 })
+
+it('keeps an unavailable discussion marked failed when its old packet expires, then clears failure on a successful retry',async()=>{
+ const ordinary=vi.mocked(fetch).getMockImplementation()!
+ let unavailable=true
+ vi.mocked(fetch).mockImplementation(async(url,init)=>String(url).endsWith('/analysis')&&unavailable?new Response(JSON.stringify(analysis(JSON.parse(String(init?.body)),'unavailable'))):ordinary(url,init))
+ const {result,rerender}=renderHook(({cutoff,playing})=>useAnalyst('match-one',cutoff,playing,prefs),{initialProps:{cutoff:{period:1 as const,elapsed_ms:120000},playing:true}})
+ await settle();await settle()
+ expect(result.current.failed).toBe(true)
+ rerender({cutoff:{period:1,elapsed_ms:360000},playing:false})
+ expect(result.current.analysis).toBeNull()
+ expect(result.current.failed).toBe(true)
+ unavailable=false
+ act(()=>result.current.requestDiscussion());await settle();await settle()
+ expect(result.current.failed).toBe(false)
+ expect(result.current.analysis?.status).toBe('complete')
+})
