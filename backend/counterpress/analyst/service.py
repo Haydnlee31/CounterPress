@@ -149,7 +149,10 @@ def build_snapshot(career, match_id: str, request: AnalystRequest) -> dict:
             signals.append(sig);candidate_refs.update(sig['evidence_ids'])
     from .passages import build_passages
     passages=[]
-    wanted={ref for s in signals for ref in s['evidence_ids']}
+    # Scoring events must survive sparse passage selection at accelerated replay.
+    # Include goals from the source prefix, including own goals stored as 'other'.
+    goal_refs={_eid(e) for e in events if e.goal_for}
+    wanted={ref for s in signals for ref in s['evidence_ids']}|goal_refs
     for passage in build_passages(events,request.cutoff,request.focus_player_id):
         if len(wanted|set(passage['evidence_ids']))<=64:
             passages.append(passage);wanted.update(passage['evidence_ids'])
@@ -159,7 +162,7 @@ def build_snapshot(career, match_id: str, request: AnalystRequest) -> dict:
         if len(selected_evidence)>=64:break
         if _eid(e) not in wanted:selected_evidence.append(e);wanted.add(_eid(e))
     selected_evidence.sort(key=lambda e:(e.period,e.elapsed_ms,e.occurrence_order))
-    evidence=[{'id':_eid(e),**{k:getattr(e,k) for k in ('event_id','revision','delivery_sequence','period','elapsed_ms','available_period','available_ms','club_id','player_id','kind','outcome','recipient_id','restart','occurrence_order')},'start':e.start.model_dump() if e.start else None,'end':e.end.model_dump() if e.end else None} for e in selected_evidence]
+    evidence=[{'id':_eid(e),**{k:getattr(e,k) for k in ('event_id','revision','delivery_sequence','period','elapsed_ms','available_period','available_ms','club_id','player_id','kind','outcome','goal_for','recipient_id','restart','occurrence_order')},'start':e.start.model_dump() if e.start else None,'end':e.end.model_dump() if e.end else None} for e in selected_evidence]
     triggers=_triggers(scopes,rows,fixture,request)
     result={'match_id':match_id,'cutoff':request.cutoff.model_dump(),'through_sequence':through,
         'language':request.language,'depth':request.depth,'focus_player_id':request.focus_player_id,

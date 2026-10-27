@@ -18,7 +18,8 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
   const manualRequest=useRef(false)
   const epoch=useRef(0),previous=useRef({matchId,cutoff,prefs:JSON.stringify(preferences),seekEpoch})
   const prefs=JSON.stringify(preferences)
-  if(previous.current.matchId!==matchId||previous.current.prefs!==prefs||before(cutoff,previous.current.cutoff)||cutoff.period!==previous.current.cutoff.period||seekEpoch!==previous.current.seekEpoch){epoch.current++;manualRequest.current=false}
+  // Forward half-time keeps the conversation; explicit seeks and rewinds still invalidate it.
+  if(previous.current.matchId!==matchId||previous.current.prefs!==prefs||before(cutoff,previous.current.cutoff)||seekEpoch!==previous.current.seekEpoch){epoch.current++;manualRequest.current=false}
   previous.current={matchId,cutoff,prefs,seekEpoch}
   const scope=JSON.stringify([matchId,prefs,revision,epoch.current])
   const live=config?.discussion_style==='live'
