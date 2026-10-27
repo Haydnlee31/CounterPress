@@ -31,6 +31,8 @@ def test_entry_route_is_not_shot_location_and_own_goal_does_not_inflate_conversi
     assert home['lanes'][0]=={'lane':'left','shots':1,'goals':1,'conversion':100.0}
     assert d['routes'][0]['entry_lane']=='left' and d['routes'][0]['shot_lane']=='centre'
     assert sum(home['cells'])==4 and home['cells'][17]==1
+    assert next(f['value'] for f in d['facts'] if f['id']=='home:all_entries')=={'left':1,'centre':0,'right':0}
+    assert next(f['value'] for f in d['facts'] if f['id']=='home:territory')['cells']==home['cells']
     assert lane(0)=='left' and lane(68/3)=='centre' and lane(68)=='right'
 
 

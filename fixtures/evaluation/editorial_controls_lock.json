@@ -19,7 +19,7 @@
     "backend/counterpress/analyst/metrics.py": "122cf2793e4b203f8a1f3e5fa0a3db53b45316a6e55a67287e433da3f98c31e6",
     "backend/counterpress/analyst/passages.py": "cb1f667e2b6df17ce61062d35677a40285775fe23c760d5679bcaf393d854806",
     "backend/counterpress/analyst/provider.py": "e63286129891454d1814236159954a7b8f8623a6f671886dc6aebf242b5ba718",
-    "backend/counterpress/analyst/report.py": "b25df61872c75a44995cdb001a715f2a25e3e2c735195849728d7b4a1c248f03",
+    "backend/counterpress/analyst/report.py": "3bc5bea504f7d8943f28f616e94c031b2a0f070d28aa249c706543ce898b84d2",
     "backend/counterpress/analyst/service.py": "d153e91c8f72c1593c952cef2f11d40c60129ce21271f088c466890003ca57d0",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
     "backend/counterpress/api/main.py": "db16b1f8c7aa2854685500d4d29afe7678a2646841808686d8c4fb452a31b9d5",
