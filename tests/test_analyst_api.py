@@ -161,10 +161,11 @@ def test_azure_activation_uses_existing_durable_admission_and_fails_closed(monke
     monkeypatch.setenv('COUNTERPRESS_ANALYST_DISCUSSION', 'azure')
     monkeypatch.delenv('COUNTERPRESS_ANALYST_LEDGER_PATH', raising=False)
     monkeypatch.setattr('counterpress.adaptation.azure.load_config', lambda: object())
-    monkeypatch.setattr('counterpress.analyst.discussion.AzureDiscussion', lambda config: provider)
+    provider.live = True
+    monkeypatch.setattr('counterpress.analyst.live.AzureLiveDiscussion', lambda config: provider)
     monkeypatch.setattr('counterpress.analyst.api.build_snapshot', lambda career, mid, body: {
         'snapshot_id': 'existing-source', 'match_id': mid, 'cutoff': body.cutoff.model_dump(),
-        'through_sequence': 4, 'evidence': [{'id': 'e1'}], 'candidates': []})
+        'through_sequence': 4, 'evidence': [{'id': 'e1','period': 1,'elapsed_ms': 119000,'kind':'pass','player_id':'p1'}], 'candidates': []})
     class Container:
         def __init__(self):
             self.reads = []
@@ -184,7 +185,7 @@ def test_azure_activation_uses_existing_durable_admission_and_fails_closed(monke
         result = client.post(f'/api/analyst/matches/{MID}/discussion', json=BODY)
         if storage == 'exhausted_cosmos':
             assert result.json()['status'] == 'budget_limit'
-            assert container.reads == [('control', 'analyst-control-v1')]
+            assert container.reads == [('control', 'analyst-live-control-v1')]
             assert container.writes[0][0][0][1][1]['payload']['spent_cents'] == 3000
         elif storage == 'failed_cosmos': assert result.json()['status'] == 'unavailable'
         else: assert result.json()['status'] == 'disabled'

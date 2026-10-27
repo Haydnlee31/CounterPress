@@ -135,7 +135,7 @@ def metric_rows(events, *, club_id, window, duration_ms, all_events, source_kind
     gxg = [geometric_xg(e) for e in shots if geometric_xg(e) is not None]
     add('xg_authored','Authored expected goals',sum(xg) if xg else None,unit='expected_goals',basis='authored_model',role='chance',n=len(xg),d=len(shots),method='authored_probability')
     add('xg_geometry','Shot-location estimate',sum(gxg) if gxg else None,unit='expected_goals',basis='uncalibrated_heuristic',role='chance',n=len(gxg),d=len(shots),method='xg_geometry')
-    add('shot_map','Shot map',{'shots':[{'event_id':e.event_id,'x':e.start.x,'y':e.start.y,'outcome':e.outcome,'distance_m':round(math.hypot(105-e.start.x,34-e.start.y),6),'technique':e.technique,'xg_authored':e.expected_goal_probability,'xg_geometry':round(geometric_xg(e),6)} for e in shots if e.start]},unit='locations',role='chance',method='geometry')
+    add('shot_map','Shot map',{'shots':[{'event_id':e.event_id,'x':e.start.x,'y':e.start.y,'outcome':e.outcome,'end':e.end.model_dump() if e.end else None,'distance_m':round(math.hypot(105-e.start.x,34-e.start.y),6),'technique':e.technique,'xg_authored':e.expected_goal_probability,'xg_geometry':round(geometric_xg(e),6)} for e in shots if e.start]},unit='locations',role='chance',method='geometry')
     for key,label,source in [('pass_speed','Fastest authored pass','pass'),('shot_speed','Fastest authored shot','shot')]:
         eligible = passes if source=='pass' else shots
         speeds = [distance(e)/(e.flight_ms/1000)*3.6 for e in eligible if e.telemetry_basis=='authored_physics' and e.flight_ms and distance(e) is not None]

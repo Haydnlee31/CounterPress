@@ -1,4 +1,43 @@
-# Analyst room — local review, 26 October 2026
+# Analyst Mode — live desk, 27 October 2026
+
+## Current Azure execution
+
+`COUNTERPRESS_ANALYST_DISCUSSION=azure` now runs the Footie live turn manager in the existing Container App. Each admitted source-minute selects **one relevant specialist** (Player, Match, Chance or Defensive), generates a natural contribution with the existing `gpt-4.1-mini` deployment, then independently reviews/repairs it with the existing `gpt-5-mini` deployment (low reasoning). Only the reviewed final record can be published. Footie checks the current, revision-pinned evidence packet; it does not use future match knowledge or assume career facts unavailable in that packet. Existing general Ask Footie remains unchanged.
+
+The manager prioritizes new shots and otherwise rotates by recent speakers and eligible evidence, preventing accelerated replay from repeatedly selecting the same role when clock minutes are skipped. Quiet spells skip inference. Up to three earlier approved messages provide conversational context; arbitrary browser-supplied chat is never accepted. Replies can build on, qualify or challenge a different colleague. The model writes prose directly; the legacy typed-fact sentence formatter is not used on this path.
+
+Short, source-local citation aliases are constrained by the response schema, then resolved back to canonical IDs. Final gates check references, player attribution, reply eligibility, numbers and source freshness. Footie's independent semantic review handles attribution and implications; this reduces errors, not a guarantee of correctness. Pass attempts and completed passes are explicitly separate. Geometric xG remains in the statistics but is excluded from the live commentary packet because it is uncalibrated. Formatting cleanup removes citation-only brackets and duplicate completion annotations without adding facts.
+
+Forward playback keeps a running turn, publishes it at its original source timestamp, then coalesces to the newest eligible minute. Pending results poll once per second. There is no backlog of every skipped event and no unreviewed token streaming. Pausing, hiding, seeking, changing match/preferences and source corrections retain the existing stale-result and cancellation protections. Approved history is scoped to match, preferences, correction generation and prompt manifest; rewinding cannot import a future contribution.
+
+## Interface
+
+- Two specialist desks on each side of the pitch at wide desktop sizes; a selectable desk on smaller screens. The desk pair stays together instead of stretching to the height of the central content.
+- Player choices are grouped by team. Focus links the selected player's statistics, pitch ring/name, contextual activity map and model request.
+- The conversation accumulates reviewed turns, follows new comments when the reader is near the bottom, and offers a new-comments control when they are reading older messages.
+- Core totals and a two-sided rolling momentum ribbon stay visible. Relevant shot/pass maps appear below the conversation; selecting a player shows their on-ball activity map. Full statistics remain available in each desk's dialog.
+- Shot arrows connect recorded start/end coordinates only. Missing endpoints remain dots. The heatmap uses soft density cells; these remain recorded action locations, not continuous tracking.
+- Context maps explicitly show the current statistics clock. A comment keeps its own earlier clock and expandable evidence, so current maps are not presented as its frozen evidence snapshot.
+
+## Cost and operational bounds
+
+The two-call turn permits at most 6,000 locally estimated input tokens per request (including schema plus a 768-token framing reserve), 700 draft output tokens and 2,000 review output/reasoning tokens. No automatic model retries. A conservative $1/M input and $4/M output assumption gives $0.0228 per complete turn; **$0.03 is reserved before dispatch**. The shared durable allowance admits at most **90 new turns / $2.70 per physical match**, including failed/cancelled calls, across viewers, languages, focus choices and revisions. Shared deployment lifetime allowance is $12. This is a conservative model-use reservation, not an Azure invoice or a cap on shared hosting/storage charges. Existing total project budget remains $200.
+
+The ledger uses the existing Cosmos container, partition `analyst-live-control-v1`; local preview uses the configured SQLite ledger path plus `.live`. It fails closed without durable admission. Completed results can be reused for up to 30 days; a bounded control-document size may evict older result payloads. Spend counters never expire or refund. Changing view preferences can consume new turns, so the allowance does not promise 90 minutes of fresh commentary for every possible view. Cache misses after expiration/eviction remain subject to the same lifetime match limit.
+
+The current source adapters cover the three registered library matches, both halves and all mapped players. Source coverage differs by match. Shared durable admission/cache helps repeated viewers; active tasks and cancellation remain process-local, with two concurrent jobs globally. This has not been load-tested as a many-match production broadcast service. Scaling beyond the pilot requires durable workers, cross-worker cancellation and per-tenant budget management.
+
+Local startup below still applies. Both named deployments must exist on the configured Azure account. No new Azure resources, agent permissions or model deployments are provisioned by this change. The native Foundry roundtable path remains separate and unchanged; the live manager emits OpenTelemetry spans through the existing configured tracing setup. Do not describe the new live manager as a native Foundry or Agent Framework group-chat runtime.
+
+## Validation
+
+Focused regression checks cover reviewed publication, rejected edits, short citation resolution, attempt/completion separation, accelerated-turn fairness, quiet skips, durable spending across preferences/restarts, temporal history and recorded-only shot paths. Frontend tests cover successive live publication, fast-forward coalescing, team groups and accumulated conversation. Browser checks cover all three matches, focus propagation, statistics dialogs and desktop/tablet/mobile layouts. A 48-case real-snapshot matrix exercises both halves and player/team views using mock model transport, with no paid calls. Real Azure model and continuous 5× browser checks are reported separately in the task validation evidence; mock publication is never presented as live evidence.
+
+## Earlier implementation and review history
+
+The sections below describe earlier roundtable checkpoints and their historical test results, **not the current Azure live-manager limits or runtime**.
+
+# Earlier Analyst room — 26 October 2026
 
 ## Hosted release input budget
 

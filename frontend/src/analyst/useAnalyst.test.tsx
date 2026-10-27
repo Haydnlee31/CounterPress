@@ -233,3 +233,24 @@ it('rejects malformed or future discussion evidence before it reaches the conver
   await settle();await settle()
   expect(result.current.analysis).toBeNull();expect(result.current.failed).toBe(true)
 })
+
+it('publishes successive live specialist turns, polls each second and coalesces fast-forward time',async()=>{
+  const ordinary=vi.mocked(fetch).getMockImplementation()!,polls=new Map<number,number>()
+  vi.mocked(fetch).mockImplementation(async(url,init)=>{
+    if(String(url)==='/api/analyst/config')return new Response(JSON.stringify({...config,discussion_available:true,discussion_style:'live'}))
+    if(String(url).endsWith('/discussion')){
+      const body=JSON.parse(String(init?.body)),t=body.cutoff.elapsed_ms,n=(polls.get(t)??0)+1;polls.set(t,n)
+      requests.push({url:String(url),body,signal:init!.signal as AbortSignal})
+      return new Response(JSON.stringify({...analysis(body,n===1?'pending':'complete'),messages:n===1?[]:[{id:'control',role:'control',text:`Reviewed turn ${t}`,reply_to:null,relation:'observation',metric_ids:[],evidence_ids:[],verified_by:'footie'}]}))
+    }
+    return ordinary(url,init)
+  })
+  const {result,rerender}=renderHook(({ms})=>useAnalyst('match-one',{period:1,elapsed_ms:ms},true,prefs),{initialProps:{ms:60000}})
+  await settle();await settle();expect(result.current.pending).toBe(true)
+  rerender({ms:180000});await settle(1100)
+  expect(result.current.rounds).toHaveLength(1)
+  await settle(2200)
+  expect(result.current.rounds).toHaveLength(2)
+  expect([...polls.keys()]).toEqual([60000,180000])
+  expect(result.current.rounds.map(r=>r.cutoff.elapsed_ms)).toEqual([60000,180000])
+})
