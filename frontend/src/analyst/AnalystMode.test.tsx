@@ -16,6 +16,8 @@ const snapshot:Snapshot={snapshot_id:'snapshot-one',match_id:'wyscout-2058017',c
   {id:'m5',key:'shot_map',window:'prefix',role:'chance',label:'Shot map',unit:'locations',basis:'recorded_events',status:'available',value:{shots:[{event_id:'e1',x:92,y:34,outcome:'goal'}]},club_id:'eastbridge'},
 ]}
 beforeEach(()=>{
+  Object.defineProperty(HTMLDialogElement.prototype,'showModal',{configurable:true,value:vi.fn(function(this:HTMLDialogElement){this.open=true})})
+  Object.defineProperty(HTMLDialogElement.prototype,'close',{configurable:true,value:vi.fn(function(this:HTMLDialogElement){this.open=false})})
   localStorage.clear();history.replaceState(null,'','/#analyst')
   state.value={config:{available:false,mode:'metrics',roles:[],interval_ms:60000},snapshot,analysis:null,pending:false,failed:false,metricsFailed:false,retryConfig:vi.fn(),retrySnapshot:vi.fn(),requestDiscussion:vi.fn()}
   vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({match_id:'wyscout-2058017',events:[{}],players:[]}))))
@@ -135,8 +137,8 @@ it('keeps old discussion timestamped while withholding stale prose from current 
   state.value.rounds=[{snapshot_id:'old',cutoff:{period:1,elapsed_ms:600000},mode:'discussion',status:'complete',readings:[],summary:null,messages:[{id:'chance',role:'chance',text:'An earlier chance finding.',reply_to:null,relation:'observation',metric_ids:['m1'],evidence_ids:[]}]}]
   const {container}=render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
   expect(screen.getByRole('log').textContent).toContain('An earlier chance finding.')
-  expect(container.querySelector('.an-desks')?.textContent).not.toContain('An earlier chance finding.')
-  expect(container.querySelector('.an-desks')?.textContent).toContain('Earlier finding from 10:00')
+  expect(Array.from(container.querySelectorAll('.an-desk')).map(e=>e.textContent).join(' ')).not.toContain('An earlier chance finding.')
+  expect(Array.from(container.querySelectorAll('.an-desk')).map(e=>e.textContent).join(' ')).toContain('Earlier finding from 10:00')
 })
 
 it('moves keyboard focus into statistics and restores it to the opening control',async()=>{
@@ -145,4 +147,22 @@ it('moves keyboard focus into statistics and restores it to the opening control'
   expect(document.activeElement).toBe(container.querySelector('.an-expanded-stats'))
   fireEvent.click(screen.getByRole('button',{name:'Close details ×'}))
   expect(document.activeElement).toBe(open)
+})
+
+
+it('preserves the replay node while metric refreshes temporarily clear the snapshot',async()=>{
+  const {rerender}=render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
+  const replay=screen.getByLabelText('Test replay')
+  state.value.snapshot=null;rerender(<AnalystMode/>)
+  expect(screen.getByLabelText('Test replay')).toBe(replay)
+  state.value.snapshot=snapshot;rerender(<AnalystMode/>)
+  expect(screen.getByLabelText('Test replay')).toBe(replay)
+})
+
+it('closes the metric dialog on Escape and restores its opener',async()=>{
+  render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
+  const open=screen.getByRole('button',{name:'Explore Match Analyst statistics'});open.focus();fireEvent.click(open)
+  const dialog=screen.getByRole('dialog',{name:'Explore the evidence'})
+  fireEvent(dialog,new Event('cancel',{cancelable:true}))
+  expect(screen.queryByRole('dialog')).toBeNull();expect(document.activeElement).toBe(open)
 })

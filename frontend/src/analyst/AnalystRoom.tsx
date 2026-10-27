@@ -38,6 +38,7 @@ export function AnalystConversation({rounds,pending,failed,available,playing,rea
     </div>
     {(failed||analysis?.status==='unavailable')&&<p className="an-room-notice" role="status">The discussion couldn’t update. Statistics are still following play. <button onClick={refresh}>Try again</button></p>}
     {analysis&&['hourly_limit','daily_limit','budget_limit'].includes(analysis.status)&&<p className="an-room-notice">The analysis allowance has been reached. You can keep exploring the match statistics.</p>}
+    {analysis?.status==='partial'&&!pending&&<p className="an-room-notice">Showing the reviewed contributions. Some findings could not be verified.</p>}
     {analysis?.status==='insufficient_evidence'&&!pending&&<p className="an-room-notice">No new supported reading in this spell. The analysts will revisit as play develops.</p>}
     {pending&&last&&<p className="an-room-notice" role="status">Comparing the latest spell…</p>}
   </section>
@@ -50,22 +51,21 @@ function Momentum({snapshot}:{snapshot:Snapshot}){
   const points=snapshot.momentum??[],xs=points.map((p,i)=>`${5+i*290/Math.max(1,points.length-1)},${45-p.value*34}`).join(' ')
   return <div className="an-momentum"><div><strong>Match momentum</strong><span>Rolling threat balance</span></div><svg viewBox="0 0 300 90" role="img" aria-label="Match momentum, rolling five-minute threat balance"><path d="M5 45H295" stroke="#9aab98" strokeDasharray="2 3"/>{points.length>1&&<polyline points={xs} fill="none" stroke="#3b7053" strokeWidth="2"/>}</svg><div><span>{snapshot.clubs[0]?.name} ↑</span><span>{snapshot.clubs[1]?.name} ↓</span></div><p>Through {clockLabel(snapshot.cutoff)} · event-based index</p></div>
 }
-export function SpecialistDesks({snapshot,rounds,focusPlayerId,setFocus,open}:{snapshot:Snapshot|null;rounds:Analysis[];focusPlayerId:string|null;setFocus:(id:string|null)=>void;open:(role:Role)=>void}){
-  const [club,setClub]=useState(''),[player,setPlayer]=useState('')
-  if(!snapshot)return <div className="an-stat-loading" role="status">Loading match statistics…</div>
-  const clubId=snapshot.clubs.some(c=>c.club_id===club)?club:snapshot.clubs[0]?.club_id??''
-  const playerId=snapshot.players.some(p=>p.player_id===(focusPlayerId||player))?focusPlayerId||player:snapshot.players[0]?.player_id??''
-  return <section aria-label="Specialist workspaces" className="an-desks"><div className="an-desks-heading"><div><p className="an-eyebrow">THE SPECIALISTS</p><h2>Follow their findings</h2></div><p>Statistics through {clockLabel(snapshot.cutoff)}</p></div><div className="an-desks-grid">{specialists.map(s=>{
+export function SpecialistDesks({snapshot,rounds,focusPlayerId,setFocus,open,pitch,conversation}:{snapshot:Snapshot|null;rounds:Analysis[];focusPlayerId:string|null;setFocus:(id:string|null)=>void;open:(role:Role)=>void;pitch?:ReactNode;conversation?:ReactNode}){
+  const [club,setClub]=useState(''),[player,setPlayer]=useState(''),[active,setActive]=useState<Role>('players')
+  const clubId=snapshot?.clubs.some(c=>c.club_id===club)?club:snapshot?.clubs[0]?.club_id??''
+  const playerId=snapshot?.players.some(p=>p.player_id===(focusPlayerId||player))?focusPlayerId||player:snapshot?.players[0]?.player_id??''
+  return <section aria-label="Specialist workspaces" className="an-desks"><div className="an-desks-grid"><div className="an-pitch-seat">{pitch}{conversation}</div><div className="an-desk-switcher" role="group" aria-label="Choose analyst workspace">{specialists.map(s=><button key={s.role} aria-pressed={active===s.role} onClick={()=>setActive(s.role)}>{s.name}</button>)}</div>{snapshot?specialists.map(s=>{
     const sourceRound=rounds.at(-1)
     const reading=sourceRound?.messages?.find(m=>m.role===s.role)
     const fresh=sourceRound&&sourceRound.cutoff.period===snapshot.cutoff.period&&snapshot.cutoff.elapsed_ms>=sourceRound.cutoff.elapsed_ms&&snapshot.cutoff.elapsed_ms-sourceRound.cutoff.elapsed_ms<=180000
-    return <article key={s.role} className={`an-desk an-role-${s.role}`}><header><span className="an-agent-avatar" aria-hidden="true">{s.mark}</span><div><h3>{s.name}</h3><p>{s.caption}</p></div><button aria-label={`Explore ${s.name} statistics`} onClick={()=>open(s.role)}><OpenArrow/></button></header>
+    return <article key={s.role} data-active={active===s.role} className={`an-desk an-role-${s.role}`}><header><span className="an-agent-avatar" aria-hidden="true">{s.mark}</span><div><h3>{s.name}</h3><p>{s.caption}</p></div><button aria-label={`Explore ${s.name} statistics`} onClick={()=>open(s.role)}><OpenArrow/></button></header>
       {s.role==='players'&&<label className="an-desk-picker">Follow a player<select aria-label="Player to analyse" value={playerId} onChange={e=>{setPlayer(e.target.value);setFocus(e.target.value)}}>{snapshot.players.map(p=><option key={p.player_id} value={p.player_id}>{p.name}</option>)}</select></label>}
-      <StatPairs snapshot={snapshot} keys={s.keys} playerId={s.role==='players'?playerId:undefined}/>
+      <StatPairs snapshot={snapshot} keys={s.keys.slice(0,s.role==='players'?4:3)} playerId={s.role==='players'?playerId:undefined}/>
       {s.role==='control'&&<Momentum snapshot={snapshot}/>}
-      {true&&<><div className="an-desk-map-title"><strong>{s.role==='players'?'Player heatmap':s.role==='chance'?'Shot map':s.role==='control'?'Match heatmap':'On-ball activity'}</strong>{s.role!=='players'&&<select aria-label={`${s.name} map club`} value={clubId} onChange={e=>setClub(e.target.value)}>{snapshot.clubs.map(c=><option key={c.club_id} value={c.club_id}>{c.name}</option>)}</select>}</div><MetricMap metrics={snapshot.metrics.filter(m=>m.window==='prefix')} view={s.role==='chance'?'shot_map':'heatmap'} clubId={clubId} playerId={s.role==='players'?playerId:undefined}/></>}
-      {reading&&sourceRound&&(fresh?<div className="an-desk-reading"><small>Discussion through {clockLabel(sourceRound.cutoff)}</small><p>{reading.text}</p></div>:<p className="an-desk-reading">Earlier finding from {clockLabel(sourceRound.cutoff)} — read it in the conversation above.</p>)}
+      {true&&<details className="an-desk-visual"><summary>{s.role==='players'?'Player heatmap':s.role==='chance'?'Shot map':s.role==='control'?'Match heatmap':'On-ball activity'} <span aria-hidden="true">＋</span></summary><div className="an-desk-map-title">{s.role!=='players'&&<select aria-label={`${s.name} map club`} value={clubId} onChange={e=>setClub(e.target.value)}>{snapshot.clubs.map(c=><option key={c.club_id} value={c.club_id}>{c.name}</option>)}</select>}</div><MetricMap metrics={snapshot.metrics.filter(m=>m.window==='prefix')} view={s.role==='chance'?'shot_map':'heatmap'} clubId={clubId} playerId={s.role==='players'?playerId:undefined}/></details>}
+      {reading&&sourceRound&&(fresh?<details className="an-desk-reading"><summary>Finding · {clockLabel(sourceRound.cutoff)}</summary><p>{reading.text}</p></details>:<p className="an-desk-reading">Earlier finding from {clockLabel(sourceRound.cutoff)} — read it in the conversation above.</p>)}
       <footer><span>{s.role==='control'?recentRange(snapshot):'Match so far'}</span><button onClick={()=>open(s.role)}>All statistics <OpenArrow/></button></footer>
     </article>
-  })}</div></section>
+  }):<div className="an-stat-loading">Loading match statistics…</div>}</div></section>
 }
