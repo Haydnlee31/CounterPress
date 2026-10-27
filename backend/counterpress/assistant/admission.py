@@ -157,8 +157,8 @@ class CosmosAdmissionStore:
 
 
 class Admission:
-    def __init__(self, store, hourly_limit=20,daily_limit=400,lease_seconds=20):
-        self.store=store;self.hourly_limit=hourly_limit;self.daily_limit=daily_limit;self.lease_seconds=lease_seconds
+    def __init__(self, store, hourly_limit=20,daily_limit=400,lease_seconds=20,*,enforce_caps=True):
+        self.enforce_caps=enforce_caps;self.store=store;self.hourly_limit=hourly_limit;self.daily_limit=daily_limit;self.lease_seconds=lease_seconds
 
     def reserve(self, key, now, slots=2):
         if slots not in (2,4):raise ValueError('Unsupported reservation size')
@@ -173,9 +173,9 @@ class Admission:
             job = jobs.get(key)
             if job:
                 outcome = (job.state, job)
-            elif len(reservations)*2+sum(n for at,n in weighted if at>now-3600)+slots>self.hourly_limit:
+            elif self.enforce_caps and len(reservations)*2+sum(n for at,n in weighted if at>now-3600)+slots>self.hourly_limit:
                 outcome = ('hourly_limit', None)
-            elif len(reservations)*2+sum(n for _,n in weighted)+slots>self.daily_limit:
+            elif self.enforce_caps and len(reservations)*2+sum(n for _,n in weighted)+slots>self.daily_limit:
                 outcome = ('daily_limit',None)
             elif sum(j.state == 'pending' for j in jobs.values()) >= 2:
                 outcome = ('busy', None)
@@ -258,5 +258,6 @@ def shared_researcher(inner, history_store, namespace):
     elif isinstance(history_store, SQLiteHistoryStore):
         store = SQLiteAdmissionStore(history_store.path)
     else:raise ValueError('Agent activation requires durable shared admission')
+    from counterpress.usage_policy import usage_caps_enabled
     hourly,daily=configured_limits()
-    return SharedResearcher(inner, Admission(store,hourly,daily,lease_seconds=max(20,getattr(inner,'deadline_seconds',12)+4)), namespace)
+    return SharedResearcher(inner, Admission(store,hourly,daily,lease_seconds=max(20,getattr(inner,'deadline_seconds',12)+4),enforce_caps=usage_caps_enabled()), namespace)
