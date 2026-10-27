@@ -136,6 +136,28 @@ def normalize_fact_layout(row):
     return row
 
 
+def bind_fact_references(row, packet):
+    """Typed fact IDs are explicit citations; carry them into the display index.
+
+    Only bind IDs already selected by the model and present in its own scoped
+    source. Never infer a subject, repair a comparison, or inherit peer claims.
+    The ordinary renderer still checks scalar values, windows and commentary.
+    """
+    known = {m['id'] for m in packet['metrics']}
+    ids = list(row.metric_ids)
+    for fact in row.facts:
+        for mid in (fact.metric_id, fact.compare_to):
+            if mid is None:
+                continue
+            if mid not in known:
+                raise ValueError('unknown_fact_reference')
+            if mid not in ids:
+                ids.append(mid)
+    if len(ids) > 12:
+        raise ValueError('too_many_references')
+    return row.model_copy(update={'metric_ids': ids})
+
+
 def check_citations(row, packet):
     mids={m['id']:m for m in packet['metrics']}; eids={e['id'] for e in packet['evidence']}
     if len(set(row.metric_ids))!=len(row.metric_ids) or len(set(row.evidence_ids))!=len(row.evidence_ids): raise ValueError('duplicate_reference')
@@ -171,7 +193,8 @@ def render_facts(row, packet):
         return clock(span['period'], span['start_ms']) + '–' + clock(span['period'], span['end_ms'])
     def number(value): return format(value, '.6g')
     def scalar(mid):
-        if mid not in row.metric_ids or mid not in mids: raise ValueError('uncited_fact')
+        if mid not in mids: raise ValueError('unknown_fact_reference')
+        if mid not in row.metric_ids: raise ValueError('uncited_fact')
         m = mids[mid]
         if m.get('status') == 'unavailable' or type(m.get('value')) not in (int, float) or not math.isfinite(m['value']):
             raise ValueError('unavailable_fact')
@@ -264,24 +287,36 @@ class DiscussionRuntime:
                         tokens['input_tokens']+=usage.get('input_tokens',usage.get('prompt_tokens',0));tokens['output_tokens']+=usage.get('output_tokens',usage.get('completion_tokens',0))
                         per_role_usage.append({'role':role,'input_tokens':usage.get('input_tokens',usage.get('prompt_tokens',0)),
                             'output_tokens':usage.get('output_tokens',usage.get('completion_tokens',0))})
-                        parsed=normalize_fact_layout(model.model_validate_json(raw))
+                        parsed=model.model_validate_json(raw)
+                        if role!='footie': parsed=normalize_fact_layout(bind_fact_references(parsed,scoped))
                         if role=='footie':
-                            parsed=parsed.model_copy(update={'revisions':[normalize_fact_layout(r) for r in parsed.revisions]})
-                        check_citations(parsed,scoped)
+                            parsed=parsed.model_copy(update={'revisions':[normalize_fact_layout(bind_fact_references(r,scoped)) for r in parsed.revisions]})
                         if role=='footie':
+                            if len(set(parsed.accepted_ids))!=len(parsed.accepted_ids): raise ValueError('duplicate_acceptance')
                             if not set(parsed.accepted_ids)<={m['id'] for m in messages}: raise ValueError('unknown_message')
                             if len({r.id for r in parsed.revisions})!=len(parsed.revisions): raise ValueError('duplicate_revision')
                             for revision in parsed.revisions:
                                 if revision.id!=revision.role or revision.id not in parsed.accepted_ids: raise ValueError('invalid_revision')
                                 check_citations(revision,scoped)
                                 if (revision.reply_to is None)!=(revision.relation=='observation'): raise ValueError('invalid_relation')
+                            # Acceptance/revision decisions are independent of the chair's
+                            # own synthesis. Never discard reviewed specialists solely
+                            # because that separate synthesis fails its fact checks.
+                            try:
+                                parsed=normalize_fact_layout(bind_fact_references(parsed,scoped))
+                                check_citations(parsed,scoped)
+                            except ValueError as exc:
+                                reasons[role]='summary_'+str(exc)
+                                failures.append(role)
+                                parsed=parsed.model_copy(update={'facts':[],'text':'','watch_next':'','metric_ids':[],'evidence_ids':[]})
                             verdict=parsed;out={'id':'footie','role':role,**parsed.model_dump()}
                         else:
+                            check_citations(parsed,scoped)
                             if parsed.reply_to is not None and parsed.reply_to not in {m['id'] for m in prior if m.get('text')}: raise ValueError('unknown_reply')
                             if (parsed.reply_to is None)!=(parsed.relation=='observation'): raise ValueError('invalid_relation')
                             out={'id':role,'role':role,**parsed.model_dump()}
                             if parsed.text: messages.append(out)
-                        span.set_attribute('footie.status','complete')
+                        span.set_attribute('footie.status','withheld' if role in failures else 'complete')
                     except (Exception,TimeoutError) as exc:
                         reasons[role]=str(exc) if type(exc) is ValueError and re.fullmatch('[a-z_]+',str(exc)) else type(exc).__name__
                         failures.append(role);out={'id':role,'role':role,'text':'','status':'unavailable'}

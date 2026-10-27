@@ -355,3 +355,57 @@ def test_distinct_specialists_challenge_revise_and_synthesize_with_rendered_fact
  assert 'Eastbridge — Passes: 12' in seen[1][1][0]['text']
  assert result['messages'][-1]['relation']=='synthesis'
  (tmp_path/'scripted-conversation.json').write_text(json.dumps(result,indent=2))
+
+
+def test_typed_fact_is_a_source_checked_reference_without_redundant_array_entry():
+ from counterpress.analyst.discussion import bind_fact_references,normalize_fact_layout
+ row=Contribution(**turn([],metric_ids=[],text='Circulation needs an attacking payoff.'))
+ bound=normalize_fact_layout(bind_fact_references(row,packet()))
+ check_citations(bound,packet())
+ assert bound.metric_ids==['passes'] and row.metric_ids==[]
+ assert 'Passes: 12' in render_facts(bound,packet())
+ for mid in ('unknown','future'):
+  with pytest.raises(ValueError,match='unknown_fact_reference'):
+   bind_fact_references(row.model_copy(update={'facts':[row.facts[0].model_copy(update={'metric_id':mid})]}),packet())
+ # Binding does not remove duplicate refs or repair invented prose.
+ for bad in (row.model_copy(update={'metric_ids':['passes','passes']}),row.model_copy(update={'text':'They scored ninety goals.'})):
+  with pytest.raises(ValueError):check_citations(normalize_fact_layout(bind_fact_references(bad,packet())),packet())
+
+
+def test_review_summary_missing_duplicate_citation_publishes_actual_five_agent_conversation():
+ async def complete(role,prompt,data,schema,tokens):
+  if role!='footie':value=turn(data['conversation'],metric_ids=[],text='Circulation needs an attacking payoff.')
+  else:value=dict(accepted_ids=list(('control','players','chance','defence')),revisions=[],facts=[{'metric_id':'passes','compare_to':None}],metric_ids=[],evidence_ids=[],text='The attacking payoff remains the useful test.',watch_next='Watch for a supported chance.')
+  return json.dumps(value),{'input_tokens':10,'output_tokens':20}
+ result=run(complete)
+ assert result['status']=='complete' and len(result['messages'])==5
+ assert result['failed_roles']==[]
+ assert all(m['metric_ids']==['passes'] for m in result['messages'])
+ assert result['execution']['model_calls']==5
+
+
+@pytest.mark.parametrize('failure',['unknown_fact','invented_prose','missing_subject_reference'])
+def test_invalid_chair_synthesis_cannot_erase_independently_reviewed_specialists(failure):
+ async def complete(role,prompt,data,schema,tokens):
+  if role!='footie':value=turn(data['conversation'])
+  else:
+   value=dict(accepted_ids=['control','players','chance','defence'],revisions=[],facts=[],metric_ids=['passes'],evidence_ids=[],text='The attacking payoff remains the useful test.',watch_next='')
+   if failure=='unknown_fact':value['facts']=[{'metric_id':'not-in-source','compare_to':None}]
+   elif failure=='invented_prose':value['text']='They scored 99 goals.'
+   else:value.update(text='A conclusion.',metric_ids=[])
+  return json.dumps(value),{}
+ result=run(complete)
+ assert result['status']=='partial'
+ assert [m['role'] for m in result['messages']]==['control','players','chance','defence']
+ assert result['failed_roles']==['footie'] and result['failure_reasons']['footie'].startswith('summary_')
+ assert result['execution']['model_calls']==5
+
+
+def test_invalid_reviewer_revision_still_blocks_publication_not_just_summary():
+ async def complete(role,prompt,data,schema,tokens):
+  if role!='footie':value=turn(data['conversation'])
+  else:value=dict(accepted_ids=['control','players','chance','defence'],revisions=[dict(id='control',role='control',**turn([],facts=[{'metric_id':'invented','compare_to':None}]))],facts=[],metric_ids=['passes'],evidence_ids=[],text='The attacking payoff remains the useful test.',watch_next='')
+  return json.dumps(value),{}
+ result=run(complete)
+ assert not result['messages']
+ assert result['failure_reasons']['footie']=='unknown_fact_reference'

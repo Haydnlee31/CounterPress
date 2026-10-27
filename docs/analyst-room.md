@@ -109,3 +109,25 @@ The generation contract now asks the model for typed facts and qualitative comme
 One actual five-role Azure round completed on the synthetic match at H1 24:00 with Isaac Lane selected. All specialists received the preceding rendered conversation; the Player and Chance Analysts built on it, the Defensive Analyst qualified the control reading, and Footie synthesized the accepted contributions. Snapshot IDs, metric/actor/unit/window bindings and no-future-evidence checks passed. This was real model output, not the earlier authored UI fixtures.
 
 The round took approximately 95 seconds. Footie accepted the contributions without an explicit revision, and the result used metric citations without event-specific citations. This verifies one snapshot and shared-history execution; it does not establish broad factual reliability, live evidence-button selection, native hosted deployment, or an observed editor correction. Accelerated playback can substantially outpace a reviewed round. A second complete player/snapshot case has not run.
+
+## Compact room and citation publication
+
+The wide layout places Player and Match Analysts left of the replay, Chance and
+Defensive Analysts right, and the conversation directly below. Smaller screens
+show one selectable specialist workspace. Maps expand on demand and full metric
+boards open in a keyboard-accessible dialog without moving the replay clock.
+
+Typed facts explicitly name their source metric IDs. The application now carries
+those IDs into the citation index after checking that they exist in the role's
+scoped snapshot. It never guesses missing IDs or repairs an invalid quantity,
+comparison, subject, or free-text claim. Review decisions and revisions are
+validated separately from Footie's synthesis: a faulty synthesis is withheld
+without discarding independently accepted specialist messages. A faulty revision
+or acceptance decision still blocks publication. Partial publication is labelled.
+
+The same pipeline supports the three registered full-match fixtures; additional
+matches require the event/roster adapter and library registration. Source coverage
+varies. Event-location maps are not continuous off-ball tracking. Shared Cosmos
+admission limits apply across viewers, while completed snapshot/preferences results
+are reused. Active execution and cancellation are process-local, so this is not yet
+a durable distributed worker system or a load-tested many-match live service.
