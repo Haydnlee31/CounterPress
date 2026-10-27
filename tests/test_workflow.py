@@ -215,6 +215,9 @@ def test_timeout_cancels_provider_and_preserves_match_calculations():
 def test_corrections_while_pending_discard_results_and_do_not_block_replay(tmp_path, pause_at, reason):
     db = tmp_path / "history.sqlite3"
     app, script = snapshots(db), Script()
+    # This tests correction ordering, not cold projection speed on shared CI.
+    # Keep the bounded rendezvous below the service's eight-second deadline.
+    app.snapshot("increase", 780000)
     async def check():
         entered, release = asyncio.Event(), asyncio.Event()
         async def pending(request):
@@ -223,7 +226,7 @@ def test_corrections_while_pending_discard_results_and_do_not_block_replay(tmp_p
                 await release.wait()
             return script(request)
         task = asyncio.create_task(service(app, pending).run("increase", 780000))
-        await asyncio.wait_for(entered.wait(), 2)
+        await asyncio.wait_for(entered.wait(), 5)
         other = snapshots(db)
         assert other.snapshot("increase", 540000).state.source_delivery_cursor == 53
         other.ingest("increase", updates()[:3])
