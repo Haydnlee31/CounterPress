@@ -1,5 +1,5 @@
 {
-  "version": "v26-coaching-report-review",
+  "version": "v27-report-publication-facts",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -9,7 +9,7 @@
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/analyst/__init__.py": "aa0e397e2eade9df5d609d6ff3bcbde6eba362adf91c1211e9eea32956fd2f22",
     "backend/counterpress/analyst/admission.py": "20cc332edcc4ad9c3958919a13a8fbb89c5f4f28c5a2bcfd598addb406674132",
-    "backend/counterpress/analyst/api.py": "8a2eff3e4ad4fd7570c71e4bf1223d4ef89afc24036d8ad01aa09da67ba30895",
+    "backend/counterpress/analyst/api.py": "b9977bcf9515597f865d73b751c17dcdf1c8a54ebb5e9df773d81b6677c6c382",
     "backend/counterpress/analyst/candidates.py": "792ac3b7d792210f57cee53c319d707eee622cef8ecb1e078633ee597f139d58",
     "backend/counterpress/analyst/contracts.py": "71427dc3d3624aec70ff6521a68acda1e170b27de5130a81f93436ac584d9370",
     "backend/counterpress/analyst/discussion.py": "755008aaf0f1bce01b32d9012ffb8002e241996ccd2cad587b20ad7b07dd737d",
@@ -19,7 +19,7 @@
     "backend/counterpress/analyst/metrics.py": "122cf2793e4b203f8a1f3e5fa0a3db53b45316a6e55a67287e433da3f98c31e6",
     "backend/counterpress/analyst/passages.py": "cb1f667e2b6df17ce61062d35677a40285775fe23c760d5679bcaf393d854806",
     "backend/counterpress/analyst/provider.py": "e63286129891454d1814236159954a7b8f8623a6f671886dc6aebf242b5ba718",
-    "backend/counterpress/analyst/report.py": "7f6fc7d7cb51b5e94876290ccdb6e65631e84e36955516202f18fed4984d82d8",
+    "backend/counterpress/analyst/report.py": "08f9cf561995bf7690271d378f6c1e0846cdbd81097c53fa7e44ac3203843f5b",
     "backend/counterpress/analyst/service.py": "d153e91c8f72c1593c952cef2f11d40c60129ce21271f088c466890003ca57d0",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
     "backend/counterpress/api/main.py": "db16b1f8c7aa2854685500d4d29afe7678a2646841808686d8c4fb452a31b9d5",
