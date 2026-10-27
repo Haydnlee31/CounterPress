@@ -1,5 +1,6 @@
 import {cleanup,render,screen} from '@testing-library/react'
 import {afterEach,expect,it} from 'vitest'
+import {ContextualInsight} from './ContextualInsight'
 import {MetricMap} from './MetricBoard'
 import {PlayerOptions} from './PlayerOptions'
 import {AnalystConversation} from './AnalystRoom'
@@ -26,4 +27,15 @@ it('keeps multiple reviewed live turns visible rather than replacing the convers
  const log=screen.getByRole('log')
  for(const i of [1,2,3])expect(log.textContent).toContain(`Reading ${i}`)
  expect(screen.queryByText('Earlier discussion')).toBeNull()
+})
+
+
+it('labels the club whose positive shot evidence triggered the contextual map',()=>{
+ const metrics=[{id:'zero',key:'shots',club_id:'a',value:0},{id:'one',key:'shots',club_id:'b',value:1}] as Metric[]
+ const snapshot={cutoff:{period:1,elapsed_ms:120000},clubs:[{club_id:'a',name:'Eastbridge'},{club_id:'b',name:'Northport'}],players:[],metrics:[]} as unknown as Snapshot
+ const round={snapshot_id:'s',cutoff:{period:1,elapsed_ms:60000},metrics,messages:[{metric_ids:['zero','one'],visual:'none'}]} as unknown as Analysis
+ const {rerender}=render(<ContextualInsight snapshot={snapshot} rounds={[round]} focusPlayerId={null}/>)
+ expect(screen.getByText(/Northport · Match so far/)).toBeTruthy()
+ rerender(<ContextualInsight snapshot={{...snapshot,cutoff:{period:1,elapsed_ms:30000}}} rounds={[round]} focusPlayerId={null}/>)
+ expect(screen.queryByRole('region',{name:'Conversation visual'})).toBeNull()
 })

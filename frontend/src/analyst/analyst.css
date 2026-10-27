@@ -374,3 +374,6 @@
  .analyst-mode .an-pitch-panel .gi-replay .gi-pitch {max-height:clamp(230px,34dvh,340px)}
 }
 .analyst-mode .an-pitch-seat .an-live-room .an-conversation {max-height:280px;min-height:140px}
+
+.an-map-legend>span {display:inline-flex;align-items:center;gap:5px}
+.an-map-legend>span:not(.an-density-key)>i {width:8px;height:8px;border-radius:50%;display:inline-block;box-shadow:0 0 0 1px #173e3326}
