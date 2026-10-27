@@ -310,7 +310,13 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
         if job.get('admitted'):
             task = asyncio.create_task(execute_report(key, job['owner'], data, body.language))
             running[key] = task; tasks.add(task); task.add_done_callback(tasks.discard)
-        if job['status'] == 'complete': return {**envelope, **job['result'], 'cached': True}
+        if job['status'] == 'complete':
+            from .report import publication_result
+            try:
+                result = publication_result(job['result'], data, body.language)
+            except (ValueError, KeyError, TypeError):
+                return {**envelope, 'status': 'unavailable'}
+            return {**envelope, **result, 'cached': True}
         return {**envelope, 'status': job['status']}
 
     app.add_middleware(AnalystBoundary)

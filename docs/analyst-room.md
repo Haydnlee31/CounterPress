@@ -386,3 +386,26 @@ Rivers/Fletcher return at 20:03 (goal), then proposes testing final-pass choices
 recording blocked/on-target outcomes. Eastbridge instead reviews longer build-up
 against the recovery finish and Hayes/Mercer return. These are proposed drills
 and review questions, not claims about unobserved defensive positioning.
+
+
+### Published-report acceptance follow-up (27 October)
+
+The fresh published test returned in 49.681 seconds with working desktop/mobile
+cards and passage links, but manual review found a further wording variant:
+442 pass attempts were called completed passes. It also incorrectly credited a
+recovery to the scorer in a goal passage that did not start with his recovery.
+A second model's approval is therefore not sufficient evidence of factual accuracy.
+
+The API now projects the overview and player-contribution paragraphs directly
+from the same revision's authoritative facts, including on cache reads. Strength,
+weakness, proposed practice and measurement remain model-written. The projection
+is pure, preserves stored responses and charges, and does not require another
+model request or invalidate the report cache. No model token or spending limits
+changed. The captured published response is a regression fixture; both English
+and Chinese projections, idempotence and preservation of coaching text are tested.
+
+Both sides' sampled goals contain return passes, and the generated coaching
+recommendations consequently overlap. They are useful hypotheses for reviewing
+specific passages, not proof that return passes cause goals or universally avoid
+blocks. Do not force artificial tactical differences to make the report appear
+more insightful. Event-only evidence cannot establish off-ball defensive errors.

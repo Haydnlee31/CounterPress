@@ -318,6 +318,56 @@ def reconcile_overview_passes(reading, data):
         reading.overview.text=text
 
 
+def publication_result(result, data, language='en'):
+    """Project factual sections from evidence on every read, including cached reports.
+
+    Coaching interpretation remains model-written. Counts and player action
+    attribution are not paraphrased by a model or repaired with prose regexes.
+    This pure projection does not mutate the cache or reserve another model run.
+    """
+    if result.get('status') != 'complete': return result
+    reading = MatchReading.model_validate(result['reading'])
+    validate_reading(reading, data)
+    zh = language == 'zh-Hans'
+    facts = {f['id']: f for f in data['facts']}
+    score = facts['match:result']['value']['score']
+    sentences = [f'最终比分：{score}。' if zh else f'The match finished {score}.']
+    for team in data['teams']:
+        t = team['totals']; name = team['name']
+        sentences.append(
+            f"{name}完成{t['completed_passes']}次传球，共尝试{t['passes']}次，射门{t['shots']}次。" if zh else
+            f"{name} completed {t['completed_passes']} of {t['passes']} passes and took {t['shots']} {'shot' if t['shots']==1 else 'shots'}."
+        )
+    reading.overview = Claim(title='比赛概况' if zh else 'Match overview', text=' '.join(sentences),
+        evidence_ids=['match:result']+[t['club_id']+':totals' for t in data['teams']])
+    for team in reading.teams:
+        contribution = next((facts[r] for r in team.player.evidence_ids if r in facts and r.startswith('player:')
+                             and facts[r]['value']['club_id']==team.club_id), None)
+        if contribution is None: continue
+        player = contribution['value']; name = player['name']
+        role = ({'GK':'门将','DF':'后卫','MF':'中场','FW':'前锋'} if zh else
+                {'GK':'goalkeeper','DF':'defender','MF':'midfielder','FW':'forward'}).get(player['role'], player['role'])
+        text = (f"{name}（{role}）完成{player['completed_passes']}次传球，射门{player['shots']}次，进球{player['goals']}个。" if zh else
+                f"{name} ({role}) completed {player['completed_passes']} passes, took {player['shots']} {'shot' if player['shots']==1 else 'shots'} and scored {player['goals']} {'goal' if player['goals']==1 else 'goals'}.")
+        refs = [contribution['id']]
+        passage = next((facts[r] for r in team.player.evidence_ids if r in facts and r.startswith('shot:')
+                        and facts[r]['value']['club_id']==team.club_id and facts[r]['value']['player']==name), None)
+        if passage:
+            v = passage['value']; combination = v.get('return_pass_before_shot')
+            outcome = ({'goal':'进球','blocked':'被封堵','saved':'被扑救','off_target':'偏出','on_target':'射正'} if zh else
+                       {'goal':'a goal','blocked':'blocked','saved':'saved','off_target':'off target','on_target':'on target'}).get(v['outcome'])
+            if outcome:
+                text += (f" 在{v['clock']}，他的射门结果为{outcome}。" if zh else
+                         f" He scored at {v['clock']}." if v['outcome']=='goal' else f" At {v['clock']}, his shot was {outcome}.")
+                if combination:
+                    text += (f" 此前的传球配合为{' → '.join(combination)}。" if zh else
+                             f" The preceding return-pass combination was {' → '.join(combination)}.")
+                refs.append(passage['id'])
+        team.player = Claim(title=f'{name} · {role}', text=text, evidence_ids=refs)
+    validate_reading(reading, data)
+    return {**result, 'reading': reading.model_dump(), 'presentation_version':'verified-facts-v1'}
+
+
 class ReportStageError(RuntimeError):
     def __init__(self,stage,reason):
         self.stage,self.reason=stage,reason

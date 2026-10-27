@@ -88,7 +88,7 @@ def test_preview_is_free_and_approved_report_is_shared_with_correction_check(tmp
         calls=0
         async def analyze(self,data,language):
             self.calls+=1
-            return {'status':'complete','reading':{'headline':'Verified'}}
+            return {'status':'complete','reading':{**draft(data),'headline':'Verified'}}
     provider=Provider();app=FastAPI();ledger=LiveAllowance(SQLiteStore(tmp_path/'budget'))
     install_analyst(app,lambda:career(sample()),live_allowance=ledger,report_provider=provider)
     with TestClient(app) as client:
@@ -291,3 +291,43 @@ def test_captured_live_report_keeps_verified_totals_and_readable_coaching_action
     assert 'Video-review passages the' not in home['adjustment']['action']
     assert 'repeated pattern' not in away['strength']['text']
     assert home['adjustment']['action']!=away['adjustment']['action']
+
+
+def test_published_report_projects_factual_sections_without_changing_coaching_or_cache():
+    from copy import deepcopy
+    from counterpress.analyst.report import publication_result
+    result=json.loads(Path('fixtures/evaluation/analyst_report_published_response.json').read_text())
+    original=deepcopy(result)
+    data=report_data(CareerService(DataStore(Path('fixtures/personalization'))),result['match_id'])
+    assert data['source_id']==result['source_id']
+    projected=publication_result(result,data)
+    assert result==original
+    text=projected['reading']['overview']['text']
+    assert '384 of 442 passes' in text and '316 of 373 passes' in text
+    assert 'completed passes (442)' not in text
+    for before,after in zip(result['reading']['teams'],projected['reading']['teams']):
+        for field in ('strength','weakness','adjustment'):
+            assert before[field]==after[field]
+    north=next(t for t in projected['reading']['teams'] if t['club_id']=='northport')
+    assert 'recovered possession' not in north['player']['text']
+    assert 'Jude Rivers → Ben Fletcher → Jude Rivers' in north['player']['text']
+    assert '20:03' in north['player']['text']
+    assert publication_result(projected,data)==projected
+    chinese=publication_result(result,data,'zh-Hans')
+    assert '完成384次传球，共尝试442次' in chinese['reading']['overview']['text']
+    assert '前锋' in chinese['reading']['teams'][1]['player']['text']
+
+
+def test_publication_projection_uses_revised_totals_and_does_not_fabricate_passage_links():
+    from counterpress.analyst.report import publication_result
+    data=report_data(career(sample()),MID)
+    r=draft(data)
+    for t in r['teams']:
+        p=next(f for f in data['facts'] if f['id'].startswith('player:') and f['value']['club_id']==t['club_id'])
+        t['player']['evidence_ids']=[p['id']]
+    projected=publication_result({'status':'complete','reading':r},data)
+    assert 'completed 2 of 3 passes' in projected['reading']['overview']['text']
+    for t in projected['reading']['teams']:
+        assert len(t['player']['evidence_ids'])==1
+        assert 'return-pass' not in t['player']['text']
+    assert publication_result({'status':'insufficient_evidence','reading':None},data)['reading'] is None

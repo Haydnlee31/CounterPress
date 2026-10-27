@@ -1,0 +1,94 @@
+{
+  "match_id": "synthetic-32fe41c5d304ce68d7d9",
+  "source_id": "89015228d5ac2a928c91d60a52a88d009f7a5fb0395724ee4284403cc9a7dc46",
+  "reading": {
+    "headline": "Eastbridge completed more passing but created fewer shots; Northport generated many attempts with several blocked",
+    "overview": {
+      "title": "Match overview",
+      "text": "Eastbridge recorded more completed passes (442) but produced fewer shots (7) than Northport (373 passes, 16 shots). Northport\u2019s higher volume included several blocked attempts. The match finished 2\u20132, with both teams converting central finishes at decisive moments.",
+      "evidence_ids": [
+        "match:result",
+        "eastbridge:totals",
+        "northport:totals"
+      ]
+    },
+    "teams": [
+      {
+        "club_id": "eastbridge",
+        "strength": {
+          "title": "Worked sequence \u2014 return pass before finish",
+          "text": "At 70:48\u201371:12 Oliver Hayes combined down the left, received a return from Kai Mercer at 71:07 and finished centrally for a goal at 71:12. The recorded combination of Hayes\u2013Kai Mercer\u2013Hayes produced a shot and a goal.",
+          "evidence_ids": [
+            "shot:a01004:r1",
+            "player:eb03"
+          ]
+        },
+        "weakness": {
+          "title": "Long linking led to a blocked central shot",
+          "text": "At 0:01\u20130:14 Rory Ellis carried then passed to Milo West and Owen Cole; Jamie Vale\u2019s 0:14 central shot from that five-action passage was blocked. The sequence reached a central attempt but was stopped before scoring.",
+          "evidence_ids": [
+            "shot:a00005:r1",
+            "eastbridge:totals"
+          ]
+        },
+        "adjustment": {
+          "title": "Test return-pass timing versus immediate finish",
+          "text": "Why: the 71:12 goal followed a short return pass (Hayes\u2013Mercer\u2013Hayes, the 71:12 passage) while the 0:14 blocked attempt finished without a return. Testing these options may show whether brief returns reduce blocks in similar situations.",
+          "evidence_ids": [
+            "shot:a01004:r1",
+            "shot:a00005:r1"
+          ],
+          "action": "Run a 20-minute video session showing the 71:12 passage and the 0:14 passage, then in training recreate each sequence and run two variations: (a) require a short return pass before the final shot; (b) allow the receiver to shoot immediately on reception (hypothetical).",
+          "measure": "Count repetitions for each variation and record for each: whether a shot was taken, whether it was blocked, saved, on target or a goal; compare the frequency of blocked outcomes between the two variations."
+        },
+        "player": {
+          "title": "Oliver Hayes \u2014 defender contributing to attack",
+          "text": "Oliver Hayes (defender) finished the 71:12 goal after the 70:48\u201371:12 passing sequence; he logged that goal plus 41 completed passes and two high recoveries, evidencing notable attacking involvement from his recorded actions.",
+          "evidence_ids": [
+            "shot:a01004:r1",
+            "player:eb03"
+          ]
+        }
+      },
+      {
+        "club_id": "northport",
+        "strength": {
+          "title": "Worked sequence \u2014 return-pass link to goal",
+          "text": "At 19:47\u201320:03 Jude Rivers combined with Ben Fletcher and received a return sequence (Rivers\u2013Fletcher\u2013Rivers) before finishing centrally for the 20:03 goal. That recorded return-pass pattern led directly to the team\u2019s opening score.",
+          "evidence_ids": [
+            "shot:a00293:r1",
+            "player:np11"
+          ]
+        },
+        "weakness": {
+          "title": "Final action met a defensive block",
+          "text": "At 11:00\u201311:21 Jude Rivers\u2019s recovery and Ben Fletcher\u2019s pass produced Henry Blake\u2019s central shot at 11:21, which was blocked. That recorded final action failed to produce a goal despite reaching the shot phase.",
+          "evidence_ids": [
+            "shot:a00166:r1",
+            "shot:a00293:r1"
+          ]
+        },
+        "adjustment": {
+          "title": "Review shoot vs return-pass choices in blocked finishes",
+          "text": "Why: Henry Blake\u2019s 11:21 blocked shot followed a recovery and forward pass, while the 20:03 goal followed a short return-pass link. Reviewing the final-action choice could expose repeatable options to avoid blocks.",
+          "evidence_ids": [
+            "shot:a00166:r1",
+            "shot:a00293:r1"
+          ],
+          "action": "Video-review clips the 11:21 passage and the 20:03 passage with forwards and attacking mids; then in drills recreate the 11:00\u201311:21 setup and run two explicit variations: (a) receiver shoots first-time; (b) receiver plays a short return pass before the finish (hypothetical).",
+          "measure": "For each drill repetition log the final action type (first-time shot or return pass) and the immediate outcome (blocked, saved, on target, goal); compare how often blocked outcomes occur in the two variations."
+        },
+        "player": {
+          "title": "Jude Rivers \u2014 forward link and finish",
+          "text": "Jude Rivers (forward) recovered possession and completed the return-pass combination with Ben Fletcher that ended with his 20:03 finish. He recorded five shots in the match and converted that linked sequence into Northport\u2019s opening goal.",
+          "evidence_ids": [
+            "shot:a00293:r1",
+            "player:np11"
+          ]
+        }
+      }
+    ]
+  },
+  "status": "complete",
+  "cached": true
+}
