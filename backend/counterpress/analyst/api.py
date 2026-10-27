@@ -279,7 +279,10 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
             result = await asyncio.wait_for(report_provider.analyze(data, language), timeout=135)
             latest = await run_in_threadpool(full_report_data, data['match_id'])
             if latest['source_id'] != data['source_id']: result = None
-        except (Exception, asyncio.CancelledError):
+        except (Exception, asyncio.CancelledError) as exc:
+            logging.getLogger(__name__).warning('analyst_report_failed stage=%s reason=%s',
+                getattr(exc, 'stage', 'validation_or_timeout'),
+                getattr(exc, 'reason', type(exc).__name__))
             result = None
         finally:
             try:

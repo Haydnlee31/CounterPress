@@ -105,7 +105,7 @@ def test_preview_is_free_and_approved_report_is_shared_with_correction_check(tmp
 
 def draft(data):
     c={'title':'A pattern','text':'The side created a shooting opportunity.','evidence_ids':[data['facts'][0]['id']]}
-    return {'headline':'A match of chances','overview':c,'teams':[{'club_id':t['club_id'],**{k:c for k in ('strength','weakness','adjustment','player')}} for t in data['teams']]}
+    return {'headline':'A match of chances','overview':c,'teams':[{'club_id':t['club_id'],**{k:c for k in ('strength','weakness','player')},'adjustment':{**c,'action':'Review the final pass in the recorded passage.','measure':'Compare the outcomes of the reviewed attempts.'}} for t in data['teams']]}
 
 
 def test_model_output_requires_known_references_and_both_teams():
@@ -138,3 +138,118 @@ def test_source_correction_during_generation_prevents_stale_publication(tmp_path
         state=store.transact(lambda s:(s,s))
         job=next(iter(state['jobs'].values()))
         assert job['status']=='unavailable' and job['result'] is None and state['spent_cents']==10
+
+
+def test_passage_records_return_combination_score_context_and_shot_outcomes():
+    es=sample()[:3]+[event(4,4000,kind='shot',outcome='blocked',start={'x':90,'y':30})]
+    d=report_data(career(es),MID)
+    f={f['id']:f['value'] for f in d['facts']}
+    first=f['shot:e3:r1']
+    assert first['return_pass_before_shot']==['h1','h2','h1']
+    assert first['score_before']=='Home 0 – Away 0'
+    assert first['observed_duration_seconds']==2
+    assert first['last_actions'][1]['recipient']=='h1'
+    assert f['shot:e4:r1']['score_before']=='Home 1 – Away 0'
+    assert f['shot:e4:r1']['return_pass_before_shot'] is None
+    assert f['home:totals']['blocked_shots']==1 and f['home:totals']['shots_on_target']==1
+    assert f['match:result']['winner']=='Home'
+
+
+def test_sparse_archive_does_not_invent_combination_or_recovery():
+    d=report_data(career([sample()[2]],source='adapted_archive'),MID)
+    shot=next(f['value'] for f in d['facts'] if f['id'].startswith('shot:'))
+    assert shot['return_pass_before_shot'] is None and shot['recovery_started_passage'] is False
+    assert len(shot['last_actions'])==1
+
+
+def test_draw_cannot_be_headlined_as_a_win_and_aggregate_cannot_be_invented():
+    es=sample()[:3]+[event(4,4000,club_id='away',player_id='a1',kind='shot',outcome='goal',goal_for='away')]
+    d=report_data(career(es),MID);r=draft(d)
+    r['headline']='Home edges Away after efficient finishing'
+    with pytest.raises(ValueError,match='draw_described_as_win'):validate_reading(MatchReading.model_validate(r),d)
+    r['headline']='The teams share the points';r['overview']['text']='Home won on aggregate.'
+    with pytest.raises(ValueError,match='unsupported_aggregate'):validate_reading(MatchReading.model_validate(r),d)
+
+
+def test_editor_can_repair_a_draft_reference_before_final_validation(monkeypatch):
+    d=report_data(career(sample()),MID);original=draft(d);original['overview']={**original['overview'],'evidence_ids':['invented']}
+    calls=[]
+    async def request(*args,**kwargs):
+        calls.append(args[3])
+        return json.dumps(original if len(calls)==1 else {'supported':True,'coaching_ready':True,'issues':[],'reading':draft(d)}),{}
+    monkeypatch.setattr('counterpress.assistant.planner.structured_request',request)
+    r=asyncio.run(AzureMatchReport(SimpleNamespace()).analyze(d,'en'))
+    assert r['status']=='complete' and len(calls)==2
+    assert calls[1]['draft']['overview']['evidence_ids']==['invented']
+    assert r['reading']['overview']['evidence_ids']!=['invented']
+
+
+def test_factual_but_generic_review_does_not_publish(monkeypatch):
+    d=report_data(career(sample()),MID)
+    async def request(*args,**kwargs):
+        return json.dumps({'supported':True,'coaching_ready':False,'issues':['Generic coaching task'],'reading':draft(d)}),{}
+    monkeypatch.setattr('counterpress.assistant.planner.structured_request',request)
+    assert asyncio.run(AzureMatchReport(SimpleNamespace()).review(d,'en',draft(d)))['status']=='insufficient_evidence'
+
+
+@pytest.mark.parametrize('mid',MATCH_IDS)
+def test_full_evidence_and_review_fit_input_budget_without_model_calls(mid,monkeypatch):
+    d=report_data(CareerService(DataStore(Path('fixtures/personalization'))),mid);calls=[]
+    async def request(config,transport,prompt,data,schema,name,tokens,timeout,**kwargs):
+        payload={'model':'gpt-5-mini','messages':[{'role':'system','content':prompt},{'role':'user','content':json.dumps(data,ensure_ascii=False)}],
+                 'response_format':{'type':'json_schema','json_schema':{'name':name,'strict':True,'schema':schema}},'max_completion_tokens':tokens,'stream':False,'reasoning_effort':kwargs['reasoning_effort']}
+        kwargs['request_guard'](json.dumps(payload).encode());calls.append(name)
+        return json.dumps(draft(d) if len(calls)==1 else {'supported':True,'coaching_ready':True,'issues':[],'reading':draft(d)}),{}
+    monkeypatch.setattr('counterpress.assistant.planner.structured_request',request)
+    assert asyncio.run(AzureMatchReport(SimpleNamespace()).analyze(d,'en'))['status']=='complete'
+    assert len(calls)==2
+
+
+def test_coaching_packet_keeps_whole_match_denominators_and_bound_examples():
+    from counterpress.analyst.report import model_context
+    d=report_data(CareerService(DataStore(Path('fixtures/personalization'))),MID)
+    context,aliases=model_context(d,'en');original={f['id']:f for f in d['facts']}
+    selected=[aliases[f['id']] for f in context['facts'] if aliases[f['id']].startswith('shot:')]
+    for team in d['teams']:
+        own=[key for key in selected if original[key]['value']['club_id']==team['club_id']]
+        assert len(own)<=5
+        assert any(original[key]['value']['goal'] for key in own)
+        fact=next(f for f in context['facts'] if aliases[f['id']]==team['club_id']+':totals')
+        assert fact['value']['shots']==team['totals']['shots']
+    assert all('role' in f['value'] for f in context['facts'] if aliases[f['id']].startswith('player:'))
+
+
+def test_review_aliases_resolve_to_real_passages_without_displaying_ids(monkeypatch):
+    from counterpress.analyst.report import model_context
+    d=report_data(career(sample()),MID);_,aliases=model_context(d,'en');alias=next(iter(aliases));r=draft(d)
+    for c in [r['overview']]+[t[k] for t in r['teams'] for k in ('strength','weakness','adjustment','player')]:
+        c['evidence_ids']=[alias];c['text']=f'A recorded sequence ({alias}).'
+    async def request(*args,**kwargs):return json.dumps({'supported':True,'coaching_ready':True,'issues':[],'reading':r}),{}
+    monkeypatch.setattr('counterpress.assistant.planner.structured_request',request)
+    result=asyncio.run(AzureMatchReport(SimpleNamespace()).review(d,'en',r))
+    assert result['status']=='complete'
+    assert result['reading']['overview']['evidence_ids']==[aliases[alias]]
+    assert alias not in result['reading']['overview']['text']
+
+
+def test_writing_packet_omits_incompatible_entry_denominators():
+    from counterpress.analyst.report import model_context
+    d=report_data(CareerService(DataStore(Path('fixtures/personalization'))),MID)
+    context,aliases=model_context(d,'en')
+    assert not any(':route:' in ref or ref.endswith(':all_entries') for ref in aliases.values())
+    assert len({f['editorial_question'] for f in context['coaching_focus']})==2
+    # Charts retain their data; only the writing packet excludes the invalid comparison.
+    assert any(f['id'].endswith(':all_entries') for f in d['facts'])
+    assert all(t['lanes'] for t in d['teams'])
+
+
+def test_report_failures_log_safe_diagnostics_without_provider_message(tmp_path,caplog):
+    class Provider:
+        async def analyze(self,data,language):raise RuntimeError('secret-token-and-private-url')
+    app=FastAPI();ledger=LiveAllowance(SQLiteStore(tmp_path/'failure'))
+    install_analyst(app,lambda:career(sample()),live_allowance=ledger,report_provider=Provider())
+    with TestClient(app) as client:
+        client.post(f'/api/analyst/matches/{MID}/report',json={'approve':True})
+        import time;time.sleep(.1)
+    assert 'analyst_report_failed' in caplog.text and 'RuntimeError' in caplog.text
+    assert 'secret-token-and-private-url' not in caplog.text
