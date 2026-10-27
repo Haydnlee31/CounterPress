@@ -255,7 +255,7 @@ def model_context(data, language):
            and (not f['id'].startswith('shot:') or f['id'] in chosen)]
     aliases={f'E{i+1:03}':f['id'] for i,f in enumerate(facts)}
     def readable(value):
-        if isinstance(value,dict):return {k.replace('_',' '):({'GK':'goalkeeper','DF':'defender','MF':'midfielder','FW':'forward'}.get(v,v) if k=='role' and isinstance(v,str) else readable(v)) for k,v in value.items()}
+        if isinstance(value,dict):return {('pass attempts' if k=='passes' else k.replace('_',' ')):({'GK':'goalkeeper','DF':'defender','MF':'midfielder','FW':'forward'}.get(v,v) if k=='role' and isinstance(v,str) else readable(v)) for k,v in value.items()}
         if isinstance(value,list):return [readable(v) for v in value]
         return value
     focus=[]
@@ -277,16 +277,45 @@ def model_context(data, language):
                 'entry_warning':'All final-third entries are independent action counts. Linked shot routes observe only the preceding 30 seconds/eight actions and may omit entries. Do not divide these datasets or treat missing links as failed attacks.'}},aliases
 
 
-def readable_text(text, aliases):
-    # Citation identifiers carry no football information. Remove known aliases
-    # from prose while retaining their verified links in evidence_ids.
+def readable_text(text, aliases, facts=None, language='en'):
+    # Standalone citations may be removed. A reference used as part of a
+    # sentence needs a readable name, otherwise "review E001 and E002" breaks.
     import re
     ids='|'.join(re.escape(x) for x in sorted(aliases,key=len,reverse=True))
-    if ids:text=re.sub(r'\b(?:'+ids+r')\b', '', text)
+    facts={f['id']:f for f in facts or []}
+    def label(match):
+        fact=facts.get(aliases[match.group()])
+        if fact and fact['id'].startswith('shot:'):return (fact['value']['clock']+'片段') if language=='zh-Hans' else 'the '+fact['value']['clock']+' passage'
+        return fact['label'] if fact else 'the cited evidence'
+    if ids:
+        text=re.sub(r'[\[(]\s*(?:'+ids+r')(?:[\s,;]+(?:'+ids+r'))*\s*[\])]', '', text)
+        text=re.sub(r'\b(?:'+ids+r')\b',label,text)
+    text=re.sub(r'\bpassages?\s+(?=the \d+:\d{2} passage)', '', text)
     text=re.sub(r'[\[(][\s,;]*[\])]', '', text)
     text=re.sub(r'[,;]\s*([\])])',r'\1',text)
     text=re.sub(r'\s+([.,;])',r'\1',text)
     return re.sub(r' {2,}',' ',text).strip()
+
+
+def reconcile_overview_passes(reading, data):
+    """Only reconcile explicit full-match team totals in the overview.
+
+    Do not rewrite player counts, period/window counts, or qualified pass
+    categories. The cited aggregate supplies both attempts and completions.
+    """
+    import re
+    for team in data['teams']:
+        if team['club_id']+':totals' not in reading.overview.evidence_ids:continue
+        text=reading.overview.text
+        if re.search(r'\d+:\d{2}|\b(?:half|minute|spell|window)\b',text,re.I):continue
+        total=team['totals'];name=re.escape(team['name'])
+        # A clear, exact comparison remains fluent even when the draft confused
+        # pass attempts/completions or wrote "completed ... shots".
+        pattern=rf'({name}) completed [\d,]+ passes and (?:[\d,]+|[a-z-]+) shots\b'
+        text=re.sub(pattern,lambda m:f"{m[1]} completed {total['completed_passes']} of {total['passes']} passes and took {total['shots']} {'shot' if total['shots']==1 else 'shots'}",text,flags=re.I)
+        pattern=rf'({name}) completed [\d,]+ passes(?=\s*(?:[.;,]|$))'
+        text=re.sub(pattern,lambda m:f"{m[1]} completed {total['completed_passes']} passes",text,flags=re.I)
+        reading.overview.text=text
 
 
 class ReportStageError(RuntimeError):
@@ -356,13 +385,17 @@ class AzureMatchReport:
         if review.get('supported') is not True or review.get('coaching_ready') is not True or review.get('issues') != [] or not review.get('reading'):
             return {'status':'insufficient_evidence','reading':None}
         final=MatchReading.model_validate(review['reading'])
-        final.headline=readable_text(final.headline,aliases)
+        final.headline=readable_text(final.headline,aliases,data['facts'],language)
         for claim in claims(final):
             claim.evidence_ids=[aliases.get(ref,ref) for ref in claim.evidence_ids]
-            claim.title=readable_text(claim.title,aliases);claim.text=readable_text(claim.text,aliases)
+            claim.title=readable_text(claim.title,aliases,data['facts'],language);claim.text=readable_text(claim.text,aliases,data['facts'],language)
         for team in final.teams:
-            team.adjustment.action=readable_text(team.adjustment.action,aliases)
-            team.adjustment.measure=readable_text(team.adjustment.measure,aliases)
+            team.adjustment.action=readable_text(team.adjustment.action,aliases,data['facts'],language)
+            team.adjustment.measure=readable_text(team.adjustment.measure,aliases,data['facts'],language)
+        reconcile_overview_passes(final,data)
+        for claim in claims(final):
+            if sum(ref.startswith('shot:') for ref in claim.evidence_ids)==1:
+                claim.text=claim.text.replace('shows a successful repeated pattern of','provides a recorded example of')
         validate_reading(final,data)
         import re
         texts=[final.headline]+[x for c in claims(final) for x in (c.title,c.text)]+[x for t in final.teams for x in (t.adjustment.action,t.adjustment.measure)]

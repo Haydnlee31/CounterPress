@@ -361,9 +361,28 @@ review of other unsuccessful finishes. A question is not a tactical diagnosis.
 The editor can repair a draft before final validation. Both factual support and
 coaching usefulness must pass. Final draw/win consistency is independently checked;
 aggregate-score claims are rejected. Short citation aliases are mapped back to real
-facts and passages, and citation identifiers are removed from displayed prose.
+facts and passages. Standalone citation brackets are removed; references used in a sentence become readable passage clocks so the sentence stays intact.
 This does not establish unobserved defender positioning, shot quality or causality.
 
 The coaching approach follows UEFA's use of concrete tactical observations with
 video and data: https://www.uefa.com/development/performance-analysis/about-performance-analysis/
 The external methodology supplies no facts about the synthetic match.
+
+
+A further bounded live author/editor check completed in 47.83 seconds. Manual
+review found a pass-attempt/completion label error and grammatical gaps from
+removed citation aliases. A narrowly scoped formatter now reconciles explicit,
+cited full-match overview pass totals (not player, window or qualified pass counts)
+with the computed values. The captured response is checked in
+`fixtures/evaluation/analyst_report_coach_response.json` and replayed through the
+final publication code without model calls. It preserves a correct 2–2 result,
+384/442 and 316/373 completed/attempted passes, distinct coaching tasks and
+readable references to actual passages. A single cited sequence is described as
+an example rather than proof of a repeated pattern. This observed case is useful
+as a coaching review prompt; it does not validate every future generated report.
+
+The tested Northport task contrasts Stone to Blake at 11:21 (blocked) with the
+Rivers/Fletcher return at 20:03 (goal), then proposes testing final-pass choices and
+recording blocked/on-target outcomes. Eastbridge instead reviews longer build-up
+against the recovery finish and Hayes/Mercer return. These are proposed drills
+and review questions, not claims about unobserved defensive positioning.

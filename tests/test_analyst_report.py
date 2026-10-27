@@ -253,3 +253,41 @@ def test_report_failures_log_safe_diagnostics_without_provider_message(tmp_path,
         import time;time.sleep(.1)
     assert 'analyst_report_failed' in caplog.text and 'RuntimeError' in caplog.text
     assert 'secret-token-and-private-url' not in caplog.text
+
+
+def test_aliases_used_in_sentences_keep_readable_passage_references():
+    from counterpress.analyst.report import readable_text
+    facts=[{'id':'shot:e3:r1','label':'Observed shot passage','value':{'clock':'0:03'}}]
+    assert readable_text('Review E001 with the passer (E001).',{'E001':'shot:e3:r1'},facts)=='Review the 0:03 passage with the passer.'
+    assert readable_text('Compare E001 and E002.',{'E001':'shot:e3:r1','E002':'shot:e3:r1'},facts)=='Compare the 0:03 passage and the 0:03 passage.'
+
+
+def test_overview_reconciles_cited_match_totals_but_not_qualified_counts():
+    from counterpress.analyst.report import reconcile_overview_passes
+    d=report_data(career(sample()),MID);r=MatchReading.model_validate(draft(d))
+    r.overview.evidence_ids=['home:totals']
+    r.overview.text='Home completed 3 passes and nine shots.'
+    reconcile_overview_passes(r,d)
+    assert r.overview.text=='Home completed 2 of 3 passes and took 1 shot.'
+    for text in ('Home completed 1 passes into the box.','Home completed 1 passes in the second half.','At 0:03 Home completed 1 passes.'):
+        r.overview.text=text;reconcile_overview_passes(r,d);assert r.overview.text==text
+    r.overview.evidence_ids=['shot:e3:r1'];r.overview.text='Home completed 1 passes.'
+    reconcile_overview_passes(r,d);assert r.overview.text=='Home completed 1 passes.'
+
+
+def test_captured_live_report_keeps_verified_totals_and_readable_coaching_actions(monkeypatch):
+    fixture=json.loads(Path('fixtures/evaluation/analyst_report_coach_response.json').read_text())
+    d=report_data(CareerService(DataStore(Path('fixtures/personalization'))),fixture['match_id'])
+    assert d['source_id']==fixture['source_id']
+    responses=iter(fixture['outputs'])
+    async def request(*args,**kwargs):return json.dumps(next(responses)),{}
+    monkeypatch.setattr('counterpress.assistant.planner.structured_request',request)
+    result=asyncio.run(AzureMatchReport(SimpleNamespace()).analyze(d,'en'))
+    assert result['status']=='complete'
+    r=result['reading'];assert r['overview']['text'].startswith(fixture['expected_overview'])
+    home,away=r['teams']
+    assert '71:12 passage' in home['adjustment']['action']
+    assert '11:21 passage and the 20:03 passage' in away['adjustment']['action']
+    assert 'Video-review passages the' not in home['adjustment']['action']
+    assert 'repeated pattern' not in away['strength']['text']
+    assert home['adjustment']['action']!=away['adjustment']['action']
