@@ -154,7 +154,7 @@ def build_snapshot(career, match_id: str, request: AnalystRequest) -> dict:
     triggers=_triggers(scopes,rows,fixture,request)
     result={'match_id':match_id,'cutoff':request.cutoff.model_dump(),'through_sequence':through,
         'language':request.language,'depth':request.depth,'focus_player_id':request.focus_player_id,
-        'momentum':momentum_series(capped,fixture,request),'clubs':clubs,'score':score,'players':players,'candidates':candidates,'period_lengths_ms':{str(i+1):v for i,v in enumerate(fixture.period_lengths_ms)},'metrics':rows,'evidence':evidence,'signals':signals,
+        'source_version':_hash([(e.event_id,e.revision,e.delivery_sequence) for e in capped if e.revision>1]),'momentum':momentum_series(capped,fixture,request),'clubs':clubs,'score':score,'players':players,'candidates':candidates,'period_lengths_ms':{str(i+1):v for i,v in enumerate(fixture.period_lengths_ms)},'metrics':rows,'evidence':evidence,'signals':signals,
         'windows':windows,'methods':dict(METHODS),'triggers':triggers,
         'coverage':{'visible_events':len(events),'evidence_events':len(evidence),'tracking':'unavailable','source_kind':fixture.source_kind},'metric_version':VERSION}
     result['snapshot_id']=_hash({'version':VERSION,'request':request.model_dump()|{'through_sequence':through},'fixture':fixture.model_dump(mode='json'),'events':[e.model_dump(mode='json') for e in events],'through_sequence':through})

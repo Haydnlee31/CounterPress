@@ -22,6 +22,7 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
   previous.current={matchId,cutoff,prefs,seekEpoch}
   const scope=JSON.stringify([matchId,prefs,revision,epoch.current])
   const metricCutoff=bucket(cutoff,15000)
+  const live=config?.discussion_style==='live'
   const interval=Math.max(60000,config?.interval_ms??60000)
   const currentScope=useRef(scope);currentScope.current=scope
   const latestCutoff=useRef(cutoff);latestCutoff.current=cutoff
@@ -81,9 +82,9 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
         if(!validateAnalysis(view,at,matchId))throw Error()
         if(!active||currentScope.current!==scope||before(latestCutoff.current,at))return
         if(view.status==='pending'){
-          if(Date.now()-start<120000){schedule(()=>void request(at,start),3000);return}
+          if(Date.now()-start<(live?45000:120000)){schedule(()=>void request(at,start),live?1000:3000);return}
           setIntel(old=>({scope,view:old.scope===scope?old.view:undefined,failed:true,pending:false}))
-        }else {setIntel({scope,view,pending:false});if(view.messages?.length)setRounds(old=>({scope,views:[...(old.scope===scope?old.views:[]).filter(r=>r.snapshot_id!==view.snapshot_id),view].slice(-6)}))}
+        }else {setIntel({scope,view,pending:false});if(view.messages?.length)setRounds(old=>({scope,views:[...(old.scope===scope?old.views:[]).filter(r=>r.snapshot_id!==view.snapshot_id),view].slice(live?-40:-6)}))}
         // An exhausted allowance is terminal for this viewing run; manual retry
         // or a fresh session can check it later without a request every minute.
         if(playing&&!['hourly_limit','daily_limit','budget_limit','disabled'].includes(view.status))schedule(next,1000)
@@ -91,7 +92,7 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
     }
     schedule(next,200)
     return()=>{active=false;clearTimeout(timer);controller.abort();setIntel(old=>old.scope===scope?{...old,pending:false}:old);if(dispatched&&viewId)void fetch(`/api/analyst/views/${viewId}/cancel`,{method:'POST',keepalive:true}).catch(()=>{})}
-  },[matchId,scope,visible,playing,config?.mode,config?.available,config?.discussion_available,config?.cancellation_available,interval,discussionRetry])
+  },[matchId,scope,visible,playing,config?.mode,config?.available,config?.discussion_available,config?.cancellation_available,interval,discussionRetry,live])
   const snapshot=metrics.scope===scope&&metrics.view&&!before(cutoff,metrics.view.cutoff)?metrics.view:null
   const analysis=intel.scope===scope&&intel.view&&!before(cutoff,intel.view.cutoff)&&cutoff.period===intel.view.cutoff.period&&cutoff.elapsed_ms-intel.view.cutoff.elapsed_ms<=180000?intel.view:null
   return {rounds:rounds.scope===scope?rounds.views.filter(r=>!before(cutoff,r.cutoff)):[],config,configFailed,snapshot,analysis,pending:visible&&intel.scope===scope&&!!intel.pending,failed:intel.scope===scope&&intel.failed,metricsFailed:metrics.scope===scope&&metrics.failed,retryConfig:()=>setConfigRetry(n=>n+1),retrySnapshot:()=>setSnapshotRetry(n=>n+1),requestDiscussion:()=>{manualRequest.current=true;setDiscussionRetry(n=>n+1)}}

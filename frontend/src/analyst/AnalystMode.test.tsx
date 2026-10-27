@@ -29,7 +29,7 @@ it('shows the shared room and four workspaces without inventing agent commentary
   expect(screen.getByRole('heading',{name:'The conversation'})).toBeTruthy()
   for(const role of ['Player Analyst','Match Analyst','Chance Analyst','Defensive Analyst'])expect(screen.getByRole('heading',{name:role})).toBeTruthy()
   expect(screen.getByText('Live discussion is not connected in this preview. The statistics below follow the replay.')).toBeTruthy()
-  expect(screen.getByText('Match heatmap')).toBeTruthy()
+  expect(screen.queryByText('Match heatmap')).toBeNull() // Maps now appear with a relevant conversation or player focus.
   fireEvent.click(screen.getByRole('button',{name:'Explore Chance Analyst statistics'}))
   fireEvent.click(screen.getByText('Other measures'))
   expect(screen.getByText('Shot speed')).toBeTruthy();expect(screen.getByText('Not available')).toBeTruthy()

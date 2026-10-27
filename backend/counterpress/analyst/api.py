@@ -65,7 +65,7 @@ class AnalystBoundary:
         await self.app(scope, buffered, private_send)
 
 
-def install_analyst(app, career_service, history_store=None, provider=None, allowance=None, discussion_provider=None):
+def install_analyst(app, career_service, history_store=None, provider=None, allowance=None, discussion_provider=None, live_allowance=None):
     router = APIRouter(prefix='/api/analyst', tags=['Analyst Mode'])
     if provider is None and os.environ.get('COUNTERPRESS_ANALYST_MODE') == 'foundry':
         from .provider import FoundryAnalyst
@@ -75,9 +75,9 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
             logging.getLogger(__name__).warning('Analyst Mode disabled: native configuration unavailable')
     if discussion_provider is None and os.environ.get('COUNTERPRESS_ANALYST_DISCUSSION') == 'azure':
         from counterpress.adaptation.azure import load_config
-        from .discussion import AzureDiscussion
+        from .live import AzureLiveDiscussion
         config = load_config()
-        if config: discussion_provider = AzureDiscussion(config)
+        if config: discussion_provider = AzureLiveDiscussion(config)
     if discussion_provider is None and os.environ.get('COUNTERPRESS_ANALYST_DISCUSSION') == 'foundry':
         from .provider import FoundryDiscussion
         try:
@@ -95,6 +95,18 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
             enabled = False
             provider = None
             discussion_provider = None
+    live = bool(getattr(discussion_provider, 'live', False))
+    if live and live_allowance is None:
+        from .live_admission import LiveAllowance
+        if hasattr(history_store, 'container'):
+            store = CosmosStore(history_store.container)
+            store.partition = 'analyst-live-control-v1'
+            live_allowance = LiveAllowance(store)
+        elif os.environ.get('COUNTERPRESS_ANALYST_LEDGER_PATH'):
+            live_allowance = LiveAllowance(SQLiteStore(os.environ['COUNTERPRESS_ANALYST_LEDGER_PATH'] + '.live'))
+        else:
+            discussion_provider = None
+            live = False
     tasks = set()
     running = {}
     viewers = {}
@@ -147,17 +159,18 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
         return {'available': enabled, 'mode': 'foundry' if enabled else 'metrics',
                 'roles': ROLES, 'interval_ms': 60000, 'max_calls_per_run': 5,
                 'matches': list(MATCHES), 'discussion_available': discussion_provider is not None,
-                'discussion_runtime': 'microsoft_agent_framework' if discussion_provider else None,
+                'discussion_runtime': 'footie_live_turn_manager' if live else 'microsoft_agent_framework' if discussion_provider else None,
+                'discussion_style': 'live' if live else 'roundtable', 'match_model_allowance_usd': 2.7 if live else None,
                 'cancellation_available': True}
 
     @router.post('/matches/{match_id}/snapshot')
     async def metrics(match_id: str, body: AnalystRequest):
         return await run_in_threadpool(snapshot, match_id, body)
 
-    async def execute(key, owner, snap, body, selected_provider):
+    async def execute(key, owner, snap, body, selected_provider, ledger, history=()):
         result = None
         try:
-            result = await asyncio.wait_for(selected_provider.analyze(snap, body), timeout=125)
+            result = await asyncio.wait_for(selected_provider.analyze(snap, body, history) if getattr(selected_provider, 'live', False) else selected_provider.analyze(snap, body), timeout=32 if getattr(selected_provider, 'live', False) else 125)
             # A native run may outlive a correction. Re-check the same pinned
             # view AND newly received revisions before publishing its prose.
             latest = await run_in_threadpool(snapshot, snap['match_id'], body.model_copy(update={'through_sequence': None}))
@@ -169,7 +182,7 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
             result = None
         finally:
             try:
-                await run_in_threadpool(allowance.finish, key, owner, result, time.time())
+                await run_in_threadpool(ledger.finish, key, owner, result, time.time())
             except (HistoryStorageError, OSError):
                 pass  # Uncertain attempts remain charged and expire by lease.
             running.pop(key, None)
@@ -208,21 +221,30 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
             latest = await run_in_threadpool(snapshot, match_id, pinned_body.model_copy(update={'through_sequence': None}))
             if latest['through_sequence'] != snap['through_sequence']:
                 raise HTTPException(409, 'This match view has changed. Refresh Analyst Mode.')
+        ledger = live_allowance if discussion and live else allowance
         key = hashlib.sha256(json.dumps({'snapshot': snap['snapshot_id'],
             'preferences': body.model_dump(exclude={'cutoff', 'through_sequence'}),
             'manifest': selected_provider.manifest_id, 'discussion': discussion}, sort_keys=True).encode()).hexdigest()
         viewers.setdefault(key, set()).add(view_id)  # None preserves legacy viewers without cancellation.
         try:
-            job = await run_in_threadpool(allowance.reserve, key, time.time())
+            if discussion and live:
+                from .live import choose_role
+                if choose_role(snap) is None:
+                    viewers.pop(key, None)
+                    return {**envelope, 'status': 'insufficient_evidence'}
+                context_scope = hashlib.sha256(json.dumps({'match': match_id, 'preferences': body.model_dump(exclude={'cutoff','through_sequence'}), 'source': snap.get('source_version', snap['through_sequence']), 'manifest': selected_provider.manifest_id}, sort_keys=True).encode()).hexdigest()
+                job = await run_in_threadpool(ledger.reserve, key, time.time(), match_id, context_scope, snap['cutoff'])
+            else:
+                job = await run_in_threadpool(ledger.reserve, key, time.time())
         except (HistoryStorageError, OSError):
             if key not in running: viewers.pop(key, None)
             return {**envelope, 'status': 'unavailable'}
         if job.get('admitted') and not viewers.get(key):
-            await run_in_threadpool(allowance.finish, key, job['owner'], None, time.time())
+            await run_in_threadpool(ledger.finish, key, job['owner'], None, time.time())
             viewers.pop(key, None)
             return {**envelope, 'status': 'cancelled'}
         if job.get('admitted'):
-            task = asyncio.create_task(execute(key, job['owner'], snap, pinned_body, selected_provider))
+            task = asyncio.create_task(execute(key, job['owner'], snap, pinned_body, selected_provider, ledger, job.get('history', ())))
             running[key] = task
             tasks.add(task)
             task.add_done_callback(tasks.discard)

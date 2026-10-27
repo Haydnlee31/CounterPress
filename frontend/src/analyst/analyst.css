@@ -341,3 +341,36 @@
 .analyst-mode .an-pitch-seat .an-message-content p {font-size:13px;line-height:1.6}
 .analyst-mode .an-pitch-seat .an-chat-message {padding:16px 0;gap:10px}
 .analyst-mode .an-pitch-seat .an-agent-avatar {width:30px;height:30px;flex-basis:30px;border-radius:9px;font-size:18px}
+
+/* Live desk: stable match information, conversational updates, purposeful visuals. */
+.an-live-room .an-conversation {max-height:340px;min-height:150px;overscroll-behavior:contain;scrollbar-gutter:stable}
+.an-live-room .an-chat-message {padding:14px 16px;border-bottom:1px solid #e3e8dc}
+.an-live-room .an-message-content p {font-size:14px;line-height:1.55;margin:7px 0}
+.an-live-room .an-chat-message:last-child {border-bottom:0}
+.an-live-room .an-room-avatars {display:flex}
+.an-new-comments {display:block;margin:8px auto 12px;border:1px solid #c2cdb7;background:#edf1e3;border-radius:999px;padding:8px 16px;color:#183e32;font:inherit;cursor:pointer}
+.an-context-insight {border:1px solid #d5dfce;border-radius:16px;padding:16px;background:#fffef8;margin-top:14px;min-width:0}
+.an-context-insight header {display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.an-context-insight h3 {font-size:17px;line-height:1.3;margin:0}
+.an-context-insight .an-eyebrow {display:block;font-size:10px;margin:0 0 6px}
+.an-context-insight header>span {font-size:11px;color:#6b7a63;white-space:nowrap}
+.an-context-insight .an-map svg {display:block;width:100%;max-height:250px;border-radius:10px;background:#173e33}
+.an-map-legend {display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:11px;color:#65785e;margin:8px 0 0}
+.an-map-legend>span:first-child {color:#4d7181}
+.an-density-key {display:inline-flex;align-items:center;gap:6px;margin-left:auto}
+.an-density-key i {display:block;width:60px;height:7px;border-radius:5px;background:linear-gradient(90deg,#e7ecd9,#adc67d,#e7bc5b)}
+.an-path-note {display:block;color:#65785e;font-size:10px;margin-top:7px}
+.an-momentum-ribbon {margin-top:12px;padding:12px 0 0;border-top:1px solid #e1e6d8}
+.an-desks .an-momentum-ribbon svg {height:100px;max-height:none;width:100%;margin:8px 0}
+.an-desks .an-momentum-ribbon>div:first-child span {display:none}
+.an-desks .an-momentum-ribbon p {display:block;font-size:10px;color:#71816a;margin:8px 0 0}
+.an-desk-reading {margin-top:14px;border-top:1px solid #e1e6d8;padding-top:12px}
+.gi-followed-player {pointer-events:none}
+@media(max-width:700px){.an-live-room .an-conversation {max-height:380px}.an-context-insight header {align-items:flex-start;flex-direction:column;gap:6px}.an-context-insight .an-map svg {max-height:230px}}
+@media(prefers-reduced-motion:no-preference){.an-live-room .an-chat-message {animation:an-comment-in 160ms ease-out}@keyframes an-comment-in {from {opacity:.4;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}}
+/* Keep each pair of desks together when a conversation visual grows. */
+@media(min-width:1201px){
+ .analyst-mode .an-desks-grid {grid-template-rows:min-content 1fr;align-items:start}
+ .analyst-mode .an-pitch-panel .gi-replay .gi-pitch {max-height:clamp(230px,34dvh,340px)}
+}
+.analyst-mode .an-pitch-seat .an-live-room .an-conversation {max-height:280px;min-height:140px}
