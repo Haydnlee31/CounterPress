@@ -54,11 +54,25 @@ def test_discussion_activation_and_rollback_are_explicit():
 @pytest.mark.parametrize('mode', ['azure', 'foundry'])
 def test_postdeploy_probe_requires_available_discussion_without_generating(mode):
     env = {'COUNTERPRESS_ANALYST_MODE': 'off', 'COUNTERPRESS_ANALYST_DISCUSSION': mode}
-    ready = {'discussion_available': True, 'discussion_runtime': 'microsoft_agent_framework', 'available': False, 'mode': 'metrics'}
+    ready = {'discussion_available': True, 'discussion_runtime': 'footie_live_turn_manager' if mode == 'azure' else 'microsoft_agent_framework', 'available': False, 'mode': 'metrics'}
+    if mode == 'azure': ready.update(discussion_style='live', match_model_allowance_usd=2.7)
     deploy.verify_analyst_status(env, ready)
     for status in ({}, {**ready, 'discussion_available': False}, {**ready, 'discussion_runtime': None}):
         with pytest.raises(deploy.DeploymentError):
             deploy.verify_analyst_status(env, status)
+
+
+@pytest.mark.parametrize('change', [
+    {'discussion_runtime': 'microsoft_agent_framework'},
+    {'discussion_style': 'roundtable'},
+    {'match_model_allowance_usd': None},
+    {'match_model_allowance_usd': 3.1},
+])
+def test_live_probe_rejects_wrong_runtime_or_unreviewed_allowance(change):
+    ready = {'discussion_available': True, 'discussion_runtime': 'footie_live_turn_manager',
+             'discussion_style': 'live', 'match_model_allowance_usd': 2.7}
+    with pytest.raises(deploy.DeploymentError):
+        deploy.verify_analyst_status({'COUNTERPRESS_ANALYST_DISCUSSION': 'azure'}, {**ready, **change})
 
 
 def test_postdeploy_probe_checks_disabled_and_legacy_paths():
