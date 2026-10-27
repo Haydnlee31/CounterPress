@@ -41,7 +41,8 @@ def test_natural_language_gate_keeps_real_references_and_numbers():
   with pytest.raises(ValueError):check_comment(Comment(**comment(evidence_ids=[e],**kw)),p,[],'control')
 
 
-def test_two_calls_publish_only_after_editor_review_and_allow_repairs():
+@pytest.mark.parametrize('reply_link', ['standalone','missing_target','extraneous_target'])
+def test_two_calls_publish_only_after_editor_review_and_allow_repairs(reply_link):
  s=source();seen=[]
  def transport(req):
   data=json.loads(req.content);seen.append(data)
@@ -49,10 +50,15 @@ def test_two_calls_publish_only_after_editor_review_and_allow_repairs():
   row=comment(evidence_ids=[eid],metric_ids=[next(m['id'] for m in packet['metrics'] if m['key']=='final_third_entries' and m.get('club_id')=='home' and m['window']=='current')])
   if len(seen)==1:row['text']='They made 99 entries.'
   else:row.update(publish=True,added_value='sequence',new_reading='The recorded entry connects to the following attack.',unsupported_premises=[],text='The pass entered the final third. That is a route worth following, but the next action will decide whether it becomes a chance.')
+  if len(seen)==2:
+   row['new_reading']='A supported sequence adds context. '*15
+   if reply_link=='missing_target':row.update(reply_to=None,relation='builds_on')
+   if reply_link=='extraneous_target':row.update(reply_to='players',relation='observation')
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(row)}}],'usage':{'prompt_tokens':123,'completion_tokens':80}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-4.1-mini',api_key='fake-test-only')
  r=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))
  assert r['status']=='complete' and len(r['messages'])==1
+ assert r['messages'][0]['reply_to'] is None and r['messages'][0]['relation']=='observation'
  assert r['messages'][0]['verified_by']=='footie' and '99' not in r['messages'][0]['text']
  assert len(seen)==2 and [p['max_completion_tokens'] for p in seen]==[700,2000]
  assert 'reasoning_effort' not in seen[0]

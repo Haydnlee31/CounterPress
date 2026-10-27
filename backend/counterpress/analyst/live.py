@@ -47,7 +47,7 @@ class Comment(BaseModel):
 class EditorialDecision(BaseModel):
     model_config = ConfigDict(extra='forbid')
     added_value: Literal['change','contrast','sequence','none']
-    new_reading: str = Field(max_length=300, description='What this adds beyond the preceding conversation, not just a changed total. Empty if it repeats a point.')
+    new_reading: str = Field(description='What this adds beyond the preceding conversation, not just a changed total. Empty if it repeats a point.')
     unsupported_premises: list[str] = Field(max_length=4)
     publish: bool
 
@@ -226,6 +226,10 @@ class AzureLiveDiscussion:
                     text=re.sub(r'\s*[\[(]\s*[me]\d+(?:\s*,\s*[me]\d+)*\s*[\])]', '', review.text)
                     text=re.sub(r'\s*[\[(](?:\d+ completed|completed\s*=\s*\d+)[\])]', '', text)
                     review=review.model_copy(update={'text':text})
+                    # A missing reply target is a standalone observation. Never
+                    # invent a relationship to rescue inconsistent link metadata.
+                    if review.reply_to is None or review.relation=='observation':
+                        review=review.model_copy(update={'reply_to':None,'relation':'observation'})
                     check_comment(review,source,past,role)
                     if not any(m['text'].strip().casefold()==review.text.strip().casefold() for m in past):
                         review=review.model_copy(update={'metric_ids':[references[i] for i in review.metric_ids],'evidence_ids':[references[i] for i in review.evidence_ids]})
