@@ -147,18 +147,23 @@ def build_snapshot(career, match_id: str, request: AnalystRequest) -> dict:
     for sig in original_signals:
         if len(candidate_refs|set(sig['evidence_ids']))<=64:
             signals.append(sig);candidate_refs.update(sig['evidence_ids'])
+    from .passages import build_passages
+    passages=[]
     wanted={ref for s in signals for ref in s['evidence_ids']}
+    for passage in build_passages(events,request.cutoff,request.focus_player_id):
+        if len(wanted|set(passage['evidence_ids']))<=64:
+            passages.append(passage);wanted.update(passage['evidence_ids'])
     selected_evidence=[e for e in events if _eid(e) in wanted]
     if len(selected_evidence)>64:raise ValueError('Candidate evidence exceeds bounded snapshot')
     for e in reversed(events):
         if len(selected_evidence)>=64:break
         if _eid(e) not in wanted:selected_evidence.append(e);wanted.add(_eid(e))
     selected_evidence.sort(key=lambda e:(e.period,e.elapsed_ms,e.occurrence_order))
-    evidence=[{'id':_eid(e),**{k:getattr(e,k) for k in ('event_id','revision','delivery_sequence','period','elapsed_ms','available_period','available_ms','club_id','player_id','kind','outcome')},'start':e.start.model_dump() if e.start else None,'end':e.end.model_dump() if e.end else None} for e in selected_evidence]
+    evidence=[{'id':_eid(e),**{k:getattr(e,k) for k in ('event_id','revision','delivery_sequence','period','elapsed_ms','available_period','available_ms','club_id','player_id','kind','outcome','recipient_id','restart','occurrence_order')},'start':e.start.model_dump() if e.start else None,'end':e.end.model_dump() if e.end else None} for e in selected_evidence]
     triggers=_triggers(scopes,rows,fixture,request)
     result={'match_id':match_id,'cutoff':request.cutoff.model_dump(),'through_sequence':through,
         'language':request.language,'depth':request.depth,'focus_player_id':request.focus_player_id,
-        'source_version':_hash([(e.event_id,e.revision,e.delivery_sequence) for e in capped if e.revision>1]),'momentum':momentum_series(capped,fixture,request),'clubs':clubs,'score':score,'players':players,'candidates':candidates,'period_lengths_ms':{str(i+1):v for i,v in enumerate(fixture.period_lengths_ms)},'metrics':rows,'evidence':evidence,'signals':signals,
+        'source_version':_hash([(e.event_id,e.revision,e.delivery_sequence) for e in capped if e.revision>1]),'momentum':momentum_series(capped,fixture,request),'clubs':clubs,'score':score,'players':players,'candidates':candidates,'period_lengths_ms':{str(i+1):v for i,v in enumerate(fixture.period_lengths_ms)},'metrics':rows,'evidence':evidence,'signals':signals,'passages':passages,
         'windows':windows,'methods':dict(METHODS),'triggers':triggers,
         'coverage':{'visible_events':len(events),'evidence_events':len(evidence),'tracking':'unavailable','source_kind':fixture.source_kind},'metric_version':VERSION}
     result['snapshot_id']=_hash({'version':VERSION,'request':request.model_dump()|{'through_sequence':through},'fixture':fixture.model_dump(mode='json'),'events':[e.model_dump(mode='json') for e in events],'through_sequence':through})

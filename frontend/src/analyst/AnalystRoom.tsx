@@ -1,4 +1,4 @@
-import {useEffect,useRef,useState,useId} from 'react'
+import {useState,useId} from 'react'
 import type {ReactNode} from 'react'
 import {PlayerOptions} from './PlayerOptions'
 import {MetricMap} from './MetricBoard'
@@ -31,21 +31,16 @@ function MessageCard({message,round,onEvidence}:{message:DiscussionMessage;round
   </article>
 }
 export function AnalystConversation({rounds,pending,failed,available,playing,ready=true,analysis,refresh,onEvidence,live=false}:{rounds:Analysis[];pending:boolean;failed?:boolean;available:boolean;playing:boolean;live?:boolean;ready?:boolean;analysis:Analysis|null;refresh:()=>void;onEvidence?:(e:Evidence)=>void}){
-  const last=rounds.at(-1),older=rounds.slice(0,live?-12:-1),visibleRounds=live?rounds.slice(-12):last?[last]:[]
-  const log=useRef<HTMLDivElement>(null),following=useRef(true)
-  const [unread,setUnread]=useState(false)
-  useEffect(()=>{if(following.current&&log.current)log.current.scrollTop=log.current.scrollHeight;else setUnread(true)},[last?.snapshot_id])
+  const entries=rounds.flatMap(round=>(round.messages??[]).map(message=>({round,message})))
+  const latest=entries.at(-1),older=entries.slice(0,-1)
   return <section className={`an-room ${live?'an-live-room':''}`} aria-labelledby="analyst-room-title"><div className="an-room-heading"><div><p className="an-eyebrow">AT THE ANALYST TABLE</p><h2 id="analyst-room-title">The conversation</h2></div><div className="an-room-status"><span className={pending?'is-thinking':''}>{pending?(live?'Reading the latest spell':'Analysts discussing'):playing?'Following the match':'Replay paused'}</span>{available&&<button disabled={pending||!ready} onClick={refresh}>Discuss this spell</button>}</div></div>
-    <div ref={log} onScroll={()=>{const el=log.current;if(el){following.current=el.scrollHeight-el.scrollTop-el.clientHeight<60;if(following.current)setUnread(false)}}} className="an-conversation" role="log" aria-live="polite" aria-relevant="additions">
-      {older.length>0&&<details className="an-earlier-rounds"><summary>Earlier discussion <span>{older.length} {older.length===1?'round':'rounds'}</span></summary>{older.map(round=><div key={round.snapshot_id} className="an-chat-round">{round.messages?.map(m=><MessageCard key={m.id} message={m} round={round} onEvidence={onEvidence}/>)}</div>)}</details>}
-      {visibleRounds.some(r=>r.messages?.length)?visibleRounds.map(round=><div key={round.snapshot_id} className="an-chat-round">{round.messages?.map(m=><MessageCard key={m.id} message={m} round={round} onEvidence={onEvidence}/>)}</div>):<div className="an-room-empty"><div className="an-room-avatars" aria-hidden="true">{specialists.map(s=><span key={s.role}>{s.mark}</span>)}</div><h3>{pending?'The analysts are comparing their findings.':available?'The analysts are watching.':'Explore the analysts’ workspaces.'}</h3><p>{pending?live?'A specialist is reading this spell. Footie checks the contribution before it appears.':'Checking the specialists’ findings and Footie’s review may take about two minutes. You can keep exploring the match.':available?'Start the replay. As the game develops, the analysts connect player performances, chances and the bigger match picture.':'Live discussion is not connected in this preview. The statistics below follow the replay.'}</p></div>}
+    <div className="an-conversation an-latest-comment" role="log" aria-live="polite" aria-atomic="true" aria-label="Latest analyst comment">
+      {latest?<MessageCard key={`${latest.round.snapshot_id}:${latest.message.id}`} message={latest.message} round={latest.round} onEvidence={onEvidence}/>:<div className="an-room-empty"><div className="an-room-avatars" aria-hidden="true">{specialists.map(s=><span key={s.role}>{s.mark}</span>)}</div><h3>{pending?'The analysts are comparing their findings.':available?'The analysts are watching.':'Explore the analysts’ workspaces.'}</h3><p>{pending?live?'A specialist is reading this spell. Footie checks the contribution before it appears.':'Checking the specialists’ findings and Footie’s review may take about two minutes. You can keep exploring the match.':available?'Start the replay. As the game develops, the analysts connect player performances, chances and the bigger match picture.':'Live discussion is not connected in this preview. The statistics below follow the replay.'}</p></div>}
     </div>
-    {unread&&<button className="an-new-comments" onClick={()=>{following.current=true;setUnread(false);if(log.current)log.current.scrollTop=log.current.scrollHeight}}>New comments ↓</button>}
+    {older.length>0&&<details className="an-conversation-history"><summary>Earlier conversation <span>{older.length} {older.length===1?'comment':'comments'}</span></summary><div className="an-history-scroll" role="region" aria-label="Earlier analyst comments" tabIndex={0}>{[...older].reverse().map(({round,message})=><MessageCard key={`${round.snapshot_id}:${message.id}`} message={message} round={round} onEvidence={onEvidence}/>)}</div></details>}
     {(failed||analysis?.status==='unavailable')&&<p className="an-room-notice" role="status">The discussion couldn’t update. Statistics are still following play. <button onClick={refresh}>Try again</button></p>}
     {analysis&&['hourly_limit','daily_limit','budget_limit'].includes(analysis.status)&&<p className="an-room-notice">The analysis allowance has been reached. You can keep exploring the match statistics.</p>}
     {analysis?.status==='partial'&&!pending&&<p className="an-room-notice">Showing the reviewed contributions. Some findings could not be verified.</p>}
-    {analysis?.status==='insufficient_evidence'&&!pending&&<p className="an-room-notice">No new supported reading in this spell. The analysts will revisit as play develops.</p>}
-    {pending&&last&&<p className="an-room-notice" role="status">Comparing the latest spell…</p>}
   </section>
 }
 function StatPairs({snapshot,keys,playerId}:{snapshot:Snapshot;keys:string[];playerId?:string}){

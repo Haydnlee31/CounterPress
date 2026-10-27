@@ -45,7 +45,7 @@ it('shows actual peer replies, their original source clock and expandable eviden
   render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
   expect(screen.getByRole('log').textContent).toContain('Builds on Match Analyst')
   expect(screen.getAllByText('9:00').length).toBe(2)
-  fireEvent.click(screen.getAllByText('See evidence')[1])
+  fireEvent.click(screen.getByRole('log').querySelector('button')!)
   expect(screen.getByText('Shot · on target')).toBeTruthy()
   fireEvent.click(screen.getByRole('button',{name:'Discuss this spell'}))
   expect(state.value.requestDiscussion).not.toHaveBeenCalled() // Replay is still at kick-off; no paid empty round.

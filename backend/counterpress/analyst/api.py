@@ -170,7 +170,7 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
     async def execute(key, owner, snap, body, selected_provider, ledger, history=()):
         result = None
         try:
-            result = await asyncio.wait_for(selected_provider.analyze(snap, body, history) if getattr(selected_provider, 'live', False) else selected_provider.analyze(snap, body), timeout=32 if getattr(selected_provider, 'live', False) else 125)
+            result = await asyncio.wait_for(selected_provider.analyze(snap, body, history) if getattr(selected_provider, 'live', False) else selected_provider.analyze(snap, body), timeout=40 if getattr(selected_provider, 'live', False) else 125)
             # A native run may outlive a correction. Re-check the same pinned
             # view AND newly received revisions before publishing its prose.
             latest = await run_in_threadpool(snapshot, snap['match_id'], body.model_copy(update={'through_sequence': None}))
