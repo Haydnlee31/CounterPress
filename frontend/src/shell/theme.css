@@ -84,8 +84,8 @@
   .highlight-experience .explore-facts > div:first-child { padding-left: 0; }
 }
 /* Match-level views use the same underline navigation as highlight views. */
-.gi.gi .gi-view-switch { border-bottom: 1px solid var(--cp-border); gap: 24px; padding-bottom: 0; }
-.gi.gi .gi-view-switch > button:not(:last-child) { min-height: 44px; padding: 8px 2px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: var(--cp-muted); font-size: 14px; }
+.gi.gi .gi-view-switch { border-bottom: 1px solid var(--cp-border); gap: 32px; padding-bottom: 0; }
+.gi.gi .gi-view-switch > button:not(:last-child) { min-height: 54px; padding: 12px 8px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: var(--cp-muted); font-size: 18px; white-space: nowrap; }
 .gi.gi .gi-view-switch > button[aria-pressed=true] { color: var(--cp-text); border-bottom-color: var(--cp-text); }
 .gi.gi .gi-view-switch > button:last-child { padding: 8px 12px; min-height: 44px; margin-bottom: 6px; font-size: 12px; }
 @media(max-width:760px) {
@@ -138,4 +138,11 @@
  .football-hub .fh-topline{flex-wrap:wrap}
  .football-hub .fh-settings{flex-direction:row;flex-wrap:wrap;gap:8px}
  .football-hub .fh-tabs{flex-wrap:wrap;justify-content:flex-start;gap:0 18px}
+}
+
+@media(max-width:700px){
+  .gi.gi .gi-view-switch{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px 8px;align-items:center}
+  .gi.gi .gi-view-switch>button:not(:last-child){font-size:15px;padding:12px 4px;min-height:48px}
+  .gi.gi .gi-view-switch>.gi-standings-link{grid-column:1 / 3;padding:10px 4px}
+  .gi.gi .gi-view-switch>button:last-child{justify-self:end;margin:0 0 10px;font-size:12px}
 }
