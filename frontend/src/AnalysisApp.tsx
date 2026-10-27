@@ -137,7 +137,7 @@ export default function App({embedded=false}:{embedded?:boolean}={}) {
       {evidenceOpen && evidence && <EvidencePanel evidence={evidence} selected={selected} onSelect={selectEvent} language={preferences.language}/>}
       {preferences.depth === 'analyst' && !specialSelected && audience?.state === 'ready' && <EventSequence audience={audience}/>}
       {snapshot?.recap && <SegmentRecap key={`${scope.id}:${scenario}`} recap={snapshot.recap} adapted={snapshot.adapted_recap} workflow={snapshot.recap_workflow} scenario={scenario}/>}
-      <footer><span>COUNTERPRESS <span className="footer-dot">/</span> {t('See the game. Understand the moment.', '看比赛，懂变化。')}</span><span>{t('Synthetic data · Evidence-backed comparisons', '模拟数据 · 基于证据的比较')}</span></footer>
+      <footer><span>FOOTIE <span className="footer-dot">/</span> {t('See the game. Understand the moment.', '看比赛，懂变化。')}</span><span>{t('Synthetic data · Evidence-backed comparisons', '模拟数据 · 基于证据的比较')}</span></footer>
     </main>
   </div>
 }

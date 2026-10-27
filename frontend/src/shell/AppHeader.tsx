@@ -20,7 +20,7 @@ export function AppHeader({active,story,language='en',controls,fullMatch=false,h
     <header className="cp-header"><a className="cp-brand" href={href('gi')} aria-label="Footie home"><FootieWordmark/></a>
       {brandContext}
       <nav className="cp-navigation" aria-label={t('Workspace','工作区')}>
-        {([['gi','Match Centre','比赛中心'],['matchday','Highlights','精彩片段'],['football','Clubhouse','Clubhouse'],['assistant','Footie','Footie']] as const).map(([key,en,cn])=><a key={key} href={href(key==='matchday'?'highlights':key)} aria-current={(active===key || active==='explore'&&key==='matchday')?'page':undefined} onClick={close}>{t(en,cn)}</a>)}
+        {([['gi','Match Centre','比赛中心'],['matchday','Highlights','精彩片段'],['football','Clubhouse','俱乐部'],['assistant','Footie','Footie']] as const).map(([key,en,cn])=><a key={key} href={href(key==='matchday'?'highlights':key)} aria-current={(active===key || active==='explore'&&key==='matchday')?'page':undefined} onClick={close}>{t(en,cn)}</a>)}
       </nav>
       {controls && <div className="cp-header-controls">{controls}</div>}
     </header>
