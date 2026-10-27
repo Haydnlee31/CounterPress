@@ -42,43 +42,45 @@ def test_natural_language_gate_keeps_real_references_and_numbers():
 
 
 @pytest.mark.parametrize('reply_link', ['standalone','missing_target','extraneous_target'])
-def test_two_calls_publish_only_after_editor_review_and_allow_repairs(reply_link):
- s=source();seen=[]
+def test_only_the_exact_independently_reviewed_draft_is_published(reply_link):
+ s=source();seen=[];draft_text='The pass entered the final third, giving this attack a route towards the box.'
  def transport(req):
   data=json.loads(req.content);seen.append(data)
-  packet=json.loads(data['messages'][1]['content'])['source'];eid=packet['evidence'][0]['id']
-  row=comment(evidence_ids=[eid],metric_ids=[next(m['id'] for m in packet['metrics'] if m['key']=='final_third_entries' and m.get('club_id')=='home' and m['window']=='current')])
-  if len(seen)==1:row['text']='They made 99 entries.'
-  else:row.update(publish=True,added_value='sequence',new_reading='The recorded entry connects to the following attack.',unsupported_premises=[],text='The pass entered the final third. That is a route worth following, but the next action will decide whether it becomes a chance.')
-  if len(seen)==2:
-   row['new_reading']='A supported sequence adds context. '*15
+  payload=json.loads(data['messages'][1]['content']);packet=payload['source']
+  row=comment(text=draft_text,evidence_ids=[packet['evidence'][0]['id']],metric_ids=[next(m['id'] for m in packet['metrics'] if m['key']=='final_third_entries' and m.get('club_id')=='home' and m['window']=='current')])
+  if len(seen)==1:
    if reply_link=='missing_target':row.update(reply_to=None,relation='builds_on')
    if reply_link=='extraneous_target':row.update(reply_to='players',relation='observation')
+  else:
+   assert payload['candidate']['text']==draft_text
+   assert payload['candidate']['reply_to'] is None and payload['candidate']['relation']=='observation'
+   row=dict(publish=True,added_value='sequence',new_reading='A supported sequence adds context. '*15,unsupported_premises=[])
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(row)}}],'usage':{'prompt_tokens':123,'completion_tokens':80}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-4.1-mini',api_key='fake-test-only')
  r=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))
  assert r['status']=='complete' and len(r['messages'])==1
+ assert r['messages'][0]['text']==draft_text and r['messages'][0]['verified_by']=='footie'
  assert r['messages'][0]['reply_to'] is None and r['messages'][0]['relation']=='observation'
- assert r['messages'][0]['verified_by']=='footie' and '99' not in r['messages'][0]['text']
  assert len(seen)==2 and [p['max_completion_tokens'] for p in seen]==[700,2000]
- assert 'reasoning_effort' not in seen[0]
+ assert 'text' not in seen[1]['response_format']['json_schema']['schema']['properties']
 
 
-@pytest.mark.parametrize('review', ['reject','invented_number','unknown_citation','no_added_value','unsupported_premise','repetition'])
-def test_editor_rejection_or_invalid_repair_never_reaches_conversation(review):
+@pytest.mark.parametrize('review', ['reject','invented_number','unknown_citation','no_added_value','unsupported_premise','repetition','rewritten_text'])
+def test_editor_verdict_or_hard_checks_block_invalid_publication(review):
  s=source();count=0
  def transport(req):
   nonlocal count
   count+=1;p=json.loads(json.loads(req.content)['messages'][1]['content'])['source']
   row=comment(evidence_ids=[p['evidence'][0]['id']],metric_ids=[next(m['id'] for m in p['metrics'] if m['key']=='final_third_entries' and m.get('club_id')=='home' and m['window']=='current')])
-  if count==2:
-   row.update(publish=review!='reject',added_value='contrast',new_reading='A new supported contrast.',unsupported_premises=[])
+  if count==1:
+   if review=='invented_number':row['text']='They scored 99 goals.'
+   if review=='unknown_citation':row['metric_ids']=['unknown']
+  else:
+   row=dict(publish=review!='reject',added_value='contrast',new_reading='A new supported contrast.',unsupported_premises=[])
    if review=='repetition':row['new_reading']=''
    if review=='no_added_value':row['added_value']='none'
    if review=='unsupported_premise':row['unsupported_premises']=['Individual blame is not supported']
-   if review=='reject':row['text']=''
-   if review=='invented_number':row['text']='They scored 99 goals.'
-   if review=='unknown_citation':row['metric_ids']=['unknown']
+   if review=='rewritten_text':row['text']='An unreviewed replacement must never publish.'
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(row)}}],'usage':{}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-4.1-mini',api_key='fake-test-only')
  r=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))

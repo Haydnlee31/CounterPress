@@ -13,7 +13,7 @@
     "backend/counterpress/analyst/candidates.py": "792ac3b7d792210f57cee53c319d707eee622cef8ecb1e078633ee597f139d58",
     "backend/counterpress/analyst/contracts.py": "71427dc3d3624aec70ff6521a68acda1e170b27de5130a81f93436ac584d9370",
     "backend/counterpress/analyst/discussion.py": "755008aaf0f1bce01b32d9012ffb8002e241996ccd2cad587b20ad7b07dd737d",
-    "backend/counterpress/analyst/live.py": "c8a0d6ee22384946a3fc096474633f02ed4a7a594cc57f13dcb682cee5b778ed",
+    "backend/counterpress/analyst/live.py": "095e99020c7f88abf757007e12d9d2782171745ffb5fadf7cc8d176358b8def3",
     "backend/counterpress/analyst/live_admission.py": "a4aa351935e08a025698f21a385cfb50084bda8059aff82379dde65a9abe97b0",
     "backend/counterpress/analyst/metrics.py": "d3f1826c5a76bb949b2745ea2988f351a4cfd6d1bbef6b74849947975b87e4f9",
     "backend/counterpress/analyst/provider.py": "e63286129891454d1814236159954a7b8f8623a6f671886dc6aebf242b5ba718",
