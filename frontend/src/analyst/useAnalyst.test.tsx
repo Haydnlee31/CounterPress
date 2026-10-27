@@ -304,3 +304,17 @@ it('keeps an unavailable discussion marked failed when its old packet expires, t
  expect(result.current.failed).toBe(false)
  expect(result.current.analysis?.status).toBe('complete')
 })
+
+it.each(['hourly_limit','daily_limit','budget_limit','disabled'])('retains %s independently of packet freshness and clears it on match change',status=>{
+ return (async()=>{
+  const ordinary=vi.mocked(fetch).getMockImplementation()!
+  vi.mocked(fetch).mockImplementation(async(url,init)=>String(url).endsWith('/analysis')?new Response(JSON.stringify(analysis(JSON.parse(String(init?.body)),status))):ordinary(url,init))
+  const {result,rerender}=renderHook(({match,cutoff,playing})=>useAnalyst(match,cutoff,playing,prefs),{initialProps:{match:'match-one',cutoff:{period:1 as const,elapsed_ms:120000},playing:true}})
+  await settle();await settle()
+  rerender({match:'match-one',cutoff:{period:1,elapsed_ms:360000},playing:false})
+  expect(result.current.analysis).toBeNull()
+  expect(result.current.discussionStatus).toBe(status)
+  rerender({match:'match-two',cutoff:{period:1,elapsed_ms:0},playing:false})
+  expect(result.current.discussionStatus).toBeUndefined()
+ })()
+})

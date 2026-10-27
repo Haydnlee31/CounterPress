@@ -28,3 +28,9 @@ it('does not ask someone already playing to start the replay',()=>{
  render(<AnalystConversation {...props}/> )
  expect(screen.queryByText(/^Start the replay/)).toBeNull()
 })
+
+it.each(['hourly_limit','daily_limit','budget_limit','disabled'])('keeps the %s status visible after the snapshot expires',discussionStatus=>{
+ render(<AnalystConversation {...props} discussionStatus={discussionStatus}/> )
+ expect(screen.queryByText('The analysts are watching.')).toBeNull()
+ expect(screen.queryByText('Following the match')).toBeNull()
+})

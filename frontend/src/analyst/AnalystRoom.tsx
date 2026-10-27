@@ -33,12 +33,13 @@ function MessageCard({message,round,onEvidence}:{message:DiscussionMessage;round
     </div>
   </article>
 }
-export function AnalystConversation({rounds,pending,failed,available,playing,ready=true,analysis,refresh,onEvidence,live=false}:{rounds:Analysis[];pending:boolean;failed?:boolean;available:boolean;playing:boolean;live?:boolean;ready?:boolean;analysis:Analysis|null;refresh:()=>void;onEvidence?:(e:Evidence)=>void}){
+export function AnalystConversation({rounds,pending,failed,available,playing,ready=true,analysis,discussionStatus,refresh,onEvidence,live=false}:{rounds:Analysis[];pending:boolean;failed?:boolean;available:boolean;playing:boolean;live?:boolean;ready?:boolean;analysis:Analysis|null;discussionStatus?:string;refresh:()=>void;onEvidence?:(e:Evidence)=>void}){
   const entries=rounds.flatMap(round=>(round.messages??[]).map(message=>({round,message})))
   const latest=entries.at(-1),older=entries.slice(0,-1)
-  const unavailable=!pending&&(failed||analysis?.status==='unavailable')
-  const limited=!pending&&!!analysis&&['hourly_limit','daily_limit','budget_limit'].includes(analysis.status)
-  const disconnected=!available||analysis?.status==='disabled'
+  const outcome=discussionStatus??analysis?.status
+  const unavailable=!pending&&(failed||outcome==='unavailable')
+  const limited=!pending&&['hourly_limit','daily_limit','budget_limit'].includes(outcome??'')
+  const disconnected=!available||outcome==='disabled'
   const status=pending?(live?'Reading the latest spell':'Analysts discussing'):unavailable?'Discussion unavailable':limited?'Analysis allowance reached':disconnected?'Discussion offline':playing?'Following the match':'Replay paused'
   const emptyTitle=pending?'The analysts are comparing their findings.':unavailable?'The discussion couldn’t update.':limited?'Discussion is paused.':disconnected?'Explore the analysts’ workspaces.':'The analysts are watching.'
   const emptyCopy=pending?(live?'A specialist is reading this spell. Footie checks the contribution before it appears.':'Checking the specialists’ findings and Footie’s review may take about two minutes. You can keep exploring the match.'):unavailable?'You can retry the discussion below. Match statistics remain available.':limited?'You can keep exploring the match statistics.':disconnected?'Live discussion is not connected in this preview. The statistics below follow the replay.':playing?'As the game develops, the analysts connect player performances, chances and the bigger match picture.':'Start the replay. As the game develops, the analysts connect player performances, chances and the bigger match picture.'
