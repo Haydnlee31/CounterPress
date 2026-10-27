@@ -154,6 +154,7 @@ def test_cancel_arriving_before_initial_analysis_prevents_inference(setup):
 
 @pytest.mark.parametrize('storage', ['exhausted_cosmos', 'failed_cosmos', 'absent'])
 def test_azure_activation_uses_existing_durable_admission_and_fails_closed(monkeypatch, storage):
+    monkeypatch.setenv("COUNTERPRESS_USAGE_CAPS", "on")
     from azure.core.exceptions import AzureError
     import copy
     provider = Provider()

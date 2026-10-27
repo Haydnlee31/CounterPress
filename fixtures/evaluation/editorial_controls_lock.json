@@ -27,7 +27,7 @@
     "backend/counterpress/api/snapshots.py": "7660f6430475f783e9faeb37983f5ccde28368e30135a3952f94f2bfa40eed6e",
     "backend/counterpress/assistant/__init__.py": "0f55df480a408a4d14ca4e8287c140334afca3ec1d5aa6570b968b48128de873",
     "backend/counterpress/assistant/admission.py": "732d63bbc3de771465904aec50ca454a3ae0a723c51d9bb5ecfd06db114c16b9",
-    "backend/counterpress/assistant/api.py": "a3aa1d843c6562ef8d668c71acdd640f4abbefdfb04fe3068619054f01228806",
+    "backend/counterpress/assistant/api.py": "fa7b0228fd6094919e71672eecf946857fc381422da49170db6dc4df3d68d5b1",
     "backend/counterpress/assistant/contracts.py": "2a20efd68311abbbc4cd601a7273be7ca1b06140a03989a045e659d87e73b8bf",
     "backend/counterpress/assistant/evaluation.py": "8fe9defb69d69e8c13f1b7771e9897291b6d09ec6c813db48e648d7e82ea3233",
     "backend/counterpress/assistant/highlight_summary.py": "c37ec68b340364ed2c2b6f8effc2d5287ed538450d8cc9b2188d63a800f6136d",
