@@ -545,10 +545,15 @@ def read_monitoring_settings(group):
 
 def verify_analyst_status(env, status):
     """Read-only post-deploy probe: never dispatch a paid discussion."""
-    if env.get('COUNTERPRESS_ANALYST_DISCUSSION') in ('azure', 'foundry'):
+    discussion = env.get('COUNTERPRESS_ANALYST_DISCUSSION')
+    if discussion in ('azure', 'foundry'):
+        expected_runtime = 'footie_live_turn_manager' if discussion == 'azure' else 'microsoft_agent_framework'
         if (status.get('discussion_available') is not True
-                or status.get('discussion_runtime') != 'microsoft_agent_framework'):
+                or status.get('discussion_runtime') != expected_runtime):
             raise DeploymentError('Analyst discussion unavailable; check model configuration and durable admission')
+        if discussion == 'azure' and (status.get('discussion_style') != 'live'
+                or status.get('match_model_allowance_usd') != 2.7):
+            raise DeploymentError('Live Analyst configuration does not match the reviewed per-match allowance')
     elif status.get('discussion_available') is True:
         raise DeploymentError('Unexpected Analyst discussion activation')
     if env.get('COUNTERPRESS_ANALYST_MODE') == 'foundry':
