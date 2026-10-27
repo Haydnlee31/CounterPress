@@ -32,3 +32,11 @@ it('keeps the visual report available when the allowance is exhausted',async()=>
  await waitFor(()=>expect(screen.getByRole('alert').textContent).toContain('allowance is used up'))
  expect(screen.getByText('Which routes paid off?')).toBeTruthy()
 })
+
+it('uses a readable dark loading state while deep analysis runs',async()=>{
+ vi.mocked(fetch).mockImplementation(async(_url,init)=>init?.method==='POST'?new Promise<Response>(()=>{}):new Response(JSON.stringify(data)))
+ const {container}=render(<MatchReport matchId="match" language="en"/>)
+ fireEvent.click(screen.getByRole('button',{name:'Match summary ↗'}));await screen.findByText('Approve deep analysis');fireEvent.click(screen.getByText('Approve deep analysis'))
+ expect(container.querySelector('.mr-intro .footie-loading.is-dark.is-compact, .mr-intro .footie-loading.is-compact.is-dark')).toBeTruthy()
+ expect(screen.getByText('Footie is connecting the patterns…')).toBeTruthy()
+})
