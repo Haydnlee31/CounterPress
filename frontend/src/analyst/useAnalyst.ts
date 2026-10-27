@@ -21,7 +21,6 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
   if(previous.current.matchId!==matchId||previous.current.prefs!==prefs||before(cutoff,previous.current.cutoff)||cutoff.period!==previous.current.cutoff.period||seekEpoch!==previous.current.seekEpoch){epoch.current++;manualRequest.current=false}
   previous.current={matchId,cutoff,prefs,seekEpoch}
   const scope=JSON.stringify([matchId,prefs,revision,epoch.current])
-  const metricCutoff=bucket(cutoff,15000)
   const live=config?.discussion_style==='live'
   const interval=Math.max(60000,config?.interval_ms??60000)
   const currentScope=useRef(scope);currentScope.current=scope
@@ -41,18 +40,32 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
     document.addEventListener('visibilitychange',change);window.addEventListener(CAREER_CHANGED,corrected)
     return()=>{document.removeEventListener('visibilitychange',change);window.removeEventListener(CAREER_CHANGED,corrected)}
   },[matchId])
+  // Complete slow snapshots across forward ticks; otherwise fast playback can
+  // cancel every response and leave the desks stuck at kickoff indefinitely.
   useEffect(()=>{
     if(!visible)return
-    let active=true;const controller=new AbortController()
-    const at={period:metricCutoff.period,elapsed_ms:metricCutoff.elapsed_ms}
-    const timer=setTimeout(()=>{
-      fetch(`/api/analyst/matches/${encodeURIComponent(matchId)}/snapshot`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cutoff:at,...preferences}),signal:controller.signal}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(view=>{
+    let active=true,timer:ReturnType<typeof setTimeout>|undefined,request:AbortController|undefined,lastAttempt:Cutoff|undefined
+    const schedule=(delay:number)=>{if(active)timer=setTimeout(()=>void next(),delay)}
+    async function next(){
+      if(!active)return
+      const at=bucket(latestCutoff.current,15000)
+      if(lastAttempt&&sameCutoff(at,lastAttempt)){schedule(250);return}
+      lastAttempt=at
+      const controller=new AbortController();request=controller
+      const timeout=setTimeout(()=>controller.abort(),15000)
+      try{
+        const response=await fetch(`/api/analyst/matches/${encodeURIComponent(matchId)}/snapshot`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cutoff:at,...preferences}),signal:controller.signal})
+        if(!response.ok)throw Error()
+        const view=await response.json()
         if(!validateSnapshot(view,matchId,at))throw Error()
-        if(active&&currentScope.current===scope)setMetrics({scope,view})
-      }).catch(e=>{if(active&&e.name!=='AbortError'&&currentScope.current===scope)setMetrics({scope,failed:true})})
-    },100)
-    return()=>{active=false;clearTimeout(timer);controller.abort()}
-  },[matchId,metricCutoff.period,metricCutoff.elapsed_ms,scope,visible,snapshotRetry])
+        if(active&&currentScope.current===scope&&!before(latestCutoff.current,at))setMetrics({scope,view})
+      }catch{
+        if(active&&currentScope.current===scope)setMetrics(old=>({scope,view:old.scope===scope?old.view:undefined,failed:true}))
+      }finally{clearTimeout(timeout);schedule(100)}
+    }
+    schedule(100)
+    return()=>{active=false;clearTimeout(timer);request?.abort()}
+  },[matchId,scope,visible,snapshotRetry])
   // A forward source-clock boundary does not cancel a running Foundry turn.
   // Finish it, then coalesce all skipped buckets into the newest eligible one.
   useEffect(()=>{

@@ -254,3 +254,37 @@ it('publishes successive live specialist turns, polls each second and coalesces 
   expect([...polls.keys()]).toEqual([60000,180000])
   expect(result.current.rounds.map(r=>r.cutoff.elapsed_ms)).toEqual([60000,180000])
 })
+
+
+it('publishes slow statistics during fast forward playback and coalesces skipped buckets',async()=>{
+  let resolve!:(r:Response)=>void,firstBody:any,signal:AbortSignal|undefined
+  const ordinary=vi.mocked(fetch).getMockImplementation()!
+  vi.mocked(fetch).mockImplementation(async(url,init)=>{
+    if(String(url).endsWith('/snapshot')&&!resolve){firstBody=JSON.parse(String(init?.body));signal=init?.signal as AbortSignal;requests.push({url:String(url),body:firstBody,signal});return new Promise(r=>{resolve=r})}
+    return ordinary(url,init)
+  })
+  const {result,rerender}=renderHook(({cutoff,seek})=>useAnalyst('match-one',cutoff,false,prefs,seek),{initialProps:{cutoff:{period:1 as const,elapsed_ms:60000},seek:0}})
+  await settle()
+  for(const elapsed_ms of [75000,90000,105000,120000]){rerender({cutoff:{period:1,elapsed_ms},seek:0});await settle(500)}
+  expect(signal!.aborted).toBe(false)
+  expect(requests.filter(r=>r.url.endsWith('/snapshot'))).toHaveLength(1)
+  await act(async()=>resolve(new Response(JSON.stringify(snapshot(firstBody)))))
+  expect(result.current.snapshot?.cutoff.elapsed_ms).toBe(60000)
+  await settle()
+  expect(requests.filter(r=>r.url.endsWith('/snapshot')).map(r=>r.body.cutoff.elapsed_ms)).toEqual([60000,120000])
+  expect(result.current.snapshot?.cutoff.elapsed_ms).toBe(120000)
+})
+
+it('aborts a slow statistics request on explicit seek and rejects its late response',async()=>{
+  let resolve!:(r:Response)=>void,firstBody:any,signal:AbortSignal|undefined
+  const ordinary=vi.mocked(fetch).getMockImplementation()!
+  vi.mocked(fetch).mockImplementation(async(url,init)=>{
+    if(String(url).endsWith('/snapshot')&&!resolve){firstBody=JSON.parse(String(init?.body));signal=init?.signal as AbortSignal;return new Promise(r=>{resolve=r})}
+    return ordinary(url,init)
+  })
+  const {result,rerender}=renderHook(({cutoff,seek})=>useAnalyst('match-one',cutoff,false,prefs,seek),{initialProps:{cutoff:{period:1 as const,elapsed_ms:60000},seek:0}})
+  await settle();rerender({cutoff:{period:1,elapsed_ms:180000},seek:1});expect(signal!.aborted).toBe(true)
+  await settle();expect(result.current.snapshot?.cutoff.elapsed_ms).toBe(180000)
+  await act(async()=>resolve(new Response(JSON.stringify(snapshot(firstBody)))))
+  expect(result.current.snapshot?.cutoff.elapsed_ms).toBe(180000)
+})
