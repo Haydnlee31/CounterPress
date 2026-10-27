@@ -26,7 +26,7 @@ def build_passages(events, cutoff, focus=None):
         chain=[];links=[];truncated=False
 
     for e in events:
-        if e.period!=cutoff.period or e.elapsed_ms<=max(0,cutoff.elapsed_ms-120000):
+        if e.period!=cutoff.period or e.elapsed_ms<=max(0,cutoff.elapsed_ms-300000):
             continue
         if chain:
             previous=chain[-1]
@@ -36,7 +36,7 @@ def build_passages(events, cutoff, focus=None):
                 finish('recipient_mismatch')
             elif previous.kind in ('carry','recovery','duel') and previous.player_id!=e.player_id:
                 finish('holder_changed')
-        eligible=(e.kind in ('pass','shot','recovery') or e.kind=='carry' and e.outcome in CONTROLLED or e.kind=='duel' and e.outcome=='won')
+        eligible=(e.goal_for or e.kind in ('pass','shot','recovery') or e.kind=='carry' and e.outcome in CONTROLLED or e.kind=='duel' and e.outcome=='won')
         if not eligible:
             finish('boundary');continue
         if chain:
@@ -46,7 +46,7 @@ def build_passages(events, cutoff, focus=None):
         chain.append(e)
         if len(chain)>7:
             chain=chain[-7:];links=links[-6:];truncated=True
-        if e.kind=='shot': finish('shot')
+        if e.goal_for or e.kind=='shot': finish('shot')
         elif e.kind=='pass' and e.outcome not in COMPLETE: finish('incomplete_pass' if e.outcome=='incomplete' else 'unknown_outcome')
     finish('ongoing')
     # Keep distinct recent passages: a focused contribution, a shot, and the latest.

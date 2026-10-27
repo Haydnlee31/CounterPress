@@ -6,7 +6,7 @@ This source revision is prepared for local review; the deployment record determi
 
 `COUNTERPRESS_ANALYST_DISCUSSION=azure` runs the Footie live turn manager in the existing Container App. Each admitted source-minute selects **one relevant specialist** (Player, Match, Chance or Defensive), proposes two short alternative comments with the existing `gpt-5-mini` deployment, then independently selects or rejects the exact drafts with a second `gpt-5-mini` call (low reasoning). The reviewer cannot rewrite prose. At most one exact reviewed draft is published. This replaces the weaker writer after bounded tests exposed attribution errors. Footie checks the current, revision-pinned evidence packet; it does not use future match knowledge or assume career facts unavailable in that packet. Existing general Ask Footie remains unchanged.
 
-The manager prioritizes goals (and the opening shot), then rotates by recent attempted roles and eligible evidence, preventing accelerated replay from repeatedly selecting the same role when clock minutes are skipped. Quiet spells skip inference. Rejected attempts advance scheduling without supplying unpublished prose to later agents. Up to three earlier approved messages provide conversational context; arbitrary browser-supplied chat is never accepted. Replies can build on, qualify or challenge a different colleague. The model writes prose directly; the legacy typed-fact sentence formatter is not used on this path.
+The manager prioritizes unreported goals since the preceding accepted turn, including own goals recorded as `other` (and the opening shot), then rotates by recent attempted roles and eligible evidence, preventing accelerated replay from repeatedly selecting the same role when clock minutes are skipped. Quiet spells skip inference. Rejected attempts advance scheduling without supplying unpublished prose to later agents. Up to three earlier approved messages provide conversational context. A role receives a specific earlier peer claim and available source anchors to extend or qualify with new evidence; unrelated points remain standalone. Priority goals must be cited and cannot inherit an unrelated buildup. Canonical card events are currently unavailable and are not inferred; arbitrary browser-supplied chat is never accepted. Replies can build on, qualify or challenge a different colleague. The model writes prose directly; the legacy typed-fact sentence formatter is not used on this path.
 
 Short, source-local citation aliases are constrained by the response schema, then resolved back to canonical IDs. Final gates check references, player attribution, reply eligibility, numbers and source freshness. Footie's independent semantic review handles attribution and implications; this reduces errors, not a guarantee of correctness. Pass attempts and completed passes are explicitly separate. Geometric xG remains in the statistics but is excluded from the live commentary packet because it is uncalibrated. Formatting cleanup removes citation-only brackets and duplicate completion annotations without adding facts.
 
@@ -27,9 +27,9 @@ Forward playback keeps a running turn, publishes it at its original source times
 
 ## Cost and operational bounds
 
-The two-call turn permits at most 6,000 locally estimated input tokens per request (including schema plus a 768-token framing reserve), 2,000 output/reasoning tokens for each of the draft and review calls. No automatic model retries. A conservative $1/M input and $4/M output assumption gives $0.028 per complete turn; **$0.03 is reserved before dispatch**. The shared durable allowance admits at most **90 new turns / $2.70 per physical match**, including failed/cancelled calls, across viewers, languages, focus choices and revisions. Shared deployment lifetime allowance is $12. This is a conservative model-use reservation, not an Azure invoice or a cap on shared hosting/storage charges. Existing total project budget remains $200.
+The two-call turn permits at most 6,000 locally estimated input tokens per request (including schema plus a 768-token framing reserve), 2,000 output/reasoning tokens for each of the draft and review calls. No automatic model retries. A conservative $1/M input and $4/M output assumption gives $0.028 per complete turn; **$0.03 is reserved before dispatch**. The shared durable allowance keeps a **$2.70 cumulative model-usage bound per physical match**, including failed/cancelled calls, across viewers, languages, focus choices and revisions. Shared deployment lifetime allowance is $12. This is a conservative model-use reservation, not an Azure invoice or a cap on shared hosting/storage charges. Existing total project budget remains $200.
 
-The ledger uses the existing Cosmos container, partition `analyst-live-control-v1`; local preview uses the configured SQLite ledger path plus `.live`. It fails closed without durable admission. Completed results can be reused for up to 30 days; a bounded control-document size may evict older result payloads. Spend counters never expire or refund. Changing view preferences can consume new turns, so the allowance does not promise 90 minutes of fresh commentary for every possible view. Cache misses after expiration/eviction remain subject to the same lifetime match limit.
+The ledger uses the existing Cosmos container, partition `analyst-live-control-v1`; local preview uses the configured SQLite ledger path plus `.live`. It fails closed without durable admission. Completed results can be reused for up to 30 days; a bounded control-document size may evict older result payloads. Cumulative counters never expire or reset. Fully metered calls on the known `gpt-5-mini` pair settle at the conservative $1/$4 token rates, rounded **up** to whole cents (at least one cent per turn). Missing, partial, out-of-bound or unknown-model usage retains all three cents, as do failures/timeouts/cancellations without a complete result. The CAS transaction records the original reservation, accounted cents and an idempotent settlement marker; retained historical records with complete usage can settle once. Pruned/unknown historical calls remain fully charged. This releases unused reservation, not billed charges. Exact source/prompt/preference cache hits remain free; revised prompts and different replay cutoffs are new work. Changing view preferences can consume new turns, so the allowance does not promise 90 minutes of fresh commentary for every possible view. Cache misses after expiration/eviction remain subject to the same lifetime match limit.
 
 The current source adapters cover the three registered library matches, both halves and all mapped players. Source coverage differs by match. Shared durable admission/cache helps repeated viewers; active tasks and cancellation remain process-local, with two concurrent jobs globally. This has not been load-tested as a many-match production broadcast service. Scaling beyond the pilot requires durable workers, cross-worker cancellation and per-tenant budget management.
 
@@ -176,3 +176,115 @@ varies. Event-location maps are not continuous off-ball tracking. Shared Cosmos
 admission limits apply across viewers, while completed snapshot/preferences results
 are reused. Active execution and cancellation are process-local, so this is not yet
 a durable distributed worker system or a load-tested many-match live service.
+
+## 27 October 2026: full 5x acceptance and release hold
+
+The local Azure-backed acceptance replay completed the featured synthetic match
+at 5x with Rory Ellis (`eb09`) selected. It published 29 comments, including 20
+cross-role replies, with all four specialists represented. Fresh turn latency was
+13.6 seconds median (18.1 maximum); 60 actual model calls consumed 217,668 input
+and 34,193 output tokens. Conservative allowance settlement charged US$0.61 for
+this run, not an Azure invoice amount. This was a functional full run, **not a
+usefulness acceptance pass**.
+
+Observed defects and corrections: natural half-time no longer clears discussion
+history; priority goal turns cannot manufacture corrections to unrelated earlier
+comments; reference-only `see e1–e7` annotations and ranges after factual text are
+cleaned without deleting factual words; shot origin is distinct from ball
+destination and the observed wrong-box claim is blocked; the observed inference
+about attacking intent is rejected. Explicit seeks, rewinds and preference changes
+still invalidate the visible discussion. The original full run plus bounded
+follow-up segments used US$0.85 of the additionally approved US$1, retaining all
+previous charges. Two candidates remain: the single-candidate experiment did not
+materially improve successful-publication latency.
+
+The final targeted live checks published 3/3 goal-segment turns and 5/6 half-time
+turns, with every published comment retained in the browser. The intent guard was
+added after those checks and verified offline. Repetition of the same
+circulation-without-danger conclusion still survives semantic review. Do not
+present those targeted checks as a new full-match pass or publish this increment
+as an accepted improvement in conversation quality. Next work is explicit memory
+of prior conclusions and a usefulness gate that requires a changed interpretation,
+not simply new event IDs. Remaining latency needs separate evaluation; raising
+allowance caps does not reduce model latency.
+
+A two-minute observation of the public MatchMind app at its lowest selectable
+20x speed measured 33 moment-linked overlays: 14 had an actual model stage in
+their path (median 4.113 seconds, maximum 8.363); 19 were entirely rules-based
+(median 0.002 seconds). Its 18 successful model-stage traces had median 2.085
+seconds. These are different workloads and environments, not a controlled speed
+benchmark. Classification uses the whole trace path because an overlay labelled
+`rules` can still inherit model-written explanation upstream. Source inspection
+shows minimal reasoning, compact moment packets, cached agents/shared clients,
+importance filtering, bounded concurrency and rule fallbacks, with no equivalent
+independent semantic editor. Useful inspiration is compact, event-triggered work
+and separating instant statistics from reviewed prose; do not label rule output
+as an AI conversation or remove grounding to match its timings.
+
+Sources: https://github.com/auroraeye-dev/matchmind/blob/main/matchmind/llm/provider.py
+and https://github.com/auroraeye-dev/matchmind/blob/main/matchmind/orchestrator.py .
+
+The editorial pilot lock is versioned `v23-analyst-live-continuity` after reviewing
+exactly the five changed analyst backend modules. Case data, expected results,
+editorial prompts, evaluator and dependencies were not changed. The old lock's
+three failing tests are not hidden or bypassed; the affected offline matrix and
+analyst tests are rerun against the new source hashes.
+
+## Conclusion memory and usefulness checks
+
+The live manager now retains the last 18 accepted conclusions within the existing
+match/preferences/source-revision/model-version scope. A conclusion has a canonical
+subject, a stable topic, a short reading, cited event identities, mechanism and
+trend direction. Rejected drafts never become conversation memory. Retrieval
+excludes future cutoffs, survives a process restart, and deduplicates the model's
+brief by topic and subject. Recent comments remain available across natural
+half-time; explicit seeks and preference changes still invalidate the visible room.
+
+The independent editor must identify the prior conclusion it is developing and
+state whether the contribution is a reversal, a new mechanism, or a new decisive
+outcome. Server checks reject fabricated memory references, uncited subjects,
+unchanged mechanisms, unsupported reversals and repeated outcomes. Cross-role
+paraphrases of sterile circulation share the same club-level key; changing player
+names, event IDs or counts does not make that lesson new. A changed score can
+change its significance. This is an enforceable repetition gate alongside semantic
+review, not a claim that model judgement is infallible.
+
+Both author alternatives and independent review remain on the bounded mini-model
+path, with no extra memory model call. Deeper reviewer reasoning was tried and
+rejected because incomplete responses and extra latency harmed continuity. The
+reviewer remains at low reasoning. Large requests compact memory field names,
+omit notes for absent metrics, and roll off only older dialogue that is not a
+proposed reply target. Evidence, candidate text and memory values are retained;
+the actual transport still enforces the 6,000-token bound before any model call.
+A worst-case 48-case matrix with 18 retained conclusions fit within 5,958 tokens.
+
+Source-schema regression checks now also reject the observed unsupported
+"liability" judgement from a single failed pass. Factual checks and usefulness
+checks are distinct: a true statistic can still be an unhelpful repeated comment.
+
+An admin-only, idempotent allowance grant supports at most one additional dollar
+per match after explicit approval. There is no public grant endpoint. It never
+resets spent counters or raises the shared US$12 allowance. Grant IDs and reasons
+are retained durably, and oversized optional history can be evicted without
+removing spend records, grants, or the active conversation scope. The feature does
+not grant production credit automatically.
+
+The source lock is versioned `v24-analyst-conclusion-memory`; frozen cases,
+expected results and evaluator logic remain unchanged. Targeted verification:
+`PYTHONPATH=backend python -m pytest tests/test_editorial_evaluation.py tests/test_analyst_*.py -q`
+returned 303 passed, 1 skipped. Live acceptance observations are recorded separately
+from these deterministic tests.
+
+
+The complete 5x player-focused replay then finished with 16 published comments,
+six cross-role replies, all four roles represented, and all four goal events cited.
+Nine repetitive conclusions were withheld (five deterministic memory decisions,
+four semantic editorial decisions). The retained conversation stayed visible
+across half-time; no browser errors occurred. Published-turn latency was 13.47s
+median and 17.94s maximum. Two request-size failures found during the replay were
+fixed with bounded context; captured-context live retries subsequently returned
+one published comment and one correct repeated-conclusion rejection, without a
+provider failure. The over-strong single-pass "liability" judgement seen during
+the replay is now blocked by a regression check. These safeguards improve the
+observed conversation; they do not promise that every football interpretation is
+perfect or that every source minute warrants another message.

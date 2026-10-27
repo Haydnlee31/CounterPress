@@ -54,7 +54,7 @@ def test_only_the_exact_independently_reviewed_draft_is_published(reply_link):
   else:
    assert payload['candidates'][0]['text']==draft_text
    assert payload['candidates'][0]['reply_to'] is None and payload['candidates'][0]['relation']=='observation'
-   row=dict(publish=True,selected_index=0,added_value='sequence',new_reading='A supported sequence adds context. '*15,unsupported_premises=[])
+   row=dict(topic='territorial_progress',subject_id='home',novelty='first',prior_memory_id=None,publish=True,selected_index=0,added_value='sequence',new_reading='A supported sequence adds context. '*15,unsupported_premises=[])
   if len(seen)==1:row={'comments':[row]}
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(row)}}],'usage':{'prompt_tokens':123,'completion_tokens':80}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-4.1-mini',api_key='fake-test-only')
@@ -77,7 +77,7 @@ def test_editor_verdict_or_hard_checks_block_invalid_publication(review):
    if review=='invented_number':row['text']='They scored 99 goals.'
    if review=='unknown_citation':row['metric_ids']=['unknown']
   else:
-   row=dict(publish=review!='reject',selected_index=0,added_value='contrast',new_reading='A new supported contrast.',unsupported_premises=[])
+   row=dict(topic='territorial_progress',subject_id='home',novelty='first',prior_memory_id=None,publish=review!='reject',selected_index=0,added_value='contrast',new_reading='A new supported contrast.',unsupported_premises=[])
    if review=='repetition':row['new_reading']=''
    if review=='no_added_value':row['added_value']='none'
    if review=='unsupported_premise':row['unsupported_premises']=['Individual blame is not supported']
@@ -86,7 +86,7 @@ def test_editor_verdict_or_hard_checks_block_invalid_publication(review):
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(row)}}],'usage':{}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-4.1-mini',api_key='fake-test-only')
  r=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))
- assert r['messages']==[] and count==2
+ assert r['messages']==[] and count==(1 if review in ('invented_number','unknown_citation') else 2)
 
 
 def test_durable_match_cap_includes_failed_attempts_and_all_preferences(tmp_path):
@@ -205,8 +205,9 @@ def test_editor_selects_supported_alternative_without_publishing_rejected_prose(
    good=comment(text='The pass advanced the ball into the final third.',evidence_ids=[p['evidence'][0]['id']],metric_ids=[next(m['id'] for m in p['metrics'] if m['key']=='final_third_entries' and m.get('club_id')=='home' and m['window']=='current')])
    out={'comments':[dict(good,text='Invented pressure caused a goal.'),good]}
   else:
-   assert len(data['candidates'])==2
-   out=dict(publish=True,selected_index=1,added_value='sequence',new_reading='The second candidate describes the supported entry.',unsupported_premises=[])
+   assert len(data['candidates'])==1
+   assert data['candidates'][0]['text']=='The pass advanced the ball into the final third.'
+   out=dict(topic='territorial_progress',subject_id='home',novelty='first',prior_memory_id=None,publish=True,selected_index=0,added_value='sequence',new_reading='The eligible original describes the supported entry.',unsupported_premises=[])
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(out)}}],'usage':{}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-5-mini',api_key='fake-test-only')
  result=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None,[{'role':'players','cutoff':{'period':1,'elapsed_ms':1000},'text':'','attempt_only':True}]))
@@ -222,7 +223,7 @@ def test_editor_cannot_select_missing_candidate(selected):
  def transport(req):
   nonlocal count
   count+=1;data=json.loads(json.loads(req.content)['messages'][1]['content']);p=data['source']
-  out={'comments':[comment(metric_ids=[],evidence_ids=[p['evidence'][0]['id']])]} if count==1 else dict(publish=True,selected_index=selected,added_value='sequence',new_reading='A passage',unsupported_premises=[])
+  out={'comments':[comment(metric_ids=[],evidence_ids=[p['evidence'][0]['id']])]} if count==1 else dict(topic='territorial_progress',subject_id='home',novelty='first',prior_memory_id=None,publish=True,selected_index=selected,added_value='sequence',new_reading='A passage',unsupported_premises=[])
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(out)}}],'usage':{}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-5-mini',api_key='fake-test-only')
  result=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))
@@ -244,7 +245,7 @@ def test_citation_only_comparison_annotations_are_removed_before_exact_review(an
    out={'comments':[comment(text='The pass entered the final third '+annotation+'.',metric_ids=[next(m['id']for m in p['metrics']if m['key']=='final_third_entries'and m['club_id']=='home'and m['window']=='current')],evidence_ids=[p['evidence'][0]['id']])]}
   else:
    assert data['candidates'][0]['text']=='The pass entered the final third.'
-   out=dict(publish=True,selected_index=0,added_value='sequence',new_reading='A supported entry',unsupported_premises=[])
+   out=dict(topic='territorial_progress',subject_id='home',novelty='first',prior_memory_id=None,publish=True,selected_index=0,added_value='sequence',new_reading='A supported entry',unsupported_premises=[])
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(out)}}],'usage':{}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-5-mini',api_key='fake-test-only')
  result=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))

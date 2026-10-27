@@ -318,3 +318,19 @@ it.each(['hourly_limit','daily_limit','budget_limit','disabled'])('retains %s in
   expect(result.current.discussionStatus).toBeUndefined()
  })()
 })
+
+it('preserves the conversation across natural half-time but clears it on a rewind',async()=>{
+  vi.mocked(fetch).mockImplementation(async(url,init)=>{
+    if(String(url).endsWith('/analysis'))return new Response(JSON.stringify({...analysis(JSON.parse(String(init?.body))),messages:[{id:'control',role:'control',text:'The recovery led to a chance.',reply_to:null,relation:'observation',metric_ids:[],evidence_ids:[]}]}))
+    if(url==='/api/analyst/config')return new Response(JSON.stringify(config))
+    return new Response(JSON.stringify(snapshot(JSON.parse(String(init?.body)))))
+  })
+  const {result,rerender}=renderHook(({cutoff})=>useAnalyst('match-one',cutoff,true,prefs),{initialProps:{cutoff:{period:1,elapsed_ms:2640000} as Cutoff}})
+  await settle();await settle()
+  expect(result.current.rounds).toHaveLength(1)
+  rerender({cutoff:{period:2,elapsed_ms:1000}})
+  expect(result.current.rounds).toHaveLength(1)
+  expect(result.current.analysis).toBeNull()
+  rerender({cutoff:{period:1,elapsed_ms:2630000}})
+  expect(result.current.rounds).toHaveLength(0)
+})
