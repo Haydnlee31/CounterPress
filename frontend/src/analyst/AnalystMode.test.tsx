@@ -98,16 +98,17 @@ it('shows loading instead of an empty map before the statistics arrive',async()=
   expect(screen.queryByText('No recorded actions yet')).toBeNull()
 })
 
-it('scopes saved player focus to the current roster while retaining analysis language and depth',async()=>{
-  localStorage.setItem(preferenceKey,JSON.stringify({...defaults(),focus_player_id:'sb09',language:'zh-Hans',depth:'analyst'}))
+it('scopes saved player focus to the current roster while fixing depth to in-depth and retaining language',async()=>{
+  localStorage.setItem(preferenceKey,JSON.stringify({...defaults(),focus_player_id:'sb09',language:'zh-Hans',depth:'casual'}))
   vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({match_id:'wyscout-2058017',events:[{}],players:[{player_id:'source-player',alias_id:'eb09',team_id:4418}]})))
   render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
   expect(state.inputs[3]).toEqual({language:'zh-Hans',depth:'analyst',focus_player_id:null})
-  fireEvent.click(screen.getByText('Your view'))
-  fireEvent.change(screen.getByLabelText('Player focus'),{target:{value:'eb09'}})
+  fireEvent.change(screen.getByLabelText('Player to analyse'),{target:{value:'eb09'}})
   expect(state.inputs[3].focus_player_id).toBe('eb09')
-  fireEvent.change(screen.getByLabelText('Analysis detail'),{target:{value:'casual'}})
-  expect(state.inputs[3].depth).toBe('casual')
+  expect(screen.queryByLabelText('Analysis detail')).toBeNull()
+  expect(screen.queryByText('Your view')).toBeNull()
+  fireEvent.change(screen.getByLabelText('Analysis language'),{target:{value:'en'}})
+  expect(state.inputs[3]).toEqual({language:'en',depth:'analyst',focus_player_id:'eb09'})
 })
 
 it('keeps the selected metric window through a seek refresh without showing stale data',async()=>{

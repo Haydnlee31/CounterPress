@@ -6,7 +6,7 @@ import './shell.css'
 import { FootieWordmark } from './FootieWordmark'
 
 export type Workspace='matchday'|'explore'|'gi'|'studio'|'analysis'|'tools'|'football'|'assistant'
-export function AppHeader({active,story,language='en',controls,fullMatch=false,hideContext=false}:{active:Workspace;story?:string;language?:string;controls?:ReactNode;fullMatch?:boolean;hideContext?:boolean}) {
+export function AppHeader({active,story,language='en',controls,fullMatch=false,hideContext=false,brandContext}:{active:Workspace;story?:string;language?:string;controls?:ReactNode;fullMatch?:boolean;hideContext?:boolean;brandContext?:ReactNode}) {
   const library=useRef<HTMLDetailsElement>(null)
   useEffect(()=>{const dismiss=(event:PointerEvent)=>{if(library.current&&!library.current.contains(event.target as Node))library.current.open=false};document.addEventListener('pointerdown',dismiss);return()=>document.removeEventListener('pointerdown',dismiss)},[])
   const zh=language==='zh-Hans',t=(en:string,cn:string)=>zh?cn:en
@@ -18,6 +18,7 @@ export function AppHeader({active,story,language='en',controls,fullMatch=false,h
   const close=()=>{if(library.current)library.current.open=false}
   return <div className="cp-shell" onKeyDown={e=>{if(e.key==='Escape'){const open=library.current?.open?library.current:null;close();open?.querySelector('summary')?.focus()}}}>
     <header className="cp-header"><a className="cp-brand" href={href('gi')} aria-label="Footie home"><FootieWordmark/></a>
+      {brandContext}
       <nav className="cp-navigation" aria-label={t('Workspace','工作区')}>
         {([['gi','Match Centre','比赛中心'],['matchday','Highlights','精彩片段'],['football','Clubhouse','Clubhouse'],['assistant','Footie','Footie']] as const).map(([key,en,cn])=><a key={key} href={href(key==='matchday'?'highlights':key)} aria-current={(active===key || active==='explore'&&key==='matchday')?'page':undefined} onClick={close}>{t(en,cn)}</a>)}
       </nav>
