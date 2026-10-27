@@ -103,7 +103,8 @@ def client_for(service,planner,narrator):
     app=FastAPI();install_assistant(app,lambda:service.career,planner,narrator)
     return TestClient(app)
 
-def test_shared_hourly_budget_counts_both_stages(service):
+def test_shared_hourly_budget_counts_both_stages(service, monkeypatch):
+    monkeypatch.setenv("COUNTERPRESS_USAGE_CAPS", "on")
     planner=Planner();narrator=Narrator()
     with client_for(service,planner,narrator) as client:
         for i in range(11):

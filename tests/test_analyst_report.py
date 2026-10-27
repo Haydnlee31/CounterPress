@@ -331,3 +331,21 @@ def test_publication_projection_uses_revised_totals_and_does_not_fabricate_passa
         assert len(t['player']['evidence_ids'])==1
         assert 'return-pass' not in t['player']['text']
     assert publication_result({'status':'insufficient_evidence','reading':None},data)['reading'] is None
+
+
+def test_report_can_start_without_a_separate_approval_field():
+    assert ReportRequest(language='en').approve is True
+
+
+def test_uncapped_live_reports_preserve_charges_deduplicate_and_limit_concurrency(tmp_path):
+    store=SQLiteStore(tmp_path/'uncapped')
+    store.transact(lambda s:({'spent_cents':999999,'matches':{'match':999999}},None))
+    live=LiveAllowance(store,enforce_caps=False)
+    report=ReportAllowance(store,enforce_caps=False)
+    a=live.reserve('live',0,'match','scope',{'period':1,'elapsed_ms':1})
+    assert a['admitted']
+    b=report.reserve('report',0,'match','report',{'period':2,'elapsed_ms':1})
+    assert b['admitted']
+    assert not report.reserve('report',1,'match','report',{'period':2,'elapsed_ms':1}).get('admitted')
+    assert live.reserve('third',1,'other','scope',{'period':1,'elapsed_ms':2})['status']=='busy'
+    assert store.transact(lambda s:(s,s))['spent_cents']==1000012

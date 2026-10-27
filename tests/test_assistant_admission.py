@@ -148,7 +148,7 @@ def test_runtime_agent_requires_shared_storage_and_loads_without_paid_call(monke
     app=create_app(db_path=tmp_path/'runtime.sqlite3')
     with TestClient(app) as client:
         config=client.get('/api/fan/assistant/config').json()
-    assert config['workflow']=='agent' and config['model_requests_per_hour']==20
+    assert config['workflow']=='agent' and config['model_requests_per_hour'] is None
     assert config['natural_language'] is True
 
 
@@ -211,3 +211,12 @@ def test_legacy_reservations_are_preserved_during_weighted_migration(tmp_path):
     state=store.transact(lambda s:s)
     assert not state.reservations
     assert sum(n for _,n in state.weighted)==8
+
+
+def test_judging_mode_removes_cumulative_limits_but_keeps_concurrency(tmp_path):
+    store=SQLiteAdmissionStore(tmp_path/'judging')
+    admission=Admission(store,hourly_limit=1,daily_limit=1,enforce_caps=False)
+    assert admission.reserve('one',1)[0]=='reserved'
+    assert admission.reserve('two',1)[0]=='reserved'
+    assert admission.reserve('three',1)[0]=='busy'
+    assert admission.reserve('one',1)[0]=='pending'

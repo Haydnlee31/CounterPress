@@ -182,7 +182,8 @@ class CountingPlanner:
         return blank('stats',player_ids=['rh09']),{'total_tokens':100}
 
 
-def test_model_hourly_limit_preserves_lookup_and_http_rate_limit(service):
+def test_model_hourly_limit_preserves_lookup_and_http_rate_limit(service, monkeypatch):
+    monkeypatch.setenv("COUNTERPRESS_USAGE_CAPS", "on")
     planner=CountingPlanner()
     with TestClient(app_for(service,planner)) as client:
         for i in range(30):
