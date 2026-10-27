@@ -5,7 +5,7 @@ import {shortName,tileValue} from './data'
 import {playerPortraits,portraitSrcSet} from './portraits'
 
 export function Badge({club}:{club:Club}){
-  if(club.club_id==='eastbridge'||club.club_id==='northport')return <ClubCrest club={club.club_id}/>
+  if(club.club_id==='eastbridge'||club.club_id==='northport')return <ClubCrest club={club.club_id} className="fh-badge"/>
   return <svg className="fh-badge" viewBox="0 0 80 90" role="img" aria-label={`${club.name} crest`}>
     <path d="M7 7Q40-2 73 7V48Q72 72 40 87Q8 72 7 48Z" fill={club.primary_color} stroke="#fff1cf" strokeWidth="3"/>
     <path d="M14 13Q40 5 66 13V46Q65 65 40 78Q15 65 14 46Z" fill="none" stroke="#fff1cf" opacity=".5"/>

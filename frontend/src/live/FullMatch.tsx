@@ -1,3 +1,4 @@
+import {FootieLoader} from '../shell/FootieLoader'
 import {useReplaySpeed} from '../football/useReplaySpeed'
 import {useEffect,useMemo,useRef,useState} from 'react'
 import type {CSSProperties} from 'react'
@@ -49,7 +50,7 @@ export default function FullMatch(){
     <AppHeader active="gi" language={language} fullMatch/>
     <main className="live-match">
       <div className="live-intro"><div><p className="fan-kicker">18 OCT 2026 · {t('FULL MATCH REPLAY','全场回放')}</p><h1>Eastbridge × Northport</h1></div><label>{t('Language','语言')} <select aria-label="Commentary language" value={language} onChange={e=>setLanguage(e.target.value as typeof language)}><option value="en">English</option><option value="zh-Hans">中文</option></select></label></div>
-      {error?<p role="alert">{t('The match could not load. Refresh to try again.','比赛加载失败，请刷新重试。')}</p>:!events.length?<p role="status">{t('Opening the match…','加载比赛…')}</p>:<>
+      {error?<p role="alert">{t('The match could not load. Refresh to try again.','比赛加载失败，请刷新重试。')}</p>:!events.length?<FootieLoader label={t('Opening the match…','加载比赛…')}/>:<>
       <section className="live-score" aria-label={t('Match scoreboard','比赛记分牌')}><ClubCrest club="eastbridge"/><div><strong>{frame.score.eastbridge} : {frame.score.northport}</strong><time>{minute}:{String(second).padStart(2,'0')}</time><span>{at===END?t('Full time','完场'):at===HALF?t('Half time','中场休息'):at<HALF?t('First half','上半场'):t('Second half','下半场')}</span></div><ClubCrest club="northport"/></section>
       <section className="live-controls" aria-label={t('Full-match playback','全场回放控制')}>
         <button className="fan-primary" onClick={play}>{playing?t('Pause match','暂停比赛'):at===HALF?t('Start second half','开始下半场'):at===END?t('Replay match','重新播放'):t('Play match','播放比赛')}</button>

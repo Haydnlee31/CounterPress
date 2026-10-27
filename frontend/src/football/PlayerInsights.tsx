@@ -1,3 +1,4 @@
+import {FootieLoader} from '../shell/FootieLoader'
 import {useId,useState} from 'react'
 import type {ReactNode} from 'react'
 import {dateLabel,getData,roleName,useResource} from './data'
@@ -70,7 +71,7 @@ export default function PlayerInsights({playerId,season,before,clubs,zh=false}:{
   const query=new URLSearchParams({before,...(season?{season}:{})}),key=`${playerId}:${query}`
   const resource=useResource<Analytics>(key,signal=>getData(`/api/data/players/${encodeURIComponent(playerId)}/analytics?${query}`,signal))
   if(resource.error)return <section className="fh-panel" role="alert"><p>{zh?'详细统计暂时无法加载。':'Detailed statistics could not be loaded.'}</p><button className="fh-button" onClick={resource.retry}>{zh?'重试':'Try again'}</button></section>
-  if(!resource.data)return <section className="fh-panel pi-loading" role="status">{zh?'加载球场足迹和统计数据…':'Loading pitch maps and player statistics…'}</section>
+  if(!resource.data)return <section className="fh-panel pi-loading"><FootieLoader compact language={zh?'zh-Hans':'en'} label={zh?'加载球场足迹和统计数据…':'Loading pitch maps and player statistics…'}/></section>
   const data=resource.data
   return <div className="pi-insights" key={key}><div className="pi-overview"><PitchExplorer data={data} zh={zh}/><PositionProfile data={data} zh={zh}/></div><Trends data={data} clubs={clubs} zh={zh}/><StatLibrary data={data} zh={zh}/><details className="pi-method"><summary>{zh?'数据与指标说明':'About these statistics'}</summary><p>{zh?'热图显示有记录的动作位置；传球线连接汇总区域的中心。':'Heatmaps show recorded action locations; passing lines join aggregated zone centres. All pitch views attack to the right.'}</p><p>{zh?'部分比赛没有完整的预期进球或动作分类，可展开单个指标查看覆盖范围。':'Expand any statistic for its definition and match coverage. Expected goals and assists use model estimates. The same period selection applies to every chart.'}</p><p>{zh?'暂未记录：':'Not recorded yet: '}{data.definitions.missing.join('; ')}.</p></details></div>
 }

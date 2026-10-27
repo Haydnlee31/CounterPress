@@ -1,4 +1,4 @@
-import {cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react'
+import {act,cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react'
 import {afterEach,beforeEach,expect,it,vi} from 'vitest'
 import AnalystMode from './AnalystMode'
 import type {Snapshot} from './data'
@@ -166,4 +166,21 @@ it('closes the metric dialog on Escape and restores its opener',async()=>{
   const dialog=screen.getByRole('dialog',{name:'Explore the evidence'})
   fireEvent(dialog,new Event('cancel',{cancelable:true}))
   expect(screen.queryByRole('dialog')).toBeNull();expect(document.activeElement).toBe(open)
+})
+
+it('moves one focus control above the pitch on phones and retains the selection on resizing',async()=>{
+ let mobile=true,notify:()=>void=()=>{}
+ vi.stubGlobal('matchMedia',vi.fn((query:string)=>({get matches(){return query==='(max-width: 700px)'&&mobile},media:query,addEventListener:(_type:string,callback:()=>void)=>{if(query==='(max-width: 700px)')notify=callback},removeEventListener:vi.fn()})))
+ vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({match_id:'wyscout-2058017',events:[{}],players:[{player_id:'source-player',alias_id:'eb09',team_id:4418}]})))
+ const {container}=render(<AnalystMode/>);await screen.findByText('Full match without duplicate observations')
+ let picker=screen.getByLabelText('Player to analyse')
+ expect(picker.closest('.an-mobile-focus')).toBeTruthy()
+ expect(container.querySelector('.an-desks-grid')?.firstElementChild?.className).toBe('an-mobile-focus')
+ fireEvent.change(picker,{target:{value:'eb09'}})
+ expect(state.inputs[3].focus_player_id).toBe('eb09')
+ mobile=false;await act(async()=>notify())
+ picker=screen.getByLabelText('Player to analyse')
+ expect(picker.closest('.an-role-players')).toBeTruthy()
+ expect((picker as HTMLSelectElement).value).toBe('eb09')
+ expect(screen.getAllByLabelText('Player to analyse')).toHaveLength(1)
 })

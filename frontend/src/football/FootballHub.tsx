@@ -1,3 +1,4 @@
+import {FootieLoader} from '../shell/FootieLoader'
 import {useEffect,useMemo,useState} from 'react'
 import type {CSSProperties} from 'react'
 import {AppHeader} from '../shell/AppHeader'
@@ -67,7 +68,7 @@ function HubContent(props:Context & {page:Page}){
     {page.kind&&page.id?<Profile key={`${page.kind}:${page.id}`} {...ctx} kind={page.kind} id={page.id}/>:page.tab==='standings'?<Standings world={world}/>:page.tab==='players'?<Directory {...ctx}/>:page.tab==='clubs'?<Clubs {...ctx}/>:page.tab==='compare'?<Comparison {...ctx}/>:<Following {...ctx} error={!!home.error} retry={home.retry}/>}
   </>
 }
-export function Loading(){return <div className="fh-loading" role="status"><span/>{'Loading your football…'}</div>}
+export function Loading(){return <FootieLoader label="Loading your football…"/>}
 export function Failure({retry}:{retry:()=>void}){return <div className="fh-empty" role="alert"><h2>This view couldn’t be loaded.</h2><p>Please try again.</p><button className="fh-button" onClick={retry}>Try again</button></div>}
 function Follow({active,name,onClick}:{active:boolean;name:string;onClick:()=>void}){return <button className={`fh-follow ${active?'is-following':''}`} onClick={onClick} aria-pressed={active} aria-label={`${active?'Unfollow':'Follow'} ${name}`}><span aria-hidden="true">{active?'♥':'♡'}</span><span>{active?'Following':'Follow'}</span></button>}
 function PlayerCard({player,ctx}:{player:Player;ctx:Context}){

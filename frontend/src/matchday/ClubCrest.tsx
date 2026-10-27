@@ -1,8 +1,8 @@
 import { clubName } from './identity'
 
 /** Original vector marks: Eastbridge's stone bridge and Northport's compass/harbour. */
-export function ClubCrest({ club }: { club: string }) {
-  return <svg className="fan-crest" viewBox="0 0 80 90" role="img" aria-label={`${clubName(club)} crest`}>
+export function ClubCrest({ club, className = 'fan-crest' }: { club: string; className?: string }) {
+  return <svg className={className} viewBox="0 0 80 90" role="img" aria-label={`${clubName(club)} crest`}>
     {club === 'eastbridge' ? <>
       <path d="M5 5Q40-2 75 5V49Q73 73 40 87Q7 73 5 49Z" fill="#143f33" stroke="#e7c771" strokeWidth="3" />
       <path d="M13 11Q40 5 67 11V48Q65 67 40 79Q15 67 13 48Z" fill="none" stroke="#e7c771" strokeWidth=".8" />

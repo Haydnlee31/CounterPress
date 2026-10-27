@@ -97,7 +97,7 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
         if(view.status==='pending'){
           if(Date.now()-start<(live?45000:120000)){schedule(()=>void request(at,start),live?1000:3000);return}
           setIntel(old=>({scope,view:old.scope===scope?old.view:undefined,failed:true,pending:false}))
-        }else {setIntel({scope,view,pending:false});if(view.messages?.length)setRounds(old=>({scope,views:[...(old.scope===scope?old.views:[]).filter(r=>r.snapshot_id!==view.snapshot_id),view].slice(live?-40:-6)}))}
+        }else {setIntel({scope,view,pending:false,failed:view.status==='unavailable'});if(view.messages?.length)setRounds(old=>({scope,views:[...(old.scope===scope?old.views:[]).filter(r=>r.snapshot_id!==view.snapshot_id),view].slice(live?-40:-6)}))}
         // An exhausted allowance is terminal for this viewing run; manual retry
         // or a fresh session can check it later without a request every minute.
         if(playing&&!['hourly_limit','daily_limit','budget_limit','disabled'].includes(view.status))schedule(next,1000)
@@ -108,5 +108,5 @@ export function useAnalyst(matchId:string,cutoff:Cutoff,playing:boolean,preferen
   },[matchId,scope,visible,playing,config?.mode,config?.available,config?.discussion_available,config?.cancellation_available,interval,discussionRetry,live])
   const snapshot=metrics.scope===scope&&metrics.view&&!before(cutoff,metrics.view.cutoff)?metrics.view:null
   const analysis=intel.scope===scope&&intel.view&&!before(cutoff,intel.view.cutoff)&&cutoff.period===intel.view.cutoff.period&&cutoff.elapsed_ms-intel.view.cutoff.elapsed_ms<=180000?intel.view:null
-  return {rounds:rounds.scope===scope?rounds.views.filter(r=>!before(cutoff,r.cutoff)):[],config,configFailed,snapshot,analysis,pending:visible&&intel.scope===scope&&!!intel.pending,failed:intel.scope===scope&&intel.failed,metricsFailed:metrics.scope===scope&&metrics.failed,retryConfig:()=>setConfigRetry(n=>n+1),retrySnapshot:()=>setSnapshotRetry(n=>n+1),requestDiscussion:()=>{manualRequest.current=true;setDiscussionRetry(n=>n+1)}}
+  return {rounds:rounds.scope===scope?rounds.views.filter(r=>!before(cutoff,r.cutoff)):[],config,configFailed,snapshot,analysis,discussionStatus:intel.scope===scope?intel.view?.status:undefined,pending:visible&&intel.scope===scope&&!!intel.pending,failed:intel.scope===scope&&intel.failed,metricsFailed:metrics.scope===scope&&metrics.failed,retryConfig:()=>setConfigRetry(n=>n+1),retrySnapshot:()=>setSnapshotRetry(n=>n+1),requestDiscussion:()=>{manualRequest.current=true;setDiscussionRetry(n=>n+1)}}
 }

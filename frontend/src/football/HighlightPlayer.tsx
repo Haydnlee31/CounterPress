@@ -1,3 +1,4 @@
+import {FootieLoader} from '../shell/FootieLoader'
 import {usePlayerPeek} from './PlayerPeek'
 import {useReplaySpeed} from './useReplaySpeed'
 import {useEffect,useMemo,useRef,useState} from 'react'
@@ -36,7 +37,7 @@ export function HighlightPlayer({highlight,world,prefs,update,close}:{highlight:
   const title=context&&!context.replay_available?context.teams.map(team=>team.name).join(' × '):highlight.title
   return <dialog ref={dialog} className="fh-replay-dialog" aria-labelledby="fh-replay-title" onCancel={close} onClick={e=>{if(e.target===e.currentTarget)close()}}>
     <div className="fh-replay-top"><div><p className="fh-eyebrow">{context&&!context.replay_available?(zh?'比赛时刻':'MATCH MOMENT'):(zh?'精彩片段':'HIGHLIGHT')}</p><h2 id="fh-replay-title">{title}</h2></div><button className="fh-close" aria-label="Close highlight" onClick={close}>×</button></div>
-    {!context?(resource.error?<div className="fh-empty" role="alert"><p>{zh?'暂时无法加载这个时刻。':'This moment couldn’t be loaded.'}</p><button className="fh-button" onClick={resource.retry}>{zh?'重试':'Try again'}</button></div>:<p className="fh-loading" role="status">{zh?'正在打开球场…':'Opening the pitch…'}</p>):<ReplayContent key={highlight.highlight_id} context={context} contextReady={!!resource.data} contextError={!!resource.error} retryContext={resource.retry} replay={replay.data} replayError={!!replay.error} retryReplay={replay.retry} world={world} prefs={prefs} update={update}/>}
+    {!context?(resource.error?<div className="fh-empty" role="alert"><p>{zh?'暂时无法加载这个时刻。':'This moment couldn’t be loaded.'}</p><button className="fh-button" onClick={resource.retry}>{zh?'重试':'Try again'}</button></div>:<FootieLoader language={zh?'zh-Hans':'en'} label={zh?'正在打开球场…':'Opening the pitch…'}/>):<ReplayContent key={highlight.highlight_id} context={context} contextReady={!!resource.data} contextError={!!resource.error} retryContext={resource.retry} replay={replay.data} replayError={!!replay.error} retryReplay={replay.retry} world={world} prefs={prefs} update={update}/>}
   </dialog>
 }
 function ReplayContent({replay,replayError,retryReplay,context,contextReady,contextError,retryContext,world,prefs,update}:{replay?:Replay;replayError:boolean;retryReplay:()=>void;context:HighlightContext;contextReady:boolean;contextError:boolean;retryContext:()=>void;world:World;prefs:FanPreferences;update:(p:FanPreferences)=>void}){
