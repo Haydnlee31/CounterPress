@@ -156,7 +156,7 @@ def report_data(career, match_id):
 
 class ReportRequest(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    approve: Literal[True]
+    approve: Literal[True] = True  # Compatibility with older clients; opening starts the report.
     language: Literal['en','zh-Hans'] = 'en'
 
     @field_validator('approve', mode='before')

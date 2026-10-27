@@ -78,8 +78,9 @@ class Allowance:
     MAX_DAILY = 200
     LEASE_SECONDS = 180
 
-    def __init__(self, store):
+    def __init__(self, store, *, enforce_caps=True):
         self.store = store
+        self.enforce_caps = enforce_caps
 
     def reserve(self, key, now):
         owner = uuid4().hex
@@ -89,9 +90,9 @@ class Allowance:
                      'jobs': {k: v for k, v in old.get('jobs', {}).items() if v['expires'] > now}}
             if key in state['jobs']:
                 return state, state['jobs'][key]
-            reason = ('budget_limit' if state['spent_cents'] + self.RUN_CENTS > self.TOTAL_CENTS else
-                      'daily_limit' if len(state['reservations']) >= self.MAX_DAILY else
-                      'hourly_limit' if sum(t > now - 3600 for t in state['reservations']) >= self.MAX_HOURLY else
+            reason = ('budget_limit' if self.enforce_caps and state['spent_cents'] + self.RUN_CENTS > self.TOTAL_CENTS else
+                      'daily_limit' if self.enforce_caps and len(state['reservations']) >= self.MAX_DAILY else
+                      'hourly_limit' if self.enforce_caps and sum(t > now - 3600 for t in state['reservations']) >= self.MAX_HOURLY else
                       'busy' if sum(j['status'] == 'pending' for j in state['jobs'].values()) >= 2 else None)
             if reason:
                 return state, {'status': reason}

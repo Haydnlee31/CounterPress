@@ -16,6 +16,7 @@ from starlette.responses import JSONResponse, Response
 
 from counterpress.gi.service import MATCHES
 from counterpress.history import HistoryStorageError
+from counterpress.usage_policy import usage_caps_enabled
 from .admission import Allowance, CosmosStore, SQLiteStore
 from .contracts import AnalystRequest
 from .service import build_snapshot
@@ -87,9 +88,9 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
     enabled = provider is not None
     if (enabled or discussion_provider is not None) and allowance is None:
         if hasattr(history_store, 'container'):
-            allowance = Allowance(CosmosStore(history_store.container))
+            allowance = Allowance(CosmosStore(history_store.container), enforce_caps=usage_caps_enabled())
         elif os.environ.get('COUNTERPRESS_ANALYST_LEDGER_PATH'):
-            allowance = Allowance(SQLiteStore(os.environ['COUNTERPRESS_ANALYST_LEDGER_PATH']))
+            allowance = Allowance(SQLiteStore(os.environ['COUNTERPRESS_ANALYST_LEDGER_PATH']), enforce_caps=usage_caps_enabled())
         else:
             logging.getLogger(__name__).warning('Analyst Mode disabled: durable allowance unavailable')
             enabled = False
@@ -101,16 +102,16 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
         if hasattr(history_store, 'container'):
             store = CosmosStore(history_store.container)
             store.partition = 'analyst-live-control-v1'
-            live_allowance = LiveAllowance(store)
+            live_allowance = LiveAllowance(store, enforce_caps=usage_caps_enabled())
         elif os.environ.get('COUNTERPRESS_ANALYST_LEDGER_PATH'):
-            live_allowance = LiveAllowance(SQLiteStore(os.environ['COUNTERPRESS_ANALYST_LEDGER_PATH'] + '.live'))
+            live_allowance = LiveAllowance(SQLiteStore(os.environ['COUNTERPRESS_ANALYST_LEDGER_PATH'] + '.live'), enforce_caps=usage_caps_enabled())
         else:
             discussion_provider = None
             live = False
     from .report import AzureMatchReport, ReportAllowance, ReportRequest, report_data
     if report_provider is None and live_allowance is not None and hasattr(discussion_provider, 'config'):
         report_provider = AzureMatchReport(discussion_provider.config)
-    report_ledger = ReportAllowance(live_allowance.store) if live_allowance is not None else None
+    report_ledger = ReportAllowance(live_allowance.store, enforce_caps=live_allowance.enforce_caps) if live_allowance is not None else None
     tasks = set()
     running = {}
     viewers = {}

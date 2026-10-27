@@ -3,3 +3,19 @@
 .mr-dialog h2{text-wrap:balance}.mr-channel-choice{font-size:13px}.mr-reading details p{font-size:12px}
 
 .mr-coaching-step{border-top:1px solid #d6decd;padding-top:14px;margin-top:14px}.mr-coaching-step>strong{font-size:13px}.mr-coaching-step p{margin:6px 0 0}.mr-linked-plays{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.mr-linked-plays:empty{display:none}.mr-dialog .mr-linked-plays button{font-size:12px;padding:8px 12px;text-align:left;max-width:100%;overflow-wrap:anywhere}.mr-passages{scroll-margin-top:110px}
+
+/* Full-time report: a reading surface, with evidence and coaching in a clear hierarchy. */
+.mr-dialog{width:min(1120px,calc(100vw - 40px));background:#f7f6ee}
+.mr-body{padding:32px 44px 44px}.mr-top{padding:20px 36px}
+.mr-score{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:22px 0 36px;margin-bottom:24px;border-bottom:1px solid #d6decd}
+.mr-score>div{justify-content:center;gap:24px;font-size:20px}.mr-score>div+div{border-left:1px solid #d6decd}.mr-score strong{font-size:72px;letter-spacing:-.06em}
+.mr-intro{padding:32px 36px;background:#173e32;border-radius:18px}.mr-intro h2{font-size:clamp(26px,3.2vw,38px);line-height:1.16;letter-spacing:-.035em;max-width:28ch;margin:14px 0 20px}.mr-intro p{color:#e2e8d6;font-size:16px;max-width:70ch;margin-bottom:0}
+.mr-team-switch{gap:6px;padding:5px;background:#e9ecdf;border-radius:13px;width:fit-content;margin:28px 0 20px}.mr-team-switch button{border:0;background:transparent;min-width:130px}
+.mr-stats{padding:24px 0;gap:28px}.mr-stats>div+div{border-left:1px solid #d6decd;padding-left:28px}.mr-stats strong{font-size:36px;letter-spacing:-.035em}.mr-stats span{display:block;margin-top:6px}
+.mr-section-heading{margin-top:36px}.mr-section-heading h2{font-size:28px;letter-spacing:-.035em;margin:8px 0 0}
+.mr-readings{gap:20px;margin:22px 0 36px}.mr-reading{padding:28px;border-radius:16px;border-top:3px solid #a9b998}.mr-reading--strength{border-top-color:#4e8061}.mr-reading--weakness{border-top-color:#c19354}
+.mr-reading h3{font-size:23px;line-height:1.3;max-width:34ch}.mr-reading p{line-height:1.75}.mr-reading--adjustment{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:0 28px;background:#edf0e2;border-color:#c7d2b7}.mr-reading--adjustment>.mr-eyebrow,.mr-reading--adjustment>h3,.mr-reading--adjustment>p,.mr-reading--adjustment>.mr-linked-plays,.mr-reading--adjustment>details{grid-column:1/-1}.mr-reading--adjustment h3{max-width:none}.mr-reading--player{grid-column:1/-1;border-top-width:1px;background:transparent}.mr-reading--player h3{font-size:20px}.mr-reading--player p{max-width:80ch}
+.mr-coaching-step{padding-top:18px;margin-top:10px}.mr-coaching-step>strong{font-size:12px;letter-spacing:.06em;text-transform:uppercase}.mr-reading details{margin-top:16px}.mr-reading details summary{cursor:pointer;min-height:32px;display:list-item}
+.mr-visuals{gap:24px;padding:24px 0 32px}.mr-visuals>section{padding:24px;background:#fffef8;border:1px solid #d6decd;border-radius:16px}.mr-passages{padding:28px;background:#fffef8;border:1px solid #d6decd;border-radius:16px}.mr-method{margin-top:28px;font-size:13px}
+@media(max-width:700px){.mr-dialog{width:calc(100vw - 16px)}.mr-body{padding:22px 18px}.mr-top{padding:18px}.mr-score{padding:12px 0 26px;margin-bottom:20px}.mr-score>div{font-size:15px;gap:12px}.mr-score strong{font-size:54px}.mr-intro{padding:24px}.mr-intro h2{font-size:27px}.mr-intro p{font-size:14px}.mr-team-switch{width:100%;box-sizing:border-box}.mr-team-switch button{min-width:0}.mr-stats{gap:12px}.mr-stats>div+div{padding-left:12px}.mr-stats strong{font-size:27px}.mr-reading--adjustment{display:block}.mr-visuals>section,.mr-passages{padding:20px}.mr-section-heading h2{font-size:25px}}
+@media(prefers-reduced-motion:no-preference){.mr-dialog[open]{animation:report-arrive 180ms cubic-bezier(.23,1,.32,1)}@keyframes report-arrive{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}}

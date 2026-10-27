@@ -51,7 +51,7 @@ class LiveAllowance:
     MATCH_CENTS=270
     TOTAL_CENTS=1200
     LEASE_SECONDS=60
-    def __init__(self,store):self.store=store
+    def __init__(self,store,*,enforce_caps=True):self.store=store;self.enforce_caps=enforce_caps
 
     def grant_match_allowance(self,grant_id,match_id,cents,reason):
         """Admin-only operation; no HTTP route. Requires explicit spend approval.
@@ -82,7 +82,7 @@ class LiveAllowance:
             if key in state['jobs']:return state,state['jobs'][key]
             spent=state['matches'].get(match_id,0)
             approved=sum(g['cents'] for g in state['approved_grants'].values() if g['match_id']==match_id)
-            if spent+self.RUN_CENTS>self.MATCH_CENTS+approved or state['spent_cents']+self.RUN_CENTS>self.TOTAL_CENTS:return state,{'status':'budget_limit'}
+            if self.enforce_caps and (spent+self.RUN_CENTS>self.MATCH_CENTS+approved or state['spent_cents']+self.RUN_CENTS>self.TOTAL_CENTS):return state,{'status':'budget_limit'}
             if sum(j['status']=='pending' for j in state['jobs'].values())>=2:return state,{'status':'busy'}
             job={'status':'pending','owner':owner,'expires':now+self.LEASE_SECONDS,'scope':scope,'cutoff':cutoff,'match_id':match_id}
             state['matches'][match_id]=spent+self.RUN_CENTS;state['spent_cents']+=self.RUN_CENTS;state['jobs'][key]=job

@@ -50,3 +50,11 @@ def test_oversized_result_fails_closed(tmp_path):
     job = allowance.reserve('a', 0)
     allowance.finish('a', job['owner'], {'text': 'x' * 16000}, 1)
     assert allowance.reserve('a', 2)['status'] == 'unavailable'
+
+
+def test_uncapped_native_allowance_preserves_accounting(tmp_path):
+    store=SQLiteStore(tmp_path/'uncapped')
+    store.transact(lambda s:({'spent_cents':999999,'reservations':[1]*300},None))
+    allowance=Allowance(store,enforce_caps=False)
+    assert allowance.reserve('new',2)['admitted']
+    assert store.transact(lambda s:(s,s))['spent_cents']==1000009

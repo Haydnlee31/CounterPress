@@ -83,7 +83,7 @@ class EvaluationApp:
         # are unchanged, and keep the same API limiter for every warm request.
         if model_calls_per_hour is None:install_assistant(app,lambda:career,researcher=self.dispatcher)
         else:
-            with patch.dict(os.environ,{'COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR':str(model_calls_per_hour)}):
+            with patch.dict(os.environ,{'COUNTERPRESS_ASSISTANT_CALLS_PER_HOUR':str(model_calls_per_hour),'COUNTERPRESS_USAGE_CAPS':'on'}):
                 install_assistant(app,lambda:career,researcher=self.dispatcher)
         self.client=TestClient(app)
     def __enter__(self):

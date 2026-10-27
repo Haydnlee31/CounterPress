@@ -38,13 +38,15 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
                 narrator=narrator or AzureNarrator(config)
     summary_config=load_config() if os.environ.get('COUNTERPRESS_ASSISTANT_MODEL')=='azure' else None
     router=APIRouter(prefix='/api/fan/assistant',tags=['Football assistant'])
+    from counterpress.usage_policy import usage_caps_enabled
     from .admission import configured_limits
     hourly_limit,_=configured_limits()
+    enforce_caps=usage_caps_enabled()
     calls=deque();model_calls=deque();gate=asyncio.Semaphore(2)
     def reserve_model_call():
         now=time.monotonic()
         while model_calls and now-model_calls[0]>=3600:model_calls.popleft()
-        if len(model_calls)>=hourly_limit:return False
+        if enforce_caps and len(model_calls)>=hourly_limit:return False
         model_calls.append(now)
         return True
     @lru_cache(maxsize=1)
@@ -73,7 +75,7 @@ def install_assistant(app,career_service,planner=None,narrator=None,researcher=N
     @router.get('/config')
     def config():
         return {'available':True,'natural_language':planner is not None or researcher is not None,'narrative_selection':narrator is not None or researcher is not None,'workflow':'multiagent' if researcher and getattr(researcher,'max_requests',2)==4 else 'agent' if researcher else 'structured_lookup','name':'Footie','storage':'session',
-                'max_question_characters':600,'model_requests_per_hour':hourly_limit if planner or narrator or researcher else 0}
+                'max_question_characters':600,'model_requests_per_hour':(hourly_limit if enforce_caps else None) if planner or narrator or researcher else 0}
 
     @router.get('/moment')
     def moment(match_id:str,event_id:str,revision:int,resolved:bool):

@@ -409,3 +409,24 @@ recommendations consequently overlap. They are useful hypotheses for reviewing
 specific passages, not proof that return passes cause goals or universally avoid
 blocks. Do not force artificial tactical differences to make the report appear
 more insightful. Event-only evidence cannot establish off-ball defensive errors.
+
+
+### Judging experience (27 October, owner-authorized)
+
+Opening Match summary now starts the report automatically. There is no approval
+button or cost message. Completed reports are shared and reused; pending work is
+joined rather than started again. Close/reopen does not duplicate a model job.
+
+The application defaults to `COUNTERPRESS_USAGE_CAPS=off`, as explicitly requested
+by the owner. Analyst live/report/native cumulative spending ceilings and
+hour/day allowances, plus Footie's cumulative model-call allowances, no longer
+stop judging sessions. Historical accounting is retained. Same-origin controls,
+short request-rate limits, two concurrent jobs, bounded model turns, timeouts,
+failure cooldowns and factual checks remain. Azure subscription credit limits and
+provider quotas are external and are not changed. Set the variable to `on` to
+restore legacy admission limits without resetting prior charges.
+
+The report uses an editorial scoreline and verdict, a team coaching brief,
+full-width training plan, player contribution and distinct evidence panels.
+Reduced motion and narrow screens are supported. This supersedes earlier
+approval/cost-cap descriptions above.
