@@ -131,7 +131,7 @@ presentations in rotated A/B/C order and blank rating fields. They do not invent
 ratings. Generated sheets and raw human responses stay under ignored `var/`.
 The [fan task kit](fan-usability.md) tests the live interface separately.
 
-The [access-controls increment](../editorial-access.md) implements explicit
+The [access-controls increment](../archive/editorial-access.md) implements explicit
 authenticated triggering, shared deduplication, durable quotas, revision-bound
 caching and stale-work cancellation. Real Entra/Cosmos integration checks and
 human review remain activation gates; this local benchmark does not satisfy them.

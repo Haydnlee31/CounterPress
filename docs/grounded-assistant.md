@@ -1,7 +1,6 @@
-# Footie — local grounded football assistant
+# Footie grounded football assistant
 
-Open **http://127.0.0.1:8017/#assistant**, or choose **Footie** in the dashboard.
-This is a separate local workspace; the hosted app has not been deployed.
+Choose **Footie** in the hosted dashboard, or use `#assistant` in a local preview. See the [README startup commands](../README.md#quick-start) for a configured local instance.
 
 You can also choose **Ask Footie** on a Clubhouse player/club profile, a linked
 Matchday highlight, a Match Centre play, the full-match replay, or a career
@@ -220,7 +219,7 @@ The browser check intercepts the assistant answer; it does not invoke Azure.
 Screenshots are saved under `var/footie-mascot-*.png`. The integration is local;
 it has not been pushed or deployed.
 
-## Question reliability follow-up — 21 October 2026 (local, unpublished)
+## Historical validation — 21 October 2026
 
 The assistant and contextual dialogs described above were published in the
 20 October release; the earlier local-only statements are historical. The new

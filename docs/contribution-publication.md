@@ -112,7 +112,7 @@ All 368 backend tests and 27 frontend tests pass, along with the production buil
 Browser review confirmed the evidence table, language switching, selected-player
 exclusion, historical update/withdraw/restore and the negative control. Review used
 an isolated ignored database; its temporary tab and servers were closed. Exact
-commands, output and changed files are in [progress](progress.md).
+commands, output and changed files are in [progress](archive/development-history.md).
 
 Best next move: evidence-linked match recaps using the available published stories
 and their revisions. Broader attribution rules and Azure application deployment

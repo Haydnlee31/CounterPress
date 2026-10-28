@@ -1,8 +1,10 @@
 # Authenticated editorial requests
 
+> Historical reference. This records an earlier implementation; use the [current documentation index](../README.md) for the public Footie experience.
+
 This increment adds the backend controls for an explicit single-editor request.
 It is disabled by default locally. The assigned-editor Studio pilot is now enabled
-on the hosted app; see [release verification](verification/studio-editorial-live.json). Fan
+on the hosted app; see [release verification](../verification/studio-editorial-live.json). Fan
 snapshots, playback, health checks and revision notifications never start a model
 call. The factual recap is always available independently of the editor.
 
@@ -144,7 +146,7 @@ uv run --env-file .env --frozen uvicorn counterpress.api.main:app --reload
 The application
 will reject incomplete auth/model configuration or in-memory admission storage.
 
-The [live integration record](verification/editorial-integration.json) now verifies
+The [live integration record](../verification/editorial-integration.json) now verifies
 Cosmos conflict/fresh-process behavior under the existing managed identity and
 real Entra authorization against the local API. Before cloud activation, verify
 hosted-route authorization, current Azure usage, live model behavior through

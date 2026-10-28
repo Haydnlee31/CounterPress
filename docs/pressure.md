@@ -146,7 +146,7 @@ The 37 new tests also cover exact x/time boundaries, repeated duels, challenger
 perspective, incomplete samples, pending and censored episodes, late delivery,
 revision changes, invalid evidence, cooldown isolation/expiry and generated
 development feeds. Held-out generator runs have not been used to tune these
-rules. All 273 backend tests pass; [progress](progress.md) records exact commands
+rules. All 273 backend tests pass; [progress](archive/development-history.md) records exact commands
 and output. No frontend file changed in this increment.
 
 ## Scope and next step

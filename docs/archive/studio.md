@@ -1,13 +1,15 @@
 # Producer Studio
 
+> Historical reference. This records an earlier implementation; use the [current documentation index](../README.md) for the public Footie experience.
+
 Studio is the authenticated producer review workspace at `#studio`. It is
-enabled on the hosted app as of 17 October 2026; [release evidence](verification/studio-live.json)
+enabled on the hosted app as of 17 October 2026; [release evidence](../verification/studio-live.json)
 records the deployed commit and real hosted sign-in, approval, export and revocation checks.
 A separate deployment switch controls activation. Public Matchday remains available without sign-in.
 Studio opens with factual templates. Reviewing, approving, exporting and polling never
 invoke a model. The optional **Request AI draft** action is a separately enabled,
 authenticated pilot; human usefulness evaluation remains pending.
-The assigned-editor pilot is now live; [hosted verification](verification/studio-editorial-live.json)
+The assigned-editor pilot is now live; [hosted verification](../verification/studio-editorial-live.json)
 records real sign-in, one successful AI request, approval, preview, download and expiry lock.
 
 ## Using Studio
@@ -159,10 +161,10 @@ To activate real browser sign-in later:
    reviewed image through the protected workflow and verify hosted behavior.
    The protected deployment workflow now supports explicit `studio_mode`
    enable/disable/preserve and a private identity-metadata secret; see the
-   [deployment runbook](deployment.md#studio-activation-through-the-protected-workflow).
+   [deployment runbook](../deployment.md#studio-activation-through-the-protected-workflow).
    Do not enable it on an older incompatible image.
 
-[Real browser SPA sign-in and new Studio decisions against live Cosmos](verification/studio-integration.json)
+[Real browser SPA sign-in and new Studio decisions against live Cosmos](../verification/studio-integration.json)
 have now passed, including local browser download/revocation/correction handling
 and restoration in a fresh cloud process. The protected release records hosted
 activation and anonymous-access smoke results separately. Human producer review
@@ -170,7 +172,7 @@ and a separate real unassigned-account test remain pending.
 
 ## Verification
 
-[Local verification results](verification/studio-local.json) record the tested source,
+[Local verification results](../verification/studio-local.json) record the tested source,
 commands, output and limits: 550 backend tests, 57 frontend tests, build and browser QA.
 
 ```sh
@@ -200,7 +202,7 @@ node scripts/test_studio.cjs http://127.0.0.1:5173
 mocked in this harness; it is never a production auth bypass or bundled build entry.
 It checks 360/390/760/1365px layouts, source evidence, approval, clean/presenter/lower-third
 previews, story selection, revocation, Chinese text at 200% sizing, session end and
-page errors. Stop the dev server after use. The [broadcast verification record](verification/studio-broadcast-local.json)
+page errors. Stop the dev server after use. The [broadcast verification record](../verification/studio-broadcast-local.json)
 captures 576 backend and 60 frontend passing tests and the local browser checks.
 
 The editorial **regression** source lock is now `matchday-pitch-regression-v1` because

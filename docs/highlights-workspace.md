@@ -1,4 +1,4 @@
-# Highlights workspace — local review
+# Highlights workspace
 
 Match Centre is the landing page and first navigation tab. Highlights is the second tab, followed by Clubhouse and Footie. The existing curated replays remain available under **Preloaded highlights**; legacy `#matchday` and breakdown links continue to work.
 
@@ -15,13 +15,13 @@ Open `http://127.0.0.1:8019`:
 2. Select **Open highlight**. The replay appears above Footie’s summary.
 3. Select **Red pen** to pause and draw on the pitch. Choose **Finish drawing** to return to normal player hover behaviour. Resuming playback hides the marks; **Saved frame** returns to an annotated frame.
 4. Add coaching notes, save, reload, and reopen the same highlight.
-5. Return to Match Centre. **Watch full match** opens the inline full-match replay. Its separate **Analyst Mode** button opens the existing analysis interface. Its intelligence has not been redesigned in this change.
+5. Return to Match Centre. **Watch full match** opens the inline full-match replay. Its separate **Analyst Mode** button opens the existing analysis interface. See [Analyst Mode](analyst-mode.md) for the discussion and report workflow.
 
 The Azure option uses the existing server-side `.env` model configuration. Credentials never enter browser storage or requests. Omit `--azure` for offline statistics summaries.
 
 ## Persistence and AI behaviour
 
-- The collection is local to this browser and origin, under `footie.highlights.v1`. This review version does not sync accounts or devices. Moving to another localhost port or the deployed site creates a separate collection.
+- The collection is local to this browser and origin, under `footie.highlights.v1`. Collections do not sync across accounts or devices. Moving to another localhost port or the deployed site creates a separate collection.
 - Save is independent of analysis: the replay reference is saved before any model call. Duplicate imports retain the original notes and drawings. Up to 50 highlights, 30 strokes per highlight, and 2,000 characters of notes are supported. A storage failure is shown rather than reported as saved.
 - Imports resolve the selected event’s canonical revision/availability clock and invoke the existing `/api/fan/assistant/summary` service. Imported moments send a server-built, revision-pinned evidence window ending at the selected action. Existing server admission, grounding and model limits apply.
 - **Footie’s Summary** is model-authored prose, not a selection of fixed sentences. A separate model call reviews every factual claim against the source packet. Code additionally checks citation IDs, goal ordinals, wrong own-goal net references, and invented dribbles when no carries are recorded. Rejected output is withheld; one corrective retry is allowed within the shared model-call limit. Automated semantic review is not a proof of factual correctness; the curated summaries also receive manual review.

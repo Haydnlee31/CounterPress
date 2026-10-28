@@ -118,7 +118,7 @@ network and model variability may still cause fallback.
 
 Saved sanitized audits: [accepted](verification/workflow-live-accepted.json) and
 [timeout](verification/workflow-live-timeout.json). Full verification commands and
-results are in [progress](progress.md).
+results are in [progress](archive/development-history.md).
 
 This workflow uses the general audience only. Stage 7 now adds separate
 [validated audience views and bilingual templates](audience.md). Procedural

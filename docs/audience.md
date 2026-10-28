@@ -123,7 +123,7 @@ empty/budget states, independent viewer preferences, delayed-response rejection
 and API perspective validation.
 
 All 177 backend tests and 16 frontend tests pass; the production build passes.
-Exact commands and output are recorded in [progress](progress.md). Browser captures:
+Exact commands and output are recorded in [progress](archive/development-history.md). Browser captures:
 
 - [English analyst view](screenshots/audience-analyst-en.png)
 - [Simplified Chinese casual view](screenshots/audience-casual-zh.png)

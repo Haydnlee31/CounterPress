@@ -1,12 +1,8 @@
-# Fan personalization — UI handoff
+# Fan personalization
 
-The personalization backend and browser adapter now have a local **My Football**
-interface at `#football`. Follow the [local user test](my-football-local.md) to try
-profiles, favorites, comparisons and highlight insights without API calls.
-The colleague's wider redesign remains separate. The product direction is preserved
-in [important Reactor review context](reactor-review-context.md).
+Clubhouse (`#football`) combines device-owned favourites, player and club profiles, comparisons and ranked recommendations. The APIs below supply deterministic views over the [data foundation](personalization-data.md). See the [walkthrough](demo-guide.md) for the user journey.
 
-## What this adds
+## Capabilities
 
 - Follow up to **four clubs and twelve players** on a device. All registered
   identities are valid, including reserves and supporting opponents. Select a
@@ -24,7 +20,7 @@ in [important Reactor review context](reactor-review-context.md).
   involvement, and current statistics. Keep all active players visible; highlight
   the chosen player and involved actors. This is not a new tracking/animation feed.
 - Contextual question suggestions with **existing data-view actions**. These are
-  navigation prompts, not a completed natural-language assistant.
+  navigation prompts, separate from the model-powered [Footie assistant](grounded-assistant.md).
 
 No model calls, new Azure resources or preference database are involved. The
 career data still comes from the [data foundation](personalization-data.md).
@@ -169,7 +165,7 @@ const next = toggleFavorite(preferences, 'player', 'rh08')
 const saved = savePreferences(window.localStorage, next)
 const client = createFanClient() // keep one instance per rendered surface
 const home = await client.home(next, { as_of: '2026-10-20T00:00:00Z' })
-// Render home.following and home.highlights using the colleague's UI.
+// Render the following list and ranked highlights.
 // Call client.cancel() on unmount, seek or any context change.
 ```
 
@@ -191,7 +187,7 @@ renderable response. Use separate clients for independent screens. On a browser
 `storage` event, re-read preferences and cancel/reload affected views so other tabs
 reflect the change. Render text normally through React, never as raw HTML.
 
-## Verification and next integration
+## Verification
 
 ```sh
 .venv/bin/pytest -q
@@ -205,16 +201,6 @@ CI runs adapter checks alongside the unchanged UI tests/build and checks the new
 APIs through a restricted container. Exact local evidence is recorded in
 [personalization verification](verification/fan-personalization-checks.md).
 
-The local UI supports **follow Clarke → open his profile → see the milestone
-at its source time → watch the goal**. Keep wider history in profiles, Matchday
-highlights-only and Match Centre limited to four featured matches. The general
-Footie assistant, cloud preference accounts and the ingestion bridge are not
-implemented by this layer.
+## Related services
 
-## Grounded assistant follow-up
-
-The previously deferred fan-facing assistant is now implemented locally as
-[Footie](grounded-assistant.md), in a separate dashboard workspace. Preferences
-remain device-scoped; cloud preference accounts and the career ingestion bridge
-remain deferred. Existing personalization contracts are preserved; capabilities
-now advertise assistant availability.
+The [Footie assistant](grounded-assistant.md) uses these records for grounded questions. The [career revision bridge](career-revision-bridge.md) keeps corrected source facts available to profiles and insights. Preferences remain device-scoped; cross-device preference accounts are not part of this service. The data API exposes four featured fixtures, while the Match Centre / Analyst replay adapter currently supports three full matches.

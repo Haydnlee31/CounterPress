@@ -1,5 +1,7 @@
 # Important context: Reactor review and personalization direction
 
+> Historical reference. This records an earlier implementation; use the [current documentation index](../README.md) for the public Footie experience.
+
 Saved 19 October 2026 at the user's request. This is project context for the next
 personalization and assistant stages. The colleague's UI redesign is still in
 progress; backend work must preserve existing UI contracts and avoid editing their
@@ -94,7 +96,7 @@ additional matches. No new general model agent is implied by a suggested questio
 ## Implementation follow-up — 20 October 2026
 
 The personalization workspace and calibrated analytics are now implemented
-locally. The first [grounded Footie assistant](grounded-assistant.md) follows the
+locally. The first [grounded Footie assistant](../grounded-assistant.md) follows the
 answer → visual → action direction above. Azure selects a bounded query plan;
 Python owns all statistics and explanations. A separate `#assistant` workspace
 supports profiles, comparison, form, club contributors and goal milestones, with
@@ -107,7 +109,7 @@ score impact and milestones as evidence-bound sentences. A second bounded Azure
 request chooses emphasis and order; Python still owns the facts and wording.
 This adopts the reference application's story-first presentation without
 introducing unrestricted generated factual prose. Both calls share the original
-20-attempt hourly allowance. See [narrative verification](verification/footie-narration.md).
+20-attempt hourly allowance. See [narrative verification](../verification/footie-narration.md).
 
 ## Finishing review — 21 October 2026
 
@@ -117,7 +119,7 @@ is therefore no longer a gap. The remaining priorities are repeatable assistant
 question evaluation, the live career-index bridge, assistant request tracing,
 and managed-identity model access. Retain ACA and evidence-bound sentences.
 
-The first [question benchmark](verification/footie-question-benchmark.md) found
+The first [question benchmark](../verification/footie-question-benchmark.md) found
 14 offline failures and a live model tendency to narrow career questions to the
 current season. Local fixes now pass 58 authored regression cases; captured-model
 responses and two fresh targeted Azure checks verify the scope guard. Preserve
@@ -134,4 +136,4 @@ and Web PubSub refresh hints. Compound Clubhouse/personalization/Footie reads
 refresh the same durable state. Browser revision checks invalidate outdated
 statistics and assistant answers without automatic model calls. This is not yet
 a hosted deployment or an update to the independent archive replay contracts.
-See [implementation and activation boundaries](career-revision-bridge.md).
+See [implementation and activation boundaries](../career-revision-bridge.md).

@@ -127,7 +127,7 @@ backfill, atomic rejection, cutoff-scoped evidence lookup, bilingual/player view
 viewer isolation and shared card ranking. Four new frontend tests cover episode
 inspection, translated rates, pressure tombstones, stale/missing streams,
 withdrawal/recreation in the screen and mismatched API narratives. Exact command
-output is in [progress](progress.md).
+output is in [progress](archive/development-history.md).
 
 Chrome review confirmed the English exposure card, episode sample table, Chinese
 casual escape view, correction horizon discovery, 58:10 withdrawal, 58:15

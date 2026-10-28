@@ -374,7 +374,7 @@ enable agent mode on the strength of the targeted check alone.
   intent cases and persistent, capped evaluation.
 - `tests/test_assistant_research.py`: real framework with simulated Azure;
   invalid subjects, scope, metrics, repeated tools, narratives and correction race.
-- `docs/reactor-review-context.md`: saved video analysis.
+- `docs/archive/reactor-design-reference.md`: saved video analysis.
 
 Microsoft's [function tool overview](https://learn.microsoft.com/en-us/agent-framework/agents/tools/?pivots=programming-language-python)
 informed the tool boundary; implementation is checked against the locked SDK and

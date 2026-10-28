@@ -1,8 +1,7 @@
 # Clubhouse player analytics
 
 Open <http://127.0.0.1:8017/#football>, choose a player, and stay on **Overview**.
-The period selector applies to every chart and statistic. Everything in this
-release runs locally; there are no new cloud services or model calls.
+The period selector applies to every chart and statistic. These charts are computed from the data layer and do not require model calls.
 
 ## What a fan can explore
 

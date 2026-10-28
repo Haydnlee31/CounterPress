@@ -129,7 +129,7 @@ split separation, independent positive/negative controls, pending endings,
 overwrite refusal and evaluator separation. A generated public feed also passes
 through persisted history, evidence creation and audience presentation without
 its private configuration. All 236 backend tests pass. Exact CLI and test output
-is recorded in [progress](progress.md).
+is recorded in [progress](archive/development-history.md).
 
 This is a ten-minute synthetic possession simulator with a small fixed roster and
 an unchanged 0–1 score. It has no shots, goals, full-match scheduling, offside,

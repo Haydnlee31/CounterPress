@@ -123,4 +123,4 @@ uses `recap-single-editor-v1`; older two-role audits remain readable.
 Use measured results and human usefulness ratings to choose the next integration.
 Authenticated triggering, shared deduplication, durable quotas, Cosmos live checks
 and revision-aware cancellation/cache behavior remain required before activation.
-The [delivery plan](redesign-implementation.md) tracks Studio and evaluation work.
+The [delivery plan](README.md) tracks Studio and evaluation work.
