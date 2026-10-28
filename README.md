@@ -71,7 +71,7 @@ Explore **44 featured players across four clubs**. Follow favourites, compare pl
 
 Ask questions about a player, club or match, compare performances, and inspect the figures behind an answer. The assistant can delegate match and career questions to specialists using validated data tools. Contextual **Ask Footie** controls connect questions to player profiles and replay moments.
 
-English and Simplified Chinese are supported in the experience, with shared preferences across the main workspaces. Translation coverage is still being completed: some controls and preloaded highlight summaries remain English, and Analyst Mode's language selection does not yet persist on refresh.
+English and Simplified Chinese language options are available.
 
 ## How the intelligence works
 
@@ -87,31 +87,9 @@ These checks reduce unsupported claims; they do not make model interpretation in
 
 ## Architecture
 
-```mermaid
-flowchart TD
-    Events["Synthetic events and source revisions"] --> Hubs["Azure Event Hubs"]
-    Hubs --> Ingest["FastAPI ingestion and validation"]
-    Ingest --> Cosmos["Azure Cosmos DB: revision history"]
-    Ingest --> Blob["Azure Blob Storage: checkpoints"]
-    Ingest --> PubSub["Azure Web PubSub: revision notices"]
-    Library["Curated replays and calibrated career records"] --> API
-    Cosmos --> API["FastAPI: football data and evidence tools"]
-    API --> Manager["Analyst turn manager and conversation memory"]
-    Manager --> Specialists["Player · Match · Chance · Defensive"]
-    Specialists --> Models["Azure OpenAI: draft and review"]
-    Models --> Review["Footie factual review and publication checks"]
-    Review --> UI["React: Match Centre, Highlights, Clubhouse and Footie"]
-    API --> Assistant["Footie assistant: Microsoft Agent Framework"]
-    Assistant --> Models
-    PubSub --> UI
-    API --> Report["Full-time report and highlight summaries"]
-    Report --> Models
-    Runtime["Azure Container Apps: application runtime"] -. hosts .-> API
-    Runtime -. hosts .-> Manager
-    Runtime -. hosts .-> Assistant
-    Manager -. traces .-> Monitor["OpenTelemetry, Azure Monitor and Foundry-linked observability"]
-    Assistant -. traces .-> Monitor
-```
+<div align="center">
+<img src="docs/screenshots/architecture.png" alt="Footie system architecture" width="680">
+</div>
 
 **Two complementary paths:** Event Hubs and Web PubSub handle incoming revisions; the curated match library drives the replay experience. Accelerated playback reveals recorded events at its replay clock—it is not a live video feed.
 
