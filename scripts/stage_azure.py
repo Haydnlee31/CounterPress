@@ -14,7 +14,7 @@ from deploy_azure import DeploymentError, require_ci, run, validate_app, model_a
 API = '2025-07-01'
 APP = 'counterpress'
 LABEL = 'footie-review'
-REVISION = re.compile(r'^counterpress--[a-z][a-z0-9]*(?:-[a-z0-9]+)*$')
+REVISION = re.compile(r'^counterpress--[a-z0-9]+(?:-[a-z0-9]+)*$')
 CANDIDATE = re.compile(r'^counterpress--stage-([0-9]+)-([0-9]+)$')
 
 
@@ -101,8 +101,9 @@ def staging_template(original, image, suffix):
     container['env'] = [e for e in env if e['name'] not in replacements] + [
         {'name':name,'value':value} for name,value in replacements.items()]
     scale = template['scale']
-    require(scale.get('minReplicas') == 0 and scale.get('maxReplicas') == 1,
-            'Staging requires the existing zero-to-one replica bound')
+    require(type(scale.get('minReplicas')) is int and scale['minReplicas'] in (0, 1)
+            and scale.get('maxReplicas') == 1,
+            'Staging requires a zero-or-one minimum and one-replica maximum')
     rules = scale.get('rules') or []
     require(all('http' in r or r.get('custom', {}).get('type') == 'azure-eventhub' for r in rules),
             'Unexpected scaler; staging stopped')

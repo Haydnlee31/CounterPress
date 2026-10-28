@@ -126,8 +126,12 @@ def test_stage_pins_before_template_and_preserves_shared_settings_and_secrets(ca
                for kind,p in cloud.events if kind == 'patch')
 
 
-def test_cleanup_restores_original_image_before_single_and_never_promotes_candidate():
-    cloud = Cloud();original = cloud.app()['properties']['template'];run_stage(cloud);cloud.events.clear()
+@pytest.mark.parametrize('minimum', [0, 1])
+def test_cleanup_restores_original_image_before_single_and_never_promotes_candidate(minimum):
+    cloud = Cloud()
+    cloud.value['properties']['template']['scale']['minReplicas'] = minimum
+    cloud.rows[PRODUCTION]['properties']['template']['scale']['minReplicas'] = minimum
+    original = cloud.app()['properties']['template'];run_stage(cloud);cloud.events.clear()
     staging.cleanup(cloud,PRODUCTION,CANDIDATE)
     final = cloud.app()
     assert final['properties']['configuration']['activeRevisionsMode'] == 'Single'
@@ -483,3 +487,36 @@ def test_background_provisioning_status_progress_is_not_configuration_drift(monk
     azure,state,calls,sleeps,reads=patch_transport(monkeypatch,tmp_path,[(1,LOCK_ERROR),(0,'')],progress)
     azure.patch(staging.routing(PRODUCTION))
     assert len(calls)==2
+
+
+def test_staging_preserves_warm_minimum_without_mutating_source():
+    app = fixture()
+    original = app['properties']['template']
+    original['scale']['minReplicas'] = 1
+    before = copy.deepcopy(original)
+    staged = staging.staging_template(original, IMAGE, 'stage-warm')
+    assert original == before
+    assert staged['scale']['minReplicas'] == 1
+    assert staged['scale']['maxReplicas'] == 1
+    assert staged['containers'][0]['env'] != before['containers'][0]['env']
+    assert all('http' in rule for rule in staged['scale']['rules'])
+
+
+@pytest.mark.parametrize('minimum', [-1, 2, None, '1', True, 1.0])
+def test_staging_rejects_unreviewed_replica_minimum(minimum):
+    original = fixture()['properties']['template']
+    original['scale']['minReplicas'] = minimum
+    with pytest.raises(staging.DeploymentError):
+        staging.staging_template(original, IMAGE, 'stage-invalid')
+
+
+def test_warm_azure_generated_revision_can_be_staged_with_exact_traffic_pin():
+    app = fixture()
+    properties = app['properties']
+    properties['template']['scale']['minReplicas'] = 1
+    properties['latestRevisionName'] = properties['latestReadyRevisionName'] = 'counterpress--0000008'
+    properties['configuration']['ingress']['traffic'] = [{'revisionName': 'counterpress--0000008', 'weight': 100}]
+    assert staging.validate_production(app) == 'counterpress--0000008'
+    properties['configuration']['ingress']['traffic'][0]['revisionName'] = PRODUCTION
+    with pytest.raises(staging.DeploymentError):
+        staging.validate_production(app)

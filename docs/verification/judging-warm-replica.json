@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-28",
+  "operation": "Judging-period minimum replica change",
+  "app": "counterpress",
+  "previous_minimum": 0,
+  "minimum": 1,
+  "maximum": 1,
+  "ready_revision": "counterpress--0000008",
+  "traffic_percent": 100,
+  "configuration_fingerprint_comparison": "Image, environment, identities, probes, resources, scale rules and app configuration preserved; only minimum and revision/traffic metadata changed.",
+  "readiness_probes": {
+    "passed": 38,
+    "failed": 0
+  },
+  "public_http_checks": 25,
+  "ai_checks": [
+    {
+      "check": "report",
+      "match": "synthetic-32fe41c5d304ce68d7d9",
+      "status": "complete",
+      "cached": true,
+      "seconds": 0.96
+    },
+    {
+      "check": "report",
+      "match": "wyscout-2058017",
+      "status": "complete",
+      "cached": true,
+      "seconds": 0.91
+    },
+    {
+      "check": "report",
+      "match": "wyscout-2058007",
+      "status": "complete",
+      "cached": true,
+      "seconds": 0.92
+    },
+    {
+      "check": "discussion",
+      "status": "complete",
+      "messages": 1,
+      "seconds": 14.59
+    },
+    {
+      "check": "Footie",
+      "status": "answered",
+      "mode": "azure_agent",
+      "facts": 5
+    }
+  ],
+  "local_guard_tests": "95 passed",
+  "scope": "Anonymous HTTP and Azure state checks; not a new browser full-match or concurrent-load acceptance run.",
+  "followup": {
+    "automation_id": "finish-footie-judging-warm-replica",
+    "scheduled_local": "2026-11-11 16:10 Asia/Singapore",
+    "action": "Review deadline and subsequent user instructions, then restore only minimum 0 if judging has ended. Requires automation host Azure access."
+  }
+}

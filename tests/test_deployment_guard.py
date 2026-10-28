@@ -394,3 +394,28 @@ def test_production_stream_scopes_reject_verifier_or_ambiguous_overrides_even_wh
                 for validate in (deploy.validate_app, deploy.validate_career_streaming_prerequisites):
                     with pytest.raises(deploy.DeploymentError, match='reviewed defaults'):
                         validate(app)
+
+
+def test_warm_replica_is_accepted_preserved_and_not_silently_changed():
+    app = career_bridge_app()
+    app['properties']['template']['scale']['minReplicas'] = 1
+    before = copy.deepcopy(app)
+    deploy.validate_app(app)
+    enabled = deploy.career_streaming_settings(app, 'enable')
+    deploy.validate_app(enabled)
+    assert app == before
+    assert enabled['properties']['template']['scale'] == before['properties']['template']['scale']
+    changed = copy.deepcopy(app)
+    changed['properties']['template']['scale']['minReplicas'] = 0
+    assert deploy.invariants(changed) != deploy.invariants(app)
+
+
+def test_replica_minimum_rejects_unreviewed_bounds_and_nonintegers():
+    import pytest
+    for minimum in (-1, 2, None, '1', True, 1.0):
+        app = career_bridge_app()
+        app['properties']['template']['scale']['minReplicas'] = minimum
+        with pytest.raises(AssertionError):
+            deploy.validate_app(app)
+        with pytest.raises(deploy.DeploymentError):
+            deploy.validate_career_streaming_prerequisites(app)
