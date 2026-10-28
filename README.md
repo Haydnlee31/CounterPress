@@ -171,6 +171,13 @@ Repository URLs, Python package names and configuration identifiers retain their
 | `#football` | Clubhouse: players, clubs, following, comparisons and standings |
 | `#assistant` | Footie questions and evidence-backed answers |
 
+## What’s next for Footie
+
+We want to keep improving Footie beyond the hackathon, guided by how fans, coaches and analysts use it.
+
+- **Stronger, faster analysis.** Evaluate higher-capability models such as [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol), subject to availability in our Azure deployment. Benchmark factual accuracy, coaching usefulness and time to a published insight during 5× replay before switching. The goal is more insightful analysis with lower latency, while retaining evidence checks and conversation memory.
+- **More languages, more fans.** Extend language controls to **Spanish, Japanese and Korean**, covering navigation, specialist conversations, Footie answers and match summaries. Validate football terminology with native speakers and preserve each viewer’s preference across workspaces.
+
 ## Documentation
 
 | Guide | What it covers |
