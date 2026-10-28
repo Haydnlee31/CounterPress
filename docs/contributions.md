@@ -106,7 +106,7 @@ The new tests check independent actor partitions, continuous controls, exact
 coordinate/window/policy boundaries, denominator effects, zero samples, membership,
 forged evidence, late corrections, historical API cutoffs, restart durability and
 CLI parsing. The complete backend suite and both required GitHub Actions checks
-must pass before merge. Exact local output is recorded in [progress](progress.md).
+must pass before merge. Exact local output is recorded in [progress](archive/development-history.md).
 
 Durable player-contribution publications, bilingual replay cards and per-player
 cooldowns are now implemented in [the next increment](contribution-publication.md).

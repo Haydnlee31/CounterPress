@@ -108,7 +108,7 @@ All 313 backend tests and 22 frontend tests pass, along with the production buil
 New checks exercise exact gain/span/window boundaries, pending and unknown starts,
 near-goal exclusions, late availability, source references, cooldown isolation,
 durable corrections, old-schema migration, bilingual views and UI selection.
-Exact commands, output and changed files are in [progress](progress.md).
+Exact commands, output and changed files are in [progress](archive/development-history.md).
 
 Chrome review confirmed the evidence table, Chinese casual wording, historical
 withdrawal and restoration using a separate ignored verification database.

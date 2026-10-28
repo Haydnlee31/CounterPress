@@ -108,7 +108,7 @@ changes, newly qualifying sources, corrections outside the window, source sequen
 gaps, atomic rejection, concurrent duplicate writers, two viewers and database errors.
 `frontend/src/App.test.tsx` checks paused polling, withdrawal tombstones, stale updates,
 new-scope rewind and discovery of a longer horizon alongside the existing UI tests.
-Exact commands, output and browser checks are recorded in `docs/progress.md`.
+Exact commands, output and browser checks are recorded in `docs/archive/development-history.md`.
 
 This is a small local implementation with full history reads and full state rebuilds.
 It has no stream transport, authentication, cloud replication, database migration

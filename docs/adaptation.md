@@ -117,5 +117,5 @@ Frontend tests check approved text, unchanged counts, evidence-version matching
 and automatic expiry fallback. These tests make no network or Azure calls. They do
 not establish that a particular live Azure deployment is reachable or supports the
 request schema. A separate live check now passed for the configured deployment;
-its exact output is recorded in `docs/progress.md`. See the [workflow guide](workflow.md)
+its exact output is recorded in `docs/archive/development-history.md`. See the [workflow guide](workflow.md)
 for the separately bounded Analyst/Producer increment.

@@ -1,5 +1,7 @@
 # Progress
 
+> Historical reference. This records an earlier implementation; use the [current documentation index](../README.md) for the public Footie experience.
+
 ## 19 October 2026 — local My Football interface
 
 Added a dashboard workspace for testing personalization as a fan: searchable
@@ -12,7 +14,7 @@ link back to Matchday. No API payloads are presented in the fan interface.
 The new module is isolated under `frontend/src/football/`, with shared changes
 limited to the lazy route and navigation. It is local only, awaiting the user's
 review before further development or deployment. No Azure or model calls added.
-See the [local user test and integration notes](my-football-local.md).
+See the [local user test and integration notes](../demo-guide.md).
 
 Validation: 152 frontend tests (including nine new UI/replay tests), 14 browser
 adapter tests, production build and real local HTTP smoke checks. Chrome checks
@@ -20,7 +22,7 @@ verified follow/profile, goal milestone/rewind and 390-pixel responsive layouts.
 
 ## 19 October 2026 — fan personalization backend and UI handoff
 
-Saved the [Reactor review and product decisions](reactor-review-context.md) as
+Saved the [Reactor review and product decisions](reactor-design-reference.md) as
 important project context. Added device-owned favorite clubs/players, a ranked
 nine-highlight feed, four featured matches, player/club profile presentations,
 common-scope comparisons, bilingual casual/analyst match cards and player focus.
@@ -30,7 +32,7 @@ is pending. No new Azure service, deployment or paid model call.
 
 Validation: 671 backend tests, 143 existing UI tests, 14 adapter tests, TypeScript,
 production frontend build and real HTTP smoke checks passed. See the [integration
-guide](fan-personalization.md) and [exact verification](verification/fan-personalization-checks.md).
+guide](../fan-personalization.md) and [exact verification](../verification/fan-personalization-checks.md).
 
 ## 19 October 2026 — continuous highlight narration
 
@@ -39,7 +41,7 @@ commentary. Each highlight is one Azure recording with actual SSML bookmark
 timestamps. Replay and phrase captions follow that recording; complete sentences
 finish naturally and speed changes preserve pitch. Audio is prepared/reviewed
 before publishing, then served from the existing private cache without synthesis
-during viewing. See [current architecture](live-companion.md).
+during viewing. See [current architecture](../live-companion.md).
 
 ## 19 October 2026 — highlight audio synchronization
 
@@ -47,7 +49,7 @@ Replaced delayed highlight narration with prepared short Azure calls scheduled
 on the same Web Audio clock as the pitch. Shot reactions align with the visible
 result; pause, seek and speed control both together. Matchday now lists highlights
 only; full-match replay and text questions stay in Match Centre without voice.
-See [current architecture and verification](live-companion.md).
+See [current architecture and verification](../live-companion.md).
 
 ## 19 October 2026 — full-match companion and Azure broadcast speech
 
@@ -55,7 +57,7 @@ Added full-match replay at `#live`, with 22-player pitch, halftime pause, seekin
 running scores/statistics and playback-grounded questions. Azure F0 expressive
 voices now support English and Mandarin, with private Blob caching, a durable
 200,000-character monthly allowance and device fallback. Managed identity keeps
-credentials server-side. See [architecture and verification](live-companion.md#19-october-2026--full-match-and-azure-broadcast-voices).
+credentials server-side. See [architecture and verification](../live-companion.md#19-october-2026--full-match-and-azure-broadcast-voices).
 
 ## 19 October 2026 — uninterrupted companion commentary
 
@@ -65,7 +67,7 @@ sentence boundary. Pending animation frames no longer cancel speech. Explicit
 seeks, pause, source or language changes still invalidate audio and queued work.
 
 Validation: 133 frontend tests, production build, and real highlight playback
-with an instrumented slow voice. See [speech pacing](live-companion.md#19-october-2026--speech-pacing-correction).
+with an instrumented slow voice. See [speech pacing](../live-companion.md#19-october-2026--speech-pacing-correction).
 
 ## 18 October 2026 — Live Companion, first integration
 
@@ -76,7 +78,7 @@ queues. No model calls or new Azure services. This first increment covers existi
 highlights; full-match streaming and conversational AI remain planned.
 
 Validation: 129 frontend tests, production build, and browser checks at desktop
-and 360/390/760px. See [implementation and next steps](live-companion.md).
+and 360/390/760px. See [implementation and next steps](../live-companion.md).
 
 ## 18 October 2026 — highlight-linked Explore Data
 
@@ -113,8 +115,8 @@ Argentina-inspired counterattack. Playback controls above the pitch include
 scrubbing, restart and speed; shot commentary and score follow the finish.
 Source links and estimation limits remain in the footer. Local validation covers
 592 backend and 78 frontend tests, production build and three browser suites.
-See [source coverage](replay.md#clip-reconstruction-source-coverage) and
-[the design critique](redesign-implementation.md#replay-gallery-designer-and-football-fan-review).
+See [source coverage](../replay.md#clip-reconstruction-source-coverage) and
+[the design critique](../README.md#replay-gallery-designer-and-football-fan-review).
 No new Azure resources or AI calls. Human comprehension testing remains pending.
 
 
@@ -125,24 +127,24 @@ coordinates are attributed to Watford FC’s official 2013 highlights in the app
 footer and guide. Existing comparison fixtures are unchanged; the short sequence
 does not publish five-minute comparisons. Local verification: 588 backend tests,
 70 frontend tests, production build and both browser suites pass. See
-[the scenario contract](fixtures.md#clip-inspired-last-second-turnaround).
+[the scenario contract](../fixtures.md#clip-inspired-last-second-turnaround).
 No new Azure resources or AI calls. Best next move: compare the original clip and
 replay with football fans and ask them to describe the change of possession and finish.
 
-Latest tracker refinement ([verification](verification/matchday-tracker-local.json), 578 backend and 68 frontend tests passed): desktop now pairs player context, pitch and synchronised
+Latest tracker refinement ([verification](../verification/matchday-tracker-local.json), 578 backend and 68 frontend tests passed): desktop now pairs player context, pitch and synchronised
 commentary; mobile keeps controls directly below the field. The original 26-metre
 spotlight has since been removed by the replay-gallery refinement above.
 Wider attacking support, compact defending lines and bounded keepers replace
 random drifting. Playback starts from the latest-event view, rewinds on request
 and stops at the end. Off-ball positioning remains illustrative. Design references
-and scope are in [the redesign record](redesign-implementation.md#broadcast-style-tracker-refinement).
+and scope are in [the redesign record](../README.md#broadcast-style-tracker-refinement).
 
 Latest fan refresh: Matchday has original club crests and background themes, a
 responsive interactive 22-player pitch at both explanation levels, moving ball
 actions, keyboard/touch player selection and plain-language bilingual stories.
 Disclosure is consolidated in the footer; Matchday renders no JSON. Recent pitch
 events are bounded to 24 canonical records available at the replay cutoff.
-[Local verification](verification/matchday-pitch-local.json): 578 backend tests,
+[Local verification](../verification/matchday-pitch-local.json): 578 backend tests,
 64 frontend tests, production build and responsive browser QA passed. Off-ball
 movement is illustrative; this does not add tracking data, Azure resources or AI
 calls. Human fan testing remains pending.
@@ -150,12 +152,12 @@ calls. Human fan testing remains pending.
 Latest broadcaster slice: Studio now supports selecting one approved story for a
 presenter cue or lower-third HTML preview/download. Full qualifications and provenance
 travel with both formats. Fresh checks reject correction, revocation and AI expiry,
-including changes during rendering. [Local verification](verification/studio-broadcast-local.json):
+including changes during rendering. [Local verification](../verification/studio-broadcast-local.json):
 576 backend tests, 60 frontend tests, production build and responsive bilingual browser
 QA passed. No new Azure resources or model calls were needed. Human producer/fan
 testing, editable rundowns and broadcast playout integration remain pending.
 
-Latest redesign verification: [Studio AI pilot](verification/studio-editorial-live.json),
+Latest redesign verification: [Studio AI pilot](../verification/studio-editorial-live.json),
 17 October 2026. Real hosted sign-in, explicit draft, approval, preview, download and
 expiry lock passed. The release reuses existing services and limits. CI: 562 backend
 tests, 58 frontend tests, container smoke and Bicep compilation. One local and one
@@ -177,7 +179,7 @@ Resolved identifiers remain in ignored local configuration.
 Stage 8's scoped local detector, generator and recap path remains complete,
 including one live Azure acceptance of bounded Microsoft Agent Framework recap
 adaptation. An explicit authenticated Studio AI action is now live; public fan
-reading remains factual. See [release evidence](verification/studio-editorial-live.json).
+reading remains factual. See [release evidence](../verification/studio-editorial-live.json).
 Full-match coverage and broader
 player attribution remain extensions. Stage 10 measured evaluation and the final
 Microsoft-platform architecture review are the next work. After each task, report
@@ -207,7 +209,7 @@ card, SVG recovery markers and source evidence panel. The snapshot API creates
 frozen evidence from actual calculated values and references. Tests confirm that
 source changes update the card/evidence together, the control has no increase
 card, and earlier cutoffs cannot expose later evidence. Browser captures are in
-`docs/screenshots/`; see `docs/interface.md` for startup and behavior.
+`docs/screenshots/`; see `docs/archive/interface.md` for startup and behavior.
 
 SQLite now retains the append-only source journal and versioned evidence. Restart
 recovery does not depend on seed fixture files. Atomic correction ingestion produces
@@ -378,11 +380,11 @@ Files added:
 - `frontend/src/App.tsx`, `frontend/src/main.tsx`, `frontend/src/styles.css`,
   `frontend/src/types.ts`, `frontend/src/api.ts`, `frontend/src/InsightCard.tsx`,
   `frontend/src/Pitch.tsx`, `frontend/src/EvidencePanel.tsx`, `frontend/src/App.test.tsx`
-- `docs/interface.md` and the four screenshot files above
+- `docs/archive/interface.md` and the four screenshot files above
 
 Files updated: `backend/counterpress/api/main.py`,
 `backend/counterpress/domain/models.py`, `.gitignore`, `README.md`,
-`docs/contracts.md`, and `docs/progress.md`. Python dependencies and authored
+`docs/contracts.md`, and `docs/archive/development-history.md`. Python dependencies and authored
 match fixtures are unchanged. Frontend dependencies are locked for reproducible installation.
 
 ## Stage 5 verification recorded on 15 October 2026
@@ -466,7 +468,7 @@ Files updated:
 - `backend/counterpress/domain/replay.py` (journal documentation only)
 - `tests/test_snapshot_api.py`
 - `frontend/src/App.tsx`, `frontend/src/App.test.tsx`, `frontend/src/api.ts`, `frontend/src/types.ts`
-- `.gitignore`, `README.md`, `docs/contracts.md`, `docs/replay.md`, `docs/interface.md`, `docs/progress.md`
+- `.gitignore`, `README.md`, `docs/contracts.md`, `docs/replay.md`, `docs/archive/interface.md`, `docs/archive/development-history.md`
 
 No dependencies, original possession fixtures or independently authored prior
 oracles changed. This milestone adds no model calls, agent workflow or cloud resources.
@@ -562,7 +564,7 @@ Files updated:
 - `backend/counterpress/api/snapshots.py`
 - `frontend/src/App.tsx`, `frontend/src/App.test.tsx`, `frontend/src/InsightCard.tsx`, `frontend/src/types.ts`
 - `pyproject.toml`, `uv.lock`
-- `README.md`, `docs/history.md`, `docs/interface.md`, `docs/progress.md`
+- `README.md`, `docs/history.md`, `docs/archive/interface.md`, `docs/archive/development-history.md`
 
 No seed fixtures or prior expected results changed. No cloud resources, agent
 workflow, procedural generator or new personalization modes were introduced.
@@ -613,7 +615,7 @@ This verifies the configured deployment's authentication and structured-output
 compatibility for one request, not sustained latency or quota capacity. Earlier
 offline tests cover rejection, timeout, expiry and stale-result behavior.
 
-Documentation updated: `README.md`, `docs/adaptation.md`, `docs/progress.md`.
+Documentation updated: `README.md`, `docs/adaptation.md`, `docs/archive/development-history.md`.
 The live attempt was appended to the ignored local SQLite database. No application
 code, credentials or cloud resources were changed.
 
@@ -792,7 +794,7 @@ Files updated:
 - `backend/counterpress/api/snapshots.py`
 - `frontend/src/App.tsx`, `frontend/src/types.ts`, `frontend/src/styles.css`
 - `pyproject.toml`, `uv.lock`
-- `README.md`, `docs/adaptation.md`, `docs/progress.md`
+- `README.md`, `docs/adaptation.md`, `docs/archive/development-history.md`
 
 Live attempts were appended to the ignored local SQLite database. No credentials,
 seed fixtures or independent expected results changed. No new Azure resources
@@ -900,7 +902,7 @@ Files updated:
 - `frontend/src/App.tsx`, `frontend/src/App.test.tsx`
 - `frontend/src/InsightCard.tsx`, `frontend/src/Pitch.tsx`, `frontend/src/EvidencePanel.tsx`
 - `frontend/src/WorkflowActivity.tsx`, `frontend/src/api.ts`, `frontend/src/types.ts`, `frontend/src/styles.css`
-- `README.md`, `docs/workflow.md`, `docs/progress.md`
+- `README.md`, `docs/workflow.md`, `docs/archive/development-history.md`
 
 Best next move: start Stage 8 with the seeded procedural match generator and
 held-out positive/negative controls before adding more detectors or recaps.
@@ -986,7 +988,7 @@ Files added:
 - `tests/expected_generator_controls.json`
 - `docs/generator.md`
 
-Files updated: `README.md`, `docs/progress.md`.
+Files updated: `README.md`, `docs/archive/development-history.md`.
 CLI verification artifacts are in ignored `var/generated-stage8-demo/` and
 `var/generated-stage8-suite/`. No existing fixture, Event contract, dependency,
 frontend, credential or Azure resource changed.
@@ -994,7 +996,7 @@ frontend, credential or Azure resource changed.
 This completes the generator increment, not all of Stage 8. The simulator covers
 a ten-minute segment with fixed teams and score; its heuristics are not calibrated
 to real matches. Generated feeds currently use the CLI rather than the browser
-scenario selector. See [the generator guide](generator.md) for operation and limits.
+scenario selector. See [the generator guide](../generator.md) for operation and limits.
 
 Best next move: pressure-exposure and defensive build-up-escape detection with
 fully observed episodes, per-window sample requirements, boundary exclusions,
@@ -1100,14 +1102,14 @@ Files added:
 - `tests/expected_pressure.json`
 - `docs/pressure.md`
 
-Files updated: `README.md`, `docs/generator.md`, `docs/progress.md`.
+Files updated: `README.md`, `docs/generator.md`, `docs/archive/development-history.md`.
 Ignored verification output: `var/pressure-evidence.json`.
 
 This completes the local detector/evidence increment. No Event contract,
 dependency, existing recovery publication, frontend or Azure resource changed.
 Frontend tests were not repeated because this increment has no frontend changes.
 The proxy cannot measure unrecorded pressure or establish tactical causality;
-thresholds are synthetic-demo eligibility rules. See [the pressure guide](pressure.md).
+thresholds are synthetic-demo eligibility rules. See [the pressure guide](../pressure.md).
 
 Best next move: integrate this evidence into the durable insight ledger and replay
 screen with create/update/withdraw behavior and audience handling, before adding
@@ -1217,7 +1219,7 @@ Browser review confirmed the 50%→100% exposure card, sample/exclusion table,
 Chinese casual 100%→16.7% escape card, unchanged score, correction-horizon discovery
 without moving the paused viewer, withdrawal at 58:10, restoration at 58:15 and
 the negative control's no-eligible-rate-change state. The temporary tab and both
-servers were closed. Screenshots are linked in [the publication guide](pressure-publication.md).
+servers were closed. Screenshots are linked in [the publication guide](../pressure-publication.md).
 
 Files added:
 
@@ -1238,7 +1240,7 @@ Files updated:
 - `tests/test_snapshot_api.py`
 - `frontend/src/App.tsx`, `frontend/src/AudienceControls.tsx`, `frontend/src/types.ts`
 - `frontend/src/api.ts`, `frontend/src/api.test.ts`, `frontend/src/playbackScope.ts`, `frontend/src/styles.css`
-- `README.md`, `docs/pressure.md`, `docs/generator.md`, `docs/audience.md`, `docs/progress.md`
+- `README.md`, `docs/pressure.md`, `docs/generator.md`, `docs/audience.md`, `docs/archive/development-history.md`
 
 The separate verification database is ignored under `var/`. No dependency,
 Event contract, original control fixture, Azure resource or credential changed.
@@ -1259,7 +1261,7 @@ the negative stays 1/6→1/6. Maximum observed forward gain distinguishes a team
 that advances then returns from a team that never advances. Eligibility requires
 three completed actions over an observed span of at least 20 seconds; incomplete
 pass destinations and delayed opponent recoveries cannot manufacture progression
-or sustain the observed span. Full rules and limitations: [progression guide](progression.md).
+or sustain the observed span. Full rules and limitations: [progression guide](../progression.md).
 
 Exact verification commands and output:
 
@@ -1352,7 +1354,7 @@ Chrome confirmed the 16.7%→66.7% card, complete exclusion table, an episode's
 10 m gain/three actions/22-second span, exact source revisions, Chinese casual
 wording, paused historical evidence after ingest, withdrawal at 58:10 and restored
 1/6→4/6 at 58:15. The tab and both servers were closed. Screenshot:
-[English progression evidence](screenshots/progression-evidence-en.png).
+[English progression evidence](../screenshots/progression-evidence-en.png).
 
 Files added:
 
@@ -1375,7 +1377,7 @@ Files updated:
 - `tests/test_snapshot_api.py`
 - `frontend/src/types.ts`, `frontend/src/App.tsx`, `frontend/src/AudienceControls.tsx`
 - `frontend/src/PressureCard.tsx`, `frontend/src/PressureCard.test.tsx`, `frontend/src/styles.css`
-- `README.md`, `docs/progress.md`, `docs/pressure-publication.md`, `docs/audience.md`
+- `README.md`, `docs/archive/development-history.md`, `docs/pressure-publication.md`, `docs/audience.md`
 
 The ignored verification database is under `var/`. No dependency, Event contract,
 existing control fixture, Azure resource or credential changed. The new detector
@@ -1405,7 +1407,7 @@ new database table or changes to existing story publication. Evidence validation
 checks actor attribution, denominators, policy decisions and source availability.
 The separate guide documents equal-duration windows, roster/membership checks,
 undefined shares, missing minutes-played information and descriptive limitations:
-[contribution guide](contributions.md).
+[contribution guide](../contributions.md).
 
 Exact local verification command and output:
 
@@ -1464,7 +1466,7 @@ Files updated:
 - `backend/counterpress/api/main.py`
 - `backend/counterpress/api/snapshots.py`
 - `README.md`
-- `docs/progress.md`
+- `docs/archive/development-history.md`
 
 Best next move: durable player-contribution publications and bilingual replay cards,
 with actor-correction withdrawal/restoration and player-scoped cooldowns. The current
@@ -1485,7 +1487,7 @@ English and Simplified Chinese cards expose player counts, full team denominator
 source actor/revision attribution, thresholds and historical provenance. Contribution
 stories share the one-card budget with recovery and pressure. Player preferences
 select the actual subject, while stale/missing lifecycle streams and mismatched
-narratives are rejected by the client. See [publication details](contribution-publication.md).
+narratives are rejected by the client. See [publication details](../contribution-publication.md).
 
 Exact local verification commands and output:
 
@@ -1568,7 +1570,7 @@ at 58:02, withdrawal at 58:05, restoration at 58:15 and the negative control's e
 state. It caught a selected-player withdrawal label showing the generic empty
 state; the UI now shows that player's withdrawal while other players keep their
 own empty state, with regression coverage. The temporary tab and both servers
-were closed. Screenshot: [player evidence](screenshots/contribution-evidence-en.png).
+were closed. Screenshot: [player evidence](../screenshots/contribution-evidence-en.png).
 
 Files added:
 
@@ -1588,7 +1590,7 @@ Files updated:
 - `tests/test_snapshot_api.py`
 - `frontend/src/App.tsx`, `frontend/src/AudienceControls.tsx`, `frontend/src/types.ts`
 - `frontend/src/api.ts`, `frontend/src/api.test.ts`, `frontend/src/playbackScope.ts`
-- `README.md`, `docs/contributions.md`, `docs/audience.md`, `docs/progress.md`
+- `README.md`, `docs/contributions.md`, `docs/audience.md`, `docs/archive/development-history.md`
 
 The independent actor controls, detector thresholds, Event contract and dependencies
 are unchanged. No Azure resources, credentials or model calls are needed. Existing
@@ -1622,7 +1624,7 @@ Files changed:
 - `frontend/src/recapValidation.ts`, `frontend/src/api.ts`: transport validation.
 - `frontend/src/App.tsx`, `frontend/src/types.ts`, `frontend/src/styles.css`: scoped UI, types and theme.
 - `tests/test_recaps.py`, `frontend/src/SegmentRecap.test.tsx`: independent and lifecycle checks.
-- `README.md`, `docs/recaps.md`, `docs/progress.md`: behavior, commands and next work.
+- `README.md`, `docs/recaps.md`, `docs/archive/development-history.md`: behavior, commands and next work.
 - `docs/screenshots/segment-recap-en.png`, `docs/screenshots/segment-recap-zh.png`: browser captures.
 
 Final local verification commands and output:
@@ -1703,7 +1705,7 @@ Files changed:
 - `backend/counterpress/recaps.py`, `audience.py`, `workflow/contracts.py`: shared factual rendering, type-only history imports and activity labels.
 - `frontend/src/SegmentRecap.tsx`, `App.tsx`, `types.ts`, `recapValidation.ts`, `WorkflowActivity.tsx`: validated presentation, expiry fallback and bilingual activity.
 - `tests/test_recap_workflow.py`, `frontend/src/SegmentRecap.test.tsx`: real framework/SDK mock boundaries, lifecycle tests and browser-contract checks.
-- `README.md`, `docs/recaps.md`, `docs/recap-workflow.md`, `docs/progress.md`: behavior, commands, scope and next milestone.
+- `README.md`, `docs/recaps.md`, `docs/recap-workflow.md`, `docs/archive/development-history.md`: behavior, commands, scope and next milestone.
 - `docs/verification/recap-workflow-live.json`, `docs/screenshots/recap-workflow-live-en.png`: sanitized live verification and browser capture.
 
 Final local verification commands and output (result excerpts):
@@ -1910,8 +1912,8 @@ This is a verification-process workaround, not an application networking change.
 
 The live browser displayed the 58:00 comparison, 1 baseline recovery versus 4
 current recoveries, all five pitch markers, 89 source records and the expanded
-evidence panel. [Screenshot](screenshots/azure-hosted-recovery-en.png) and
-[sanitized verification record](verification/azure-hosted-smoke.json) are included.
+evidence panel. [Screenshot](../screenshots/azure-hosted-recovery-en.png) and
+[sanitized verification record](../verification/azure-hosted-smoke.json) are included.
 The test tab was closed after capture to avoid continued polling. Raw Azure
 responses, account identifiers and budget contact details remain ignored locally.
 The published hostname is the public demo, not the private model endpoint.
@@ -1948,7 +1950,7 @@ identity; existing app/model resources were ignored. Cost Management returned
 USD 0.00 but is delayed billing data. Serverless storage stays inside the existing
 USD 5 storage/monitoring/networking allocation and USD 75 total envelope. Azure
 provisioning is underway; live managed-identity and revision-restart checks must
-pass before claiming cloud durability. See [Cosmos design and runbook](cosmos.md).
+pass before claiming cloud durability. See [Cosmos design and runbook](../cosmos.md).
 
 
 Local restricted-container smoke passed both HTTP behavior and non-root/private-file
@@ -2022,8 +2024,8 @@ allocation are unchanged. The cross-region app/database arrangement adds latency
 and potential transfer cost; it is a capacity fallback, not regional replication.
 No paid upgrade or trial-spending-limit change was made.
 
-See [sanitized live evidence](verification/cosmos-durability.json) and the updated
-[deployed architecture](deployment.md). Cloud replica-restart durability is now
+See [sanitized live evidence](../verification/cosmos-durability.json) and the updated
+[deployed architecture](../deployment.md). Cloud replica-restart durability is now
 verified. Larger histories, Event Hubs ingestion, Web PubSub reconnect delivery,
 OIDC deployment and Stage 10 evaluation remain subsequent work.
 
@@ -2062,7 +2064,7 @@ Both `infra/streaming.bicep` and the updated `infra/app.bicep` compiled. The ima
 archive scan passed against four configured sensitive values/hostnames. The Azure
 what-if preview showed only new streaming resources; application activation and
 live transport proof are separate from these offline implementation checks.
-See [streaming design and operations](streaming.md).
+See [streaming design and operations](../streaming.md).
 
 ### Event Hubs received partition-key compatibility
 
@@ -2135,12 +2137,12 @@ Chrome confirmed **Live revision updates connected**, the 58:00 historical 1 →
 comparison with a **View latest corrections** action, then 1 → 2 at 58:15. The
 evidence table identifies `p053` revision 3. The browser remained paused until the
 latest-corrections button was clicked. The screenshot is in
-[screenshots/streaming-live.png](screenshots/streaming-live.png); the test tab was
+[screenshots/streaming-live.png](../screenshots/streaming-live.png); the test tab was
 closed afterward. Reconnect/duplicate-notice/fallback behavior also has automated
 frontend coverage; activation from zero has not been separately measured.
 
-The [demo guide](demo-guide.md), [current architecture](deployment.md) and
-[sanitized live record](verification/streaming-live.json) now reflect deployed
+The [demo guide](../demo-guide.md), [current architecture](../deployment.md) and
+[sanitized live record](../verification/streaming-live.json) now reflect deployed
 streaming. The USD 75 total envelope and USD 20 streaming allocation are unchanged;
 these are not measured spend or a hard cap. No model credentials were added to the
 hosted app. Next: protected OIDC deployment, cost-bounded operational telemetry,
@@ -2180,7 +2182,7 @@ East US Analytics ingestion was checked at USD 2.30/GB. The nominal 0.025 GB dai
 guard corresponds to about USD 1.61 over 28 days before other charges, within the
 existing USD 5 storage/monitoring/network allowance and USD 75 total envelope.
 Caps may overshoot and the actual-cost API remained unavailable. See the
-[operations runbook](operations.md) for release, rollback, metric meanings and
+[operations runbook](../operations.md) for release, rollback, metric meanings and
 limits. Live model adaptation remains disabled.
 
 Azure's workspace API rejected the initial 0.01 GB guard because its minimum is
@@ -2325,8 +2327,8 @@ Observed output:
 }
 ```
 
-Sanitized [release evidence](verification/operations-live.json) and the
-[operations runbook](operations.md) capture the current behavior. The source and
+Sanitized [release evidence](../verification/operations-live.json) and the
+[operations runbook](../operations.md) capture the current behavior. The source and
 successful public release log scans found no configured model credentials/endpoints
 or credential patterns; the log also passed a JWT-pattern scan. Resolved cloud
 configuration and raw Azure responses remain outside tracked files.
@@ -2350,7 +2352,7 @@ position, and removes future facts on rewind. Slow playback requests are coalesc
 rather than repeatedly cancelled; displayed facts have an explicit cutoff.
 The release introduces no new cloud resources. Hosted model adaptation stays off;
 authenticated Studio, bounded editorial integration and user studies remain pending.
-See the [delivery plan](redesign-implementation.md) and [identity register](identity-assets.md).
+See the [delivery plan](../README.md) and [identity register](../identity-assets.md).
 
 Local verification against an isolated SQLite backend:
 
@@ -2400,7 +2402,7 @@ observed against the live app. Live desktop/mobile screenshots were visually
 reviewed and showed the revision channel connected. Source, 19 screenshot OCR
 outputs and the successful release log passed configured-secret/private-model-
 endpoint scans; the release log also passed a JWT-pattern check. Sanitized evidence
-is in [verification/matchday-live.json](verification/matchday-live.json).
+is in [verification/matchday-live.json](../verification/matchday-live.json).
 
 Next: benchmark templates, one agent and the existing Analyst/Producer workflow,
 then integrate the smallest useful bounded editorial flow. Authenticated Studio
@@ -2432,18 +2434,18 @@ $ UV_CACHE_DIR=.uv-cache uv run --env-file .env --frozen python -m counterpress.
 
 The warning identifies the pinned Agent Framework evaluation API as experimental.
 The printed live output also included per-variant counters; the complete sanitized
-record is [verification/editorial-pilot.json](verification/editorial-pilot.json).
+record is [verification/editorial-pilot.json](../verification/editorial-pilot.json).
 Single editor: 21/22 eligible adaptations, median 4,610 ms, 22 dispatched calls.
 Analyst/Producer: 13/22, median 7,323 ms, 61 calls. Templates: median 27 ms and no
 provider calls. Six usage receipts are missing; do not call unknown usage free.
 Known receipts estimate US$0.10281172 under conservative rates; the US$1 admission
 allowance reserved US$0.54624944, not an observed charge.
 
-The [results and decision](evaluation/editorial-pilot.md) recommend retaining the
+The [results and decision](../evaluation/editorial-pilot.md) recommend retaining the
 immediate factual default and using one editor as the next integration candidate.
 Acceptance and supported citations do not demonstrate human preference. Fan and
 producer ratings remain uncollected; the user will arrange participants later.
-A [five-fan task kit](evaluation/fan-usability.md), blank response form, and separate
+A [five-fan task kit](../evaluation/fan-usability.md), blank response form, and separate
 English/Chinese blind-review packets are prepared. No agents simulate participants.
 
 Source, live result/log and generated review sheets passed configured-secret,
@@ -2561,7 +2563,7 @@ $ UV_CACHE_DIR=.uv-cache uv run --frozen --offline python -m counterpress.evalua
 The private remote wrapper selected the existing ready revision and invoked the
 committed `scripts/check_editorial_cosmos.py` seed/verify CLI from a verified
 temporary source archive. [Reusable commands and scope](editorial-integration.md)
-and [sanitized results](verification/editorial-integration.json) are committed;
+and [sanitized results](../verification/editorial-integration.json) are committed;
 resource identifiers, endpoints and console diagnostics remain local. Backend,
 frontend/build and container/Bicep GitHub checks passed on the probe source.
 The existing experimental-evaluator warning remains. MSAL became a direct
@@ -2578,21 +2580,21 @@ Implemented separate `/#gi` navigation and `/api/gi/matches/wyscout-2058017`. Th
 
 No Azure provisioning, AI calls, video download, deployment or production database changes. Current storage is a bundled read-only source, not the highlight history store. The prior research SQLite database stays private under ignored `var/`. The backend source evaluation lock is versioned `gi-reader-regression-v1`; original model prompts/cases are unchanged.
 
-Validation: 595 backend tests, 91 frontend tests, production build and GI/Explore Data browser checks passed. See [GI guide](gi.md) and [exact commands/results](verification/gi-local.json). Next: verify official video playback and rights for embedding, then calibrate per-half seek offsets before adding precise video jumps or uploads.
+Validation: 595 backend tests, 91 frontend tests, production build and GI/Explore Data browser checks passed. See [GI guide](../gi.md) and [exact commands/results](../verification/gi-local.json). Next: verify official video playback and rights for embedding, then calibrate per-half seek offsets before adding precise video jumps or uploads.
 
 
 ### GI canvas refinement — local
 
 Replaced the country-based presentation with Eastbridge/Northport names, existing crests and club-coloured markers. Historical source identity remains in the footer. Reorganized GI around a dark pitch canvas, a compact action rail, direct team/half chips, keyboard-accessible scoped shot map, whole-match action scrubber, and a running-score goal ribbon. Metrics moved below the canvas as action links. Data and backend contracts are unchanged. ArtCraft's canvas-interaction principle informed the original layout; no third-party assets were copied.
 
-Validation: 91 frontend tests, production build and real-API browser checks passed, including 360/390px layouts, shot-map selection/scoping, empty states and keyboard timeline. [Exact results](verification/gi-canvas-local.json). This refinement is not deployed.
+Validation: 91 frontend tests, production build and real-API browser checks passed, including 360/390px layouts, shot-map selection/scoping, empty states and keyboard timeline. [Exact results](../verification/gi-canvas-local.json). This refinement is not deployed.
 
 
 ### Unified navigation and workspace continuity — local
 
 All five workspaces now use a shared header, library and context strip. Highlight identity persists between Matchday and Explore; GI retains filters, selected action and shot-map mode within the browser session. Existing saved club preferences also theme GI. Studio and advanced analysis are grouped under Tools, with their existing authentication/evidence flows unchanged. The advanced view no longer duplicates the brand header. Source-specific highlight/GI records are kept distinct.
 
-97 frontend tests, production build and full navigation/Explore/GI browser checks pass, including saved Northport theme and 360/390px layouts. See [guide](unified-experience.md) and [verification](verification/unified-experience-local.json). Local only; no Azure resources or model calls.
+97 frontend tests, production build and full navigation/Explore/GI browser checks pass, including saved Northport theme and 360/390px layouts. See [guide](../unified-experience.md) and [verification](../verification/unified-experience-local.json). Local only; no Azure resources or model calls.
 
 ### Local career realism v2, assist coverage and four portrait previews
 
@@ -2618,7 +2620,7 @@ Rebuilt the career population with source-aligned goalkeeper, defender, midfield
 
 Audited all 844 fixtures and 1,179,903 events; all 44 careers reconcile. Corrected goalkeeper aliases in both archives, preserved stable identities and portraits, supported drawn-duel replay/commentary, and ensured explicit metric preferences retain a relevant card. Leon now has 437 saves in 141 matches and 77.6% completion from 4,344 passes. The regenerated fourth match is Southbank 2–2 Redhaven; its highlights include Mateo Cross's 80th career goal.
 
-Verification: `.venv/bin/pytest -q` → **689 passed, 1 warning in 74.69s**; `npm test` in frontend → **156 passed**; `npm run build` → successful in **3.97s**. Full ledger audit passed in 127.13s, `git diff --check` is clean, and local HTTP health, archive, replay, profile and final metric-focus checks passed. [Methodology](position-calibration.md), [results and limitations](verification/position-recalibration.md), [ledger audit](verification/personalization-data.json).
+Verification: `.venv/bin/pytest -q` → **689 passed, 1 warning in 74.69s**; `npm test` in frontend → **156 passed**; `npm run build` → successful in **3.97s**. Full ledger audit passed in 127.13s, `git diff --check` is clean, and local HTTP health, archive, replay, profile and final metric-focus checks passed. [Methodology](../position-calibration.md), [results and limitations](../verification/position-recalibration.md), [ledger audit](../verification/personalization-data.json).
 
 The refreshed app is running at `http://127.0.0.1:8017/#football`. Local only, no push/deployment or Azure/model spending. Next: user reviews Clubhouse position profiles and the regenerated showcase before proceeding to the grounded assistant phase.
 
@@ -2628,13 +2630,13 @@ Researched FotMob's player profiles, Sofascore's spatial maps/comparison feature
 
 An additive, checksum-bound analytics index covers all 844 fixtures while preserving the calibrated model, ledger, registry and 44 portraits unchanged. The registry has 71 metric definitions; 63 are exposed for outfield players and 68 for goalkeepers. Unsupported headers/woodwork remain unavailable, not misleading zeroes. Continuous carry segments are joined before assessing progression. Revisions and historical availability bypass affected cached reductions; coverage denominators and peer cohorts respect the selected period.
 
-Verification: **702 backend tests**, **162 frontend tests**, TypeScript/Vite build in **953ms**, clean `git diff --check`, real HTTP checks for all four roles, and Chrome desktop/mobile checks at 1470px and 390px. [Guide and methodology](player-analytics.md), [exact results](verification/player-analytics.md). The local app is at `http://127.0.0.1:8017/#football`. No push, cloud deployment or Azure/model spending. Next: user explores the maps and statistics in Clubhouse; richer event types and calibrated movement telemetry would be a separate data-generation stage before exposing tracking-based metrics.
+Verification: **702 backend tests**, **162 frontend tests**, TypeScript/Vite build in **953ms**, clean `git diff --check`, real HTTP checks for all four roles, and Chrome desktop/mobile checks at 1470px and 390px. [Guide and methodology](../player-analytics.md), [exact results](../verification/player-analytics.md). The local app is at `http://127.0.0.1:8017/#football`. No push, cloud deployment or Azure/model spending. Next: user explores the maps and statistics in Clubhouse; richer event types and calibrated movement telemetry would be a separate data-generation stage before exposing tracking-based metrics.
 
 ### Extended all-position validation — local, 20 October 2026
 
 Added a read-only independent audit of all 71 metric definitions across GK/DF/MF/FW, featured clubs and eligible individual players. Reconciled all 22,870 player-match rows in 844 fixtures, with zero arithmetic or team reconciliation errors. All 57 original position gates still pass. However, 8 of 136 eligible expanded population comparisons and 16 of 392 club role-share checks flag spatial/passing distribution issues. Two individual progression rates narrowly exceed their reference envelopes. Result is explicitly `needs_recalibration`, not an all-clear.
 
-The reference's missing goal-kick outcomes and corner-sentinel origins exclude several goalkeeper comparisons. Protocol v1.1 corrects eligibility without widening numeric tolerances; the initial run is retained locally. Every metric is classified as externally comparable, model diagnostic, or limited/unbenchmarked. Whole-match bootstrap intervals, sample-size rules and formation-minute-adjusted shares are recorded in [the audit report](verification/player-position-audit.md) and its JSON matrix.
+The reference's missing goal-kick outcomes and corner-sentinel origins exclude several goalkeeper comparisons. Protocol v1.1 corrects eligibility without widening numeric tolerances; the initial run is retained locally. Every metric is classified as externally comparable, model diagnostic, or limited/unbenchmarked. Whole-match bootstrap intervals, sample-size rules and formation-minute-adjusted shares are recorded in [the audit report](../verification/player-position-audit.md) and its JSON matrix.
 
 Verification: 29 targeted tests; **710 backend tests passed**, one existing experimental warning; strict audit intentionally exits 1 for unresolved findings; clean `git diff --check`. All 13 calibrated fixture files and the analytics artifact remain unchanged. No push, deployment or Azure/model spending. Next: jointly recalibrate spatial passing, crossing, shot ownership and creation chains, then regenerate and rerun the audit before claiming those metrics are validated.
 
@@ -2643,7 +2645,7 @@ Verification: 29 targeted tests; **710 backend tests passed**, one existing expe
 
 Jointly fitted role-conditioned pass destinations, long-pass completion, wide-area involvement, shooting locations and creation chains. Role traits are centered by actual appearance minutes, preserving relative player strengths without unused bench traits shifting the active role. Rebuilt 840 historical careers and the fourth showcase, retaining all IDs/portraits and the three existing archive files byte-for-byte. Canonical events supply all totals and maps; no post-hoc career quotas were assigned.
 
-The frozen candidate passes 285 original position gates, 20 historical/pooled population gates and all batch diagnostics across 3,000 fresh simulated matches. All 136 eligible expanded career comparisons and 544 expanded independent-cohort checks pass. The full 844-fixture audit reconciles 1,176,374 events and all 44 careers. Zero individual flags or arithmetic errors remain. Of 392 original club-share comparisons, one Eastbridge defender-assist flag remains visible; its 27.34% share lies within the empirical training-club range of 14.41–30.52%. Acceptance-method v1.2 explicitly adds this source-supported style adjudication after observing earlier flags; numerical envelopes remain unchanged. Repeated holdout use, rejected candidates and unbenchmarked metrics are disclosed in [the full report](verification/spatial-recalibration.md).
+The frozen candidate passes 285 original position gates, 20 historical/pooled population gates and all batch diagnostics across 3,000 fresh simulated matches. All 136 eligible expanded career comparisons and 544 expanded independent-cohort checks pass. The full 844-fixture audit reconciles 1,176,374 events and all 44 careers. Zero individual flags or arithmetic errors remain. Of 392 original club-share comparisons, one Eastbridge defender-assist flag remains visible; its 27.34% share lies within the empirical training-club range of 14.41–30.52%. Acceptance-method v1.2 explicitly adds this source-supported style adjudication after observing earlier flags; numerical envelopes remain unchanged. Repeated holdout use, rejected candidates and unbenchmarked metrics are disclosed in [the full report](../verification/spatial-recalibration.md).
 
 Verification: **719 backend tests passed**, one existing experimental warning; full ledger audit in 76.71s; actual HTTP health, library, replay, nine-highlight feed, causal milestone and audience parity checks passed. The fourth match is now Southbank 2–3 Redhaven, including Mateo Cross's 75th goal. The accepted audit is checksum-bound into the dataset, and the app rejects an unreviewed spatial model. Offline/mocked source lock updated; no paid pilot or Azure call.
 
@@ -2655,13 +2657,13 @@ Implemented the separate `#assistant` workspace with natural-language questions,
 
 Verification: **749 backend tests**, **166 frontend tests**, production build in 868ms, actual desktop/mobile Chrome flow at 1440/390/360px, and the complete existing HTTP smoke passed. Eight bounded Azure attempts tested six question types; an initial timeout and a rejected match plan safely fell back, and both follow-up checks passed after refining the match instructions and schema. Seven responses reported 19,331 total tokens; the timeout has unknown returned usage, so this is not a total billing statement. No new Azure resources, push or deployment. Keys/endpoints remain server-side and were not found in the assistant deliverables or browser bundle.
 
-The app is running at `http://127.0.0.1:8017/#assistant` with Azure interpretation enabled, using a fresh local history database. Career fixtures, portraits and the existing UI screens are preserved. [Guide and architecture](grounded-assistant.md); [verification and limitations](verification/grounded-assistant.md). Next: user tries Footie as a fan, then embed the ask action into player profiles and exact Matchday/Match Centre moments without losing playback or revision context.
+The app is running at `http://127.0.0.1:8017/#assistant` with Azure interpretation enabled, using a fresh local history database. Career fixtures, portraits and the existing UI screens are preserved. [Guide and architecture](../grounded-assistant.md); [verification and limitations](../verification/grounded-assistant.md). Next: user tries Footie as a fan, then embed the ask action into player profiles and exact Matchday/Match Centre moments without losing playback or revision context.
 
 ### Footie contextual stories — local, 20 October 2026
 
 Added evidence-bound narrative composition after query interpretation. Python derives rates, compatible comparison gaps/ties and match milestone sentences; a second bounded Azure call selects emphasis and order. Every sentence binds the exact supporting facts and evidence fingerprint. Unknown IDs, extra prose, duplicate selections, partial-coverage comparisons and stale revision snapshots cannot become model-authored claims. Timeout/quota failures retain calculated stories; the existing twenty-call hourly budget is shared across both stages. English stories lead the answer, with original figures in an expandable breakdown; Chinese retains its prior localized answer.
 
-Validation: **765 backend tests**, **167 frontend tests**, production build, desktop/390/360px browser journey, four live narrative checks and one integrated two-call question passed. A final same-player wording refinement passed 106 targeted backend/source-lock checks and the integrated Azure question. Six model calls reported 5,128 tokens; no new resources, push or deployment. Secret/endpoint scan found no configured values in assistant deliverables or browser bundles. [Verification](verification/footie-narration.md).
+Validation: **765 backend tests**, **167 frontend tests**, production build, desktop/390/360px browser journey, four live narrative checks and one integrated two-call question passed. A final same-player wording refinement passed 106 targeted backend/source-lock checks and the integrated Azure question. Six model calls reported 5,128 tokens; no new resources, push or deployment. Secret/endpoint scan found no configured values in assistant deliverables or browser bundles. [Verification](../verification/footie-narration.md).
 
 The updated preview runs at `http://127.0.0.1:8017/#assistant`. Next: user tries a comparison, recent-form question and milestone explanation, then integrate Ask Footie into profiles and match moments with their exact evidence/time context.
 
@@ -2671,7 +2673,7 @@ Added an embedded Ask Footie dialog to player/club profiles, linked Matchday hig
 
 Selected-action answers now explain the recorded pass, challenge or goal using canonical evidence. Future, retracted, unknown and changed revisions cannot silently substitute another action or reveal a later result. A read-only source lookup resolves legacy highlight clocks to canonical event availability; browser testing caught and fixed a 100ms mismatch at a goal. Original preloaded reconstructions without a canonical career match remain outside this handoff.
 
-Verification: **772 backend tests**, **171 frontend tests**, production build, desktop/390/360px browser journey and two live Azure questions passed. The four model calls reported 6,663 tokens; no new resources, push or deployment. [Exact commands, results and limitations](verification/footie-context.md).
+Verification: **772 backend tests**, **171 frontend tests**, production build, desktop/390/360px browser journey and two live Azure questions passed. The four model calls reported 6,663 tokens; no new resources, push or deployment. [Exact commands, results and limitations](../verification/footie-context.md).
 
 The refreshed app runs at `http://127.0.0.1:8017/#football`. Next: user tries a profile question and a selected-play question in context, then review for publishing.
 
@@ -2693,11 +2695,11 @@ Release #50 passed 773 backend tests, 171 frontend tests, the full career ledger
 
 Moved Explore Data into Matchday's Watch/Breakdown views while preserving its phase explanations, player involvement, passing routes, timeline and comparisons. The same pitch and audio track remain mounted through view changes and browser history. Reduced Matchday header/score spacing, standardized main fan surfaces around Clubhouse's cream/forest palette, strengthened Match Centre statistics and compacted standalone Footie's welcome. Phone commentary now follows the pitch. Browser validation also identified and fixed invisible player hit areas intercepting nearby visible markers.
 
-Validation: 172 frontend tests, production build, desktop/tablet/390/360px browser checks, Chinese comparisons, error/empty recovery, reduced motion, instrumented narration continuity and the existing non-Azure Footie context journey pass. No browser errors or paid model/synthesis calls. [Commands, results and limitations](verification/layout-refresh.md). Local preview remains on port 8017; no push or deployment. Next: user reviews Matchday Watch/Breakdown and Match Centre before publication.
+Validation: 172 frontend tests, production build, desktop/tablet/390/360px browser checks, Chinese comparisons, error/empty recovery, reduced motion, instrumented narration continuity and the existing non-Azure Footie context journey pass. No browser errors or paid model/synthesis calls. [Commands, results and limitations](../verification/layout-refresh.md). Local preview remains on port 8017; no push or deployment. Next: user reviews Matchday Watch/Breakdown and Match Centre before publication.
 
 ### Spacing review — local, 20 October 2026
 
-Fixed the Footie mascot wrapper being shorter than the artwork, with clear gaps between mascot, heading, explanation and starter cards. Auditing the other pages also found and fixed clipped mobile profile actions, tight Breakdown and Live Companion copy, and full-match language/score spacing. Thirteen page layouts pass clipping/spacing checks at four widths; 172 frontend tests, build and the full unified-layout interaction journey pass. No AI calls or publication. See [validation](verification/layout-refresh.md#spacing-follow-up--20-october-2026). Next: user reviews the updated local Footie and mobile profile before publishing.
+Fixed the Footie mascot wrapper being shorter than the artwork, with clear gaps between mascot, heading, explanation and starter cards. Auditing the other pages also found and fixed clipped mobile profile actions, tight Breakdown and Live Companion copy, and full-match language/score spacing. Thirteen page layouts pass clipping/spacing checks at four widths; 172 frontend tests, build and the full unified-layout interaction journey pass. No AI calls or publication. See [validation](../verification/layout-refresh.md#spacing-follow-up--20-october-2026). Next: user reviews the updated local Footie and mobile profile before publishing.
 
 ### Footie logo header test — local, 21 October 2026
 
@@ -2715,7 +2717,7 @@ name resolution and server-side scope validation. Final offline answers pass
 fresh targeted Azure checks passed. Initial live sample remains recorded at
 5/10, not replaced by an inflated post-fix model-accuracy claim. Total live
 attempts: 20; reported tokens: 37,298. No publication or data-layer regeneration.
-See [methodology and results](verification/footie-question-benchmark.md).
+See [methodology and results](../verification/footie-question-benchmark.md).
 
 Final backend verification: 858 passed, one existing experimental evaluator warning. Credential scan and diff whitespace checks passed.
 
@@ -2736,8 +2738,8 @@ production build pass. Final dataset-change refinement passes its 32-test UI
 regression set. No Azure/model calls, new services or publication. The broader
 Azure question sample remains blocked by the unchanged hourly evaluation cap.
 
-See [design and activation](career-revision-bridge.md) and
-[verification](verification/career-revision-bridge.md). Next: rerun the preselected
+See [design and activation](../career-revision-bridge.md) and
+[verification](../verification/career-revision-bridge.md). Next: rerun the preselected
 Azure question sample when its allowance renews, then perform an isolated cloud
 career correction/restore check before enabling this bridge in the hosted app.
 Legacy replay feeds still need explicit mapping/rebuilding before claiming
@@ -2758,7 +2760,7 @@ no model calls). Browser testing found and fixed a 1.6-second first-play delay;
 all six tracks now start within 12–15 ms locally and finish without cuts at 2×.
 892 backend tests, 191 frontend tests, production build, three full-match scores,
 mobile layouts and narration controls pass. No push or deployment. See
-[implementation and verification](verification/fan-feedback.md). Next: user
+[implementation and verification](../verification/fan-feedback.md). Next: user
 tries the local build on port 8019 before publishing the accepted changes.
 
 ### Commentary preference — original accent retained
@@ -2783,7 +2785,7 @@ commentary actions. Removed the redundant normal-play instruction. Corrected
 inherited disclosure styles and the mobile Auto-play wrap during screenshot
 review. Four replay surfaces pass at five widths; the wider 13-page spacing
 audit passes at four widths. No backend changes, cloud calls or publication.
-See the control-placement section in [verification](verification/fan-feedback.md).
+See the control-placement section in [verification](../verification/fan-feedback.md).
 Next: user reviews the local Match Centre before publishing.
 
 ### Player hover cards — local, 21 October 2026
@@ -2841,7 +2843,7 @@ zero configured-limit violations). 203 frontend tests, 902 backend tests, build,
 Responsive controls pass at five widths. Event data cannot recover exact off-ball
 runs, marking, body contact or save trajectories; those remain constrained
 estimates, and replay time compresses stoppages. Details, commands, numeric
-limits and research sources: [verification](verification/fan-feedback.md).
+limits and research sources: [verification](../verification/fan-feedback.md).
 
 Local preview: http://127.0.0.1:8019/?match=wyscout-2058017#gi . No Azure usage or
 publication. Next: user checks Watch full match at 1×, especially the 17:58 own
@@ -2866,7 +2868,7 @@ Frontend: 208 tests and build passed; desktop/mobile/replay-to-Footie checks pas
 Backend full suite: 1,245 passed, one old probe fixture failure; typed mock-config
 repair then passed all 39 related probe/auth/editorial tests. Historical evaluation
 results remain preserved. Exact commands, scores, caveats and local report paths:
-[verification](verification/footie-intelligence.md).
+[verification](../verification/footie-intelligence.md).
 
 User approved an evaluation-only ceiling of 600 calls per rolling 24 hours; ledger
 retained, production limits and US$125 project cap unchanged. Managed-identity
@@ -2889,7 +2891,7 @@ passed without horizontal overflow or console errors. Three matched live questio
 passed, taking 5.243/3.733/7.992s versus 11.066/6.918/7.865s previously. Background
 load and one workload differed, so this does not establish a causal speedup or
 release p95. Three targeted live explanation cases also passed with independent
-prose/evidence review. Details: [verification](verification/footie-intelligence.md).
+prose/evidence review. Details: [verification](../verification/footie-intelligence.md).
 
 The 23 approved calls in this increment brought evaluation to its 600-call rolling
 24-hour ceiling. US$125 total budget and production limits unchanged. No more paid
@@ -2955,7 +2957,7 @@ Final evaluation ledger observation: **594/600**, six calls available. No new
 service, quota reset, push, deployment or cloud configuration change. Next: resume
 the remaining live regression when enough prior reservations expire, then complete
 staged correction/identity checks after the core gate is satisfied. See
-[verification](verification/footie-intelligence.md) for exact commands and limits.
+[verification](../verification/footie-intelligence.md) for exact commands and limits.
 
 ### 24 October 2026 — complete intelligence regression and isolated staging
 

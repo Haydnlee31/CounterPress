@@ -1,12 +1,14 @@
 # Editorial identity and cloud integration
 
+> Historical reference. This records an earlier implementation; use the [current documentation index](../README.md) for the public Footie experience.
+
 This document records the pre-activation identity/storage checks. The later
-[Studio AI pilot](verification/studio-editorial-live.json) adds verified hosted
+[Studio AI pilot](../verification/studio-editorial-live.json) adds verified hosted
 authorization and an explicit model action for the assigned editor. Participant
 review remains pending; these integration checks do not establish usefulness.
 
 **Real Entra sign-in and both managed-identity Cosmos phases passed.** The
-[sanitized verification record](verification/editorial-integration.json) separates
+[sanitized verification record](../verification/editorial-integration.json) separates
 real identity, real storage and mocked model behavior.
 
 ## Entra registration

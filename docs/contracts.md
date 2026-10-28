@@ -1,6 +1,6 @@
 # Foundation contracts
 
-All data is synthetic. IDs refer to fictional teams and players. Version one
+The foundation fixtures described here are synthetic. IDs refer to fictional teams and players. The wider app also includes licensed adapted archives; see [data provenance](../README.md#data-and-scope). Version one
 supports regulation periods, passes, carries, duels and controlled recoveries.
 Additional actions and extra time require explicit future contract changes.
 Unknown fields, coerced integer strings, invalid identifiers and out-of-bounds

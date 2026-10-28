@@ -12,7 +12,7 @@
 
 Football intelligence for fans, analysts and coaches: follow your players, replay the action, hear specialist perspectives and keep the moments that matter.
 
-[Open Footie](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/) · [Watch the demo](https://www.youtube.com/watch?v=vqpPXBcn0R0) · [Quick start](#quick-start) · [Architecture](#architecture)
+[Open Footie](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/) · [Watch the demo](https://www.youtube.com/watch?v=vqpPXBcn0R0) · [Judge walkthrough](docs/demo-guide.md) · [Quick start](#quick-start) · [Architecture](#architecture)
 
 [![Footie Analyst Mode: four specialist desks around a replay, with an evidence-linked conversation below](docs/screenshots/footie-analyst-mode.jpg)](https://www.youtube.com/watch?v=vqpPXBcn0R0)
 
@@ -108,7 +108,15 @@ The current live analyst conversation uses an application-managed turn scheduler
 
 ## Data and scope
 
-Featured clubs and players are fictional. The career dataset contains **840 historical fixtures**; player histories include matches beyond the curated replay library. Synthetic statistics are calibrated against licensed football event data, with role-specific validation rather than arbitrary totals.
+Footie brings together **original simulated football** and **licensed reference matches**, giving viewers both new stories to discover and recognizable football patterns to explore. Featured club and player identities are fictional.
+
+| Data collection | How it is built | Where to explore it |
+|---|---|---|
+| **Generated matches and careers** | Seeded simulations create new event sequences, calibrated against aggregate patterns in licensed football data and checked by playing position. The career collection includes **840 generated historical fixtures**. | Clubhouse histories and statistics; the generated Eastbridge–Northport match dated **18 October 2026** in Match Centre and Analyst Mode. |
+| **Adapted reference matches** | Two licensed historical event archives retain their recorded actions and results, with fictional display identities, showcase dates and normalized pitch coordinates. They are adapted records, rather than newly simulated matches. | Eastbridge–Northport matches dated **16 and 17 October 2026** in the replay library. |
+| **Preloaded highlights** | Authored synthetic sequences illustrate memorable football patterns; saved highlights reference their selected parent match. | Highlights and its Breakdown view. |
+
+For the generated-match walkthrough, [open Analyst Mode on 18 October](https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/?match=synthetic-32fe41c5d304ce68d7d9#analyst). Wider career history remains in profiles, so the replay library stays focused.
 
 The pitch is **105 × 68 metres**, with normalized attacking direction for analysis. Comparison windows exclude their start and include their end. Event-location heatmaps show where recorded actions occurred; supporting replay movement is reconstructed, not measured continuous player tracking. Video upload, automatic event extraction and measured sprint tracking are not current features.
 
@@ -182,7 +190,9 @@ We want to keep improving Footie beyond the hackathon, guided by how fans, coach
 
 | Guide | What it covers |
 |---|---|
-| [Analyst conversation and reports](docs/analyst-room.md) | Live scheduling, evidence, memory, reports and release history |
+| [Judge walkthrough](docs/demo-guide.md) | Direct links, a short exploration path and what to expect |
+| [Documentation index](docs/README.md) | Product guides, technical references and verification evidence |
+| [Analyst conversation and reports](docs/analyst-room.md) | Live scheduling, evidence, memory and automatic reports |
 | [Highlights workspace](docs/highlights-workspace.md) | Saved replays, summaries and annotations |
 | [Footie assistant](docs/grounded-assistant.md) | Data tools and specialist coordination |
 | [Player and club data](docs/personalization-data.md) | Generation, calibration, coverage and API contracts |

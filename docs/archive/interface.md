@@ -1,7 +1,9 @@
 # First local interface and evidence card
 
+> Historical reference. This records an earlier implementation; use the [current documentation index](../README.md) for the public Footie experience.
+
 For a nontechnical walkthrough of the current hosted app, see the
-[demo user guide](demo-guide.md).
+[demo user guide](../demo-guide.md).
 
 The interface connects a React TypeScript screen to the deterministic Python replay.
 The API supplies authoritative counts, eligibility, insight text and source records.
@@ -28,7 +30,7 @@ Open <http://127.0.0.1:5173/>. Use a Node version supported by the package's
 `engines` field; this build was checked with Node 26.5.0. Dependency versions are
 locked in `package-lock.json`. Vite proxies `/api` to the backend on port 8000.
 No credentials or cloud services are needed. Stage 5 creates local SQLite history;
-see [durable history](history.md) for paths and correction ingestion. Stop both processes with Ctrl+C.
+see [durable history](../history.md) for paths and correction ingestion. Stop both processes with Ctrl+C.
 
 The screen starts paused at 48:00. Play runs at the selected speed; pause preserves
 the position; reset returns to 48:00 and clears the card and evidence. The slider
@@ -104,7 +106,7 @@ clock does not change source timestamps, ingestion or calculations for other vie
 The transport is full-snapshot HTTP polling, with no stream server. Snapshot reads
 never call a model. Stage 6 adds optional approved adaptation text for an exact
 evidence version; the browser checks its expiry and restores the factual wording
-when it expires. See [adaptation](adaptation.md) for the explicit single-call CLI.
+when it expires. See [adaptation](../adaptation.md) for the explicit single-call CLI.
 
 ## Validation and captures
 
