@@ -422,7 +422,8 @@ def validate_career_streaming_prerequisites(app):
                 raise ValueError
         scale = properties['template']['scale']
         if (properties['configuration']['activeRevisionsMode'] != 'Single'
-                or scale.get('minReplicas') != 0 or scale.get('maxReplicas') != 1):
+                or type(scale.get('minReplicas')) is not int
+                or scale['minReplicas'] not in (0, 1) or scale.get('maxReplicas') != 1):
             raise ValueError
     except (KeyError, TypeError, ValueError, AttributeError):
         raise DeploymentError('Career streaming requires existing reviewed Cosmos, streaming and attached identities') from None
@@ -489,7 +490,9 @@ def validate_app(app):
         assert str(UUID(env['COUNTERPRESS_AGENT_TRACING_CLIENT_ID'])) == env['COUNTERPRESS_AGENT_TRACING_CLIENT_ID']
         assert env.get('COUNTERPRESS_AGENT_TRACE_SAMPLE_RATIO') == '1.0'
     assert p['configuration']['activeRevisionsMode']=='Single'
-    assert p['template']['scale']['minReplicas']==0 and p['template']['scale']['maxReplicas']==1
+    scale = p['template']['scale']
+    assert type(scale.get('minReplicas')) is int and scale['minReplicas'] in (0, 1)
+    assert scale['maxReplicas'] == 1
     assert p['configuration']['ingress']['allowInsecure'] is False
 
 

@@ -3,7 +3,7 @@
 The `Deploy Azure` GitHub Action publishes a tested image to the existing registry
 and updates the existing CounterPress app. Azure resource provisioning stays a
 separate reviewed Bicep operation. The deployment preserves Cosmos, Event Hubs,
-Web PubSub, managed identities, telemetry and zero-to-one scaling.
+Web PubSub, managed identities, telemetry and the existing replica minimum (zero or one), with a maximum of one.
 
 Live release and retained-metric checks are recorded in
 [verification/operations-live.json](verification/operations-live.json).
@@ -161,3 +161,27 @@ References: [Azure OIDC authentication](https://learn.microsoft.com/en-us/azure/
 [Logs Ingestion API](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/logs-ingestion-api-overview),
 [Ingestion API sample and initial delays](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/tutorial-logs-ingestion-code),
 [daily cap limitations](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/daily-cap).
+
+
+## Judging-period warm replica
+
+During judging, the production app uses **minimum 1 / maximum 1** so an idle app does not scale to zero. This is a scaling-only change: the image, model configuration, storage, identities and event-stream rules remain unchanged. Image deployments and staging preserve the existing minimum; their configuration invariants reject an unrequested change. Provisioning templates retain their scale-to-zero default and should not be reapplied to override the judging setting.
+
+The judging window closes on **11 November 2026 at 15:59 Singapore time**. A Codex follow-up is scheduled for 16:10 to review the deadline and restore the previous minimum of zero, unless subsequent instructions or an extended deadline require keeping the app warm. This follow-up depends on the automation host having Azure access; it is not an Azure-side expiry policy.
+
+To inspect scaling without reading credentials:
+
+```sh
+az containerapp show -g counterpress-dev -n counterpress \
+  --query '{ready:properties.latestReadyRevisionName,min:properties.template.scale.minReplicas,max:properties.template.scale.maxReplicas}' -o json
+```
+
+To restore scale-to-zero after judging, change **only** the minimum, then verify the new ready revision, traffic and public health:
+
+```sh
+az containerapp update -g counterpress-dev -n counterpress --min-replicas 0 \
+  --query '{latest:properties.latestRevisionName,ready:properties.latestReadyRevisionName,min:properties.template.scale.minReplicas}' -o json
+curl --fail https://counterpress.icyplant-0eb80d8e.eastus.azurecontainerapps.io/health
+```
+
+Do not disable ingestion, delete replicas or change the application image to adjust the idle scaling policy. A successful update response can precede the new revision becoming ready; check that the requested revision is ready before considering the rollout complete.
