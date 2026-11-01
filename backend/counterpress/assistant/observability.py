@@ -19,13 +19,19 @@ AGENT_IDS = {
     'orchestrator': 'footie-orchestrator',
     'match': 'footie-match-analyst',
     'career': 'footie-career-analyst',
+    **{role: 'footie-analyst-' + role for role in ('players', 'control', 'chance', 'defence', 'footie')},
 }
 _NAMES = {'footie.request', 'footie.route', 'footie.query', 'footie.story', 'footie.specialist', 'footie.synthesize',
           'footie.tool', 'footie.validate', 'footie.monitoring_check'}
+_NAMES.update({'footie.analyst.request', 'footie.analyst.generate', 'footie.report.request', 'footie.report.generate', 'footie.report.draft', 'footie.report.review'})
+_NAMES.update('footie.analyst.' + role for role in ('players', 'control', 'chance', 'defence', 'footie'))
+_NAMES.update('footie.analyst.live.' + role for role in ('players', 'control', 'chance', 'defence', 'footie'))
+_ROOTS = {'footie.request', 'footie.analyst.request', 'footie.analyst.generate', 'footie.report.request', 'footie.report.generate'}
 _NUMERIC = {'footie.provider_requests', 'footie.tool_calls', 'footie.specialist_count',
             'footie.claim_count', 'gen_ai.usage.input_tokens', 'gen_ai.usage.output_tokens'}
 _BOOL = {'footie.cached', 'footie.fallback', 'footie.partial'}
 _ENUM = {
+    'footie.outcome': {'complete', 'pending', 'unavailable', 'disabled', 'insufficient_evidence', 'error', 'cancelled', 'limited', 'superseded', 'busy', 'budget_limit', 'daily_limit', 'hourly_limit'},
     'footie.role': set(AGENT_IDS),
     'footie.operation': {'stats', 'compare', 'recent', 'seasons', 'club_leaders',
                          'match', 'unsupported', 'clarify', 'compound'},
@@ -101,7 +107,7 @@ class ContentFreeAzureMonitorTraceExporter(AzureMonitorTraceExporter):
         }
         if clean.parent and clean.parent.span_id:
             envelope.tags['ai.operation.parentId'] = f'{clean.parent.span_id:016x}'
-        elif clean.name == 'footie.request':
+        elif clean.name in _ROOTS:
             # Explicit boundary: Azure must not infer an unexported dependency parent.
             envelope.tags['ai.operation.parentId'] = ''
         data = envelope.data.base_data
@@ -245,7 +251,7 @@ def agent_span(name, *, role='orchestrator', attributes=None):
     from opentelemetry.context import Context
     # The content-free export is its own trace boundary. Do not inherit a parent
     # that is deliberately excluded by the allowlist; Foundry needs a visible root.
-    root_options = {'context': Context(), 'kind': trace.SpanKind.SERVER} if name == 'footie.request' else {}
+    root_options = {'context': Context(), 'kind': trace.SpanKind.SERVER} if name in _ROOTS else {}
     with trace.get_tracer('counterpress.assistant').start_as_current_span(
         name, attributes=attrs, record_exception=False, set_status_on_exception=False, **root_options,
     ) as span:
@@ -254,3 +260,30 @@ def agent_span(name, *, role='orchestrator', attributes=None):
         except BaseException:
             span.set_status(Status(StatusCode.ERROR))
             raise
+
+
+def traced_operation(name):
+    """Trace public outcomes and background jobs without arguments or response text.
+
+    Each job has its own root: asyncio tasks inherit request context, but may
+    finish after that request. Separate roots avoid invisible/expired parents.
+    """
+    from functools import wraps
+    def decorate(function):
+        @wraps(function)
+        async def wrapped(*args, **kwargs):
+            with agent_span(name) as span:
+                try:
+                    result = await function(*args, **kwargs)
+                except BaseException as exc:
+                    import asyncio
+                    span.set_attribute('footie.outcome', 'cancelled' if isinstance(exc, asyncio.CancelledError) else 'error')
+                    raise
+                outcome = result.get('status', 'unavailable') if isinstance(result, dict) else 'unavailable'
+                span.set_attribute('footie.outcome', outcome)
+                span.set_attribute('footie.cached', bool(result.get('cached', False)) if isinstance(result, dict) else False)
+                if outcome in {'unavailable', 'error'}:
+                    span.set_status(Status(StatusCode.ERROR))
+                return result
+        return wrapped
+    return decorate

@@ -376,7 +376,13 @@ class ReportStageError(RuntimeError):
 
 async def report_request(stage,*args,**kwargs):
     from counterpress.assistant.planner import structured_request
-    try: return await structured_request(*args,**kwargs)
+    from counterpress.assistant.observability import agent_span
+    try:
+        with agent_span('footie.report.' + stage) as span:
+            raw, usage = await structured_request(*args, **kwargs)
+            span.set_attribute('gen_ai.usage.input_tokens', usage.get('prompt_tokens', 0))
+            span.set_attribute('gen_ai.usage.output_tokens', usage.get('completion_tokens', 0))
+            return raw, usage
     except Exception as exc:
         # Safe diagnostics: never log model prose, credentials or request URLs.
         raise ReportStageError(stage,type(exc).__name__) from None
