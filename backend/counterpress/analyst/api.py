@@ -14,6 +14,7 @@ from fastapi import APIRouter, HTTPException, Request
 from starlette.concurrency import run_in_threadpool
 from starlette.responses import JSONResponse, Response
 
+from counterpress.assistant.observability import traced_operation
 from counterpress.gi.service import MATCHES
 from counterpress.history import HistoryStorageError
 from counterpress.usage_policy import usage_caps_enabled
@@ -172,6 +173,7 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
     async def metrics(match_id: str, body: AnalystRequest):
         return await run_in_threadpool(snapshot, match_id, body)
 
+    @traced_operation('footie.analyst.generate')
     async def execute(key, owner, snap, body, selected_provider, ledger, history=()):
         result = None
         try:
@@ -192,9 +194,11 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
                 pass  # Uncertain attempts remain charged and expire by lease.
             running.pop(key, None)
             viewers.pop(key, None)
+        return result
 
     @router.post('/matches/{match_id}/discussion')
     @router.post('/matches/{match_id}/analysis')
+    @traced_operation('footie.analyst.request')
     async def analysis(match_id: str, body: AnalystRequest, request: Request):
         discussion = request.url.path.endswith('/discussion')
         selected_provider = discussion_provider if discussion else provider
@@ -274,6 +278,7 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
         return {**data, 'available': report_provider is not None and report_ledger is not None,
                 'maximum_cost_usd': .10, 'status': 'not_requested'}
 
+    @traced_operation('footie.report.generate')
     async def execute_report(key, owner, data, language):
         result = None
         try:
@@ -291,8 +296,10 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
             except (HistoryStorageError, OSError):
                 pass
             running.pop(key, None)
+        return result
 
     @router.post('/matches/{match_id}/report')
+    @traced_operation('footie.report.request')
     async def deep_report(match_id: str, body: ReportRequest):
         now = time.monotonic()
         while calls and calls[0] < now - 60: calls.popleft()

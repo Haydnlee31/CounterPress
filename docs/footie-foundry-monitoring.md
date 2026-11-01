@@ -200,3 +200,32 @@ does not fix an application issue. Retention handles stored telemetry normally.
 
 Checked 23 October 2026. This runbook describes the integration design; deployment
 and live trace evidence must be recorded in the release verification report.
+
+## Analyst conversations and match reports
+
+Analyst POST requests emit `footie.analyst.request`; full-time report POST requests
+emit `footie.report.request`. The content-free `footie.outcome` and `footie.cached`
+attributes distinguish pending, completed, unavailable and cached responses.
+Background jobs have independent `footie.analyst.generate` / `footie.report.generate`
+roots because they may finish after the HTTP request. Specialist/reviewer spans
+are children of the generation trace; report model stages are `footie.report.draft`
+and `footie.report.review`. Model-stage spans carry token counts, not prompts.
+
+The exporter strips source/player/match identifiers, response text, deployment
+names and exception details. Page loads and GET readiness/configuration checks
+are not AI traces. Counts are operations, not unique people or evidence of judge
+identity. A completed cached response does not mean a new model call occurred.
+
+Read the linked Log Analytics workspace without triggering paid generation:
+
+```kusto
+union AppRequests, AppDependencies
+| where TimeGenerated > ago(24h)
+| where Name startswith "footie.analyst." or Name startswith "footie.report."
+| summarize Operations=count(), LastSeen=max(TimeGenerated)
+    by Name, Outcome=tostring(Properties["footie.outcome"]),
+       Cached=tostring(Properties["footie.cached"])
+```
+
+Allow a few minutes for ingestion. Compare request and generation spans before
+interpreting gaps; the safe telemetry deliberately does not identify visitors.
