@@ -277,3 +277,13 @@ def test_single_correction_round_is_independently_reviewed_before_publication():
  assert result['execution']['repair_attempts']==1
  assert seen[1]['correction']['reason']=='unsupported_number'
  assert result['messages'][0]['verified_by']=='footie'
+
+
+@pytest.mark.parametrize('text', ['Home scored the opener.', 'Home opened the scoring.'])
+def test_recent_goal_count_does_not_establish_match_opener(text):
+ p=live_packet(source(),'control');p['score']={'home':2,'away':2}
+ e=p['evidence'][0]['id']
+ with pytest.raises(ValueError,match='unsupported_goal_order'):
+  check_comment(Comment(**comment(text=text,evidence_ids=[e])),p,[],'control')
+ p['score']={'home':1,'away':0}
+ check_comment(Comment(**comment(text=text,evidence_ids=[e])),p,[],'control')
