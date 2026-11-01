@@ -1,5 +1,5 @@
 {
-  "version": "v28-judging-report-experience",
+  "version": "v29-content-free-analyst-report-tracing",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -9,7 +9,7 @@
     "backend/counterpress/adaptation/service.py": "3c6c8879d6c254f98c0153d296ba63c9fb435e90eea0152b4fec8226c84514e9",
     "backend/counterpress/analyst/__init__.py": "aa0e397e2eade9df5d609d6ff3bcbde6eba362adf91c1211e9eea32956fd2f22",
     "backend/counterpress/analyst/admission.py": "a8db5b81fe71e0d9e13fdd4f7ab355ea99ab716b7d2c39ab9fb864a97291c402",
-    "backend/counterpress/analyst/api.py": "93d74a68d4a5a98d1a2f1768e27866fee9fabacba4de27f73e1b1d0931973f5a",
+    "backend/counterpress/analyst/api.py": "be3a4511cc17da9aeea4d2eb62b72e74d74f43619c63f84a0573a343ce73ef2e",
     "backend/counterpress/analyst/candidates.py": "792ac3b7d792210f57cee53c319d707eee622cef8ecb1e078633ee597f139d58",
     "backend/counterpress/analyst/contracts.py": "71427dc3d3624aec70ff6521a68acda1e170b27de5130a81f93436ac584d9370",
     "backend/counterpress/analyst/discussion.py": "755008aaf0f1bce01b32d9012ffb8002e241996ccd2cad587b20ad7b07dd737d",
@@ -19,7 +19,7 @@
     "backend/counterpress/analyst/metrics.py": "122cf2793e4b203f8a1f3e5fa0a3db53b45316a6e55a67287e433da3f98c31e6",
     "backend/counterpress/analyst/passages.py": "cb1f667e2b6df17ce61062d35677a40285775fe23c760d5679bcaf393d854806",
     "backend/counterpress/analyst/provider.py": "e63286129891454d1814236159954a7b8f8623a6f671886dc6aebf242b5ba718",
-    "backend/counterpress/analyst/report.py": "b9983ec6653afb1fdaa6344ceabadb0bf856c4ec2304094a0695a3d692885ef8",
+    "backend/counterpress/analyst/report.py": "4ad370afbc91076fd216d29e39630197622f40b757ce2df5072d20d602a7dd72",
     "backend/counterpress/analyst/service.py": "d153e91c8f72c1593c952cef2f11d40c60129ce21271f088c466890003ca57d0",
     "backend/counterpress/api/__init__.py": "a9a3c298ac7e04d2a99c36074aac55684553104bdc1fc1ae2186b9214b5e20c5",
     "backend/counterpress/api/main.py": "db16b1f8c7aa2854685500d4d29afe7678a2646841808686d8c4fb452a31b9d5",
@@ -36,7 +36,7 @@
     "backend/counterpress/assistant/multiagent.py": "08c7d57abeecd9a59459387ac5578eda6cc92c01d65a3366a48d8483ae3640b0",
     "backend/counterpress/assistant/multiagent_evaluation.py": "85ee686feea112f9c5399ca98ba1d4df9fd73a150fddd41960b3b5ff76fc5880",
     "backend/counterpress/assistant/narrative.py": "d5dd3b2ffd54481e248c34328ded192f2b6b2ecd3868843f25c16ddc7198feba",
-    "backend/counterpress/assistant/observability.py": "99857c17cacfb171545fb9a30377010df57c45dd4474853db81dedfc7c471dcb",
+    "backend/counterpress/assistant/observability.py": "48ace4e27e7dd4e58df609bcdf3e7a3309c10fed0dcc56c7d352abcdbe66b696",
     "backend/counterpress/assistant/observation.py": "f142ff95dbb85d73c48843e746f100cb02f31ae1a45f76efd11526bea650c321",
     "backend/counterpress/assistant/planner.py": "5e208f146dae43943a6d672a53854b65bc247dd86728b3b42e93cf1ec361e0ae",
     "backend/counterpress/assistant/research.py": "54b335c63b0d34c89d6fa5209dc92ce045a6ea70d83f8ac794bd61ac2ae92e0c",
