@@ -77,7 +77,7 @@ def test_report_reservation_uses_shared_match_and_total_budget_without_live_sett
     reports.finish('report:x',job['owner'],{'status':'complete','reading':{'text':'report'}},1)
     assert reports.reserve('report:x',2,'match','report:x',{'period':2,'elapsed_ms':1})['status']=='complete'
     live.reserve('live:y',3,'match','live:y',{'period':1,'elapsed_ms':1})
-    state=store.transact(lambda s:(s,s));assert state['spent_cents']==16
+    state=store.transact(lambda s:(s,s));assert state['spent_cents']==17
     assert state['jobs']['report:x']['accounted_cents']==10
     store.transact(lambda s:({**s,'spent_cents':1200},None))
     assert reports.reserve('report:z',4,'other','scope',{'period':2,'elapsed_ms':1})['status']=='budget_limit'
@@ -348,4 +348,4 @@ def test_uncapped_live_reports_preserve_charges_deduplicate_and_limit_concurrenc
     assert b['admitted']
     assert not report.reserve('report',1,'match','report',{'period':2,'elapsed_ms':1}).get('admitted')
     assert live.reserve('third',1,'other','scope',{'period':1,'elapsed_ms':2})['status']=='busy'
-    assert store.transact(lambda s:(s,s))['spent_cents']==1000015
+    assert store.transact(lambda s:(s,s))['spent_cents']==1000016

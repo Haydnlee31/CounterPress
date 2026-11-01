@@ -87,7 +87,7 @@ def test_explicit_allowance_grant_preserves_costs_is_idempotent_and_match_scoped
     a=LiveAllowance(SQLiteStore(tmp_path/'grant.sqlite3'))
     assert a.reserve('allowed',1,'match','scope',{'period':1,'elapsed_ms':60000})['admitted']
     state=store.transact(lambda s:(s,s))
-    assert state['spent_cents']==276 and state['matches']['match']==276
+    assert state['spent_cents']==277 and state['matches']['match']==277
     assert len(state['approved_grants'])==1
     from counterpress.history import HistoryStorageError
     with pytest.raises(HistoryStorageError):a.grant_match_allowance('another','match',1,'No double top-up')
@@ -127,7 +127,7 @@ def test_large_old_memory_is_pruned_without_erasing_costs_or_active_scope(tmp_pa
     store.transact(fill);a.finish('active',j['owner'],None,1)
     state=store.transact(lambda s:(s,s))
     assert len(json.dumps(state).encode())<=1_200_000
-    assert state['spent_cents']==6 and state['matches']['match']==6
+    assert state['spent_cents']==7 and state['matches']['match']==7
     assert 'active-scope' in state['history']
 
 

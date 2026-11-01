@@ -20,7 +20,7 @@ from .discussion import packet_for, strict_schema
 MODEL = 'gpt-5-mini'
 REVIEW_MODEL = 'gpt-5-mini'
 REVIEW_OUTPUT_LIMIT = 2000
-INPUT_LIMIT = 6000
+INPUT_LIMIT = 8000
 OUTPUT_LIMIT = 2000
 FOCUS = {
  'control': 'Start with a recent passage: did circulation advance the ball or return it away from goal? Explain a change between comparable spells or a mismatch between passing volume and entries or shots. Lead with what changed and why that changes the reading of the match, not a list of totals.',
@@ -368,7 +368,7 @@ class AzureLiveDiscussion:
                     properties['reply_to']={'enum':[None]+sorted({m['role'] for m in past if m['role']!=role})}
                 config=self.config.model_copy(update={'deployment':REVIEW_MODEL}) if name=='footie' else self.config
                 span.set_attribute('gen_ai.operation.name','chat');span.set_attribute('gen_ai.provider.name','azure.ai.openai');span.set_attribute('gen_ai.request.model',config.deployment)
-                data=compact_context(config,prompt,data,schema,'live_'+name,REVIEW_OUTPUT_LIMIT if name=='footie' else OUTPUT_LIMIT)
+                data=compact_context(config,prompt,data,schema,'live_'+name,REVIEW_OUTPUT_LIMIT if name=='footie' else OUTPUT_LIMIT,limit=INPUT_LIMIT)
                 raw,usage=await structured_request(config,self.transport,prompt,data,schema,'live_'+name,REVIEW_OUTPUT_LIMIT if name=='footie' else OUTPUT_LIMIT,18 if name=='footie' else 15,reasoning_effort='low',request_guard=guard_live_request)
                 span.set_attribute('gen_ai.usage.input_tokens',usage.get('prompt_tokens',0));span.set_attribute('gen_ai.usage.output_tokens',usage.get('completion_tokens',0))
                 calls.append({'role':name,'input_tokens':usage.get('prompt_tokens',0),'output_tokens':usage.get('completion_tokens',0),'usage_complete':all(type(usage.get(k)) is int and usage[k]>0 for k in ('prompt_tokens','completion_tokens'))})
@@ -427,7 +427,7 @@ class AzureLiveDiscussion:
         except Exception as exc:
             editorial_rejection=type(exc) is ValueError and re.fullmatch('[a-z_]+',str(exc))
             result['status']='insufficient_evidence' if editorial_rejection else 'unavailable'
-            result['failure_reason']=str(exc) if editorial_rejection else type(exc).__name__
+            result['failure_reason']=str(exc) if editorial_rejection else ('live_input_budget_exceeded' if getattr(exc,'reason',None)=='live_input_budget_exceeded' else type(exc).__name__)
             verdict=result['failure_reason']
         result['execution']={'runtime':'footie_live_turn_manager','scheduled_role':role,'publication_decision':verdict,'model':MODEL,'review_model':REVIEW_MODEL,'model_calls':attempts,'repair_attempts':locals().get('repair_attempts',0),'per_role_usage':calls,'input_tokens':sum(c['input_tokens'] for c in calls),'output_tokens':sum(c['output_tokens'] for c in calls),'elapsed_ms':round((time.monotonic()-started)*1000)}
         return result
