@@ -229,3 +229,21 @@ union AppRequests, AppDependencies
 
 Allow a few minutes for ingestion. Compare request and generation spans before
 interpreting gaps; the safe telemetry deliberately does not identify visitors.
+
+### Conversation correction and memory
+
+The reviewer receives prior trend directions and score context alongside the
+remembered takeaway. These remain historical context, never evidence for current
+facts. Defensive novelty requires a new cited regain and a source-linked forward
+pass/carry; team ordering or another isolated duel is insufficient.
+
+A withheld draft may receive one correction round using the same source. The
+corrected draft must pass the original citation, numeric, causal, timing and
+novelty checks and a separate model review. There are at most four model calls;
+no retry starts after 17 seconds, and the existing 40-second background deadline
+still applies. Quiet or repetitive passages may remain unpublished.
+
+Usage accounting reserves seven cents for the worst-case four-call turn (8,000 input and 2,000 output tokens per call) and settles
+against complete token usage. Older three-cent reservations retain their original
+accounting. This changes reservation sizing, not production spending-cap policy,
+concurrency limits, historical charges or the user interface.

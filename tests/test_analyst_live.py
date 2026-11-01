@@ -71,9 +71,9 @@ def test_editor_verdict_or_hard_checks_block_invalid_publication(review):
  s=source();count=0
  def transport(req):
   nonlocal count
-  count+=1;p=json.loads(json.loads(req.content)['messages'][1]['content'])['source']
+  count+=1;payload=json.loads(json.loads(req.content)['messages'][1]['content']);p=payload['source'];author='candidates' not in payload
   row=comment(evidence_ids=[p['evidence'][0]['id']],metric_ids=[next(m['id'] for m in p['metrics'] if m['key']=='final_third_entries' and m.get('club_id')=='home' and m['window']=='current')])
-  if count==1:
+  if author:
    if review=='invented_number':row['text']='They scored 99 goals.'
    if review=='unknown_citation':row['metric_ids']=['unknown']
   else:
@@ -82,16 +82,16 @@ def test_editor_verdict_or_hard_checks_block_invalid_publication(review):
    if review=='no_added_value':row['added_value']='none'
    if review=='unsupported_premise':row['unsupported_premises']=['Individual blame is not supported']
    if review=='rewritten_text':row['text']='An unreviewed replacement must never publish.'
-  if count==1:row={'comments':[row]}
+  if author:row={'comments':[row]}
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(row)}}],'usage':{}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-4.1-mini',api_key='fake-test-only')
  r=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))
- assert r['messages']==[] and count==(1 if review in ('invented_number','unknown_citation') else 2)
+ assert r['messages']==[] and count==(2 if review in ('invented_number','unknown_citation','rewritten_text') else 4)
 
 
 def test_durable_match_cap_includes_failed_attempts_and_all_preferences(tmp_path):
  path=tmp_path/'live.sqlite3';a=LiveAllowance(SQLiteStore(path))
- for i in range(90):
+ for i in range(a.MATCH_CENTS//a.RUN_CENTS):
   job=a.reserve(str(i),i*60,'match','prefs-'+str(i%4),{'period':1,'elapsed_ms':i*60000})
   assert job['admitted'];a.finish(str(i),job['owner'],None,i*60+1)
  b=LiveAllowance(SQLiteStore(path))
@@ -223,11 +223,11 @@ def test_editor_cannot_select_missing_candidate(selected):
  def transport(req):
   nonlocal count
   count+=1;data=json.loads(json.loads(req.content)['messages'][1]['content']);p=data['source']
-  out={'comments':[comment(metric_ids=[],evidence_ids=[p['evidence'][0]['id']])]} if count==1 else dict(topic='territorial_progress',subject_id='home',novelty='first',prior_memory_id=None,publish=True,selected_index=selected,added_value='sequence',new_reading='A passage',unsupported_premises=[])
+  out={'comments':[comment(metric_ids=[],evidence_ids=[p['evidence'][0]['id']])]} if 'candidates' not in data else dict(topic='territorial_progress',subject_id='home',novelty='first',prior_memory_id=None,publish=True,selected_index=selected,added_value='sequence',new_reading='A passage',unsupported_premises=[])
   return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(out)}}],'usage':{}})
  cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-5-mini',api_key='fake-test-only')
  result=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))
- assert result['messages']==[] and result['execution']['model_calls']==2
+ assert result['messages']==[] and result['execution']['model_calls']==4
 
 
 def test_passage_cannot_be_the_cause_of_a_window_wide_change():
@@ -258,3 +258,32 @@ def test_event_clock_is_valid_only_when_its_exact_action_is_cited():
  for text,ids in [('At 9:51 the pass reached the final third.',['e1:r1']),('At 9:50 the pass reached the final third.',[])]:
   with pytest.raises(ValueError,match='unsupported_clock'):
    check_comment(Comment(**comment(text=text,evidence_ids=ids)),p,[],'control')
+
+
+def test_single_correction_round_is_independently_reviewed_before_publication():
+ s=source();seen=[]
+ def transport(req):
+  payload=json.loads(json.loads(req.content)['messages'][1]['content']);seen.append(payload);p=payload['source']
+  if 'candidates' not in payload:
+   text='They scored 99 goals.' if 'correction' not in payload else 'The completed pass reached the final third; watch whether the next action turns that entry into a chance.'
+   row={'comments':[comment(text=text,metric_ids=[],evidence_ids=[p['evidence'][0]['id']])]}
+  else:
+   assert payload['candidates'][0]['text']!='They scored 99 goals.'
+   row=dict(topic='territorial_progress',subject_id='home',novelty='first',prior_memory_id=None,publish=True,selected_index=0,added_value='sequence',new_reading='A supported forward entry.',unsupported_premises=[])
+  return httpx.Response(200,json={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(row)}}],'usage':{'prompt_tokens':100,'completion_tokens':100}})
+ cfg=AzureConfig(endpoint='https://fixture.openai.azure.com',deployment='gpt-5-mini',api_key='fake-test-only')
+ result=asyncio.run(AzureLiveDiscussion(cfg,httpx.MockTransport(transport)).analyze(s,None))
+ assert result['status']=='complete' and result['execution']['model_calls']==3
+ assert result['execution']['repair_attempts']==1
+ assert seen[1]['correction']['reason']=='unsupported_number'
+ assert result['messages'][0]['verified_by']=='footie'
+
+
+@pytest.mark.parametrize('text', ['Home scored the opener.', 'Home opened the scoring.'])
+def test_recent_goal_count_does_not_establish_match_opener(text):
+ p=live_packet(source(),'control');p['score']={'home':2,'away':2}
+ e=p['evidence'][0]['id']
+ with pytest.raises(ValueError,match='unsupported_goal_order'):
+  check_comment(Comment(**comment(text=text,evidence_ids=[e])),p,[],'control')
+ p['score']={'home':1,'away':0}
+ check_comment(Comment(**comment(text=text,evidence_ids=[e])),p,[],'control')

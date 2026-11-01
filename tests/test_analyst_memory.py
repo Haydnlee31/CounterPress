@@ -87,7 +87,7 @@ def test_explicit_allowance_grant_preserves_costs_is_idempotent_and_match_scoped
     a=LiveAllowance(SQLiteStore(tmp_path/'grant.sqlite3'))
     assert a.reserve('allowed',1,'match','scope',{'period':1,'elapsed_ms':60000})['admitted']
     state=store.transact(lambda s:(s,s))
-    assert state['spent_cents']==273 and state['matches']['match']==273
+    assert state['spent_cents']==277 and state['matches']['match']==277
     assert len(state['approved_grants'])==1
     from counterpress.history import HistoryStorageError
     with pytest.raises(HistoryStorageError):a.grant_match_allowance('another','match',1,'No double top-up')
@@ -127,7 +127,7 @@ def test_large_old_memory_is_pruned_without_erasing_costs_or_active_scope(tmp_pa
     store.transact(fill);a.finish('active',j['owner'],None,1)
     state=store.transact(lambda s:(s,s))
     assert len(json.dumps(state).encode())<=1_200_000
-    assert state['spent_cents']==3 and state['matches']['match']==3
+    assert state['spent_cents']==7 and state['matches']['match']==7
     assert 'active-scope' in state['history']
 
 
@@ -142,3 +142,35 @@ def test_a_real_shot_is_not_misclassified_as_harmless_circulation():
     s,d,r=setup('chance_creation');s['evidence'][0]['kind']='shot'
     d=d.model_copy(update={'text':'The passing produced a shot but limited end product as it was blocked.'})
     assert conclusion(r,d,s,[])['topic']=='chance_creation'
+
+
+def test_reviewer_memory_includes_actual_prior_trends_and_score():
+    memory={'id':'m','topic':'territorial_progress','subject_id':'home','takeaway':'Earlier trend',
+            'score':{'home':0,'away':0},'trends':{'final_third_entries':-1}}
+    row=public_memory([{'memory':memory}])[0]
+    assert row['trends']==memory['trends'] and row['score']==memory['score']
+
+
+def test_defensive_outcome_requires_new_regain_and_cited_strong_links():
+    from counterpress.analyst.memory import defensive_development
+    old={'evidence_ids':['old']}; refs={'e1':'new-regain','e2':'new-pass'}
+    events=[{'id':'e1','kind':'recovery','outcome':'established','club_id':'home'},
+            {'id':'e2','kind':'pass','outcome':'complete','club_id':'home','ball_direction':'forward'}]
+    source={'passages':[{'evidence_ids':['e1','e2'],'links':['same_holder']}]}
+    assert defensive_development('ball_winning',events,source,old,refs)
+    assert not defensive_development('ball_winning',events[:1],source,old,refs)
+    assert not defensive_development('finishing',events,source,old,refs)
+    assert not defensive_development('ball_winning',events,source,{'evidence_ids':['new-regain']},refs)
+    source['passages'][0]['links']=['team_order_only']
+    assert not defensive_development('ball_winning',events,source,old,refs)
+
+
+@pytest.mark.parametrize('text',[
+    'They are prioritising safe progression without overcommitting.',
+    'The recovery hands momentum back to Eastbridge.',
+    'Takeaway: a forward pass. Support: a completed action.',
+])
+def test_repairs_cannot_introduce_intent_or_formulaic_analysis(text):
+    from counterpress.analyst.live import check_comment
+    s,d,_=setup()
+    with pytest.raises(ValueError):check_comment(d.model_copy(update={'text':text}),s,[],'control')

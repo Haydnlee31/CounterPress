@@ -1,5 +1,5 @@
 {
-  "version": "v29-content-free-analyst-report-tracing",
+  "version": "v31-reviewed-conversation-memory-repair",
   "files": {
     "backend/counterpress/__init__.py": "76a7241da73e8b6d1f486c6c5182c7968ec1b93693828339aa2837314fee8d36",
     "backend/counterpress/adapt.py": "2982ee396408f04826ceb0d05e6138d83eee55bd69aec3e189876c1e6af2315b",
@@ -13,9 +13,9 @@
     "backend/counterpress/analyst/candidates.py": "792ac3b7d792210f57cee53c319d707eee622cef8ecb1e078633ee597f139d58",
     "backend/counterpress/analyst/contracts.py": "71427dc3d3624aec70ff6521a68acda1e170b27de5130a81f93436ac584d9370",
     "backend/counterpress/analyst/discussion.py": "755008aaf0f1bce01b32d9012ffb8002e241996ccd2cad587b20ad7b07dd737d",
-    "backend/counterpress/analyst/live.py": "bc5bc35db30c7cdc8299153481d596e2cf75e97a43464a5f77767b5d8d2c40da",
-    "backend/counterpress/analyst/live_admission.py": "79df24ee634814c44d40cc0ef973b6af22e2c0dd12f3eec360cc04d364b8e648",
-    "backend/counterpress/analyst/memory.py": "e2a36b9ff10a73219472faadc998e16b20feba75cc8f5321ab029e92c867cbb6",
+    "backend/counterpress/analyst/live.py": "fa8604975f689792a47e56b6f5d1d4e426fe948abdd7eb6263107186fbaf4afe",
+    "backend/counterpress/analyst/live_admission.py": "7d87ae5ad35fb325fa8ac77ccdfd5de09db0a87259cb42f52073571158f6cd32",
+    "backend/counterpress/analyst/memory.py": "2679c911ad1d2e683e123ca2c4f85222209c5b02081dc25981961061eb6923ff",
     "backend/counterpress/analyst/metrics.py": "122cf2793e4b203f8a1f3e5fa0a3db53b45316a6e55a67287e433da3f98c31e6",
     "backend/counterpress/analyst/passages.py": "cb1f667e2b6df17ce61062d35677a40285775fe23c760d5679bcaf393d854806",
     "backend/counterpress/analyst/provider.py": "e63286129891454d1814236159954a7b8f8623a6f671886dc6aebf242b5ba718",

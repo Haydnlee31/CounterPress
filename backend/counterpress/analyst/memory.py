@@ -21,8 +21,34 @@ def public_memory(history):
         latest.pop(key,None);latest[key]=m
     rows=list(latest.values())
     return [{'id':m['id'],'topic':m['topic'],'subject_id':m['subject_id'],
-             'takeaway':m['takeaway'][:140] if i>=len(rows)-4 else ''}
+             'takeaway':m['takeaway'][:140] if i>=len(rows)-4 else '',
+             'score':m.get('score',{}), 'trends':m.get('trends',{})}
             for i,m in enumerate(rows)]
+
+
+def defensive_development(topic, events, source, old, references):
+    """A new regain followed by linked forward ball movement, not any new duel.
+
+    Require cited actions in a source-built same-holder/recipient chain. A
+    timestamp or team ordering alone never establishes a counterattack.
+    """
+    if topic not in ('ball_winning', 'defensive_exposure'): return False
+    cited = {e['id']: e for e in events}
+    for passage in source.get('passages', []):
+        ids, links = passage['evidence_ids'], passage['links']
+        for i, ref in enumerate(ids):
+            regain = cited.get(ref, {})
+            if not ((regain.get('kind') == 'recovery' and regain.get('outcome') in ('established', 'won', 'successful')) or (regain.get('kind') == 'duel' and regain.get('outcome') == 'won')): continue
+            if references.get(ref, ref) in old.get('evidence_ids', []): continue
+            for j in range(i + 1, len(ids)):
+                if any(link not in ('same_holder', 'recipient') for link in links[i:j]): break
+                if len(links[i:j]) != j-i: break
+                if not set(ids[i:j+1]) <= cited.keys(): continue
+                move = cited.get(ids[j], {})
+                if move.get('club_id') != regain.get('club_id'): continue
+                if move.get('kind') in ('pass', 'carry') and move.get('outcome') in ('complete','completed','controlled','successful') and move.get('ball_direction') == 'forward':
+                    return True
+    return False
 
 
 def conclusion(review, draft, source, history, references=None):
@@ -53,7 +79,7 @@ def conclusion(review, draft, source, history, references=None):
         score_changed=old.get('score')!=source['score']
         if topic=='sterile_circulation' and not score_changed:raise ValueError('repeated_conclusion')
         decisive=any(e['kind'] in ('shot','save') and references.get(e['id'],e['id']) not in old.get('evidence_ids',[]) for e in events)
-        if review.novelty=='new_outcome' and not (decisive or score_changed):raise ValueError('no_new_outcome')
+        if review.novelty=='new_outcome' and not (decisive or score_changed or defensive_development(topic, events, source, old, references)):raise ValueError('no_new_outcome')
     elif review.prior_memory_id is not None:
         # References may only name actual earlier memory, never invented IDs.
         if review.prior_memory_id not in {m['id'] for m in memories(history)}:raise ValueError('unknown_memory_reference')
@@ -62,6 +88,7 @@ def conclusion(review, draft, source, history, references=None):
     mechanism=sorted({(e['kind'],e.get('outcome'),e.get('from_area'),e.get('to_area'),e.get('ball_direction')) for e in events},key=str)
     trends={}
     for a in cited:
+        if subject not in (a.get('club_id'), a.get('player_id')): continue
         b=next((m for m in source['metrics'] if m['window']=='previous' and a['window']=='current' and m['key']==a['key'] and m.get('club_id')==a.get('club_id') and m.get('player_id')==a.get('player_id')),None)
         if b and type(a.get('value')) in (int,float) and type(b.get('value')) in (int,float):
             trends[a['key']]=(a['value']>b['value'])-(a['value']<b['value'])
@@ -91,9 +118,9 @@ def compact_context(config,prompt,data,schema,name,tokens,limit=6000):
     size=len(tiktoken.get_encoding('o200k_base').encode(json.dumps(payload,ensure_ascii=False,separators=(',',':')),disallowed_special=()))+768
     rows=data.get('source',{}).get('conversation_memory')
     if size<limit-200 or not isinstance(rows,list) or not rows:return data
-    columns=['id','topic','subject_id','takeaway']
+    columns=list(dict.fromkeys(k for row in rows for k in row))
     result={**data,'source':{**data['source'],'conversation_memory':{
-        'columns':columns,'rows':[[m[k] for k in columns] for m in rows]}}}
+        'columns':columns,'rows':[[m.get(k) for k in columns] for m in rows]}}}
     # Omit notes about metrics absent from this specialist's evidence packet.
     keys={m['key'] for m in data['source'].get('metrics',[])}
     if 'metric_notes' in result['source']:
