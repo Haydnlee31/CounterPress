@@ -31,7 +31,7 @@ _NUMERIC = {'footie.provider_requests', 'footie.tool_calls', 'footie.specialist_
             'footie.claim_count', 'gen_ai.usage.input_tokens', 'gen_ai.usage.output_tokens'}
 _BOOL = {'footie.cached', 'footie.fallback', 'footie.partial'}
 _ENUM = {
-    'footie.outcome': {'complete', 'pending', 'unavailable', 'disabled', 'insufficient_evidence', 'error', 'cancelled', 'limited', 'superseded'},
+    'footie.outcome': {'complete', 'pending', 'unavailable', 'disabled', 'insufficient_evidence', 'error', 'cancelled', 'limited', 'superseded', 'busy', 'budget_limit', 'daily_limit', 'hourly_limit'},
     'footie.role': set(AGENT_IDS),
     'footie.operation': {'stats', 'compare', 'recent', 'seasons', 'club_leaders',
                          'match', 'unsupported', 'clarify', 'compound'},

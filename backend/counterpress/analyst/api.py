@@ -191,7 +191,7 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
             try:
                 await run_in_threadpool(ledger.finish, key, owner, result, time.time())
             except (HistoryStorageError, OSError):
-                pass  # Uncertain attempts remain charged and expire by lease.
+                result = None  # Uncertain attempts remain charged and expire by lease.
             running.pop(key, None)
             viewers.pop(key, None)
         return result
@@ -294,7 +294,7 @@ def install_analyst(app, career_service, history_store=None, provider=None, allo
             try:
                 await run_in_threadpool(report_ledger.finish, key, owner, result, time.time())
             except (HistoryStorageError, OSError):
-                pass
+                result = None
             running.pop(key, None)
         return result
 
