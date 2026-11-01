@@ -1,9 +1,9 @@
 """Durable, shared per-match live-analysis cap. Failures remain charged.
 
-Reserve $0.03 before each two-call turn: <=6k input and 2,000 output tokens per call.
-At conservative $1/$4 per million tokens this is <=$0.028/turn.
+Reserve $0.06 before each turn with at most one correction round: <=6k input and 2,000 output tokens per call; at most four calls.
+At conservative $1/$4 per million tokens this is <=$0.056/turn.
 At most $2.70 is accounted per match across viewers, preferences and revisions.
-Fully metered mini-model calls settle conservatively; uncertain calls keep $0.03.
+Fully metered mini-model calls settle conservatively; uncertain calls keep the full reservation.
 This is a model-usage ceiling, not a meter of shared Azure hosting charges.
 """
 import json
@@ -20,14 +20,14 @@ def accounted_cents(result):
     """
     execution=(result or {}).get('execution',{})
     calls=execution.get('per_role_usage',[])
-    if execution.get('model')!='gpt-5-mini' or execution.get('review_model')!='gpt-5-mini':return 3
-    if type(execution.get('model_calls')) is not int or execution['model_calls'] not in (1,2) or len(calls)!=execution['model_calls']:return 3
+    if execution.get('model')!='gpt-5-mini' or execution.get('review_model')!='gpt-5-mini':return 6
+    if type(execution.get('model_calls')) is not int or execution['model_calls'] not in (1,2,3,4) or len(calls)!=execution['model_calls']:return 6
     for call in calls:
-        if call.get('usage_complete') is False:return 3
-        if any(type(call.get(k)) is not int or not 0<call[k]<=limit for k,limit in (('input_tokens',6000),('output_tokens',2000))):return 3
+        if call.get('usage_complete') is False:return 6
+        if any(type(call.get(k)) is not int or not 0<call[k]<=limit for k,limit in (('input_tokens',6000),('output_tokens',2000))):return 6
     inputs=sum(c['input_tokens'] for c in calls);outputs=sum(c['output_tokens'] for c in calls)
-    if execution.get('input_tokens')!=inputs or execution.get('output_tokens')!=outputs:return 3
-    return min(3,max(1,math.ceil((inputs+4*outputs)/10000)))
+    if execution.get('input_tokens')!=inputs or execution.get('output_tokens')!=outputs:return 6
+    return min(6,max(1,math.ceil((inputs+4*outputs)/10000)))
 
 
 def settle_completed(state):
@@ -38,16 +38,17 @@ def settle_completed(state):
     """
     for job in state.get('jobs',{}).values():
         if job.get('status')!='complete' or job.get('usage_settled'):continue
-        charged=accounted_cents(job.get('result'))
-        release=3-charged;match=job.get('match_id')
+        reserved=job.get('reserved_cents',3)  # Legacy jobs reserved three cents.
+        charged=min(reserved,accounted_cents(job.get('result')))
+        release=reserved-charged;match=job.get('match_id')
         if state.get('spent_cents',0)<release or state.get('matches',{}).get(match,0)<release:continue
         state['spent_cents']-=release;state['matches'][match]-=release
         state['released_cents']=state.get('released_cents',0)+release
-        job.update(usage_settled=True,reserved_cents=3,accounted_cents=charged)
+        job.update(usage_settled=True,reserved_cents=reserved,accounted_cents=charged)
 
 
 class LiveAllowance:
-    RUN_CENTS=3
+    RUN_CENTS=6
     MATCH_CENTS=270
     TOTAL_CENTS=1200
     LEASE_SECONDS=60
@@ -84,7 +85,7 @@ class LiveAllowance:
             approved=sum(g['cents'] for g in state['approved_grants'].values() if g['match_id']==match_id)
             if self.enforce_caps and (spent+self.RUN_CENTS>self.MATCH_CENTS+approved or state['spent_cents']+self.RUN_CENTS>self.TOTAL_CENTS):return state,{'status':'budget_limit'}
             if sum(j['status']=='pending' for j in state['jobs'].values())>=2:return state,{'status':'busy'}
-            job={'status':'pending','owner':owner,'expires':now+self.LEASE_SECONDS,'scope':scope,'cutoff':cutoff,'match_id':match_id}
+            job={'reserved_cents':self.RUN_CENTS,'status':'pending','owner':owner,'expires':now+self.LEASE_SECONDS,'scope':scope,'cutoff':cutoff,'match_id':match_id}
             state['matches'][match_id]=spent+self.RUN_CENTS;state['spent_cents']+=self.RUN_CENTS;state['jobs'][key]=job
             history=[m for m in state['history'].get(scope,[]) if (m['cutoff']['period'],m['cutoff']['elapsed_ms'])<(cutoff['period'],cutoff['elapsed_ms'])]
             attempted=[m for m in state['turns'].get(scope,[]) if (m['cutoff']['period'],m['cutoff']['elapsed_ms'])<(cutoff['period'],cutoff['elapsed_ms'])]

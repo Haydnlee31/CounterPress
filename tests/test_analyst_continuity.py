@@ -22,8 +22,8 @@ def test_settlement_uses_conservative_round_up_and_complete_usage_only():
     for changes in ({'model_calls':3},{'model':'unknown'},{'input_tokens':1},
                     {'per_role_usage':[]},{'per_role_usage':[dict(input_tokens=2500,output_tokens=500,usage_complete=False)]*2},
                     {'input_tokens':0,'per_role_usage':[dict(input_tokens=0,output_tokens=500)]*2}):
-        assert accounted_cents(metered(**changes))==3
-    assert accounted_cents(None)==3
+        assert accounted_cents(metered(**changes))==6
+    assert accounted_cents(None)==6
 
 
 def test_legacy_reconciliation_is_idempotent_and_keeps_unknown_costs():
@@ -39,7 +39,7 @@ def test_legacy_reconciliation_is_idempotent_and_keeps_unknown_costs():
 
 def test_shared_settlement_still_enforces_match_cap_and_survives_restart(tmp_path):
     store=SQLiteStore(tmp_path/'budget.sqlite3');a=LiveAllowance(store)
-    for i in range(268):
+    for i in range(265):
         job=a.reserve(str(i),i*3,'match','scope',{'period':1,'elapsed_ms':i*1000})
         assert job['admitted'];a.finish(str(i),job['owner'],metered(),i*3+1)
         # A duplicate finish cannot release money twice.
@@ -47,7 +47,7 @@ def test_shared_settlement_still_enforces_match_cap_and_survives_restart(tmp_pat
     a=LiveAllowance(store)
     assert a.reserve('new',1000,'match','other',{'period':2,'elapsed_ms':0})['status']=='budget_limit'
     assert a.reserve('0',1000,'match','scope',{'period':1,'elapsed_ms':0})['status']=='complete'
-    assert store.transact(lambda s:(s,s['spent_cents']))==268
+    assert store.transact(lambda s:(s,s['spent_cents']))==265
 
 
 def test_wrong_owner_and_expired_work_do_not_release_reservation(tmp_path):
@@ -55,7 +55,7 @@ def test_wrong_owner_and_expired_work_do_not_release_reservation(tmp_path):
     j=a.reserve('one',0,'match','scope',{'period':1,'elapsed_ms':0})
     a.finish('one','not-owner',metered(),1)
     a.finish('one',j['owner'],metered(),61)
-    assert store.transact(lambda s:(s,s['spent_cents']))==3
+    assert store.transact(lambda s:(s,s['spent_cents']))==6
 
 
 def test_concurrent_viewers_share_one_reservation_and_one_settlement(tmp_path):
@@ -66,7 +66,7 @@ def test_concurrent_viewers_share_one_reservation_and_one_settlement(tmp_path):
         owner=next(j['owner'] for j in jobs if j.get('admitted'))
         list(pool.map(lambda _:a.finish('same',owner,metered(),1),range(6)))
     state=store.transact(lambda s:(s,s))
-    assert state['spent_cents']==1 and state['released_cents']==2
+    assert state['spent_cents']==1 and state['released_cents']==5
 
 
 def test_unknown_legacy_usage_cannot_create_headroom_at_the_cap(tmp_path):
